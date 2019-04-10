@@ -1,0 +1,37 @@
+spring:
+  profiles:
+    active: dev
+  mvc:
+    throw-exception-if-no-handler-found: true
+  aop:
+    proxy-target-class: true
+  cache:
+    type: caffeine
+  mail:
+    host: smtp.163.com
+    username: alwaysacc@163.com
+    password: alwaysacc1
+    default-encoding: utf-8
+  redis:
+    database: 0
+    host: 127.0.0.1
+    password: 123456
+    port: 6379
+    pool:
+    jedis:
+      pool:
+        max-active: 800
+        max-idle: 800
+        min-idle: 10
+  servlet:
+    multipart:
+      max-file-size: 100MB
+  data:
+    solr:
+      host: http://111.230.252.141:8983/solr/alwaysacc
+server:
+  error:
+    whitelabel:
+      enabled: false
+  port: 8082
+
