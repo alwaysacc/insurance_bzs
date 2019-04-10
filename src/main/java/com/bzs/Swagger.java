@@ -26,8 +26,8 @@ public class Swagger {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("swagger构建api文档")
-                .description("记账小程序接口文档")
-                .termsOfServiceUrl("服务条款")
+                .description("")
+                .termsOfServiceUrl("")
                 //.contact(new Contact("daxie", "ss", "alwaysacc@163.com"))
                 .version("1.0")
                 .build();
