@@ -6,11 +6,17 @@ import javax.persistence.*;
 @Table(name = "account_info")
 public class AccountInfo {
     /**
-     * 乐观锁
+     * id
      */
     @Id
+    @Column(name = "account_id")
+    private String accountId;
+
+    /**
+     * 乐观锁
+     */
     @Column(name = "REVISION")
-    private Integer revision;
+    private String revision;
 
     /**
      * 创建人
@@ -37,16 +43,10 @@ public class AccountInfo {
     private Date updatedTime;
 
     /**
-     * id
-     */
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    /**
      * 父级id
      */
     @Column(name = "parent_id")
-    private Integer parentId;
+    private String parentId;
 
     /**
      * 账号所属区域
@@ -98,12 +98,36 @@ public class AccountInfo {
      */
     private String email;
 
+    @Column(name = "role_id")
+    private String roleId;
+
+    @Column(name = "ancestor_id")
+    private String ancestorId;
+
+    /**
+     * 获取id
+     *
+     * @return account_id - id
+     */
+    public String getAccountId() {
+        return accountId;
+    }
+
+    /**
+     * 设置id
+     *
+     * @param accountId id
+     */
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
     /**
      * 获取乐观锁
      *
      * @return REVISION - 乐观锁
      */
-    public Integer getRevision() {
+    public String getRevision() {
         return revision;
     }
 
@@ -112,7 +136,7 @@ public class AccountInfo {
      *
      * @param revision 乐观锁
      */
-    public void setRevision(Integer revision) {
+    public void setRevision(String revision) {
         this.revision = revision;
     }
 
@@ -189,29 +213,11 @@ public class AccountInfo {
     }
 
     /**
-     * 获取id
-     *
-     * @return id - id
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * 设置id
-     *
-     * @param id id
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
      * 获取父级id
      *
      * @return parent_id - 父级id
      */
-    public Integer getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
@@ -220,7 +226,7 @@ public class AccountInfo {
      *
      * @param parentId 父级id
      */
-    public void setParentId(Integer parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
@@ -384,5 +390,33 @@ public class AccountInfo {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * @return role_id
+     */
+    public String getRoleId() {
+        return roleId;
+    }
+
+    /**
+     * @param roleId
+     */
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
+    }
+
+    /**
+     * @return ancestor_id
+     */
+    public String getAncestorId() {
+        return ancestorId;
+    }
+
+    /**
+     * @param ancestorId
+     */
+    public void setAncestorId(String ancestorId) {
+        this.ancestorId = ancestorId;
     }
 }

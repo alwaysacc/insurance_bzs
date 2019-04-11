@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by alwaysacc on 2019/04/10.
+* Created by alwaysacc on 2019/04/11.
 */
 @RestController
 @RequestMapping("/account/info")
@@ -41,8 +41,8 @@ public class AccountInfoController {
     }
 
     @PostMapping("/detail")
-    public Result detail(@RequestParam Integer id) {
-        AccountInfo accountInfo = accountInfoService.findById(id);
+    public Result detail(@RequestParam String id) {
+        AccountInfo accountInfo = (AccountInfo) accountInfoService.findByIds(id);
         return ResultGenerator.genSuccessResult(accountInfo);
     }
 

@@ -5,13 +5,13 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="REVISION" jdbcType="INTEGER" property="revision" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="REVISION" jdbcType="VARCHAR" property="revision" />
     <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
     <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
     <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-    <result column="id" jdbcType="INTEGER" property="id" />
-    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
     <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
     <result column="account_state" jdbcType="VARCHAR" property="accountState" />
     <result column="login_name" jdbcType="VARCHAR" property="loginName" />
@@ -21,5 +21,10 @@
     <result column="id_card" jdbcType="VARCHAR" property="idCard" />
     <result column="wechat" jdbcType="VARCHAR" property="wechat" />
     <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+    <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId" />
   </resultMap>
+  <select id="getRoleIdByAccountId" resultType="String">
+    select role_id from account_id where account_id=#{account_id}
+  </select>
 </mapper>

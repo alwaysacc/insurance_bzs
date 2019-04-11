@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 
 /**
- * Created by alwaysacc on 2019/04/10.
+ * Created by alwaysacc on 2019/04/11.
  */
 @Service
 @Transactional
@@ -19,4 +19,8 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     @Resource
     private AccountInfoMapper accountInfoMapper;
 
+    @Override
+    public String getRoleIdByAccountId(String account_id) {
+        return accountInfoMapper.getRoleIdByAccountId(account_id);
+    }
 }
