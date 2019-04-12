@@ -210,7 +210,7 @@ public class InsuredInfo {
     /**
      * 设置id
      *
-     * @param insuredId
+     * @param insuredId id
      */
     public void setInsuredId(String insuredId) {
         this.insuredId = insuredId;
@@ -219,7 +219,7 @@ public class InsuredInfo {
     /**
      * 获取创建人
      *
-     * @return accountId - 创建人
+     * @return account_id - 创建人
      */
     public String getAccountId() {
         return accountId;

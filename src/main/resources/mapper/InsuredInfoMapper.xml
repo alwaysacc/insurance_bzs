@@ -5,10 +5,10 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="insured_id" jdbcType="INTEGER" property="insuredId" />
-    <result column="create_id" jdbcType="INTEGER" property="createId" />
+    <result column="insured_id" jdbcType="VARCHAR" property="insuredId" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_by" jdbcType="INTEGER" property="updateBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="insurance_company" jdbcType="VARCHAR" property="insuranceCompany" />
     <result column="choice_insurance_source" jdbcType="VARCHAR" property="choiceInsuranceSource" />
@@ -36,6 +36,6 @@
     <result column="biz_last_year_out_danger_count" jdbcType="VARCHAR" property="bizLastYearOutDangerCount" />
     <result column="force_last_year_out_danger" jdbcType="VARCHAR" property="forceLastYearOutDanger" />
     <result column="biz_last_year_out_danger" jdbcType="VARCHAR" property="bizLastYearOutDanger" />
-    <result column="car_info_id" jdbcType="INTEGER" property="carInfoId" />
+    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
   </resultMap>
 </mapper>

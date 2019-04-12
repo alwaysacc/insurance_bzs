@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.QuoteInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.QuoteInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="REVISION" jdbcType="INTEGER" property="revision" />
+    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
+    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="quote_id" jdbcType="VARCHAR" property="quoteId" />
+    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
+    <result column="quote_status" jdbcType="INTEGER" property="quoteStatus" />
+    <result column="repeat_submit_result" jdbcType="VARCHAR" property="repeatSubmitResult" />
+    <result column="submit_status" jdbcType="INTEGER" property="submitStatus" />
+    <result column="force_rate" jdbcType="VARCHAR" property="forceRate" />
+    <result column="no_reparation_sale_rate" jdbcType="VARCHAR" property="noReparationSaleRate" />
+    <result column="independent_channel_date" jdbcType="VARCHAR" property="independentChannelDate" />
+    <result column="independent_submit_rate" jdbcType="VARCHAR" property="independentSubmitRate" />
+    <result column="traffic_illegal_rate" jdbcType="VARCHAR" property="trafficIllegalRate" />
+    <result column="discount_rate" jdbcType="VARCHAR" property="discountRate" />
+    <result column="quote_channel" jdbcType="VARCHAR" property="quoteChannel" />
+    <result column="car_used_type" jdbcType="VARCHAR" property="carUsedType" />
+    <result column="car_model" jdbcType="VARCHAR" property="carModel" />
+    <result column="biz_total" jdbcType="DECIMAL" property="bizTotal" />
+    <result column="force_total" jdbcType="DECIMAL" property="forceTotal" />
+    <result column="tax_total" jdbcType="DECIMAL" property="taxTotal" />
+    <result column="total" jdbcType="DECIMAL" property="total" />
+    <result column="quote_insurance_name" jdbcType="VARCHAR" property="quoteInsuranceName" />
+    <result column="quote_source" jdbcType="VARCHAR" property="quoteSource" />
+    <result column="biz_no" jdbcType="VARCHAR" property="bizNo" />
+    <result column="force_no" jdbcType="VARCHAR" property="forceNo" />
+    <result column="quote_result" jdbcType="LONGVARCHAR" property="quoteResult" />
+    <result column="SubmitResult" jdbcType="LONGVARCHAR" property="submitresult" />
+  </resultMap>
+</mapper>
