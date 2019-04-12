@@ -24,6 +24,6 @@ public interface InsuredInfoService extends Service<InsuredInfo> {
      * @param insuredArea 投保区域
      * @return
      */
-    public Result<RenewalBean> checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, String lastYearSource, String insuredArea);
+    public Result<String> checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, String lastYearSource, String insuredArea);
 
 }

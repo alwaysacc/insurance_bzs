@@ -702,4 +702,11 @@ public class QuoteInfo {
     public void setSubmitresult(String submitresult) {
         this.submitresult = submitresult;
     }
+
+    public QuoteInfo() {
+    }
+
+    public QuoteInfo(String quoteId) {
+        this.quoteId = quoteId;
+    }
 }

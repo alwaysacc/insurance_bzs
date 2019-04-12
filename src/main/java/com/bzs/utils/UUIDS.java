@@ -110,7 +110,7 @@ public class UUIDS {
      * @description 获取UUID 并去除“-”号
      * @return
      */
-    public static String getUUID() {
+    public static String getUUID() {//
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         return uuid;
     }

@@ -26,32 +26,27 @@ import java.util.List;
 
 /**
 * Created by alwaysacc on 2019/04/11.
->>>>>>> f32665f1bb289f060e3830ea3c95f08aff5a07b8
 */
 @RestController
 @RequestMapping("/insured/info")
 public class InsuredInfoController {
     @Resource
     private InsuredInfoService insuredInfoService;
-
     @PostMapping("/add")
     public Result add(InsuredInfo insuredInfo) {
         insuredInfoService.save(insuredInfo);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         insuredInfoService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/update")
     public Result update(InsuredInfo insuredInfo) {
         insuredInfoService.update(insuredInfo);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
         InsuredInfo insuredInfo = insuredInfoService.findById(id);
@@ -74,7 +69,7 @@ public class InsuredInfoController {
     public Map<String,Object>result(String name,String age){
         Map<String,Object> result=new HashMap<String,Object>();
         result.put("status",1);
-        result.put("msg","此时成功");
+        result.put("msg","成功");
         result.put("data",name);
         return result;
 
