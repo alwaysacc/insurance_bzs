@@ -5,6 +5,7 @@ import com.bzs.model.InsuredInfo;
 import com.bzs.service.InsuredInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -14,6 +15,18 @@ import java.util.Map;
 
 /**
 * Created by denglei on 2019/04/10 17:09:11.
+=======
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+* Created by alwaysacc on 2019/04/11.
+>>>>>>> f32665f1bb289f060e3830ea3c95f08aff5a07b8
 */
 @RestController
 @RequestMapping("/insured/info")
@@ -52,6 +65,7 @@ public class InsuredInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
     @PostMapping("/checkByCarNoOrVinNo")
     public Result list(@RequestParam  String checkType,  String carNo,String idCard,String vinNo,String engineNo,String lastYearSource,String insuredArea ) {
         return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea);

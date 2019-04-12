@@ -1,14 +1,12 @@
 package com.bzs.service.impl;
 
-<<<<<<< HEAD
 import com.alibaba.fastjson.JSON;
-=======
->>>>>>> origin/master
+
 import com.bzs.dao.InsuredInfoMapper;
 import com.bzs.model.InsuredInfo;
 import com.bzs.service.InsuredInfoService;
 import com.bzs.utils.AbstractService;
-<<<<<<< HEAD
+
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultCode;
 import com.bzs.utils.ResultGenerator;
@@ -16,13 +14,12 @@ import com.bzs.utils.httpUtil.HttpClientUtil;
 import com.bzs.utils.httpUtil.HttpResult;
 import com.bzs.utils.jsontobean.RenewalBean;
 import org.apache.commons.lang.StringUtils;
-=======
->>>>>>> origin/master
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-<<<<<<< HEAD
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +31,7 @@ import java.util.Map;
 
 /**
  * Created by alwaysacc on 2019/04/11.
->>>>>>> origin/master
+>>>>>>> f32665f1bb289f060e3830ea3c95f08aff5a07b8
  */
 @Service
 @Transactional
@@ -42,7 +39,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     @Resource
     private InsuredInfoMapper insuredInfoMapper;
 
-<<<<<<< HEAD
+
     @Override
     public Result<RenewalBean> checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, String lastYearSource, String insuredArea) {
         if (StringUtils.isBlank(checkType)) {
@@ -90,6 +87,5 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
 
         return null;
     }
-=======
->>>>>>> origin/master
+
 }
