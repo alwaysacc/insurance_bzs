@@ -773,4 +773,10 @@ public class InsuredInfo {
     public void setCarInfoId(String carInfoId) {
         this.carInfoId = carInfoId;
     }
+
+    public InsuredInfo() {
+    }
+    public  InsuredInfo(String insuredId){
+        this.insuredId=insuredId;
+    }
 }
