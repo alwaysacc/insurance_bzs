@@ -35,6 +35,7 @@
         <result column="license_owner" jdbcType="VARCHAR" property="licenseOwner"/>
         <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard"/>
         <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
     </resultMap>
     <select id="getUserList" resultType="map">
         SELECT
@@ -85,15 +86,8 @@
             </if>
             <if test="roleId==3">
                 and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
             </if>
-            <if test="salesman!=null">
-                and car_info.salesman=#{salesman}
-            </if>
-            <if test="customerStatus!=null">
-                and car_info.customer_status=#{customerStatus}
-            </if>
-            and car_info.status=0
         </where>
     </select>
 
@@ -133,9 +127,8 @@
         quote_info.submit_status,
         quote_info.car_info_id FROM
         car_info ,
-        quote_info,customer
+        quote_info
         <where>
-            car_info.car_info_id = quote_info.car_info_id
             <if test="roleId==1">
             </if>
             <if test="roleId==2">
@@ -145,37 +138,37 @@
             </if>
             <if test="roleId==3">
                 and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
             </if>
-            <if test="carNumber!=null">
+            <if test="car_number!=null">
                 and car_info.car_number = #{carNumber}
             </if>
-            <if test="frameNumber!=null">
+            <if test="frame_number!=null">
                 and car_info.frame_number = #{frameNumber}
             </if>
-            <if test="customerName!=null">
-                and
-                customer.customer_id = car_info.customer_id
-                and customer.customer_name = #{customerName}
+            <if test="frame_number!=null">
+                and frame_number = #{frameNumber}
             </if>
-            <if test="customerTel!=null">
-                and
-                customer.customer_id = car_info.customer_id
-                and customer.customer_tel1 = #{customerTel} or
-                customer.customer_tel2 = #{customerTel}
-            </if>
-            and car_info.status=0
         </where>
 
     </select>
-    <!--假删除，到回收站-->
-    <update id="recoverUser">
-        update car_info set status = 1
-        <where>
-            car_info_id in
-            <foreach collection="array" index="index" item="carInfoId" open="(" separator="," close=")">
-                #{carInfoId}
-            </foreach>
-        </where>
-    </update>
+
+    <!--根据车牌或者车架和创建人查询   开始-->
+    <sql id="selectCarInfoId"> car_info_id</sql>
+    <sql id="findParams">
+        <trim prefix="WHERE" suffixOverrides="and " >
+            <if test="carNumber!=null and carNumber!=''"> car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''"> CREATED_BY=#{createdBy} and</if>
+            <if test="frameNumber!=null and frameNumber!=''"> frame_number=#{frameNumber} and</if>
+            <if test="engineNumber!=null and engineNumber!=''"> engine_umber=#{engineNumber} and </if>
+        </trim>
+
+    </sql>
+    <select id="findOneBy" parameterType="com.bzs.model.CheckInfo" resultMap="BaseResultMap">
+        select
+        <include refid="selectCarInfoId"/>
+        from car_info
+        <include refid="findParams"/>
+    </select>
+    <!--根据车牌或者车架和创建人查询  结束-->
 </mapper>

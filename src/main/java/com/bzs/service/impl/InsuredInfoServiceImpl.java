@@ -90,10 +90,10 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         String state = bean.getState();
                         RenewalData data = bean.getData();
                         String sendTime = bean.getSendTime();
+                        checkInfo.setSendTime(sendTime);
                         List<InsuranceTypeInfo> insuranceTypeInfoList = null;
                         if ("1".equals(state)) {//查询成功并返回值
                             if (data != null) {
-
                                 insuranceTypeInfoList = InsuranceTypeBase.getInsuranceTypeInfoList(data, uuid, uuid, "0");
                                 String engineNoNew = data.getEngineNo();//发送机号
                                 String registerDate = data.getFirstRegisterDate();//车辆注册日期
