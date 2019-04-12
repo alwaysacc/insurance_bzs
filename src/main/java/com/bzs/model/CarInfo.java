@@ -724,4 +724,11 @@ public class CarInfo {
     public void setLicenseOwnerIdCardType(String licenseOwnerIdCardType) {
         this.licenseOwnerIdCardType = licenseOwnerIdCardType;
     }
+
+    public CarInfo() {
+    }
+
+    public CarInfo(String carInfoId) {
+        this.carInfoId = carInfoId;
+    }
 }
