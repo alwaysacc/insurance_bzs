@@ -1,154 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.CarInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.CarInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
-    <result column="car_number" jdbcType="VARCHAR" property="carNumber" />
-    <result column="engine_number" jdbcType="VARCHAR" property="engineNumber" />
-    <result column="frame_number" jdbcType="VARCHAR" property="frameNumber" />
-    <result column="register_date" jdbcType="VARCHAR" property="registerDate" />
-    <result column="brand_model" jdbcType="VARCHAR" property="brandModel" />
-    <result column="car_model" jdbcType="VARCHAR" property="carModel" />
-    <result column="purchase_price" jdbcType="INTEGER" property="purchasePrice" />
-    <result column="seat_number" jdbcType="INTEGER" property="seatNumber" />
-    <result column="displacement" jdbcType="DECIMAL" property="displacement" />
-    <result column="isTransfer_car" jdbcType="INTEGER" property="istransferCar" />
-    <result column="isLoan_car" jdbcType="INTEGER" property="isloanCar" />
-    <result column="remarks_car" jdbcType="VARCHAR" property="remarksCar" />
-    <result column="follow_count" jdbcType="INTEGER" property="followCount" />
-    <result column="follow_time" jdbcType="VARCHAR" property="followTime" />
-    <result column="follow_content" jdbcType="VARCHAR" property="followContent" />
-    <result column="plan_return_time" jdbcType="VARCHAR" property="planReturnTime" />
-    <result column="customer_status" jdbcType="INTEGER" property="customerStatus" />
-    <result column="customer_type" jdbcType="VARCHAR" property="customerType" />
-    <result column="salesman" jdbcType="VARCHAR" property="salesman" />
-    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-    <result column="choice_last_year_insurance_name" jdbcType="VARCHAR" property="choiceLastYearInsuranceName" />
-    <result column="choice_last_year_source" jdbcType="VARCHAR" property="choiceLastYearSource" />
-    <result column="insured_area" jdbcType="VARCHAR" property="insuredArea" />
-    <result column="license_owner" jdbcType="VARCHAR" property="licenseOwner" />
-    <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard" />
-    <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType" />
-  </resultMap>
-  <select id="getUserList" resultType="map">
-    SELECT
-car_info.car_info_id,
-car_info.car_number,
-car_info.engine_number,
-car_info.frame_number,
-car_info.register_date,
-car_info.brand_model,
-car_info.car_model,
-car_info.purchase_price,
-car_info.seat_number,
-car_info.displacement,
-car_info.isTransfer_car,
-car_info.isLoan_car,
-car_info.remarks_car,
-car_info.follow_count,
-car_info.follow_time,
-car_info.follow_content,
-car_info.plan_return_time,
-car_info.customer_status,
-car_info.customer_type,
-car_info.salesman,
-car_info.CREATED_BY,
-car_info.CREATED_TIME,
-car_info.UPDATED_BY,
-car_info.UPDATED_TIME,
-car_info.choice_last_year_insurance_name,
-car_info.choice_last_year_source,
-car_info.insured_area,
-car_info.license_owner,
-car_info.license_owner_id_card,
-car_info.license_owner_id_card_type,
-quote_info.quote_status,
-quote_info.submit_status,
-quote_info.car_info_id
-FROM
-car_info ,
-quote_info
-<where>
-  car_info.car_info_id = quote_info.car_info_id
-  <if test="roleId==1">
-  </if>
-  <if test="roleId==2">
-    and car_info.car_info_id in (
-    SELECT car_info_id FROM check_info WHERE create_by in
-    (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
-  </if>
-  <if test="roleId==3">
-    and car_info.car_info_id in (
-    SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
-  </if>
-</where>
- </select>
+    <resultMap id="BaseResultMap" type="com.bzs.model.CarInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId"/>
+        <result column="car_number" jdbcType="VARCHAR" property="carNumber"/>
+        <result column="engine_number" jdbcType="VARCHAR" property="engineNumber"/>
+        <result column="frame_number" jdbcType="VARCHAR" property="frameNumber"/>
+        <result column="register_date" jdbcType="VARCHAR" property="registerDate"/>
+        <result column="brand_model" jdbcType="VARCHAR" property="brandModel"/>
+        <result column="car_model" jdbcType="VARCHAR" property="carModel"/>
+        <result column="purchase_price" jdbcType="INTEGER" property="purchasePrice"/>
+        <result column="seat_number" jdbcType="INTEGER" property="seatNumber"/>
+        <result column="displacement" jdbcType="DECIMAL" property="displacement"/>
+        <result column="isTransfer_car" jdbcType="INTEGER" property="istransferCar"/>
+        <result column="isLoan_car" jdbcType="INTEGER" property="isloanCar"/>
+        <result column="remarks_car" jdbcType="VARCHAR" property="remarksCar"/>
+        <result column="follow_count" jdbcType="INTEGER" property="followCount"/>
+        <result column="follow_time" jdbcType="VARCHAR" property="followTime"/>
+        <result column="follow_content" jdbcType="VARCHAR" property="followContent"/>
+        <result column="plan_return_time" jdbcType="VARCHAR" property="planReturnTime"/>
+        <result column="customer_status" jdbcType="INTEGER" property="customerStatus"/>
+        <result column="customer_type" jdbcType="VARCHAR" property="customerType"/>
+        <result column="salesman" jdbcType="VARCHAR" property="salesman"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="choice_last_year_insurance_name" jdbcType="VARCHAR" property="choiceLastYearInsuranceName"/>
+        <result column="choice_last_year_source" jdbcType="VARCHAR" property="choiceLastYearSource"/>
+        <result column="insured_area" jdbcType="VARCHAR" property="insuredArea"/>
+        <result column="license_owner" jdbcType="VARCHAR" property="licenseOwner"/>
+        <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard"/>
+        <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType"/>
+    </resultMap>
+    <select id="getUserList" resultType="map">
+        SELECT
+        car_info.car_info_id,
+        car_info.car_number,
+        car_info.engine_number,
+        car_info.frame_number,
+        car_info.register_date,
+        car_info.brand_model,
+        car_info.car_model,
+        car_info.purchase_price,
+        car_info.seat_number,
+        car_info.displacement,
+        car_info.isTransfer_car,
+        car_info.isLoan_car,
+        car_info.remarks_car,
+        car_info.follow_count,
+        car_info.follow_time,
+        car_info.follow_content,
+        car_info.plan_return_time,
+        car_info.customer_status,
+        car_info.customer_type,
+        car_info.salesman,
+        car_info.CREATED_BY,
+        car_info.CREATED_TIME,
+        car_info.UPDATED_BY,
+        car_info.UPDATED_TIME,
+        car_info.choice_last_year_insurance_name,
+        car_info.choice_last_year_source,
+        car_info.insured_area,
+        car_info.license_owner,
+        car_info.license_owner_id_card,
+        car_info.license_owner_id_card_type,
+        quote_info.quote_status,
+        quote_info.submit_status,
+        quote_info.car_info_id
+        FROM
+        car_info ,
+        quote_info
+        <where>
+            car_info.car_info_id = quote_info.car_info_id
+            <if test="roleId==1">
+            </if>
+            <if test="roleId==2">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by in
+                (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
+            </if>
+            <if test="roleId==3">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
+            </if>
+            <if test="salesman!=null">
+                and car_info.salesman=#{salesman}
+            </if>
+            <if test="customerStatus!=null">
+                and car_info.customer_status=#{customerStatus}
+            </if>
+            and car_info.status=0
+        </where>
+    </select>
 
-  <select id="searchUserList" resultType="map">
-    select
-    car_info.car_info_id,
-    car_info.car_number,
-    car_info.engine_number,
-    car_info.frame_number,
-    car_info.register_date,
-    car_info.brand_model,
-    car_info.car_model,
-    car_info.purchase_price,
-    car_info.seat_number,
-    car_info.displacement,
-    car_info.isTransfer_car,
-    car_info.isLoan_car,
-    car_info.remarks_car,
-    car_info.follow_count,
-    car_info.follow_time,
-    car_info.follow_content,
-    car_info.plan_return_time,
-    car_info.customer_status,
-    car_info.customer_type,
-    car_info.salesman,
-    car_info.CREATED_BY,
-    car_info.CREATED_TIME,
-    car_info.UPDATED_BY,
-    car_info.UPDATED_TIME,
-    car_info.choice_last_year_insurance_name,
-    car_info.choice_last_year_source,
-    car_info.insured_area,
-    car_info.license_owner,
-    car_info.license_owner_id_card,
-    car_info.license_owner_id_card_type,
-    quote_info.quote_status,
-    quote_info.submit_status,
-    quote_info.car_info_id FROM
-    car_info ,
-    quote_info
-    <where>
-      <if test="roleId==1">
-      </if>
-    <if test="roleId==2">
-      and car_info.car_info_id in (
-      SELECT car_info_id FROM check_info WHERE create_by in
-      (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
-    </if>
-    <if test="roleId==3">
-      and car_info.car_info_id in (
-      SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
-    </if>
-    <if test="car_number!=null">
-      and car_info.car_number = #{carNumber}
-    </if>
-    <if test="frame_number!=null">
-      and car_info.frame_number = #{frameNumber}
-    </if>
-    <if test="frame_number!=null">
-      and frame_number = #{frameNumber}
-    </if>
-    </where>
+    <select id="searchUserList" resultType="map">
+        select
+        car_info.car_info_id,
+        car_info.car_number,
+        car_info.engine_number,
+        car_info.frame_number,
+        car_info.register_date,
+        car_info.brand_model,
+        car_info.car_model,
+        car_info.purchase_price,
+        car_info.seat_number,
+        car_info.displacement,
+        car_info.isTransfer_car,
+        car_info.isLoan_car,
+        car_info.remarks_car,
+        car_info.follow_count,
+        car_info.follow_time,
+        car_info.follow_content,
+        car_info.plan_return_time,
+        car_info.customer_status,
+        car_info.customer_type,
+        car_info.salesman,
+        car_info.CREATED_BY,
+        car_info.CREATED_TIME,
+        car_info.UPDATED_BY,
+        car_info.UPDATED_TIME,
+        car_info.choice_last_year_insurance_name,
+        car_info.choice_last_year_source,
+        car_info.insured_area,
+        car_info.license_owner,
+        car_info.license_owner_id_card,
+        car_info.license_owner_id_card_type,
+        quote_info.quote_status,
+        quote_info.submit_status,
+        quote_info.car_info_id FROM
+        car_info ,
+        quote_info,customer
+        <where>
+            car_info.car_info_id = quote_info.car_info_id
+            <if test="roleId==1">
+            </if>
+            <if test="roleId==2">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by in
+                (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
+            </if>
+            <if test="roleId==3">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
+            </if>
+            <if test="carNumber!=null">
+                and car_info.car_number = #{carNumber}
+            </if>
+            <if test="frameNumber!=null">
+                and car_info.frame_number = #{frameNumber}
+            </if>
+            <if test="customerName!=null">
+                and
+                customer.customer_id = car_info.customer_id
+                and customer.customer_name = #{customerName}
+            </if>
+            <if test="customerTel!=null">
+                and
+                customer.customer_id = car_info.customer_id
+                and customer.customer_tel1 = #{customerTel} or
+                customer.customer_tel2 = #{customerTel}
+            </if>
+            and car_info.status=0
+        </where>
 
-  </select>
+    </select>
+    <!--假删除，到回收站-->
+    <update id="recoverUser">
+        update car_info set status = 1
+        <where>
+            car_info_id in
+            <foreach collection="array" index="index" item="carInfoId" open="(" separator="," close=")">
+                #{carInfoId}
+            </foreach>
+        </where>
+    </update>
 </mapper>
