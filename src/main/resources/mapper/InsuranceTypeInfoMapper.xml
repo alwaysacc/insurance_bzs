@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.InsuranceTypeInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.InsuranceTypeInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="insuiance_type_id" jdbcType="VARCHAR" property="insuianceTypeId" />
+    <result column="REVISION" jdbcType="INTEGER" property="revision" />
+    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
+    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="insurance_name" jdbcType="VARCHAR" property="insuranceName" />
+    <result column="insurance_amount" jdbcType="DECIMAL" property="insuranceAmount" />
+    <result column="insurance_premium" jdbcType="DECIMAL" property="insurancePremium" />
+    <result column="info_type" jdbcType="VARCHAR" property="infoType" />
+    <result column="type_id" jdbcType="VARCHAR" property="typeId" />
+  </resultMap>
+</mapper>

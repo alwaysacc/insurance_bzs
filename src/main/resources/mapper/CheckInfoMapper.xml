@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.CheckInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.CheckInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="check_info_id" jdbcType="VARCHAR" property="checkInfoId" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
+    <result column="is_first_time" jdbcType="VARCHAR" property="isFirstTime" />
+    <result column="check_type" jdbcType="VARCHAR" property="checkType" />
+  </resultMap>
+</mapper>
