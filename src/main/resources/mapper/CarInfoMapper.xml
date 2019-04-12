@@ -149,5 +149,6 @@ quote_info
       and frame_number = #{frameNumber}
     </if>
     </where>
+
   </select>
 </mapper>
