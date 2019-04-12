@@ -1,5 +1,7 @@
 package com.bzs.utils;
 
+import org.apache.poi.hssf.record.formula.functions.T;
+
 /**
  * 响应结果生成工具
  */
@@ -23,5 +25,19 @@ public class ResultGenerator {
         return new Result()
                 .setCode(ResultCode.FAIL)
                 .setMessage(message);
+    }
+    public static <T> Result<T> genSuccessResult(T data,String message) {
+        return new Result()
+                .setCode(ResultCode.SUCCESS)
+                .setMessage(message)
+                .setData(data);
+    }
+    public static Result genParamsErrorResult(String message) {
+        return new Result()
+                .setCode(ResultCode.PARAMS_ERROR)
+                .setMessage(message);
+    }
+    public static <T>Result<T> gen(String message,T t,ResultCode code){
+        return  new Result().setCode(code).setMessage(message).setData(t);
     }
 }
