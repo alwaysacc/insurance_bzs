@@ -15,8 +15,8 @@ public class InsuredInfo {
     /**
      * 创建人
      */
-    @Column(name = "account_id")
-    private String accountId;
+    @Column(name = "create_id")
+    private String createId;
 
     /**
      * 创建时间
@@ -221,17 +221,17 @@ public class InsuredInfo {
      *
      * @return account_id - 创建人
      */
-    public String getAccountId() {
-        return accountId;
+    public String getCreateId() {
+        return createId;
     }
 
     /**
      * 设置创建人
      *
-     * @param accountId 创建人
+     * @param createId 创建人
      */
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setCreateId(String createId) {
+        this.createId = createId;
     }
 
     /**

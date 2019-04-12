@@ -73,6 +73,9 @@ public class InsuranceTypeInfo {
     @Column(name = "type_id")
     private String typeId;
 
+    @Column(name = "excluding_deductible")
+    private BigDecimal excludingEeductible;
+
     /**
      * 获取id
      *
@@ -269,5 +272,21 @@ public class InsuranceTypeInfo {
      */
     public void setTypeId(String typeId) {
         this.typeId = typeId;
+    }
+
+    /**
+     * 不计免
+     * @return
+     */
+    public BigDecimal getExcludingEeductible() {
+        return excludingEeductible;
+    }
+
+    /**
+     * 不计免
+     * @param excludingEeductible
+     */
+    public void setExcludingEeductible(BigDecimal excludingEeductible) {
+        this.excludingEeductible = excludingEeductible;
     }
 }

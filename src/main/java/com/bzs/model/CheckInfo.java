@@ -35,6 +35,8 @@ public class CheckInfo {
      */
     @Column(name = "check_type")
     private String checkType;
+    @Column(name = "send_time")
+    private String sendTime;
 
     /**
      * @return check_info_id
@@ -134,6 +136,14 @@ public class CheckInfo {
      */
     public void setCheckType(String checkType) {
         this.checkType = checkType;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
     }
 
     public CheckInfo() {

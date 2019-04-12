@@ -4,7 +4,8 @@ package com.bzs.utils;
  * 响应码枚举，参考HTTP状态码的语义
  */
 public enum ResultCode {
-    PARAMS_ERROR(-10000),
+    SUCCESS_NULL(100),//查询成功，但未查询到数据
+    PARAMS_ERROR(-100),
     SUCCESS(200),//成功
     FAIL(400),//失败
     UNAUTHORIZED(401),//未认证（签名错误）

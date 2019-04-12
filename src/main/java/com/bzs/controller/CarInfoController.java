@@ -66,4 +66,16 @@ public class CarInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
+    /**
+     * 通过车牌或者车架号和添加人查询，车牌号和车架号必须有一个不为空
+     * @param carNo 车牌
+     * @param vinNo 车架
+     * @param operatorId 添加者
+     * @return
+     */
+    @PostMapping("/getCarInfoIdInfo")
+    public Result getCarInfoIdInfo(String carNo,String vinNo,String operatorId){
+      return  carInfoService.getCarInfoIdInfo(carNo,vinNo,operatorId);
+    }
 }

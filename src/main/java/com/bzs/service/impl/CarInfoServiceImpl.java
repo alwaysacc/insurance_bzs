@@ -6,8 +6,13 @@ import com.bzs.model.AccountInfo;
 import com.bzs.model.CarInfo;
 import com.bzs.service.CarInfoService;
 import com.bzs.utils.AbstractService;
+import com.bzs.utils.Result;
+import com.bzs.utils.ResultCode;
+import com.bzs.utils.ResultGenerator;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -37,5 +42,23 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
 
         }
         return carInfoMapper.getUserList(accountId,roleId);
+    }
+
+    @Override
+    public Result getCarInfoIdInfo(String carNo, String vinNo, String operatorId) {
+        if(StringUtils.isNotBlank(carNo)&&StringUtils.isNotBlank(vinNo)){
+           return ResultGenerator.genFailResult("车牌号和车架号不能同时为空");
+        }
+        CarInfo carInfo=new CarInfo();
+        carInfo.setCreatedBy(operatorId);
+        carInfo.setCarNumber(carNo);
+        carInfo.setFrameNumber(vinNo);
+        List list=carInfoMapper.findOneBy(carInfo);
+        if(CollectionUtils.isEmpty(list)){
+            return ResultGenerator.gen("查询成功,返回值为空",null, ResultCode.SUCCESS_NULL);//
+        }else{
+            return ResultGenerator.genSuccessResult(list);
+        }
+
     }
 }

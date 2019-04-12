@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CarInfoMapper extends Mapper<CarInfo> {
     List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId);
+    List findOneBy(CarInfo carInfo);
 }
