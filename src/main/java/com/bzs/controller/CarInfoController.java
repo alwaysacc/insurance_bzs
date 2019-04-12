@@ -29,7 +29,7 @@ public class CarInfoController {
         carInfo.setCarInfoId("1213");
         carInfoService.save(carInfo);
         System.out.println(11);
-        carInfoService.save(carInfo);
+        carInfoService.save(carInfo  );
         return ResultGenerator.genSuccessResult();
     }
 
@@ -58,24 +58,42 @@ public class CarInfoController {
         CarInfo carInfo = carInfoService.findBy("carInfoId",carInfoId);
         return ResultGenerator.genSuccessResult(carInfo);
     }
-
-    @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId) {
+    /**
+     * @Author 孙鹏程
+     * @Description //TODO 获取客户列表，salesman是否分配0未分配，customerStatus客户状态，0未回访
+     * @Date 2019/4/12/012  11:15 
+     * @Param [page, size, accountId, roleId, salesman, customerStatus]
+     * @return com.bzs.utils.Result
+     **/
+    @ApiOperation("获取客户列表")
+    @PostMapping("/getUserList")
+    public Result list(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId,String salesman,String customerStatus) {
         PageHelper.startPage(page, size);
-        List<CarInfo> list = carInfoService.getUserList(accountId,roleId);
+        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
     /**
-     * 通过车牌或者车架号和添加人查询，车牌号和车架号必须有一个不为空
-     * @param carNo 车牌
-     * @param vinNo 车架
-     * @param operatorId 添加者
-     * @return
-     */
-    @PostMapping("/getCarInfoIdInfo")
-    public Result getCarInfoIdInfo(String carNo,String vinNo,String operatorId){
-      return  carInfoService.getCarInfoIdInfo(carNo,vinNo,operatorId);
+     * @Author 孙鹏程
+     * @Description //TODO 搜索客户列表，查询什么条件就传什么条件
+     * @Date 2019/4/12/012  11:17 
+     * @Param [accountId, roleId, carNumber, frameNumber, customerName, customerTel]
+     * @return com.bzs.utils.Result
+     **/
+    @ApiOperation("搜索客户列表")
+    @PostMapping("/searchUserList")
+    public Result searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel) {
+        List<CarInfo> list = carInfoService.searchUserList(
+                accountId,roleId,carNumber,frameNumber,customerName,customerTel);
+        return ResultGenerator.genSuccessResult(list);
     }
+    @ApiOperation("回收客户")
+    @PostMapping("/recoverUser")
+    public Result recoverUser(String[] carInfoId) {
+        //carInfoService.recoverUser(carInfoId);
+        //System.out.println(carInfoId);
+        //System.out.println(ResultGenerator.genSuccessResult(id));
+        return ResultGenerator.genSuccessResult( carInfoService.recoverUser(carInfoId));
+    }
+
 }
