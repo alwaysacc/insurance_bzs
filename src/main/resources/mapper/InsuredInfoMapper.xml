@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.InsuredInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.InsuredInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="insured_id" jdbcType="VARCHAR" property="insuredId" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="insurance_company" jdbcType="VARCHAR" property="insuranceCompany" />
+    <result column="choice_insurance_source" jdbcType="VARCHAR" property="choiceInsuranceSource" />
+    <result column="mechanism_number" jdbcType="VARCHAR" property="mechanismNumber" />
+    <result column="busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
+    <result column="force_expire_date" jdbcType="VARCHAR" property="forceExpireDate" />
+    <result column="next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate" />
+    <result column="next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate" />
+    <result column="force_is_insured" jdbcType="VARCHAR" property="forceIsInsured" />
+    <result column="biz_is_insured" jdbcType="VARCHAR" property="bizIsInsured" />
+    <result column="last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany" />
+    <result column="last_year_source" jdbcType="VARCHAR" property="lastYearSource" />
+    <result column="license_owner" jdbcType="VARCHAR" property="licenseOwner" />
+    <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard" />
+    <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType" />
+    <result column="posted_name" jdbcType="VARCHAR" property="postedName" />
+    <result column="holder_id_card" jdbcType="VARCHAR" property="holderIdCard" />
+    <result column="holder_id_card_type" jdbcType="VARCHAR" property="holderIdCardType" />
+    <result column="insured_name" jdbcType="VARCHAR" property="insuredName" />
+    <result column="insured__id_card" jdbcType="INTEGER" property="insuredIdCard" />
+    <result column="insured_id_card_type" jdbcType="INTEGER" property="insuredIdCardType" />
+    <result column="busines_number" jdbcType="INTEGER" property="businesNumber" />
+    <result column="traffic_number" jdbcType="INTEGER" property="trafficNumber" />
+    <result column="force_last_year_out_danger_count" jdbcType="VARCHAR" property="forceLastYearOutDangerCount" />
+    <result column="biz_last_year_out_danger_count" jdbcType="VARCHAR" property="bizLastYearOutDangerCount" />
+    <result column="force_last_year_out_danger" jdbcType="VARCHAR" property="forceLastYearOutDanger" />
+    <result column="biz_last_year_out_danger" jdbcType="VARCHAR" property="bizLastYearOutDanger" />
+    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
+  </resultMap>
+</mapper>
