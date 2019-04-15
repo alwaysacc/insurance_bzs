@@ -3,14 +3,14 @@ Navicat MySQL Data Transfer
 
 Source Server         : 1
 Source Server Version : 50725
-Source Host           : 192.168.1.103:3306
+Source Host           : 192.168.1.102:3306
 Source Database       : insurance_bzs
 
 Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-04-12 18:02:31
+Date: 2019-04-11 17:16:39
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,8 +25,8 @@ CREATE TABLE `account_info` (
   `CREATED_TIME` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATED_BY` varchar(32) DEFAULT NULL COMMENT '更新人',
   `UPDATED_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `account_id` varchar(64) NOT NULL COMMENT 'id',
-  `parent_id` varchar(64) DEFAULT NULL COMMENT '父级id',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `parent_id` int(11) DEFAULT NULL COMMENT '父级id',
   `area_code` varchar(32) DEFAULT NULL COMMENT '账号所属区域',
   `account_state` varchar(32) DEFAULT '0' COMMENT '账号状态 0启用1禁用',
   `login_name` varchar(32) DEFAULT NULL COMMENT '账号登陆名',
@@ -37,16 +37,16 @@ CREATE TABLE `account_info` (
   `wechat` varchar(32) DEFAULT NULL COMMENT '微信号',
   `email` varchar(32) DEFAULT NULL COMMENT '邮箱号',
   `ancestor_id` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账号列表 ';
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='账号列表 ';
 
 -- ----------------------------
 -- Records of account_info
 -- ----------------------------
 INSERT INTO `account_info` VALUES ('1', '1', null, '1', null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', null);
-INSERT INTO `account_info` VALUES ('2', '2', null, null, '2019-04-12 10:05:17', '2', null, null, '0', null, null, null, null, null, null, null, '1');
-INSERT INTO `account_info` VALUES ('3', '3', null, null, '2019-04-12 10:05:16', '3', null, null, '0', null, null, null, null, null, null, null, '1');
-INSERT INTO `account_info` VALUES ('4', '22', '2019-04-11 16:52:55', null, '2019-04-12 10:05:16', '4', null, null, '0', null, null, null, null, null, null, null, '1');
+INSERT INTO `account_info` VALUES ('2', '2', null, null, null, '2', null, null, '0', null, null, null, null, null, null, null, null);
+INSERT INTO `account_info` VALUES ('3', '3', null, null, null, '3', null, null, '0', null, null, null, null, null, null, null, null);
+INSERT INTO `account_info` VALUES ('4', '22', '2019-04-11 16:52:55', null, '2019-04-11 16:52:59', '4', null, null, '0', null, null, null, null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for account_role_info
@@ -90,9 +90,9 @@ CREATE TABLE `car_info` (
   `follow_time` varchar(32) DEFAULT NULL COMMENT '最后跟进时间',
   `follow_content` varchar(1024) DEFAULT NULL COMMENT '最后跟进内容',
   `plan_return_time` varchar(32) DEFAULT NULL COMMENT '计划回访时间',
-  `customer_status` int(11) DEFAULT '0' COMMENT '客户状态 0回访1未回访',
+  `customer_status` int(11) DEFAULT NULL COMMENT '客户状态 0回访1未回访',
   `customer_type` varchar(32) DEFAULT NULL COMMENT '客户类别',
-  `salesman` varchar(32) DEFAULT '0' COMMENT '业务员',
+  `salesman` varchar(32) DEFAULT NULL COMMENT '业务员',
   `CREATED_BY` varchar(32) DEFAULT NULL COMMENT '创建人',
   `CREATED_TIME` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATED_BY` varchar(32) DEFAULT NULL COMMENT '更新人',
@@ -104,23 +104,15 @@ CREATE TABLE `car_info` (
   `license_owner_id_card` varchar(32) DEFAULT NULL COMMENT '车主证件号码',
   `license_owner_id_card_type` varchar(32) DEFAULT '0' COMMENT '车主证件类型 证件类型 0：没有取到 1：身份证 2: 组织机构代码证 3：护照',
   `customer_Id` varchar(64) DEFAULT NULL COMMENT '客户id',
-  `status` int(2) DEFAULT '0',
-  `mobile` varchar(20) DEFAULT NULL COMMENT '手机号',
   PRIMARY KEY (`car_info_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='车辆信息表 ';
 
 -- ----------------------------
 -- Records of car_info
 -- ----------------------------
-INSERT INTO `car_info` VALUES ('1', '1', '123', 'a', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '0', '0', '0', '', '2019-04-13 11:14:40', '', '2019-04-12 11:39:09', '1', '', '南京', '张三', null, '0', '1', '0', null);
-INSERT INTO `car_info` VALUES ('1213', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', null, '2019-04-12 14:44:01', null, null, null, null, null, null, null, '0', null, '0', null);
-INSERT INTO `car_info` VALUES ('2', '2', '456', 'b', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '0', '0', '1', '', '2019-04-13 11:14:40', '', '2019-04-12 11:39:10', '1', '', '南京', '李四', null, '0', '1', '0', null);
-INSERT INTO `car_info` VALUES ('20190412133426574117', '苏A00VC9', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', '20190412133426574117', '2019-04-12 13:36:00', null, null, null, null, null, null, null, '0', null, '0', null);
-INSERT INTO `car_info` VALUES ('20190412135138390401', '苏A00VC9', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', '20190412135138390401', '2019-04-12 13:53:11', null, null, null, null, null, null, null, '0', null, '0', null);
-INSERT INTO `car_info` VALUES ('3', '3', '789', 'c', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '1', '0', '1', '', '2019-04-13 11:14:40', '', '2019-04-12 11:39:11', '1', '', '南京', '王二', null, '01', '1', '0', null);
-INSERT INTO `car_info` VALUES ('4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', null, '2019-04-12 13:33:57', null, '2019-04-12 14:06:45', null, null, null, null, null, '0', null, '1', null);
-INSERT INTO `car_info` VALUES ('5', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', null, '2019-04-12 13:33:59', null, '2019-04-12 14:06:45', null, null, null, null, null, '0', '0', '1', null);
-INSERT INTO `car_info` VALUES ('6', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, '0', null, '2019-04-12 13:34:01', null, '2019-04-12 14:06:45', null, null, null, null, null, '0', null, '1', null);
+INSERT INTO `car_info` VALUES ('1', '苏A99C3G', '453684F', 'JKAHDUASGDHKWBA', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '0', '0', '1', '', '2019-04-13 11:14:40', '', '2019-04-15 00:00:00', '1', '', '南京', '张三', null, '0', null);
+INSERT INTO `car_info` VALUES ('2', '苏A99C3G', '453684F', 'JKAHDUASGDHKWBA', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '0', '0', '1', '', '2019-04-13 11:14:40', '', '2019-04-15 00:00:00', '1', '', '南京', '李四', null, '0', null);
+INSERT INTO `car_info` VALUES ('3', '苏A99C3G', '453684F', 'JKAHDUASGDHKWBA', '2019-4-1', '宝马', '奔驰5座', '2054122', '6', '2.0000000000', '1', '1', '哈哈哈', '1', '2019-4-10', '哈哈哈哈哈', '2019-4-20', '0', '0', '1', '', '2019-04-13 11:14:40', '', '2019-04-15 00:00:00', '1', '', '南京', '王二', null, '0', null);
 
 -- ----------------------------
 -- Table structure for car_out_danger_info
@@ -151,26 +143,17 @@ CREATE TABLE `car_out_danger_info` (
 DROP TABLE IF EXISTS `check_info`;
 CREATE TABLE `check_info` (
   `check_info_id` varchar(64) NOT NULL,
-  `create_by` varchar(64) DEFAULT NULL COMMENT '操作者id',
+  `create_by` varchar(64) DEFAULT NULL COMMENT '操作人id',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `car_info_id` varchar(64) DEFAULT NULL COMMENT '操作车辆id',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
   `is_first_time` varchar(10) DEFAULT '0' COMMENT '是否首次查询:默认0 不是 1是',
   `check_type` varchar(4) DEFAULT NULL COMMENT '查询方式0车牌查询1车架查询',
-  `send_time` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`check_info_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of check_info
 -- ----------------------------
-INSERT INTO `check_info` VALUES ('1', '1', '1', '2019-04-12 10:02:16', null, '0', null, null);
-INSERT INTO `check_info` VALUES ('1w', '1', '1', '2019-04-12 14:00:28', null, '0', '1', null);
-INSERT INTO `check_info` VALUES ('2', '1', '2', '2019-04-12 10:02:22', null, '0', null, null);
-INSERT INTO `check_info` VALUES ('20190412133426574117', null, null, '2019-04-12 13:36:00', null, '0', null, null);
-INSERT INTO `check_info` VALUES ('20190412135138390401', null, null, '2019-04-12 13:53:11', '2019-04-12 14:02:28', '1', null, null);
-INSERT INTO `check_info` VALUES ('3', '1', '3', '2019-04-12 10:34:23', null, '0', null, null);
-INSERT INTO `check_info` VALUES ('`12', null, '4', '2019-04-12 11:36:58', null, '0', null, null);
 
 -- ----------------------------
 -- Table structure for customer
@@ -198,7 +181,6 @@ CREATE TABLE `customer` (
 -- ----------------------------
 -- Records of customer
 -- ----------------------------
-INSERT INTO `customer` VALUES ('1', 'hh', '155', null, null, null, null, null, null, null, null, '2019-04-12 10:18:30', null, null, null);
 
 -- ----------------------------
 -- Table structure for insurance_follow_info
@@ -235,12 +217,10 @@ CREATE TABLE `insurance_type_info` (
   `UPDATED_BY` varchar(32) DEFAULT NULL COMMENT '更新人',
   `UPDATED_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `insurance_name` varchar(32) DEFAULT NULL COMMENT '承保险种名称',
-  `insurance_amount` decimal(32,4) DEFAULT '0.0000' COMMENT '保额',
-  `insurance_premium` decimal(32,4) DEFAULT '0.0000' COMMENT '保费',
+  `insurance_amount` decimal(32,8) DEFAULT '0.00000000' COMMENT '保额',
+  `insurance_premium` decimal(32,8) DEFAULT '0.00000000' COMMENT '保费',
   `info_type` varchar(32) DEFAULT NULL COMMENT '类型 0投保1报价（0）',
   `type_id` varchar(64) DEFAULT NULL COMMENT '类型id info_type=0表示投保id，info_type=1表示报价id',
-  `excluding_deductible` decimal(32,4) DEFAULT '0.0000' COMMENT '不计免',
-  `send_time` varchar(32) DEFAULT NULL COMMENT '请求发送日期',
   PRIMARY KEY (`insuiance_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='保险分类信息 ';
 
@@ -253,8 +233,8 @@ CREATE TABLE `insurance_type_info` (
 -- ----------------------------
 DROP TABLE IF EXISTS `insured_info`;
 CREATE TABLE `insured_info` (
-  `insured_id` varchar(64) NOT NULL COMMENT 'id',
-  `create_id` varchar(64) DEFAULT NULL COMMENT '创建人',
+  `insured_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `create_id` int(11) DEFAULT NULL COMMENT '创建人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_by` int(11) DEFAULT NULL COMMENT '更新人',
   `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -285,16 +265,13 @@ CREATE TABLE `insured_info` (
   `force_last_year_out_danger` varchar(32) DEFAULT NULL COMMENT '上一年交强险出险情况',
   `biz_last_year_out_danger` varchar(32) DEFAULT NULL COMMENT '上一年商业险出险情况',
   `car_info_id` varchar(64) DEFAULT NULL COMMENT '车辆信息表id 关联相关车辆的续保信息',
-  `status` int(2) DEFAULT '0',
   PRIMARY KEY (`insured_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投保信息 ';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='投保信息 ';
 
 -- ----------------------------
 -- Records of insured_info
 -- ----------------------------
-INSERT INTO `insured_info` VALUES ('1', null, '2019-04-10 14:15:48', null, '2019-04-12 14:54:00', null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, null, null, '人保车险', null, null, null, null, null, null, null, null, '1', '0');
-INSERT INTO `insured_info` VALUES ('20190412133426574117', '20190412133426574117', '2019-04-12 13:36:00', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0');
-INSERT INTO `insured_info` VALUES ('20190412135138390401', '20190412135138390401', '2019-04-12 13:53:11', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0');
+INSERT INTO `insured_info` VALUES ('1', null, '2019-04-10 14:15:48', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', null, null, null, '人保车险', null, null, null, null, null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for menu_info
@@ -317,32 +294,6 @@ CREATE TABLE `menu_info` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for order_info
--- ----------------------------
-DROP TABLE IF EXISTS `order_info`;
-CREATE TABLE `order_info` (
-  `order_id` varchar(64) NOT NULL COMMENT '订单号',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '订单生成日期',
-  `finish_time` datetime DEFAULT NULL COMMENT '订单完成日期',
-  `account_id` varchar(64) DEFAULT NULL COMMENT '创建者id',
-  `pay_status` int(4) DEFAULT '0' COMMENT '支付状态0待支付,1完成2取消3退款4支付超时5支付失败',
-  `pay_type` varchar(4) DEFAULT NULL COMMENT '支付用途：1购买账号,2保单',
-  `payment` varchar(4) DEFAULT NULL COMMENT '支付方式1支付宝2微信3pos',
-  `pay_money` decimal(10,4) DEFAULT NULL COMMENT '支付金额',
-  `car_info_id` varchar(64) DEFAULT NULL,
-  `delivery_way` int(4) DEFAULT NULL,
-  `delivery_address` varchar(64) DEFAULT NULL,
-  `contact_name` varchar(11) DEFAULT NULL,
-  `contact_tel` int(11) DEFAULT NULL,
-  PRIMARY KEY (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of order_info
--- ----------------------------
-INSERT INTO `order_info` VALUES ('1', '2019-04-12 14:50:37', null, '1', '0', null, null, null, '1', null, null, null, null);
-
--- ----------------------------
 -- Table structure for policy_payment_info
 -- ----------------------------
 DROP TABLE IF EXISTS `policy_payment_info`;
@@ -352,8 +303,8 @@ CREATE TABLE `policy_payment_info` (
   `CREATED_TIME` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `UPDATED_BY` varchar(32) DEFAULT NULL COMMENT '更新人',
   `UPDATED_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `policy_id` varchar(64) NOT NULL COMMENT 'id',
-  `car_info_id` varchar(64) DEFAULT NULL COMMENT '车辆信息id',
+  `policy_id` varchar(11) NOT NULL COMMENT 'id',
+  `car_info_id` varchar(11) DEFAULT NULL COMMENT '车辆信息id',
   `payment` varchar(32) DEFAULT NULL COMMENT '支付方式 1支付宝2微信3pos',
   `pay_money` decimal(32,8) DEFAULT NULL COMMENT '支付金额',
   `order_state` varchar(32) DEFAULT NULL COMMENT '订单状态 0待支付1待出单2已承保3已取消4已过期5已完成',
@@ -423,16 +374,15 @@ CREATE TABLE `quote_info` (
   `quote_source` varchar(32) DEFAULT NULL COMMENT '报价保司枚举值 1太保2平安4人保',
   `biz_no` varchar(64) DEFAULT NULL COMMENT '商业险保单号',
   `force_no` varchar(64) DEFAULT NULL COMMENT '交强险保单号',
-  `status` int(2) DEFAULT '0',
   PRIMARY KEY (`quote_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='报价信息 ';
 
 -- ----------------------------
 -- Records of quote_info
 -- ----------------------------
-INSERT INTO `quote_info` VALUES (null, null, null, null, null, '1', '1', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, null, null, null, null, '2', '2', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, null, null, null, null, '3', '3', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, null, null, null, null, '1', '1', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, null, null, null, null, '2', '2', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, null, null, null, null, '3', '3', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for role_info
@@ -523,6 +473,19 @@ CREATE TABLE `third_insurance_account_info` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for third_insurance_info
+-- ----------------------------
+DROP TABLE IF EXISTS `third_insurance_info`;
+CREATE TABLE `third_insurance_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='第三方保险公司账号,用于续保报价 ';
+
+-- ----------------------------
+-- Records of third_insurance_info
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for upload_file_info
 -- ----------------------------
 DROP TABLE IF EXISTS `upload_file_info`;
@@ -543,11 +506,6 @@ CREATE TABLE `upload_file_info` (
 -- ----------------------------
 -- Records of upload_file_info
 -- ----------------------------
-DROP TRIGGER IF EXISTS `update_check_info_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_check_info_trigger` BEFORE UPDATE ON `check_info` FOR EACH ROW SET NEW.update_time=NOW()
-;;
-DELIMITER ;
 DROP TRIGGER IF EXISTS `update_insured_info_trigger`;
 DELIMITER ;;
 CREATE TRIGGER `update_insured_info_trigger` BEFORE UPDATE ON `insured_info` FOR EACH ROW SET NEW.`update_time` = NOW()

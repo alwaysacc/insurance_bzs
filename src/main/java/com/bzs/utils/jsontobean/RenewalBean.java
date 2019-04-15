@@ -11,7 +11,7 @@ import java.util.Date;
 public class RenewalBean {
     private String state;
     private RenewalData data;
-    private Date sendTime;
+    private String sendTime;
     private String message;
     public void setState(String state) {
         this.state = state;
@@ -21,10 +21,10 @@ public class RenewalBean {
     }
 
 
-    public void setSendTime(Date sendTime) {
+    public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
     }
-    public Date getSendTime() {
+    public String getSendTime() {
         return sendTime;
     }
 

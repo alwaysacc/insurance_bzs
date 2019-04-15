@@ -184,6 +184,8 @@ public class CarInfo {
      */
     @Column(name = "license_owner_id_card_type")
     private String licenseOwnerIdCardType;
+    @Column(name = "mobile")
+    private String mobile;
 
     /**
      * 获取ID
@@ -730,5 +732,13 @@ public class CarInfo {
 
     public CarInfo(String carInfoId) {
         this.carInfoId = carInfoId;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

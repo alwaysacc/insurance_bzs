@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class RenewalData {
     private A a;
-    private String frameNo;
+    private String frameNo;//车架号
     private B b;
     private C c;
     private D d;
@@ -26,14 +26,16 @@ public class RenewalData {
     private N n;
     private O o;
     private P p;
-    private String name;
-    private String vehicleFgwCode;
-    private String mobile;
-    private String biPremium;
-    private Date firstRegisterDate;
-    private String engineNo;
-    private String cardID;
-    private Date biBeginDate;
+    private String name;//车主
+    private String vehicleFgwCode;//车辆型号
+    private String mobile;//手机号
+    private String biPremium;//商业险保费
+    private String firstRegisterDate;//车辆注册日期
+    private String engineNo;//发动机号
+    private String cardID;//车主证件号
+    private String biBeginDate;//商业险下次起保日期
+    private String ciPremium;//交强险保费
+    private String ciBeginDate;//交强险下次起保日期
 
     public RenewalData() {
     }
@@ -206,11 +208,11 @@ public class RenewalData {
         this.biPremium = biPremium;
     }
 
-    public Date getFirstRegisterDate() {
+    public String getFirstRegisterDate() {
         return firstRegisterDate;
     }
 
-    public void setFirstRegisterDate(Date firstRegisterDate) {
+    public void setFirstRegisterDate(String firstRegisterDate) {
         this.firstRegisterDate = firstRegisterDate;
     }
 
@@ -230,11 +232,27 @@ public class RenewalData {
         this.cardID = cardID;
     }
 
-    public Date getBiBeginDate() {
+    public String getBiBeginDate() {
         return biBeginDate;
     }
 
-    public void setBiBeginDate(Date biBeginDate) {
+    public void setBiBeginDate(String biBeginDate) {
         this.biBeginDate = biBeginDate;
+    }
+
+    public String getCiPremium() {
+        return ciPremium;
+    }
+
+    public void setCiPremium(String ciPremium) {
+        this.ciPremium = ciPremium;
+    }
+
+    public String getCiBeginDate() {
+        return ciBeginDate;
+    }
+
+    public void setCiBeginDate(String ciBeginDate) {
+        this.ciBeginDate = ciBeginDate;
     }
 }

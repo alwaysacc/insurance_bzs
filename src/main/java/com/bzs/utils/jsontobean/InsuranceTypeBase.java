@@ -1,5 +1,12 @@
 package com.bzs.utils.jsontobean;
 
+import com.bzs.model.InsuranceTypeInfo;
+import com.bzs.utils.encodeUtil.EncodeUtil;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @program: insurance_bzs
  * @description: 投保险种的基础项
@@ -45,5 +52,83 @@ public class InsuranceTypeBase {
 
     public void setInsuredPremium(String insuredPremium) {
         this.insuredPremium = insuredPremium;
+    }
+
+    /**
+     * @param data
+     * @param typeId     投保或报价id
+     * @param operatorId 执行人
+     * @param infoType   0投保1报价
+     * @return
+     */
+    public static List<InsuranceTypeInfo> getInsuranceTypeInfoList(RenewalData data, String typeId, String operatorId, String infoType) {
+        if (null != data) {
+            List<InsuranceTypeBase> insuranceTypeBasesList = new ArrayList<InsuranceTypeBase>();
+            InsuranceTypeBase a = data.getA();
+            InsuranceTypeBase b = data.getB();
+            InsuranceTypeBase c = data.getC();
+            InsuranceTypeBase d = data.getD();
+            InsuranceTypeBase e=data.getE();
+            InsuranceTypeBase f=data.getF();
+            InsuranceTypeBase g=data.getG();
+            InsuranceTypeBase h=data.getH();
+            InsuranceTypeBase i=data.getI();
+            InsuranceTypeBase j=data.getJ();
+            InsuranceTypeBase k=data.getK();
+            InsuranceTypeBase l=data.getL();
+            InsuranceTypeBase m=data.getM();
+            InsuranceTypeBase n=data.getN();
+            InsuranceTypeBase o=data.getO();
+            InsuranceTypeBase p=data.getP();
+            insuranceTypeBasesList.add(a);
+            insuranceTypeBasesList.add(b);
+            insuranceTypeBasesList.add(c);
+            insuranceTypeBasesList.add(d);
+            insuranceTypeBasesList.add(e);
+            insuranceTypeBasesList.add(f);
+            insuranceTypeBasesList.add(g);
+
+            insuranceTypeBasesList.add(h);
+            insuranceTypeBasesList.add(i);
+            insuranceTypeBasesList.add(j);
+            insuranceTypeBasesList.add(k);
+            insuranceTypeBasesList.add(l);
+            insuranceTypeBasesList.add(m);
+            insuranceTypeBasesList.add(n);
+            insuranceTypeBasesList.add(o);
+            insuranceTypeBasesList.add(p);
+          return  base(infoType,typeId,operatorId,insuranceTypeBasesList);
+        }
+        return null;
+    }
+    public static List<InsuranceTypeInfo> base(String infoType,String typeId,String operatorId,List<InsuranceTypeBase> list){
+       List<InsuranceTypeInfo> resultList = new ArrayList<InsuranceTypeInfo>();
+        if (list != null&&list.size()>0) {
+            for (int i=0;i<list.size();i++ ){
+                InsuranceTypeBase base= (InsuranceTypeBase)list.get(i);
+                if(null!=base){
+                    InsuranceTypeInfo info = new InsuranceTypeInfo();
+                    //险种名称
+                    String name = EncodeUtil.unicodeToString(base.getInsuranceName());
+                    info.setInsuranceName(name);
+                    //保额
+                    BigDecimal account = new BigDecimal(base.getAmount());
+                    info.setInsuranceAmount(account);
+                    //保费
+                    BigDecimal premium = new BigDecimal(base.getInsuredPremium());
+                    info.setInsurancePremium(premium);
+                    //不计免
+                    BigDecimal bjm = new BigDecimal(base.getBujimianpei());
+                    info.setExcludingEeductible(bjm);
+                    info.setInfoType(infoType);
+                    info.setTypeId(typeId);
+                    info.setCreatedBy(operatorId);
+                    resultList.add(info);
+                }
+
+            }
+
+        }
+        return resultList;
     }
 }

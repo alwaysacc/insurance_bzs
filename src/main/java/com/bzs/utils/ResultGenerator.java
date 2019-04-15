@@ -37,7 +37,7 @@ public class ResultGenerator {
                 .setCode(ResultCode.PARAMS_ERROR)
                 .setMessage(message);
     }
-    public static <T>Result<T> gen(String message,T t,ResultCode code){
-        return  new Result().setCode(code).setMessage(message).setData(t);
+    public static <T>Result<T> gen(String message,T data,ResultCode code){
+        return  new Result().setCode(code).setMessage(message).setData(data);
     }
 }

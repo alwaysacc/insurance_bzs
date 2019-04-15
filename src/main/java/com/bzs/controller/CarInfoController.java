@@ -65,7 +65,7 @@ public class CarInfoController {
      **/
     @ApiOperation("获取客户列表")
     @PostMapping("/getUserList")
-    public Result list(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId,String salesman,String customerStatus) {
+    public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId,String salesman,String customerStatus) {
         PageHelper.startPage(page, size);
         List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus);
         PageInfo pageInfo = new PageInfo(list);
@@ -74,7 +74,7 @@ public class CarInfoController {
     /**
      * @Author 孙鹏程
      * @Description  搜索客户列表，查询什么条件就传什么条件
-     * @Date 2019/4/12/012  11:17 
+     * @Date 2019/4/12/012  11:17
      * @Param [accountId, roleId, carNumber, frameNumber, customerName, customerTel]
      * @return com.bzs.utils.Result
      **/
@@ -84,6 +84,17 @@ public class CarInfoController {
         List<CarInfo> list = carInfoService.searchUserList(
                 accountId,roleId,carNumber,frameNumber,customerName,customerTel);
         return ResultGenerator.genSuccessResult(list);
+    }
+    /**
+     * 通过车牌或者车架号和添加人查询，车牌号和车架号必须有一个不为空
+     * @param carNo 车牌
+     * @param vinNo 车架
+     * @param operatorId 添加者
+     * @return
+     */
+    @PostMapping("/getCarInfoIdInfo")
+    public Result getCarInfoIdInfo(String carNo,String vinNo,String operatorId){
+      return  carInfoService.getCarInfoIdInfo(carNo,vinNo,operatorId);
     }
     @ApiOperation("回收客户")
     @PostMapping("/recoverUser")

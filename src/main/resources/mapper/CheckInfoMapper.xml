@@ -11,5 +11,7 @@
     <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
     <result column="is_first_time" jdbcType="VARCHAR" property="isFirstTime" />
     <result column="check_type" jdbcType="VARCHAR" property="checkType" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="SEND_TIME" jdbcType="VARCHAR" property="sendTime" />
   </resultMap>
 </mapper>
