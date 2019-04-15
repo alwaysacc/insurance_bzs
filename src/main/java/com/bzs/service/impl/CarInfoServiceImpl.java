@@ -30,7 +30,7 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
     private AccountInfoMapper accountInfoMapper;
 
     @Override
-    public List getUserList(String accountId,String roleId) {
+    public List getUserList(String accountId,String roleId,String salesman,String customerStatus) {
         //roleId= accountInfoMapper.getRoleIdByAccountId(accountId);
         if (roleId.equals("管理员")){
 
@@ -41,7 +41,17 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
         }else{
 
         }
-        return carInfoMapper.getUserList(accountId,roleId);
+        return carInfoMapper.getUserList(accountId,roleId,salesman,customerStatus);
+    }
+
+    @Override
+    public List searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel) {
+        return null;
+    }
+
+    @Override
+    public int recoverUser(String[] carInfoId) {
+        return 0;
     }
 
     @Override

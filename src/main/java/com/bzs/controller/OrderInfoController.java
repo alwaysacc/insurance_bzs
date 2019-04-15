@@ -1,8 +1,8 @@
 package com.bzs.controller;
-import com.bzs.utils.Result;
-import com.bzs.utils.ResultGenerator;
 import com.bzs.model.OrderInfo;
 import com.bzs.service.OrderInfoService;
+import com.bzs.utils.Result;
+import com.bzs.utils.ResultGenerator;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -42,7 +42,7 @@ public class OrderInfoController {
     /**
      * @Author 孙鹏程
      * @Description
-     * @Date 2019/4/12/012  15:53 
+     * @Date 2019/4/12/012  15:53
      * @Param [accountId, payStatus, page, size]
      * @return com.bzs.utils.Result
      **/
