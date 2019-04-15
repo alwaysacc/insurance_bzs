@@ -10,8 +10,8 @@ public class InsuranceTypeInfo {
      * id
      */
     @Id
-    @Column(name = "insuiance_type_id")
-    private String insuianceTypeId;
+    @Column(name = "insurance_type_id")
+    private String insuranceTypeId;
 
     /**
      * 乐观锁
@@ -81,17 +81,17 @@ public class InsuranceTypeInfo {
      *
      * @return insuiance_type_id - id
      */
-    public String getInsuianceTypeId() {
-        return insuianceTypeId;
+    public String getInsuranceTypeId() {
+        return insuranceTypeId;
     }
 
     /**
      * 设置id
      *
-     * @param insuianceTypeId id
+     * @param insuranceTypeId id
      */
-    public void setInsuianceTypeId(String insuianceTypeId) {
-        this.insuianceTypeId = insuianceTypeId;
+    public void setInsuranceTypeId(String insuranceTypeId) {
+        this.insuranceTypeId = insuranceTypeId;
     }
 
     /**
@@ -288,5 +288,12 @@ public class InsuranceTypeInfo {
      */
     public void setExcludingEeductible(BigDecimal excludingEeductible) {
         this.excludingEeductible = excludingEeductible;
+    }
+
+    public InsuranceTypeInfo() {
+    }
+
+    public InsuranceTypeInfo(String insuranceTypeId) {
+        this.insuranceTypeId = insuranceTypeId;
     }
 }
