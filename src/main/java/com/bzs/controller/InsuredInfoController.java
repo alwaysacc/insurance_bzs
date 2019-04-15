@@ -3,12 +3,14 @@ import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.InsuredInfo;
 import com.bzs.service.InsuredInfoService;
+import com.bzs.utils.UUIDS;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +63,23 @@ public class InsuredInfoController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
+    /**
+     *
+     * @param checkType 查询类型0车牌1车架
+     * @param carNo 车牌号
+     * @param idCard 身份证后6位
+     * @param vinNo 车架号
+     * @param engineNo 发动机号
+     * @param lastYearSource 上年续保公司
+     * @param insuredArea
+     * @param request
+     * @param createdBy 创建人
+     * @return
+     */
+
     @PostMapping("/checkByCarNoOrVinNo")
-    public Result list(@RequestParam  String checkType,  String carNo,String idCard,String vinNo,String engineNo,String lastYearSource,String insuredArea ) {
-        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea);
+    public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createdBy) {
+        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy );
     }
     @GetMapping("/httpGetTest")
     public Map<String,Object>result(String name,String age){

@@ -8,7 +8,7 @@ import org.apache.poi.hssf.record.formula.functions.T;
  * @author: dengl
  * @create: 2019-04-11 13:18
  */
-public class HttpResult {
+public class HttpResult<T> {
     private int code;
     private String body;
     private String message;

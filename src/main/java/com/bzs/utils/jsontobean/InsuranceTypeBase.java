@@ -1,6 +1,7 @@
 package com.bzs.utils.jsontobean;
 
 import com.bzs.model.InsuranceTypeInfo;
+import com.bzs.utils.UUIDS;
 import com.bzs.utils.encodeUtil.EncodeUtil;
 
 import java.math.BigDecimal;
@@ -107,8 +108,10 @@ public class InsuranceTypeBase {
             for (int i=0;i<list.size();i++ ){
                 InsuranceTypeBase base= (InsuranceTypeBase)list.get(i);
                 if(null!=base){
-                    InsuranceTypeInfo info = new InsuranceTypeInfo();
+                    String uuids=UUIDS.getDateUUID();
+                    InsuranceTypeInfo info = new InsuranceTypeInfo(uuids);
                     //险种名称
+                   // info.setInsuranceTypeId(uuids);
                     String name = EncodeUtil.unicodeToString(base.getInsuranceName());
                     info.setInsuranceName(name);
                     //保额
@@ -118,7 +121,7 @@ public class InsuranceTypeBase {
                     BigDecimal premium = new BigDecimal(base.getInsuredPremium());
                     info.setInsurancePremium(premium);
                     //不计免
-                    BigDecimal bjm = new BigDecimal(base.getBujimianpei());
+                    BigDecimal bjm = new BigDecimal(base.getBujimianpei().replaceAll(" ",""));
                     info.setExcludingEeductible(bjm);
                     info.setInfoType(infoType);
                     info.setTypeId(typeId);

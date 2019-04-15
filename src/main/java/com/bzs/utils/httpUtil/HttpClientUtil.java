@@ -21,6 +21,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.poi.hssf.record.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,10 @@ import java.util.*;
  * @create: 2019-04-11 09:46
  */
 public class HttpClientUtil {
-    private  static final Logger logger=LoggerFactory.getLogger(HttpClientUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
     private static final String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36";
     private static final String CONTENT_TYPE_TEXT_JSON = "text/json";
+
     /**
      * @param strUrl 请求路径，不用加？
      * @param params 参数是json字符串
@@ -274,7 +276,7 @@ public class HttpClientUtil {
     // 更改下面两列配置：
     // httpPost.setEntity(new StringEntity("你的json串"));
     // httpPost.addHeader("Content-Type", "application/json")。
-    public static HttpResult doPost(String url, Map<String, Object> paramMap, String type) {
+    public static <T> HttpResult doPost(String url, Map<String, Object> paramMap, String type, Class<T> clz,String jsonStr) {
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse httpResponse = null;
         HttpResult result = new HttpResult();
@@ -295,36 +297,59 @@ public class HttpClientUtil {
             // 设置请求头
             httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
         }
-
-
-        // 封装post请求参数
-        if (null != paramMap && paramMap.size() > 0) {
-            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-            // 通过map集成entrySet方法获取entity
-            Set<Map.Entry<String, Object>> entrySet = paramMap.entrySet();
-            // 循环遍历，获取迭代器
-            Iterator<Map.Entry<String, Object>> iterator = entrySet.iterator();
-            JSONObject object = new JSONObject();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Object> mapEntry = iterator.next();
-                nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
-                object.put(mapEntry.getKey(), mapEntry.getValue().toString());
-            }
-            // 为httpPost设置封装好的请求参数
-            try {
-                if (StringUtils.isNotBlank(type) && "JSON".equals(type)) {
-                    String jsonString = object.toJSONString();
-                    StringEntity entity = new StringEntity(jsonString, "utf-8");
-                    entity.setContentEncoding("UTF-8");
-                    entity.setContentType("application/json");
-                    httpPost.setEntity(entity);
-                } else {
-                    httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+        if(StringUtils.isNotBlank(type) && "JSON".equals(type)){
+            if (null != paramMap && paramMap.size() > 0) {
+                // 通过map集成entrySet方法获取entity
+                Set<Map.Entry<String, Object>> entrySet = paramMap.entrySet();
+                // 循环遍历，获取迭代器
+                Iterator<Map.Entry<String, Object>> iterator = entrySet.iterator();
+                JSONObject object = new JSONObject();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Object> mapEntry = iterator.next();
+                    object.put(mapEntry.getKey(), mapEntry.getValue().toString());
                 }
-            } catch (UnsupportedEncodingException e) {
-                logger.error("调取远程接口异常",e);
+                logger.info(jsonStr);
+                StringEntity entity = new StringEntity(object.toJSONString(), "utf-8");
+                entity.setContentEncoding("UTF-8");
+                entity.setContentType("application/json");
+                httpPost.setEntity(entity);
+            }else if(StringUtils.isNotBlank(jsonStr)) {
+                logger.info(jsonStr);
+                StringEntity entity = new StringEntity(jsonStr, "utf-8");
+                entity.setContentEncoding("UTF-8");
+                entity.setContentType("application/json");
+                httpPost.setEntity(entity);
+
             }
+
+
+
+        }else {
+            // 封装post请求参数
+            if (null != paramMap && paramMap.size() > 0) {
+                List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                // 通过map集成entrySet方法获取entity
+                Set<Map.Entry<String, Object>> entrySet = paramMap.entrySet();
+                // 循环遍历，获取迭代器
+                Iterator<Map.Entry<String, Object>> iterator = entrySet.iterator();
+                JSONObject object = new JSONObject();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Object> mapEntry = iterator.next();
+                    nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
+                    object.put(mapEntry.getKey(), mapEntry.getValue().toString());
+                }
+                // 为httpPost设置封装好的请求参数
+                try {
+                  httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    logger.error("调取远程接口异常", e);
+                }
+            }
+
         }
+
+
+
         try {
             // httpClient对象执行post请求,并返回响应参数对象
             httpResponse = httpClient.execute(httpPost);
@@ -334,10 +359,21 @@ public class HttpClientUtil {
             String body = EntityUtils.toString(entity);
             result.setCode(code);
             result.setBody(body);
+            String message = "请求失败";
+            if (code == 200) {
+                message = "请求成功";
+                if (null != clz) {
+                    T o = JSON.parseObject(body, clz);
+                    result.setT(o);
+                }
+            } else {
+                //  result.setT(null);
+            }
+            result.setMessage(message);
         } catch (ClientProtocolException e) {
-            logger.error("调取远程接口异常",e);
+            logger.error("调取远程接口异常", e);
         } catch (IOException e) {
-            logger.error("调取远程接口异常",e);
+            logger.error("调取远程接口异常", e);
         } finally {
             // 关闭资源
             if (null != httpResponse) {
@@ -414,21 +450,22 @@ public class HttpClientUtil {
         String url = "http://192.168.1.106:5000";
         String api = "/cpic_xubao";
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("carNo", "苏A99C3J");// 苏A99C3G
+        paramMap.put("carNo", "苏AW961B");// 苏A99C3G
      /* String param=object.toJSONString();
       System.out.println(param);*/
-        HttpResult result = null;
+        HttpResult<RenewalBean> result = null;
         try {
-            result = doPost(url + api, paramMap, "JSON");
-            if(null!=result){
-                int code=result.getCode();
-                if(code==200){//远程请求成功
-                    String body =result.getBody();
-                    if(StringUtils.isNotBlank(body)){
-                        RenewalBean bean= JSON.parseObject(body,RenewalBean.class);
-                        System.out.println("返回值："+bean.getSendTime());
+            result = doPost(url + api, paramMap, "JSON", RenewalBean.class,null);
+            if (null != result) {
+                int code = result.getCode();
+                if (code == 200) {//远程请求成功
+                    String body = result.getBody();
+                    if (StringUtils.isNotBlank(body)) {
+                        RenewalBean bean = JSON.parseObject(body, RenewalBean.class);
+                        System.out.println("返回值：" + bean.getSendTime());
                     }
-                }else{
+                } else {
+                    System.out.println("输出请求码:" + code);
 
                 }
             }
