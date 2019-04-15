@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="insuiance_type_id" jdbcType="VARCHAR" property="insuianceTypeId" />
+    <result column="insurance_type_id" jdbcType="VARCHAR" property="insuranceTypeId" />
     <result column="REVISION" jdbcType="INTEGER" property="revision" />
     <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
     <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
