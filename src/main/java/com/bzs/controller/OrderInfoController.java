@@ -26,7 +26,7 @@ public class OrderInfoController {
 
     /**
      * @Author 孙鹏程
-     * @Description //TODO 获取订单列表 payStatus订单支付状态
+     * @Description  获取订单列表 payStatus订单支付状态
      * @Date 2019/4/12/012  15:52
      * @Param [accountId, payStatus, page, size]
      * @return com.bzs.utils.Result
@@ -41,13 +41,13 @@ public class OrderInfoController {
     }
     /**
      * @Author 孙鹏程
-     * @Description //TODO 
+     * @Description
      * @Date 2019/4/12/012  15:53 
      * @Param [accountId, payStatus, page, size]
      * @return com.bzs.utils.Result
      **/
     @ApiOperation("搜索订单列表")
-    @PostMapping("/getOrderList")
+    @PostMapping("/searchOrderList")
     public Result searchOrderList(String accountId, @RequestParam(defaultValue = "0")int payStatus,String carNumber, String postedName, int deliveryWay, String insuranceCompany) {
         List list=orderInfoService.searchOrderList(accountId,payStatus,carNumber,postedName,deliveryWay,insuranceCompany);
         return ResultGenerator.genSuccessResult(list);

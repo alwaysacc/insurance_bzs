@@ -28,8 +28,6 @@ public class CarInfoController {
      public Result add(CarInfo carInfo) {
         carInfo.setCarInfoId("1213");
         carInfoService.save(carInfo);
-        System.out.println(11);
-        carInfoService.save(carInfo  );
         return ResultGenerator.genSuccessResult();
     }
 
@@ -40,7 +38,7 @@ public class CarInfoController {
     }
     /**
      * @Author 孙鹏程
-     * @Description //TODO 修改车辆信息
+     * @Description  修改车辆信息
      * @Date 2019/4/11/011  15:58
      * @Param [carInfo]
      * @return com.bzs.utils.Result
@@ -60,7 +58,7 @@ public class CarInfoController {
     }
     /**
      * @Author 孙鹏程
-     * @Description //TODO 获取客户列表，salesman是否分配0未分配，customerStatus客户状态，0未回访
+     * @Description  获取客户列表，salesman是否分配0未分配，customerStatus客户状态，0未回访
      * @Date 2019/4/12/012  11:15 
      * @Param [page, size, accountId, roleId, salesman, customerStatus]
      * @return com.bzs.utils.Result
@@ -75,7 +73,7 @@ public class CarInfoController {
     }
     /**
      * @Author 孙鹏程
-     * @Description //TODO 搜索客户列表，查询什么条件就传什么条件
+     * @Description  搜索客户列表，查询什么条件就传什么条件
      * @Date 2019/4/12/012  11:17 
      * @Param [accountId, roleId, carNumber, frameNumber, customerName, customerTel]
      * @return com.bzs.utils.Result
