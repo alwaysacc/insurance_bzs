@@ -5,6 +5,7 @@ import com.bzs.model.MenuInfo;
 import com.bzs.service.MenuInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,10 +23,10 @@ public class MenuInfoController {
     @Resource
     private MenuInfoService menuInfoService;
 
-    @PostMapping("/add")
-    public Result add(MenuInfo menuInfo) {
-        menuInfoService.save(menuInfo);
-        return ResultGenerator.genSuccessResult();
+    @PostMapping("/asd")
+    public Result asd(String username) {
+
+        return ResultGenerator.genSuccessResult(menuInfoService.getUserPermissions(username));
     }
 
     @PostMapping("/delete")
@@ -39,13 +40,13 @@ public class MenuInfoController {
         menuInfoService.update(menuInfo);
         return ResultGenerator.genSuccessResult();
     }
-
+    @RequiresPermissions("dept:aa")
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
         MenuInfo menuInfo = menuInfoService.findById(id);
         return ResultGenerator.genSuccessResult(menuInfo);
     }
-
+    @RequiresPermissions("dept:list")
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);

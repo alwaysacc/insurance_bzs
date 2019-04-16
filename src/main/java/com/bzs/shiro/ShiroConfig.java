@@ -72,8 +72,8 @@ public class ShiroConfig {
 
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
-        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();        
-        
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();//获取filters
 		//filters.put("user", new CustomUserFilter());
         // 设置 securityManager
@@ -84,7 +84,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSuccessUrl(febsProperties.getShiro().getSuccessUrl());
         // 未授权 url
         shiroFilterFactoryBean.setUnauthorizedUrl(febsProperties.getShiro().getUnauthorizedUrl());
-		
+
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // 设置免认证 url
         String[] anonUrls = StringUtils.splitByWholeSeparatorPreserveAllTokens(febsProperties.getShiro().getAnonUrl(), ",");
@@ -108,20 +108,20 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 配置 SecurityManager，并注入 shiroRealm
-        //securityManager.setRealm(shiroRealm());
+        securityManager.setRealm(shiroRealm());
         // 配置 rememberMeCookie
         securityManager.setRememberMeManager(rememberMeManager());
         // 配置 缓存管理类 cacheManager
         securityManager.setCacheManager(cacheManager());
-        securityManager.setSessionManager(sessionManager());
+        //securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
 
-//    @Bean
-//    public ShiroRealm shiroRealm() {
-//        // 配置 Realm，需自己实现，见 cc.mrbird.common.shiro.ShiroRealm
-//        return new ShiroRealm();
-//    }
+    @Bean
+    public ShiroRealm shiroRealm() {
+        // 配置 Realm，需自己实现
+        return new ShiroRealm();
+    }
 
     /**
      * rememberMe cookie 效果是重开浏览器后无需重新登录
@@ -161,28 +161,28 @@ public class ShiroConfig {
      *
      * @return ShiroDialect shiro 方言对象
      */
-    @Bean
-    public RedisSessionDAO redisSessionDAO() {
-        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
-        redisSessionDAO.setRedisManager(redisManager());
-        return redisSessionDAO;
-    }
+//    @Bean
+//    public RedisSessionDAO redisSessionDAO() {
+//        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+//        redisSessionDAO.setRedisManager(redisManager());
+//        return redisSessionDAO;
+//    }
 
     /**
      * session 管理对象
      *
      * @return DefaultWebSessionManager
      */
-    @Bean
-    public DefaultWebSessionManager sessionManager() {
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        Collection<SessionListener> listeners = new ArrayList<>();
-        listeners.add(new ShiroSessionListener());
-        // 设置session超时时间，单位为毫秒
-        sessionManager.setGlobalSessionTimeout(febsProperties.getShiro().getSessionTimeout());
-        sessionManager.setSessionListeners(listeners);
-        sessionManager.setSessionDAO(redisSessionDAO());
-        sessionManager.setSessionIdUrlRewritingEnabled(false);
-        return sessionManager;
-    }
+//    @Bean
+//    public DefaultWebSessionManager sessionManager() {
+//        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+//        Collection<SessionListener> listeners = new ArrayList<>();
+//        listeners.add(new ShiroSessionListener());
+//        // 设置session超时时间，单位为毫秒
+//        sessionManager.setGlobalSessionTimeout(febsProperties.getShiro().getSessionTimeout());
+//        sessionManager.setSessionListeners(listeners);
+//        sessionManager.setSessionDAO(redisSessionDAO());
+//        sessionManager.setSessionIdUrlRewritingEnabled(false);
+//        return sessionManager;
+//    }
 }

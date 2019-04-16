@@ -3,7 +3,11 @@ package com.bzs.service.impl;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
+import com.bzs.service.MenuInfoService;
+import com.bzs.service.RoleInfoService;
 import com.bzs.utils.AbstractService;
+import com.bzs.utils.ResultGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
@@ -11,7 +15,9 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,6 +28,12 @@ import java.util.List;
 public class AccountInfoServiceImpl extends AbstractService<AccountInfo> implements AccountInfoService {
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @Autowired
+    private AccountInfoService accountInfoService;
+    @Autowired
+    private RoleInfoService roleInfoService;
+    @Autowired
+    private MenuInfoService menuInfoService;
 
     @Override
     public String getRoleIdByAccountId(String account_id) {
@@ -37,15 +49,22 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     public void updateLoginTime(String userName) {
         Example example=new Example(AccountInfo.class);
         example.createCriteria().andCondition("lower(login_name)=", userName.toLowerCase());
-        AccountInfo accountInfo=new AccountInfo();
+        AccountInfo accountInfo=accountInfoService.findByLoginName(userName.toLowerCase());
         accountInfo.setLoginTime(new Date());
         accountInfoMapper.updateByCondition(accountInfo,example);
     }
 
     @Override
     public AccountInfo findByLoginName(String userName) {
-        Condition condition=new Condition(AccountInfo.class);
-        condition.createCriteria().andCondition("lower(login_name)="+userName);
-        return (AccountInfo) accountInfoMapper.selectByCondition(condition);
+        return accountInfoService.findBy("loginName",userName);
+    }
+
+    @Override
+    public Map<String, Object> getUserInfo(AccountInfo accountInfo) {
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("user",accountInfo);
+        userInfo.put("roles",roleInfoService.getUserRole(accountInfo.getLoginName()));
+        userInfo.put("permissions",menuInfoService.getUserPermissions(accountInfo.getLoginName()));
+        return userInfo;
     }
 }

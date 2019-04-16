@@ -1,13 +1,15 @@
 package com.bzs.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "account_info")
-public class AccountInfo {
+public class AccountInfo implements Serializable {
     public static final String STATUS_VALID = "0";
 
     public static final String STATUS_LOCK = "1";
+    private static final long serialVersionUID = -4852732617765810959L;
     /**
      * id
      */

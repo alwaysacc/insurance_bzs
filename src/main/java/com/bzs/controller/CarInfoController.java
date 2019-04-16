@@ -19,7 +19,7 @@ import java.util.List;
 * Created by alwaysacc on 2019/04/10.
 */
 @RestController
-@RequestMapping("/car/info")
+@RequestMapping("/carinfo")
 public class CarInfoController {
     @Resource
     private CarInfoService carInfoService;

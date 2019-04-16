@@ -1,34 +1,32 @@
 package com.bzs.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by alwaysacc on 2019/04/11.
 */
 @RestController
-@RequestMapping("/account/info")
+@RequestMapping("/login")
 public class LoginController {
     private Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String CODE_KEY = "_code";
@@ -37,7 +35,8 @@ public class LoginController {
     private AccountInfoService accountInfoService;
     
     @PostMapping("/login")
-    public Result add(String username,String password,String code,boolean rememberMe) {
+    @ResponseBody
+    public Result login(String username,String password,String code,boolean rememberMe) {
         if (StringUtils.isBlank(code)){
             return ResultGenerator.genFailResult("验证码不能为空");
         }
@@ -48,19 +47,33 @@ public class LoginController {
 //        }
         password=MD5Utils.encrypt(username.toLowerCase(),password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
-        Subject subject=SecurityUtils.getSubject();
+        AccountInfo accountInfo=accountInfoService.findByLoginName(username);
+        System.out.println(accountInfo.getLoginPwd());
+        if (accountInfo==null)
+            return ResultGenerator.genFailResult("用户名或密码错误");
+        if (!accountInfo.getLoginPwd().equals(password))
+            return ResultGenerator.genFailResult("用户名或密码错误");
+        if (AccountInfo.STATUS_LOCK.equals(accountInfo.getAccountState()))
+            return ResultGenerator.genFailResult("账号已锁定");
         try {
+            Subject subject=SecurityUtils.getSubject();
             if (subject!=null)
                 subject.logout();
+            System.out.println(subject.getPrincipals());
             subject.login(token);
             //修改登录时间
             accountInfoService.updateLoginTime(username);
-            return ResultGenerator.genSuccessResult();
+            return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
         }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
             return ResultGenerator.genFailResult(e.getMessage());
         }catch (AuthenticationException e){
-            return  ResultGenerator.genFailResult("认证失败");
+            return  ResultGenerator.genFailResult("认证失败"+e.getMessage());
         }
+    }
+    private Map<String,Object> getUserInfo(String username){
+        Map<String,Object> userInfo=null;
+
+        return userInfo;
     }
 
 }

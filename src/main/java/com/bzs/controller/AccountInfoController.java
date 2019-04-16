@@ -42,9 +42,8 @@ public class AccountInfoController {
     }
 
     @PostMapping("/delete")
-    public Result delete(@RequestParam Integer id) {
-        accountInfoService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
+    public Result delete(String id) {
+        return ResultGenerator.genSuccessResult(accountInfoService.findByLoginName(id));
     }
 
     @PostMapping("/update")

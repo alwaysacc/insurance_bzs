@@ -16,7 +16,7 @@
     <result column="MODIFY_TIME" jdbcType="TIMESTAMP" property="modifyTime" />
     <result column="PERMS" jdbcType="LONGVARCHAR" property="perms" />
   </resultMap>
-  <select id="getUserPermissions" resultType="MenuInfo">
+  <select id="getUserPermissions" resultType="String">
     select m.perms from role_info r
     left join account_role_info ar on(r.role_id = ar.role_id)
     left join account_info a on(a.account_id = ar.account_id)

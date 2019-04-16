@@ -5,6 +5,7 @@ import com.bzs.utils.Service;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -21,4 +22,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
     void updateLoginTime(String userName);
 
     AccountInfo findByLoginName(String userName);
+
+    Map<String,Object> getUserInfo(AccountInfo accountInfo);
 }

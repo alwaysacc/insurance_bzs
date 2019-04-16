@@ -1,5 +1,6 @@
 package com.bzs.shiro;
 
+import com.alibaba.fastjson.JSON;
 import com.bzs.model.AccountInfo;
 import com.bzs.model.MenuInfo;
 import com.bzs.model.RoleInfo;
@@ -13,10 +14,10 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class ShiroRealm extends AuthorizingRealm {
@@ -36,26 +37,29 @@ public class ShiroRealm extends AuthorizingRealm {
         List<RoleInfo> roleInfoList=roleInfoService.getUserRole(username);
         Set<String> roleSet=roleInfoList.stream().map(RoleInfo::getRoleName).collect(Collectors.toSet());
         simpleAuthorizationInfo.setRoles(roleSet);
+        System.out.println(JSON.parse(String.valueOf(roleInfoList)));
         //获取用户权限集
         List<MenuInfo> menuInfoList=menuInfoService.getUserPermissions(username);
         Set<String> menuSet=menuInfoList.stream().map(MenuInfo::getMenuName).collect(Collectors.toSet());
         simpleAuthorizationInfo.setStringPermissions(menuSet);
+        System.out.println(JSON.parse(String.valueOf(menuInfoList)));
         return simpleAuthorizationInfo;
     }
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String username= (String) authenticationToken.getPrincipal();
-        String password= (String) authenticationToken.getCredentials();
-        String pass=  new String((char[]) authenticationToken.getCredentials());
+        String pass=   new String((char[]) authenticationToken.getCredentials());
+        System.out.println(pass);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
+        System.out.println(accountInfo.getLoginPwd());
         if (accountInfo==null)
             throw new UnknownAccountException("用户名或密码错误");
-        if (accountInfo.getLoginPwd()!=password)
+        if (!accountInfo.getLoginPwd().equals(pass))
             throw new IncorrectCredentialsException("用户名或密码错误");
         if (AccountInfo.STATUS_LOCK.equals(accountInfo.getAccountState()))
             throw new LockedAccountException("账号已锁定");
-        return new SimpleAuthenticationInfo(accountInfo,password,getName());
+        return new SimpleAuthenticationInfo(accountInfo,pass,getName());
     }
     /**
      * 清除权限缓存
