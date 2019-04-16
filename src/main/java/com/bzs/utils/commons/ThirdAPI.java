@@ -13,7 +13,12 @@ public interface ThirdAPI {
 
     public static final String CPIC_RENEWAL_NAME="cpic_xubao";//太保续保接口
     public static final String CPIC_QUOTE_NAME="cpic_kuaisubaojia";//太保报价接口
+    public static final String CPIC_QUOTE_ALL="cpic_accurateOffer";//太平洋报价续保和支付
 
     public static final String PAIC_RENEWAL_NAME="paic_xubao";//平安续保接口
     public static final String PAIC_QUOTE_NAME="paic_kuaisubaojia";//平安报价接口
+
+    public static  final String HOST="http://192.168.1.106";
+
+    public static final String PORT="5000";
 }

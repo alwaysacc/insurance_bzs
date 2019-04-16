@@ -9,6 +9,7 @@ public class OrderInfo {
     /**
      * 订单号
      */
+    @Id
     @Column(name = "order_id")
     private String orderId;
 

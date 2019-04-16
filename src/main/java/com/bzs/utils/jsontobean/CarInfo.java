@@ -8,7 +8,7 @@ package com.bzs.utils.jsontobean;
  */
 public class CarInfo {
     private String carNo;
-    private String NoType;
+    private String noType;
     private String color;
     private String frameNo;
     private String engineNo;
@@ -28,10 +28,10 @@ public class CarInfo {
     }
 
     public void setNoType(String NoType) {
-        this.NoType = NoType;
+        this.noType =noType;
     }
     public String getNoType() {
-        return NoType;
+        return noType;
     }
 
     public void setColor(String color) {

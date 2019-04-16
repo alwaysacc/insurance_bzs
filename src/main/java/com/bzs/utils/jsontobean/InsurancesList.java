@@ -11,6 +11,10 @@ public class InsurancesList {
     private String insuranceName;
     private String insuredAmount;
     private String flag;
+    //报价返回值添加
+    private String insuredPremium;
+    private String standardPremium;
+    private String amount;
     public void setInsuranceCode(String insuranceCode) {
         this.insuranceCode = insuranceCode;
     }
@@ -37,5 +41,29 @@ public class InsurancesList {
     }
     public String getFlag() {
         return flag;
+    }
+
+    public String getInsuredPremium() {
+        return insuredPremium;
+    }
+
+    public void setInsuredPremium(String insuredPremium) {
+        this.insuredPremium = insuredPremium;
+    }
+
+    public String getStandardPremium() {
+        return standardPremium;
+    }
+
+    public void setStandardPremium(String standardPremium) {
+        this.standardPremium = standardPremium;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 }
