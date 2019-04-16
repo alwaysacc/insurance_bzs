@@ -5,6 +5,9 @@ import javax.persistence.*;
 
 @Table(name = "account_info")
 public class AccountInfo {
+    public static final String STATUS_VALID = "0";
+
+    public static final String STATUS_LOCK = "1";
     /**
      * id
      */
@@ -12,35 +15,11 @@ public class AccountInfo {
     @Column(name = "account_id")
     private String accountId;
 
-    /**
-     * 乐观锁
-     */
-    @Column(name = "REVISION")
-    private String revision;
+    @Column(name = "role_id")
+    private String roleId;
 
-    /**
-     * 创建人
-     */
-    @Column(name = "CREATED_BY")
-    private String createdBy;
-
-    /**
-     * 创建时间
-     */
-    @Column(name = "CREATED_TIME")
-    private Date createdTime;
-
-    /**
-     * 更新人
-     */
-    @Column(name = "UPDATED_BY")
-    private String updatedBy;
-
-    /**
-     * 更新时间
-     */
-    @Column(name = "UPDATED_TIME")
-    private Date updatedTime;
+    @Column(name = "role_name")
+    private String roleName;
 
     /**
      * 父级id
@@ -49,10 +28,10 @@ public class AccountInfo {
     private String parentId;
 
     /**
-     * 账号所属区域
+     * 祖id
      */
-    @Column(name = "area_code")
-    private String areaCode;
+    @Column(name = "ancestor_id")
+    private String ancestorId;
 
     /**
      * 账号状态 0启用1禁用
@@ -69,13 +48,20 @@ public class AccountInfo {
     /**
      * 账号密码
      */
-    private String pwd;
+    @Column(name = "login_pwd")
+    private String loginPwd;
 
     /**
      * 真实姓名
      */
     @Column(name = "user_name")
     private String userName;
+
+    /**
+     * 账号所属区域
+     */
+    @Column(name = "area_code")
+    private String areaCode;
 
     /**
      * 手机号
@@ -98,11 +84,38 @@ public class AccountInfo {
      */
     private String email;
 
-    @Column(name = "role_id")
-    private String roleId;
+    @Column(name = "delete_status")
+    private Byte deleteStatus;
 
-    @Column(name = "ancestor_id")
-    private String ancestorId;
+    /**
+     * 更新人
+     */
+    @Column(name = "UPDATED_BY")
+    private String updatedBy;
+
+    /**
+     * 创建人
+     */
+    @Column(name = "CREATED_BY")
+    private String createdBy;
+
+    /**
+     * 乐观锁
+     */
+    @Column(name = "login_time")
+    private Date loginTime;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "CREATED_TIME")
+    private Date createdTime;
+
+    /**
+     * 更新时间
+     */
+    @Column(name = "UPDATED_TIME")
+    private Date updatedTime;
 
     /**
      * 获取id
@@ -123,93 +136,31 @@ public class AccountInfo {
     }
 
     /**
-     * 获取乐观锁
-     *
-     * @return REVISION - 乐观锁
+     * @return role_id
      */
-    public String getRevision() {
-        return revision;
+    public String getRoleId() {
+        return roleId;
     }
 
     /**
-     * 设置乐观锁
-     *
-     * @param revision 乐观锁
+     * @param roleId
      */
-    public void setRevision(String revision) {
-        this.revision = revision;
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     /**
-     * 获取创建人
-     *
-     * @return CREATED_BY - 创建人
+     * @return role_name
      */
-    public String getCreatedBy() {
-        return createdBy;
+    public String getRoleName() {
+        return roleName;
     }
 
     /**
-     * 设置创建人
-     *
-     * @param createdBy 创建人
+     * @param roleName
      */
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    /**
-     * 获取创建时间
-     *
-     * @return CREATED_TIME - 创建时间
-     */
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    /**
-     * 设置创建时间
-     *
-     * @param createdTime 创建时间
-     */
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    /**
-     * 获取更新人
-     *
-     * @return UPDATED_BY - 更新人
-     */
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    /**
-     * 设置更新人
-     *
-     * @param updatedBy 更新人
-     */
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    /**
-     * 获取更新时间
-     *
-     * @return UPDATED_TIME - 更新时间
-     */
-    public Date getUpdatedTime() {
-        return updatedTime;
-    }
-
-    /**
-     * 设置更新时间
-     *
-     * @param updatedTime 更新时间
-     */
-    public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     /**
@@ -231,21 +182,21 @@ public class AccountInfo {
     }
 
     /**
-     * 获取账号所属区域
+     * 获取祖id
      *
-     * @return area_code - 账号所属区域
+     * @return ancestor_id - 祖id
      */
-    public String getAreaCode() {
-        return areaCode;
+    public String getAncestorId() {
+        return ancestorId;
     }
 
     /**
-     * 设置账号所属区域
+     * 设置祖id
      *
-     * @param areaCode 账号所属区域
+     * @param ancestorId 祖id
      */
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
+    public void setAncestorId(String ancestorId) {
+        this.ancestorId = ancestorId;
     }
 
     /**
@@ -287,19 +238,19 @@ public class AccountInfo {
     /**
      * 获取账号密码
      *
-     * @return pwd - 账号密码
+     * @return login_pwd - 账号密码
      */
-    public String getPwd() {
-        return pwd;
+    public String getLoginPwd() {
+        return loginPwd;
     }
 
     /**
      * 设置账号密码
      *
-     * @param pwd 账号密码
+     * @param loginPwd 账号密码
      */
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
+    public void setLoginPwd(String loginPwd) {
+        this.loginPwd = loginPwd;
     }
 
     /**
@@ -318,6 +269,24 @@ public class AccountInfo {
      */
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    /**
+     * 获取账号所属区域
+     *
+     * @return area_code - 账号所属区域
+     */
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    /**
+     * 设置账号所属区域
+     *
+     * @param areaCode 账号所属区域
+     */
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
     }
 
     /**
@@ -393,30 +362,106 @@ public class AccountInfo {
     }
 
     /**
-     * @return role_id
+     * @return delete_status
      */
-    public String getRoleId() {
-        return roleId;
+    public Byte getDeleteStatus() {
+        return deleteStatus;
     }
 
     /**
-     * @param roleId
+     * @param deleteStatus
      */
-    public void setRoleId(String roleId) {
-        this.roleId = roleId;
+    public void setDeleteStatus(Byte deleteStatus) {
+        this.deleteStatus = deleteStatus;
     }
 
     /**
-     * @return ancestor_id
+     * 获取更新人
+     *
+     * @return UPDATED_BY - 更新人
      */
-    public String getAncestorId() {
-        return ancestorId;
+    public String getUpdatedBy() {
+        return updatedBy;
     }
 
     /**
-     * @param ancestorId
+     * 设置更新人
+     *
+     * @param updatedBy 更新人
      */
-    public void setAncestorId(String ancestorId) {
-        this.ancestorId = ancestorId;
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    /**
+     * 获取创建人
+     *
+     * @return CREATED_BY - 创建人
+     */
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    /**
+     * 设置创建人
+     *
+     * @param createdBy 创建人
+     */
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    /**
+     * 获取乐观锁
+     *
+     * @return login_time - 乐观锁
+     */
+    public Date getLoginTime() {
+        return loginTime;
+    }
+
+    /**
+     * 设置乐观锁
+     *
+     * @param loginTime 乐观锁
+     */
+    public void setLoginTime(Date loginTime) {
+        this.loginTime = loginTime;
+    }
+
+    /**
+     * 获取创建时间
+     *
+     * @return CREATED_TIME - 创建时间
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * 设置创建时间
+     *
+     * @param createdTime 创建时间
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    /**
+     * 获取更新时间
+     *
+     * @return UPDATED_TIME - 更新时间
+     */
+    public Date getUpdatedTime() {
+        return updatedTime;
+    }
+
+    /**
+     * 设置更新时间
+     *
+     * @param updatedTime 更新时间
+     */
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 }

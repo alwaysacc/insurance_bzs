@@ -7,6 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface CarInfoMapper extends Mapper<CarInfo> {
-    List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId);
+    List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId,String salesman,String customerStatus);
     List findOneBy(CarInfo carInfo);
 }

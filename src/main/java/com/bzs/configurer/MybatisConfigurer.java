@@ -26,7 +26,6 @@ public  class   MybatisConfigurer {
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setTypeAliasesPackage(ProjectConstant.MODEL_PACKAGE);
-
         //配置分页插件，详情请查阅官方文档
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
@@ -37,6 +36,11 @@ public  class   MybatisConfigurer {
 
         //添加插件
         factory.setPlugins(new Interceptor[]{pageHelper});
+
+        //解决查询null值不显示的问题
+        org.apache.ibatis.session.Configuration configuration=new org.apache.ibatis.session.Configuration();
+        configuration.setCallSettersOnNulls(true);
+        factory.setConfiguration(configuration);
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

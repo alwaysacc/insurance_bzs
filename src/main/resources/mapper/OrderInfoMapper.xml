@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.OrderInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.OrderInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
+    <result column="pay_type" jdbcType="VARCHAR" property="payType" />
+    <result column="payment" jdbcType="VARCHAR" property="payment" />
+    <result column="pay_money" jdbcType="DECIMAL" property="payMoney" />
+    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
+    <result column="delivery_way" jdbcType="INTEGER" property="deliveryWay" />
+    <result column="delivery_address" jdbcType="VARCHAR" property="deliveryAddress" />
+    <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
+    <result column="contact_tel" jdbcType="INTEGER" property="contactTel" />
+  </resultMap>
+</mapper>

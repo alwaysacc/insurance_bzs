@@ -1,26 +1,39 @@
 package com.bzs.controller;
+import com.bzs.shiro.FebsProperties;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
+import com.bzs.utils.vcode.Captcha;
+import com.bzs.utils.vcode.GifCaptcha;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.shiro.session.mgt.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
-* Created by alwaysacc on 2019/04/11.
+* Created by alwaysacc on 2019/04/15.
 */
 @RestController
 @RequestMapping("/account/info")
 public class AccountInfoController {
+    private static final String CODE_KEY = "_code";
+
+    private Logger log=LoggerFactory.getLogger(this.getClass());
     @Resource
     private AccountInfoService accountInfoService;
+
+    @Autowired
+    private FebsProperties febsProperties;
 
     @PostMapping("/add")
     public Result add(AccountInfo accountInfo) {
@@ -41,8 +54,8 @@ public class AccountInfoController {
     }
 
     @PostMapping("/detail")
-    public Result detail(@RequestParam String id) {
-        AccountInfo accountInfo = (AccountInfo) accountInfoService.findByIds(id);
+    public Result detail(@RequestParam Integer id) {
+        AccountInfo accountInfo = accountInfoService.findById(id);
         return ResultGenerator.genSuccessResult(accountInfo);
     }
 
@@ -52,5 +65,25 @@ public class AccountInfoController {
         List<AccountInfo> list = accountInfoService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+    @GetMapping(value = "gifCode")
+    public void getGifCode(HttpServletResponse response, HttpServletRequest request) {
+        try {
+            response.setHeader("Pragma", "No-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+            response.setContentType("image/gif");
+
+            Captcha captcha = new GifCaptcha(
+                    febsProperties.getValidateCode().getWidth(),
+                    febsProperties.getValidateCode().getHeight(),
+                    febsProperties.getValidateCode().getLength());
+            HttpSession session = request.getSession(true);
+            captcha.out(response.getOutputStream());
+            session.removeAttribute(CODE_KEY);
+            session.setAttribute(CODE_KEY, captcha.text().toLowerCase());
+        } catch (Exception e) {
+            log.error("图形验证码生成失败", e);
+        }
     }
 }

@@ -7,7 +7,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 填写你数据库的url、登录名、密码和数据库名
-    url: jdbc:mysql://192.168.1.103:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://192.168.1.104:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: bzs820077
     druid:
@@ -61,3 +61,45 @@ spring:
           result-set-close-after-log-enabled: false
 logging:
   config: classpath:log4j.xml
+# febs 配置
+febs:
+  # 是否在控制台打印 sql语句
+  showsql: true
+  # 时间类型参数在前端页面的展示格式，默认格式为 yyyy-MM-dd HH:mm:ss
+  timeFormat: yyyy-MM-dd HH:mm:ss
+  # 是否开启 AOP 日志，默认开启
+  openAopLog: true
+  shiro:
+    # shiro redis缓存时长，默认1800秒
+    expireIn: 1800
+    # session 超时时间，默认1800000毫秒
+    sessionTimeout: 1800000
+    # rememberMe cookie有效时长，默认86400秒，即一天
+    cookieTimeout: 86400
+    # 免认证的路径配置，如静态资源，druid监控页面，注册页面，验证码请求等
+    anonUrl: /css/**,/js/**,/fonts/**,/swagger-ui.html/**,/druid/**,/user/regist,/gifCode,/,/actuator/**,/test/**
+    # 登录 url
+    filter-rules:
+            - /swagger-ui.html==>anon
+            - /swagger-resources/**==>anon
+            - //webjars/**==>anon
+            - /v2/**==>anon
+            - /user/login/**==>anon
+            - /user/queryAll/**==>anon
+            - /**==>authc
+    loginUrl: /login
+    # 登录成功后跳转的 url
+    successUrl: /index
+    # 登出 url
+    logoutUrl: /logout
+    # 未授权跳转 url
+    unauthorizedUrl: /403
+  # 验证码
+  validateCode:
+    # 宽度，默认 146px
+    width: 146
+    # 高度，默认 33px
+    height: 33
+    # 验证码字符个数，默认4个字符
+    length: 4
+
