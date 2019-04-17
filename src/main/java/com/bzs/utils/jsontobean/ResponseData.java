@@ -9,8 +9,16 @@ import java.util.List;
  * @create: 2019-04-16 10:39
  */
 public class ResponseData {
-    private String  payUrl ;
+
+    private String underwritingRate;
+    private String nonClaimDiscountRate;
+    private PayInfo payInfo;
+    private String channelRate;
+    private List<InsurancesList> insurancesList;
+    private List<String> carList;
+    private String trafficTransgressRate;
     private String refId;
+    private String  payUrl ;
     private String ciBeginDate;
     private String ciPremium;
     private String  proposalNo ;
@@ -22,9 +30,6 @@ public class ResponseData {
     private String advDiscountRate;
     private String realDiscountRate;
     private String biEcompensationRate;
-    private List<InsurancesList> insurancesList;
-    private List<CarList> carList;
-
     public ResponseData() {
     }
 
@@ -140,11 +145,51 @@ public class ResponseData {
         this.insurancesList = insurancesList;
     }
 
-    public List<CarList> getCarList() {
+    public List<String > getCarList() {
         return carList;
     }
 
-    public void setCarList(List<CarList> carList) {
+    public void setCarList(List<String> carList) {
         this.carList = carList;
+    }
+
+    public String getUnderwritingRate() {
+        return underwritingRate;
+    }
+
+    public void setUnderwritingRate(String underwritingRate) {
+        this.underwritingRate = underwritingRate;
+    }
+
+    public String getNonClaimDiscountRate() {
+        return nonClaimDiscountRate;
+    }
+
+    public void setNonClaimDiscountRate(String nonClaimDiscountRate) {
+        this.nonClaimDiscountRate = nonClaimDiscountRate;
+    }
+
+    public PayInfo getPayInfo() {
+        return payInfo;
+    }
+
+    public void setPayInfo(PayInfo payInfo) {
+        this.payInfo = payInfo;
+    }
+
+    public String getChannelRate() {
+        return channelRate;
+    }
+
+    public void setChannelRate(String channelRate) {
+        this.channelRate = channelRate;
+    }
+
+    public String getTrafficTransgressRate() {
+        return trafficTransgressRate;
+    }
+
+    public void setTrafficTransgressRate(String trafficTransgressRate) {
+        this.trafficTransgressRate = trafficTransgressRate;
     }
 }

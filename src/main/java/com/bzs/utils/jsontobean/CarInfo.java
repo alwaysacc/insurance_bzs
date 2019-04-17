@@ -27,11 +27,11 @@ public class CarInfo {
         return carNo;
     }
 
-    public void setNoType(String NoType) {
-        this.noType =noType;
-    }
     public String getNoType() {
         return noType;
+    }
+    public void setNoType(String noType) {
+        this.noType = noType;
     }
 
     public void setColor(String color) {

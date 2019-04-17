@@ -2,6 +2,7 @@ package com.bzs.utils.httpUtil;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bzs.utils.jsontobean.PCICResponseBean;
 import com.bzs.utils.jsontobean.RenewalBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -359,12 +360,18 @@ public class HttpClientUtil {
             String body = EntityUtils.toString(entity);
             result.setCode(code);
             result.setBody(body);
+            System.out.println(body);
+            logger.info("请求返回的内容");
             String message = "请求失败";
             if (code == 200) {
                 message = "请求成功";
                 if (null != clz) {
-                    T o = JSON.parseObject(body, clz);
-                    result.setT(o);
+                    try{
+                        T o = JSON.parseObject(body, clz);
+                        result.setT(o);
+                    }catch(Exception e){
+                        logger.error("请求成功，JSON转换异常", e);
+                    }
                 }
             } else {
                 //  result.setT(null);
@@ -445,33 +452,8 @@ public class HttpClientUtil {
 
     //  CloseableHttpClient httpclient = HttpClients.createDefault();
     public static void main(String[] args) {
-       /* String url = "http://192.168.1.101:8082";
-        String api = "/insured/info/httpGetTest";*/
-        String url = "http://192.168.1.106:5000";
-        String api = "/cpic_xubao";
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("carNo", "苏AW961B");// 苏A99C3G
-     /* String param=object.toJSONString();
-      System.out.println(param);*/
-        HttpResult<RenewalBean> result = null;
-        try {
-            result = doPost(url + api, paramMap, "JSON", RenewalBean.class,null);
-            if (null != result) {
-                int code = result.getCode();
-                if (code == 200) {//远程请求成功
-                    String body = result.getBody();
-                    if (StringUtils.isNotBlank(body)) {
-                        RenewalBean bean = JSON.parseObject(body, RenewalBean.class);
-                        System.out.println("返回值：" + bean.getSendTime());
-                    }
-                } else {
-                    System.out.println("输出请求码:" + code);
-
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(result);
+        String body="{\"state\": \"1\", \"data\": {\"underwritingRate\": \"0.85\", \"advDiscountRate\": \"0.487688\", \"ciEcompensationRate\": \"0.7876\", \"carshipTax\": \"300.00\", \"nonClaimDiscountRate\": \"0.85\", \"ciPremium\": \"855.00\", \"biPremium\": \"4,135.52\", \"proposalNo\": \"QNAJV23Y1419F014069H\", \"payInfo\": {\"payTime\": \"2019-04-16\", \"payUrl\": \"https://w.url.cn/s/A6hGmOU\\n\"}, \"biBeginDate\": \"2019-05-23\", \"channelRate\": \"0.750001\", \"ciBeginDate\": \"2019-05-22\", \"realDiscountRate\": \"0.487688\", \"biPremiumByDis\": \"2,016.85\", \"insurancesList\": [{\"amount\": \"113855\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"2521.52\", \"insuredAmount\": \"Y\", \"insuranceCode\": \"A\", \"insuredPremium\": \"1229.72\"}, {\"amount\": \"500000\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"1614.00\", \"insuredAmount\": \"500000\", \"insuranceCode\": \"B\", \"insuredPremium\": \"787.13\"}], \"carList\": [\"{\\\"actualValue\\\":132900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0161\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":132900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8c6a\\u534e\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\", \"{\\\"actualValue\\\":121900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0164\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":121900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8212\\u9002\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\"], \"trafficTransgressRate\": \"0.9\", \"refId\": \"201806241930025376\", \"biEcompensationRate\": \"0.3494\"}, \"sendTime\": \"2019-04-16\", \"retMsg\": \"\", \"retCode\": \"0000\"}";
+        PCICResponseBean o = JSON.parseObject(body,  PCICResponseBean.class);
+        System.out.println(o.toString());
     }
 }

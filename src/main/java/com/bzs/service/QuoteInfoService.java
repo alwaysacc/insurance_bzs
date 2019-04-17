@@ -14,5 +14,5 @@ import java.util.Map;
  */
 public interface QuoteInfoService extends Service<QuoteInfo> {
     Map quoteDetails(String carInfoId);
-    Result getQuoteDetailsByApi(QuoteParmasBean params,List<InsurancesList> list);
+    Result getQuoteDetailsByApi(QuoteParmasBean params,List<InsurancesList> list,String carInfoId,String createdBy);
 }

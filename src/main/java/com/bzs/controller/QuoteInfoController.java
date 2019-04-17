@@ -69,12 +69,18 @@ public class QuoteInfoController {
 
     /**
      * 获取报价信息,通过第三方接口
+     *
      * @param params
      * @param list
      * @return
      */
     @PostMapping("/getQuoteInfo")
-    public Result getQuoteInfo(QuoteParmasBean params, @RequestBody(required = false)List<InsurancesList> list) {
-        return quoteInfoService.getQuoteDetailsByApi(params,list);
+    public Result getQuoteInfo(QuoteParmasBean params, @RequestBody(required = false) List<InsurancesList> list,String carInfoId,String createdBy) {
+        return quoteInfoService.getQuoteDetailsByApi(params, list,carInfoId,createdBy);
+    }
+
+    @PostMapping("/getQuoteInfoAllParams")
+    public Result getQuoteInfo(String sendTime, String pay, String refId, String flag) {
+        return null;
     }
 }

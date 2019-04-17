@@ -706,6 +706,7 @@ public class QuoteInfo {
     public QuoteInfo() {
     }
 
+
     public QuoteInfo(String quoteId) {
         this.quoteId = quoteId;
     }

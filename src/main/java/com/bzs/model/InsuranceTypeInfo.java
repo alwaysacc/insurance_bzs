@@ -50,16 +50,21 @@ public class InsuranceTypeInfo {
     private String insuranceName;
 
     /**
-     * 保额
+     * 保额 >0投保
      */
     @Column(name = "insurance_amount")
     private BigDecimal insuranceAmount;
 
     /**
-     * 保费
+     * 保费-保单保费
      */
     @Column(name = "insurance_premium")
     private BigDecimal insurancePremium;
+    /**
+     * 保费-标准保费
+     */
+    @Column(name = "standard_premium")
+    private  String standardPremium;
 
     /**
      * 类型 0投保1报价（0）
@@ -72,10 +77,11 @@ public class InsuranceTypeInfo {
      */
     @Column(name = "type_id")
     private String typeId;
-
+    /**
+     * 类型excluding_deductible 表示不计免，0不投保>0保费
+     */
     @Column(name = "excluding_deductible")
     private BigDecimal excludingEeductible;
-
     /**
      * 获取id
      *
@@ -295,5 +301,13 @@ public class InsuranceTypeInfo {
 
     public InsuranceTypeInfo(String insuranceTypeId) {
         this.insuranceTypeId = insuranceTypeId;
+    }
+
+    public String getStandardPremium() {
+        return standardPremium;
+    }
+
+    public void setStandardPremium(String standardPremium) {
+        this.standardPremium = standardPremium;
     }
 }

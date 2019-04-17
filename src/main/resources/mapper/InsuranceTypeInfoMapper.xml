@@ -16,5 +16,20 @@
     <result column="insurance_premium" jdbcType="DECIMAL" property="insurancePremium" />
     <result column="info_type" jdbcType="VARCHAR" property="infoType" />
     <result column="type_id" jdbcType="VARCHAR" property="typeId" />
+    <result column="standard_premium" jdbcType="VARCHAR" property="standardPremium" />
+    <result column="excluding_deductible" jdbcType="DECIMAL" property="excludingEeductible" />
   </resultMap>
+  <sql id="insertBacthItems">
+    <trim prefix="(" suffixOverrides="," suffix=")">
+      insurance_type_id,insurance_name,insurance_amount,insurance_premium,info_type,type_id,standard_premium,excluding_deductible,CREATED_BY
+    </trim>
+  </sql>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into insurance_type_info <include refid="insertBacthItems"/> values
+    <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.insuranceTypeId},#{item.insuranceName},#{item.insuranceAmount},#{item.insurancePremium}, #{item.infoType},
+      #{item.typeId}
+      , #{item.standardPremium}, #{item.excludingEeductible}, #{item.createdBy})
+      </foreach>
+  </insert>
 </mapper>
