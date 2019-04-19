@@ -38,6 +38,11 @@ public class CheckInfo {
     @Column(name = "send_time")
     private String sendTime;
 
+    @Column(name = "car_no")
+    private String carNo;
+    @Column(name = "vin_no")
+    private String vinNo;
+
     /**
      * @return check_info_id
      */
@@ -151,5 +156,21 @@ public class CheckInfo {
 
     public CheckInfo(String checkInfoId) {
         this.checkInfoId = checkInfoId;
+    }
+
+    public String getCarNo() {
+        return carNo;
+    }
+
+    public void setCarNo(String carNo) {
+        this.carNo = carNo;
+    }
+
+    public String getVinNo() {
+        return vinNo;
+    }
+
+    public void setVinNo(String vinNo) {
+        this.vinNo = vinNo;
     }
 }

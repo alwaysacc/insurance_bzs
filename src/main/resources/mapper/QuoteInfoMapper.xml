@@ -34,5 +34,22 @@
     <result column="force_no" jdbcType="VARCHAR" property="forceNo" />
     <result column="quote_result" jdbcType="LONGVARCHAR" property="quoteResult" />
     <result column="SubmitResult" jdbcType="LONGVARCHAR" property="submitresult" />
+
+    <result column="proposal_no" jdbcType="VARCHAR" property="proposalNo" />
+    <result column="pay_url" jdbcType="VARCHAR" property="payUrl" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="ref_id" jdbcType="VARCHAR" property="refId" />
+    <result column="adv_discount_rate" jdbcType="VARCHAR" property="advDiscountRate" />
+    <result column="force_start_time" jdbcType="VARCHAR" property="forceStartTime" />
+    <result column="biz_start_time" jdbcType="VARCHAR" property="bizStartTime" />
+    <result column="force_ecompensation_rate" jdbcType="VARCHAR" property="forceEcompensationRate" />
+    <result column="biz_ecompensation_rate" jdbcType="VARCHAR" property="bizEcompensationRate" />
+    <result column="biz_premium" jdbcType="VARCHAR" property="bizPremium" />
+    <result column="biz_premiumBy_dis" jdbcType="VARCHAR" property="bizPremiumByDis" />
+    <result column="real_discount_rate" jdbcType="VARCHAR" property="realDiscountRate" />
+    <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate" />
   </resultMap>
+  <update id="updatePayInfo">
+    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime} where proposal_no=#{proposalNo}
+  </update>
 </mapper>

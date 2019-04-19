@@ -44,6 +44,12 @@ public class OrderInfo {
     private String payType;
 
     /**
+     * 支付用途1=账号id,2=报价id
+     */
+    @Column(name = "pay_type_id")
+    private String payTypeId;
+
+    /**
      * 支付方式1支付宝2微信3pos
      */
     private String payment;
@@ -281,5 +287,13 @@ public class OrderInfo {
      */
     public void setContactTel(Integer contactTel) {
         this.contactTel = contactTel;
+    }
+
+    public String getPayTypeId() {
+        return payTypeId;
+    }
+
+    public void setPayTypeId(String payTypeId) {
+        this.payTypeId = payTypeId;
     }
 }

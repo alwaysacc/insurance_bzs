@@ -5,6 +5,7 @@ import com.bzs.utils.Service;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -23,5 +24,22 @@ public interface CarInfoService extends Service<CarInfo> {
     int recoverUser(String[] carInfoId);
 
     Result getCarInfoIdInfo(String carNo, String vinNo, String operatorId);
+
+    /**
+     * 续保时查看同一车牌和车架号的是否已经续保
+     * @param carNo
+     * @param vinNo
+     * @param operatorId
+     * @return
+     */
+
+    Map<String,Object>getCarInfoIdByCarNoAndVinNo(String carNo,String vinNo,String operatorId);
+
+    /**
+     * 更新或者插入
+     * @param carInfo
+     * @return
+     */
+    Map<String,Object>insertOrUpdate(CarInfo carInfo);
 
 }

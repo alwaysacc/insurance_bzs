@@ -36,6 +36,8 @@
         <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard"/>
         <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="channel_type" jdbcType="VARCHAR" property="channelType"/>
+        <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
     </resultMap>
     <select id="getUserList" resultType="map">
         SELECT
@@ -156,11 +158,11 @@
     <!--根据车牌或者车架和创建人查询   开始-->
     <sql id="selectCarInfoId"> car_info_id</sql>
     <sql id="findParams">
-        <trim prefix="WHERE" suffixOverrides="and " >
-            <if test="carNumber!=null and carNumber!=''"> car_number=#{carNumber} and</if>
-            <if test="createdBy!=null and createdBy!=''"> CREATED_BY=#{createdBy} and</if>
-            <if test="frameNumber!=null and frameNumber!=''"> frame_number=#{frameNumber} and</if>
-            <if test="engineNumber!=null and engineNumber!=''"> engine_umber=#{engineNumber} and </if>
+        <trim prefix="WHERE" suffixOverrides="and ">
+            <if test="carNumber!=null and carNumber!=''">car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">CREATED_BY=#{createdBy} and</if>
+            <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
+            <if test="engineNumber!=null and engineNumber!=''">engine_umber=#{engineNumber} and</if>
         </trim>
 
     </sql>
@@ -171,4 +173,44 @@
         <include refid="findParams"/>
     </select>
     <!--根据车牌或者车架和创建人查询  结束-->
+    <!-- 根据车牌和车架更新 开始-->
+    <update id="updateByCarNoAndVinNo">
+
+    </update>
+    <!-- 根据车牌和车架更新 开始-->
+    <!-- 根据车牌和车架获取车辆信息 开始 by dl-->
+    <select id="getCarInfoIdByCarNoAndVinNo">
+        <if test="vinNo!=null and ''!=vinNo and carNo!=null and !''=carNo">
+            select * FROM car_info where frame_number=#{vinNo} and car_number=#{carNo}
+        </if>
+    </select>
+    <!-- 根据车牌和车架获取车辆信息 结束-->
+    <!-- 根据车辆信息id 存在则更新 开始-->
+    <sql id="insertItems">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            car_info_id,
+            <if test="carNumber!=null and ''!=carNumber ">car_number,</if>
+            <if test="engineNumber!=null and ''!=engineNumber ">engine_number,</if>
+            <if test="frameNumber!=null and ''!=frameNumber ">frame_number,</if>
+        </trim>
+    </sql>
+    <sql id="insertValues">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{carInfoId},
+            <if test="carNumber!=null and ''!=carNumber ">#{carNumber},</if>
+            <if test="engineNumber!=null and ''!=engineNumber ">#{engineNumber},</if>
+            <if test="frameNumber!=null and ''!=frameNumber ">#{frameNumber},</if>
+        </trim>
+
+    </sql>
+    <insert id="insertOrUpdate" parameterType="com.bzs.model.CarInfo">
+        insert into car_info <include refid="insertItems"/> values <include refid="insertValues"/>
+        ON DUPLICATE KEY UPDATE
+        car_info_id=values(car_info_id),
+        car_number=values(car_number),
+        engine_number=values(engine_number),
+        frame_number=values(frame_number),
+        frame_number=values(frame_number)
+    </insert>
+    <!-- 根据车辆信息id 存在则更新 结束-->
 </mapper>

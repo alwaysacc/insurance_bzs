@@ -30,7 +30,7 @@ import java.util.List;
 * Created by alwaysacc on 2019/04/11.
 */
 @RestController
-@RequestMapping("/insured/info")
+@RequestMapping("/insuredinfo")
 public class InsuredInfoController {
     @Resource
     private InsuredInfoService insuredInfoService;
@@ -88,7 +88,6 @@ public class InsuredInfoController {
         result.put("msg","成功");
         result.put("data",name);
         return result;
-
     }
 
 }

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.*;
 
@@ -286,9 +287,9 @@ public class HttpClientUtil {
         // 创建httpPost远程连接实例
         HttpPost httpPost = new HttpPost(url);
         // 配置请求参数实例
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(35000)// 设置连接主机服务超时时间
-                .setConnectionRequestTimeout(35000)// 设置连接请求超时时间
-                .setSocketTimeout(60000)// 设置读取数据连接超时时间
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(120000)// 设置连接主机服务超时时间
+                .setConnectionRequestTimeout(120000)// 设置连接请求超时时间
+                .setSocketTimeout(120000)// 设置读取数据连接超时时间
                 .build();
         // 为httpPost实例设置配置
         httpPost.setConfig(requestConfig);
@@ -339,6 +340,7 @@ public class HttpClientUtil {
                     nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
                     object.put(mapEntry.getKey(), mapEntry.getValue().toString());
                 }
+                logger.info("请求参数"+object.toJSONString());
                 // 为httpPost设置封装好的请求参数
                 try {
                   httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
@@ -361,7 +363,7 @@ public class HttpClientUtil {
             result.setCode(code);
             result.setBody(body);
             System.out.println(body);
-            logger.info("请求返回的内容");
+            logger.info("请求返回的内容>>>"+body);
             String message = "请求失败";
             if (code == 200) {
                 message = "请求成功";
@@ -379,8 +381,16 @@ public class HttpClientUtil {
             result.setMessage(message);
         } catch (ClientProtocolException e) {
             logger.error("调取远程接口异常", e);
-        } catch (IOException e) {
+            result.setMessage("接口请求异常");
+            return result;
+        } catch (SocketTimeoutException e) {
+            logger.error("调取远程接口时间超时", e);
+            result.setMessage("接口请求超时");
+            return result;
+        }catch (IOException e) {
             logger.error("调取远程接口异常", e);
+            result.setMessage("接口请求异常");
+            return result;
         } finally {
             // 关闭资源
             if (null != httpResponse) {

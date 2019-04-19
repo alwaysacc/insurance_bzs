@@ -186,6 +186,16 @@ public class CarInfo {
     private String licenseOwnerIdCardType;
     @Column(name = "mobile")
     private String mobile;
+    /**
+     * 车辆信息获取方式默认-1手动添加还未查询过，0使用车牌1使用车架2车牌和车架均使用
+     */
+    @Column(name="channel_type")
+    private String  channelType;
+    /**
+     * 是否手动添加,默认0=查询获取,1是
+     */
+    @Column(name="is_addtion")
+    private String isAddtion;
 
     /**
      * 获取ID
@@ -728,8 +738,8 @@ public class CarInfo {
     }
 
     public CarInfo() {
-    }
 
+    }
     public CarInfo(String carInfoId) {
         this.carInfoId = carInfoId;
     }
@@ -740,5 +750,21 @@ public class CarInfo {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
+    }
+
+    public String getIsAddtion() {
+        return isAddtion;
+    }
+
+    public void setIsAddtion(String isAddtion) {
+        this.isAddtion = isAddtion;
     }
 }

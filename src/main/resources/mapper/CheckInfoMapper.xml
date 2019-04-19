@@ -13,5 +13,7 @@
     <result column="check_type" jdbcType="VARCHAR" property="checkType" />
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="SEND_TIME" jdbcType="VARCHAR" property="sendTime" />
+    <result column="car_no" jdbcType="VARCHAR" property="carNo" />
+    <result column="vin_no" jdbcType="VARCHAR" property="vinNo" />
   </resultMap>
 </mapper>

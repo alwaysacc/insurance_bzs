@@ -7,16 +7,20 @@ import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.QuoteInfo;
 import com.bzs.service.QuoteInfoService;
+import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.jsontobean.InsurancesList;
 import com.bzs.utils.jsontobean.ParamsData;
+import com.bzs.utils.jsontobean.PersonInfo;
 import com.bzs.utils.jsontobean.QuoteParmasBean;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -75,12 +79,150 @@ public class QuoteInfoController {
      * @return
      */
     @PostMapping("/getQuoteInfo")
-    public Result getQuoteInfo(QuoteParmasBean params, @RequestBody(required = false) List<InsurancesList> list,String carInfoId,String createdBy) {
-        return quoteInfoService.getQuoteDetailsByApi(params, list,carInfoId,createdBy);
+    public Result getQuoteInfo(QuoteParmasBean params, @RequestBody(required = false) List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
+        return quoteInfoService.getQuoteDetailsByApi(params, list, carInfoId, createdBy, source);
     }
 
+    /**
+     *
+     * @param sendTime
+     * @param pay 支付方式 默认0微信 1支付宝
+     * @param refId
+     * @param flag  1支付2报价 默认只报价
+     * @param salesPerson 销售人员姓名 根据保代公司决定（太平洋必传）
+     * @param ciBeginDate 交强险起期
+     * @param biBeginDate 商业险起期
+     * @param carTransDate 过户日期
+     * @param carIsTrans 是否过户 0：否 1：是
+     * @param carEnergyType
+     * @param carVehicleFgwCode
+     * @param carUse
+     * @param carVehicleType
+     * @param carUseProperty
+     * @param carFirstRegisterDate
+     * @param carEngineNo
+     * @param carFrameNo
+     * @param carColor
+     * @param carNoType
+     * @param carNo
+     * @param personName
+     * @param personSex
+     * @param personAge
+     * @param personMobile
+     * @param personCardID
+     * @param personAddress
+     * @param list
+     * @param carInfoId
+     * @param createdBy
+     * @param source
+     * @return
+     */
+
     @PostMapping("/getQuoteInfoAllParams")
-    public Result getQuoteInfo(String sendTime, String pay, String refId, String flag) {
-        return null;
+    public Result getQuoteInfo(String sendTime, String pay, String refId, String flag, String salesPerson,
+                               String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
+                               String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty, String carFirstRegisterDate,
+                               String carEngineNo, String carFrameNo, String carColor, String carNoType, String carNo,
+                               String personName, String personSex, String personAge, String personMobile, String personCardID,
+                               String personAddress, @RequestBody(required = false) List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
+
+        if(StringUtils.isBlank(carNoType)){
+            carNoType="02";
+        }
+        if(StringUtils.isBlank(carColor)){
+            carColor="1";
+        }
+        if(StringUtils.isBlank(carUseProperty)){
+            carUseProperty="101";
+        }
+        if(StringUtils.isBlank(carUse)){
+            carUse="01";
+        }
+        if(StringUtils.isBlank(carEnergyType)){
+            carEnergyType="0";
+        }
+        if(StringUtils.isBlank(personAge)){
+            personAge="32";
+        }
+        if(StringUtils.isBlank(carVehicleType)){
+            carVehicleType="A01";
+        }
+        if(StringUtils.isNotBlank(flag)&&"1".equals(flag)){
+            flag="1";
+        }else{
+            flag="2";
+        }
+        flag="2";//只报价
+        if(StringUtils.isBlank(pay)||"0".equals(pay)||"weixin".equals(pay)){
+            pay="weixin";
+        }else{
+            pay="alipay";
+        }
+        if(StringUtils.isBlank(carIsTrans)&&!"1".equals(carIsTrans)){
+            carIsTrans="0";//默认非过户
+        }
+        if(StringUtils.isNotBlank(carIsTrans)&&"1".equals(carIsTrans)&&StringUtils.isBlank(carTransDate)){
+            return ResultGenerator.genFailResult("选择过户，必传过户日期");
+        }
+        QuoteParmasBean params=new QuoteParmasBean();
+        params.setFlag(flag);
+        params.setPay(pay);
+        params.setRefId(refId);
+        sendTime=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        params.setSendTime(sendTime);
+        ParamsData data=new ParamsData();
+       // data.setInsurancesList(list);
+        data.setCiBeginDate(ciBeginDate);
+        data.setBiBeginDate(biBeginDate);
+        data.setSalesPerson(salesPerson);
+        params.setData(data);
+        com.bzs.utils.jsontobean.CarInfo carInfo=new com.bzs.utils.jsontobean.CarInfo();
+        carInfo.setIsTrans(carIsTrans);
+        carInfo.setTransDate("");
+        carInfo.setCarNo(carNo);
+        carInfo.setCarUse(carUse);
+        carInfo.setEnergyType(carEnergyType);
+        carInfo.setCarUse(carUse);
+        carInfo.setFirstRegisterDate(carFirstRegisterDate);
+        carInfo.setNoType(carNoType);
+        carInfo.setColor(carColor);
+        carInfo.setEngineNo(carEngineNo);
+        carInfo.setFrameNo(carFrameNo);
+        carInfo.setVehicleType(carVehicleType);
+        carInfo.setVehicleFgwCode(carVehicleFgwCode);
+        carInfo.setUseProperty(carUseProperty);
+        data.setCarInfo(carInfo);
+        PersonInfo personInfo=new PersonInfo();
+        personInfo.setAddress(personAddress);
+        personInfo.setAge(personAge);
+        personInfo.setCardID(personCardID);
+        personInfo.setMobile(personMobile);
+        personInfo.setName(personName);
+        personInfo.setSex(personSex);
+        data.setPersonInfo(personInfo);
+        return quoteInfoService.getQuoteDetailsByApi(params, list, carInfoId, createdBy, source);
     }
+
+    /**
+     *
+     * @param proposalNo 核保单号
+     * @param pay 支付方式 0微信1支付宝
+     * @param money 支付金额
+     * @param createdBy 创建人
+     * @param carInfoId 车辆信息id
+     * @param quoteId 报价id
+     * @param source 报价公司的枚举值
+     * @return
+     */
+    @PostMapping("/pay")
+    public Result getPayMent(String proposalNo,String pay,String money,String createdBy,String carInfoId,String quoteId,Long source){
+        return quoteInfoService.getPayMentgetPayMent(proposalNo,pay,money,createdBy,carInfoId,quoteId,source);
+    }
+    @PostMapping("/updatePayInfo")
+    public Result updatePayInfo(String payUrl,String payTime,String proposalNo){
+       Map<String,Object> result= quoteInfoService.updatePayInfo(proposalNo);
+       String status= (String )result.get("status");
+        return ResultGenerator.genSuccessResult(status);
+    }
+
 }
