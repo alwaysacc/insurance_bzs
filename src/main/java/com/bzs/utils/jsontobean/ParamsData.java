@@ -14,6 +14,7 @@ public class ParamsData {
     private CarInfo carInfo;
     private String ciBeginDate;
     private String biBeginDate;
+    private InsuranceAccountInfo accountInfo;
     private List<InsurancesList> insurancesList;
     public void setSalesPerson(String salesPerson) {
         this.salesPerson = salesPerson;
@@ -55,5 +56,13 @@ public class ParamsData {
     }
     public List<InsurancesList> getInsurancesList() {
         return insurancesList;
+    }
+
+    public InsuranceAccountInfo getAccountInfo() {
+        return accountInfo;
+    }
+
+    public void setAccountInfo(InsuranceAccountInfo accountInfo) {
+        this.accountInfo = accountInfo;
     }
 }

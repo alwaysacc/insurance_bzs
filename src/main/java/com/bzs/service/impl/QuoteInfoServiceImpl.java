@@ -77,26 +77,26 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
     @Override
     public Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
-        if (CollectionUtils.isNotEmpty(list)) {
+       /* if (CollectionUtils.isNotEmpty(list)) {*/
             ParamsData data = params.getData();
             if (null != data) {
                 data.setInsurancesList(list);
-                String isTrans = data.getCarInfo().getIsTrans();
+             /*   String isTrans = data.getCarInfo().getIsTrans();
                 if (StringUtils.isBlank(isTrans)) {
                     data.getCarInfo().setIsTrans("");
                 }
                 if (StringUtils.isNotBlank(isTrans) && "0".equals(isTrans)) {
                     data.getCarInfo().setTransDate("");
-                }
-                //System.out.println(list.get(0).getFlag());
-                String host = ThirdAPI.HOST;
-                String port = ThirdAPI.PORT;
+                }*/
                 //---------------------------  注意修改开始
                 createdBy = UUIDS.getDateUUID();
                 carInfoId = UUIDS.getDateUUID();
-                source = 1L;
+
+                if(source==null){
+                    source = 1L;
+                }
                 //---------------------------  注意修改结束
-                Map<String, Object> quoteMap = getQuoteDetailsByApi(source, host, port, createdBy, params);
+                Map<String, Object> quoteMap = getQuoteDetailsByApi(source,createdBy, params);
                 String status = (String) quoteMap.get("status");
                 String msg = (String) quoteMap.get("msg");
                 String uuids = UUIDS.getDateUUID();
@@ -107,7 +107,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 quoteInfo.setQuoteInsuranceName(InsuranceNameEnum.getName(source));
                 Date date=DateUtil.getDateToDate(new Date(),"yyyy-MM-dd HH:mm:ss");
                 quoteInfo.setCreatedTime(date);
-                if ("1".equals(status)) {//报价成功
+                if ("1".equals(status)) {//报价成功,其他均为报价失败
                     String body = (String) quoteMap.get("body");//爬虫返回的数据
                     logger.info("body=" + body);
                     PCICResponseBean bean = (PCICResponseBean) quoteMap.get("data");//body 转为实体对象
@@ -117,7 +117,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         retMsg = EncodeUtil.unicodeToString(retMsg);
                         logger.info("retCode=" + retCode + ",retMsg=" + retMsg);
                         if (StringUtils.isNotBlank(retCode)) {
-                            if ("0000".equals(retCode)) {//报价 核保 支付获取成功
+                            if ("0000".equals(retCode)) {//报价 核保
                                 logger.info("code="+retCode+","+retMsg);
                                 quoteInfo.setQuoteStatus(1);
                                 quoteInfo.setQuoteResult("报价成功");//报价结果
@@ -153,6 +153,11 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 quoteInfo.setSubmitresult(retMsg);
                             } else {
                                 logger.info("code="+retCode+","+retMsg);
+                                logger.info("code="+retCode+","+retMsg);
+                                quoteInfo.setQuoteStatus(0);
+                                quoteInfo.setQuoteResult(retMsg);//报价结果
+                                quoteInfo.setSubmitStatus(0);
+                                quoteInfo.setSubmitresult(retMsg);
                             }
                             ResponseData rdata = bean.getData();
                             if (null != rdata) {
@@ -276,15 +281,17 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 }
             }
             return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
-        } else {
-            return ResultGenerator.gen("成功", "", ResultCode.SUCCESS);
-        }
+        /*} else {
+            return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
+        }*/
     }
 
-    public Map<String, Object> getQuoteDetailsByApi(Long source, String host, String port, String createdBy, QuoteParmasBean params) {
+    public Map<String, Object> getQuoteDetailsByApi(Long source, String createdBy, QuoteParmasBean params) {
         Map<String, Object> result = new HashMap<>();
         String jsonStr = JSON.toJSONString(params);
-        String api = null;
+        String api = "";
+        String host = ThirdAPI.HOST;
+        String port = "";
         if (null == source) {
             result.put("status", "400");
             result.put("msg", "参数错误");
@@ -293,10 +300,13 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             if (1 == source) {
                 // api = ThirdAPI.CPIC_QUOTE_NAME;
                 api = ThirdAPI.CPIC_QUOTE_ALL;
+                port=ThirdAPI.PORT;
             } else if (2 == source) {
                 api = ThirdAPI.PAIC_QUOTE_NAME;
+                port=ThirdAPI.PAIC_PORT;
             } else if (4 == source) {
                 api = ThirdAPI.PICC_QUOTE_ALL;
+                port=ThirdAPI.PICC_PORT;
             } else {
                 result.put("status", "400");
                 result.put("msg", "参数错误");
@@ -316,14 +326,23 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String body = httpResult.getBody();
             if (200 == code) {//远程请求成功
                 PCICResponseBean bean = (PCICResponseBean) httpResult.getT();
-                result.put("status", "1");
-                result.put("msg", msg);
+                String state=bean.getState();
+                String retCode=bean.getRetCode();
+                String retMsg=bean.getRetMsg();
+                retMsg=EncodeUtil.unicodeToString(retMsg);
+                if(StringUtils.isNotBlank(state)&&"1".equals(state)){
+                    result.put("status", "1");
+                }
+                if(StringUtils.isNotBlank(retCode)&&retCode.equals("0099")||retCode.equals("0002")){
+                    result.put("status", retCode);
+                }
+                result.put("msg", retMsg);
                 result.put("data", bean);
                 result.put("body", body);
                 return result;
             } else {
-                result.put("status", code);
-                result.put("msg", "调用爬虫接口出险异常，报错代码：" + code);
+                result.put("status", code+"");
+                result.put("msg", "报价失败，报错代码：" + code);
                 return result;
             }
         } else {

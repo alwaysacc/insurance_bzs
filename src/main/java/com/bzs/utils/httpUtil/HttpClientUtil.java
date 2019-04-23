@@ -16,6 +16,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -321,11 +322,7 @@ public class HttpClientUtil {
                 entity.setContentEncoding("UTF-8");
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
-
             }
-
-
-
         }else {
             // 封装post请求参数
             if (null != paramMap && paramMap.size() > 0) {
@@ -348,11 +345,7 @@ public class HttpClientUtil {
                     logger.error("调取远程接口异常", e);
                 }
             }
-
         }
-
-
-
         try {
             // httpClient对象执行post请求,并返回响应参数对象
             httpResponse = httpClient.execute(httpPost);
@@ -362,7 +355,7 @@ public class HttpClientUtil {
             String body = EntityUtils.toString(entity);
             result.setCode(code);
             result.setBody(body);
-            System.out.println(body);
+           // System.out.println(body);
             logger.info("请求返回的内容>>>"+body);
             String message = "请求失败";
             if (code == 200) {
@@ -375,21 +368,29 @@ public class HttpClientUtil {
                         logger.error("请求成功，JSON转换异常", e);
                     }
                 }
-            } else {
-                //  result.setT(null);
+            } else  if(code==404){
+                result.setMessage("请检查接口地址");
+            }else{
+                result.setMessage(message);
             }
-            result.setMessage(message);
+
         } catch (ClientProtocolException e) {
             logger.error("调取远程接口异常", e);
             result.setMessage("接口请求异常");
             return result;
         } catch (SocketTimeoutException e) {
-            logger.error("调取远程接口时间超时", e);
+           // logger.error("调取远程接口时间超时", e);
             result.setMessage("接口请求超时");
             return result;
+        }catch (HttpHostConnectException e) {
+           // logger.error("调取远程接口时间超时", e);
+            result.setMessage("接口请求超时");
+            logger.info("接口请求异常");
+            return result;
         }catch (IOException e) {
-            logger.error("调取远程接口异常", e);
+          //  logger.error("调取远程接口异常", e);
             result.setMessage("接口请求异常");
+            logger.info("接口请求异常");
             return result;
         } finally {
             // 关闭资源
