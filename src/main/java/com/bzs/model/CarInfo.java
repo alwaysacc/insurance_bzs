@@ -198,6 +198,16 @@ public class CarInfo {
      */
     @Column(name = "mobile")
     private String mobile;
+    /**
+     * 车辆信息获取方式默认-1手动添加还未查询过，0使用车牌1使用车架2车牌和车架均使用
+     */
+    @Column(name="channel_type")
+    private String  channelType;
+    /**
+     * 是否手动添加,默认0=查询获取,1是
+     */
+    @Column(name="is_addtion")
+    private String isAddtion;
 
     /**
      * 获取ID
@@ -739,59 +749,18 @@ public class CarInfo {
         this.licenseOwnerIdCardType = licenseOwnerIdCardType;
     }
 
-    /**
-     * 获取客户id
-     *
-     * @return customer_Id - 客户id
-     */
-    public String getCustomerId() {
-        return customerId;
+    public CarInfo() {
     }
 
-    /**
-     * 设置客户id
-     *
-     * @param customerId 客户id
-     */
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public CarInfo(String carInfoId) {
+        this.carInfoId = carInfoId;
     }
 
-    /**
-     * @return status
-     */
-    public Integer getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status
-     */
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    /**
-     * 获取手机号
-     *
-     * @return mobile - 手机号
-     */
     public String getMobile() {
         return mobile;
     }
 
-    /**
-     * 设置手机号
-     *
-     * @param mobile 手机号
-     */
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-    public CarInfo() {
-
-    }
-    public CarInfo(String carInfoId) {
-        this.carInfoId = carInfoId;
     }
 }

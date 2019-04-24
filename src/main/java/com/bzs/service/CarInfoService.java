@@ -29,4 +29,21 @@ public interface CarInfoService extends Service<CarInfo> {
 
     Map userDetail(String carInfoId);
 
+    /**
+     * 续保时查看同一车牌和车架号的是否已经续保
+     * @param carNo
+     * @param vinNo
+     * @param operatorId
+     * @return
+     */
+
+    Map<String,Object>getCarInfoIdByCarNoAndVinNo(String carNo,String vinNo,String operatorId);
+
+    /**
+     * 更新或者插入
+     * @param carInfo
+     * @return
+     */
+    Map<String,Object>insertOrUpdate(CarInfo carInfo);
+
 }

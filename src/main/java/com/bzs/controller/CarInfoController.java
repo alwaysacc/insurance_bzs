@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by alwaysacc on 2019/04/10.
@@ -112,4 +113,14 @@ public class CarInfoController {
         return ResultGenerator.genSuccessResult( carInfoService.getRecoverUser(accountId,roleId));
     }
 
+    /**
+     * 插入或者更新
+     * @param carInfo
+     * @return
+     */
+    @PostMapping("/insertOrUpdate")
+    public Result insertOrUpdate(CarInfo carInfo){
+       Map<String,Object> result=carInfoService.insertOrUpdate(carInfo);
+        return ResultGenerator.genSuccessResult("成功");
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -19,4 +20,8 @@ public class InsuranceTypeInfoServiceImpl extends AbstractService<InsuranceTypeI
     @Resource
     private InsuranceTypeInfoMapper insuranceTypeInfoMapper;
 
+    @Override
+    public int insertBatch(List<InsuranceTypeInfo> list) {
+        return insuranceTypeInfoMapper.insertBatch(list);
+    }
 }

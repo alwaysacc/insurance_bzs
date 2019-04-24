@@ -180,6 +180,72 @@ public class QuoteInfo {
      */
     @Column(name = "SubmitResult")
     private String submitresult;
+    /**
+     *报价单号 获取支付接口用';
+     */
+    @Column(name = "proposal_no")
+    private String proposalNo;
+    /**
+     * 支付地址
+     */
+    @Column(name = "pay_url")
+    private String payUrl;
+    /**
+     * 支付日期
+     */
+    @Column(name = "pay_time")
+    private String payTime;
+    /**
+     * 报价流水号
+     */
+    @Column(name = "ref_id")
+    private String refId;
+    /**
+     * 建议折扣率
+     */
+    @Column(name = "adv_discount_rate")
+    private String advDiscountRate;
+    /**
+     * 交强险起保日期
+     */
+    @Column(name = "force_start_time")
+    private String forceStartTime;
+    /**
+     * 商业险起保日期
+     */
+    @Column(name = "biz_start_time")
+    private String bizStartTime;
+    /**
+     * 交强险预期赔付率
+     */
+    @Column(name = "force_ecompensation_rate")
+    private String forceEcompensationRate;
+    /**
+     * 商业险预期赔付率
+     */
+    @Column(name = "biz_ecompensation_rate")
+    private String bizEcompensationRate;
+    /**
+     * 商业险标准保费
+     */
+    @Column(name = "biz_premium")
+    private String bizPremium;
+    /**
+     * 商业险折后保费
+     */
+    @Column(name = "biz_premiumBy_dis")
+    private String bizPremiumByDis;
+    /**
+     * 实际折扣率
+     */
+    @Column(name = "real_discount_rate")
+    private String realDiscountRate;
+    /**
+     * 无赔款折扣系数
+     */
+    @Column(name = "non_claim_discount_rate")
+    private String nonClaim_discountRate;
+
 
     /**
      * 获取乐观锁
@@ -703,8 +769,113 @@ public class QuoteInfo {
         this.submitresult = submitresult;
     }
 
+    public String getProposalNo() {
+        return proposalNo;
+    }
+
+    public void setProposalNo(String proposalNo) {
+        this.proposalNo = proposalNo;
+    }
+
+    public String getPayUrl() {
+        return payUrl;
+    }
+
+    public void setPayUrl(String payUrl) {
+        this.payUrl = payUrl;
+    }
+
+    public String getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(String payTime) {
+        this.payTime = payTime;
+    }
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
+
+    public String getAdvDiscountRate() {
+        return advDiscountRate;
+    }
+
+    public void setAdvDiscountRate(String advDiscountRate) {
+        this.advDiscountRate = advDiscountRate;
+    }
+
+    public String getForceStartTime() {
+        return forceStartTime;
+    }
+
+    public void setForceStartTime(String forceStartTime) {
+        this.forceStartTime = forceStartTime;
+    }
+
+    public String getBizStartTime() {
+        return bizStartTime;
+    }
+
+    public void setBizStartTime(String bizStartTime) {
+        this.bizStartTime = bizStartTime;
+    }
+
+    public String getForceEcompensationRate() {
+        return forceEcompensationRate;
+    }
+
+    public void setForceEcompensationRate(String forceEcompensationRate) {
+        this.forceEcompensationRate = forceEcompensationRate;
+    }
+
+    public String getBizEcompensationRate() {
+        return bizEcompensationRate;
+    }
+
+    public void setBizEcompensationRate(String bizEcompensationRate) {
+        this.bizEcompensationRate = bizEcompensationRate;
+    }
+
+    public String getBizPremium() {
+        return bizPremium;
+    }
+
+    public void setBizPremium(String bizPremium) {
+        this.bizPremium = bizPremium;
+    }
+
+    public String getBizPremiumByDis() {
+        return bizPremiumByDis;
+    }
+
+    public void setBizPremiumByDis(String bizPremiumByDis) {
+        this.bizPremiumByDis = bizPremiumByDis;
+    }
+
+    public String getRealDiscountRate() {
+        return realDiscountRate;
+    }
+
+    public void setRealDiscountRate(String realDiscountRate) {
+        this.realDiscountRate = realDiscountRate;
+    }
+
+    public String getNonClaim_discountRate() {
+        return nonClaim_discountRate;
+    }
+
+    public void setNonClaim_discountRate(String nonClaim_discountRate) {
+        this.nonClaim_discountRate = nonClaim_discountRate;
+    }
+
     public QuoteInfo() {
     }
+
 
     public QuoteInfo(String quoteId) {
         this.quoteId = quoteId;

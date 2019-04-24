@@ -19,15 +19,12 @@ public class RenewalBean {
     public String getState() {
         return state;
     }
-
-
     public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
     }
     public String getSendTime() {
         return sendTime;
     }
-
     public RenewalData getData() {
         return data;
     }
@@ -43,4 +40,6 @@ public class RenewalBean {
     public void setMessage(String message) {
         this.message = message;
     }
+
+
 }
