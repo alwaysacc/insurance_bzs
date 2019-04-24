@@ -24,4 +24,25 @@ public interface CarInfoMapper extends Mapper<CarInfo> {
     int recoverUser (@Param("carInfoId")String[] carInfoId,@Param("status") int status);
 
     List getRecoverUser(@Param("accountId") String accountId, @Param("roleId") String roleId);
+
+    List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId, String salesman, String customerStatus);
+
+
+    /**
+     * 根据车牌和车架更新车辆信息
+     *
+     * @param carInfo
+     * @return
+     */
+    int updateRenewalInfoByCarNoAndVinNo(CarInfo carInfo);
+
+    /**
+     * 根据车牌和车架获取车辆信息
+     *
+     * @param carNo
+     * @param vinNo
+     * @return
+     */
+    CarInfo getCarInfoIdByCarNoAndVinNo(String carNo, String vinNo);
+    int insertOrUpdate(CarInfo carInfo);
 }

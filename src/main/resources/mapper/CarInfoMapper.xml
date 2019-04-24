@@ -177,11 +177,6 @@
     <sql id="selectCarInfoId"> car_info_id</sql>
     <sql id="findParams">
         <trim prefix="WHERE" suffixOverrides="and ">
-            <if test="carNumber!=null and carNumber!=''"> car_number=#{carNumber} and</if>
-            <if test="createdBy!=null and createdBy!=''"> CREATED_BY=#{createdBy} and</if>
-            <if test="frameNumber!=null and frameNumber!=''"> frame_number=#{frameNumber} and</if>
-            <if test="engineNumber!=null and engineNumber!=''"> engine_umber=#{engineNumber} and </if>
-        <trim prefix="WHERE" suffixOverrides="and ">
             <if test="carNumber!=null and carNumber!=''">car_number=#{carNumber} and</if>
             <if test="createdBy!=null and createdBy!=''">CREATED_BY=#{createdBy} and</if>
             <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
