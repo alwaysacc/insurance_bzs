@@ -818,7 +818,6 @@ public class CarInfo {
     public String getIsAddtion() {
         return isAddtion;
     }
-
     public void setIsAddtion(String isAddtion) {
         this.isAddtion = isAddtion;
     }
