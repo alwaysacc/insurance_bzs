@@ -14,7 +14,6 @@
     <result column="customer_address" jdbcType="VARCHAR" property="customerAddress" />
     <result column="customer_remarks1" jdbcType="VARCHAR" property="customerRemarks1" />
     <result column="customer_remarks2" jdbcType="VARCHAR" property="customerRemarks2" />
-    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
     <result column="REVISION" jdbcType="INTEGER" property="revision" />
     <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
     <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />

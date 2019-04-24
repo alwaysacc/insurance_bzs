@@ -26,7 +26,6 @@ public class CarInfoController {
 
     @PostMapping("/add")
      public Result add(CarInfo carInfo) {
-        carInfo.setCarInfoId("1213");
         carInfoService.save(carInfo);
         return ResultGenerator.genSuccessResult();
     }
@@ -59,15 +58,18 @@ public class CarInfoController {
     /**
      * @Author 孙鹏程
      * @Description  获取客户列表，salesman是否分配0未分配，customerStatus客户状态，0未回访
-     * @Date 2019/4/12/012  11:15 
+     * @Date 2019/4/12/012  11:15
      * @Param [page, size, accountId, roleId, salesman, customerStatus]
      * @return com.bzs.utils.Result
      **/
     @ApiOperation("获取客户列表")
     @PostMapping("/getUserList")
-    public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId,String salesman,String customerStatus) {
+    public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,
+                              String roleId,String salesman,String customerStatus,
+                              String plan
+                              ) {
         PageHelper.startPage(page, size);
-        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus);
+        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus,plan);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -80,9 +82,9 @@ public class CarInfoController {
      **/
     @ApiOperation("搜索客户列表")
     @PostMapping("/searchUserList")
-    public Result searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel) {
+    public Result searchUserList(String accountId, String roleId, String carNumber, String frameNumber,String customerName, String customerTel,String lincenseOwner) {
         List<CarInfo> list = carInfoService.searchUserList(
-                accountId,roleId,carNumber,frameNumber,customerName,customerTel);
+                accountId,roleId,carNumber,frameNumber,customerName,customerTel,lincenseOwner);
         return ResultGenerator.genSuccessResult(list);
     }
     /**
@@ -98,11 +100,16 @@ public class CarInfoController {
     }
     @ApiOperation("回收客户")
     @PostMapping("/recoverUser")
-    public Result recoverUser(String[] carInfoId) {
+    public Result recoverUser(String[] carInfoIds,int status) {
         //carInfoService.recoverUser(carInfoId);
         //System.out.println(carInfoId);
         //System.out.println(ResultGenerator.genSuccessResult(id));
-        return ResultGenerator.genSuccessResult( carInfoService.recoverUser(carInfoId));
+        return ResultGenerator.genSuccessResult( carInfoService.recoverUser(carInfoIds,status));
+    }
+    @ApiOperation("获取回收客户")
+    @PostMapping("/getRecoverUser")
+    public Result getRecoverUser(String accountId, String roleId) {
+        return ResultGenerator.genSuccessResult( carInfoService.getRecoverUser(accountId,roleId));
     }
 
 }

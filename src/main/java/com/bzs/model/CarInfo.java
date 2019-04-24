@@ -184,6 +184,18 @@ public class CarInfo {
      */
     @Column(name = "license_owner_id_card_type")
     private String licenseOwnerIdCardType;
+
+    /**
+     * 客户id
+     */
+    @Column(name = "customer_Id")
+    private String customerId;
+
+    private Integer status;
+
+    /**
+     * 手机号
+     */
     @Column(name = "mobile")
     private String mobile;
 
@@ -727,18 +739,59 @@ public class CarInfo {
         this.licenseOwnerIdCardType = licenseOwnerIdCardType;
     }
 
-    public CarInfo() {
+    /**
+     * 获取客户id
+     *
+     * @return customer_Id - 客户id
+     */
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public CarInfo(String carInfoId) {
-        this.carInfoId = carInfoId;
+    /**
+     * 设置客户id
+     *
+     * @param customerId 客户id
+     */
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
+    /**
+     * @return status
+     */
+    public Integer getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status
+     */
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    /**
+     * 获取手机号
+     *
+     * @return mobile - 手机号
+     */
     public String getMobile() {
         return mobile;
     }
 
+    /**
+     * 设置手机号
+     *
+     * @param mobile 手机号
+     */
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+    public CarInfo() {
+
+    }
+    public CarInfo(String carInfoId) {
+        this.carInfoId = carInfoId;
     }
 }

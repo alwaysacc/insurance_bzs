@@ -38,10 +38,13 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     public Map quoteDetails(String carInfoId) {
         //报价信息
         QuoteInfo quoteInfo=quoteInfoService.findBy("carInfoId",carInfoId);
-        //客户信息
-        Customer customer=customerService.findBy("carInfoId",carInfoId);
         //车辆信息
         CarInfo carInfo=carInfoService.findBy("carInfoId",carInfoId);
+        //客户信息
+        Customer customer=null;
+        if (carInfo.getCustomerId()!="" && carInfo.getCustomerId()!=null){
+            customer=customerService.findBy("customerId",carInfo.getCustomerId());
+        }
         //跟进信息
         InsuranceFollowInfo insuranceFollowInfo=insuranceFollowInfoService.findBy("carInfoId",carInfoId);
         //投保信息

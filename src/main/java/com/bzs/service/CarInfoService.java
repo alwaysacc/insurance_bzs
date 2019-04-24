@@ -5,6 +5,7 @@ import com.bzs.utils.Service;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -12,16 +13,20 @@ import java.util.List;
  */
 public interface CarInfoService extends Service<CarInfo> {
 
-    List getUserList( String accountId, String roleId, String salesman, String customerStatus);
+    List getUserList( String accountId, String roleId, String salesman, String customerStatus,String plan);
 
     List searchUserList(
-            @Param("accountId") String accountId, @Param("roleId") String roleId,
-            @Param("carNumber") String carNumber, @Param("frameNumber") String frameNumber,
-            @Param("customerName") String customerName, @Param("customerTel") String customerTel
+            String accountId,String roleId,
+            String carNumber,String frameNumber,
+            String customerName,String customerTel,
+            String lincenseOwner
     );
+    List getRecoverUser(String accountId,String roleId);
 
-    int recoverUser(String[] carInfoId);
+    int recoverUser(String[] carInfoId,int status);
 
     Result getCarInfoIdInfo(String carNo, String vinNo, String operatorId);
+
+    Map userDetail(String carInfoId);
 
 }

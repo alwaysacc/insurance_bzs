@@ -18,7 +18,7 @@ import java.util.Map;
 * Created by alwaysacc on 2019/04/11.
 */
 @RestController
-@RequestMapping("/quote/info")
+@RequestMapping("/quoteinfo")
 public class QuoteInfoController {
     @Resource
     private QuoteInfoService quoteInfoService;

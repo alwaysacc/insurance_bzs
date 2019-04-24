@@ -13,9 +13,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,7 +32,7 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
     private AccountInfoMapper accountInfoMapper;
 
     @Override
-    public List getUserList(String accountId,String roleId,String salesman,String customerStatus) {
+    public List getUserList(String accountId,String roleId,String salesman,String customerStatus,String plan) {
         //roleId= accountInfoMapper.getRoleIdByAccountId(accountId);
         if (roleId.equals("管理员")){
 
@@ -41,17 +43,22 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
         }else{
 
         }
-        return carInfoMapper.getUserList(accountId,roleId,salesman,customerStatus);
+        return carInfoMapper.getUserList(accountId,roleId,salesman,customerStatus,plan);
     }
 
     @Override
-    public List searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel) {
-        return null;
+    public List searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel, String lincenseOwner) {
+        return carInfoMapper.searchUserList(accountId,roleId,carNumber,frameNumber,customerName,customerTel,lincenseOwner);
     }
 
     @Override
-    public int recoverUser(String[] carInfoId) {
-        return 0;
+    public List getRecoverUser(String accountId, String roleId) {
+        return carInfoMapper.getRecoverUser(accountId,roleId);
+    }
+
+    @Override
+    public int recoverUser(String[] carInfoId,int status) {
+        return carInfoMapper.recoverUser(carInfoId,status);
     }
 
     @Override
@@ -70,5 +77,11 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
             return ResultGenerator.genSuccessResult(list);
         }
 
+    }
+
+    @Override
+    public Map userDetail(String carInfoId) {
+        Condition condition=new Condition(CarInfo.class);
+        return null;
     }
 }

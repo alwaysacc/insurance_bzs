@@ -11,6 +11,7 @@
     <result column="account_id" jdbcType="VARCHAR" property="accountId" />
     <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
     <result column="pay_type" jdbcType="VARCHAR" property="payType" />
+    <result column="pay_type_id" jdbcType="VARCHAR" property="payTypeId" />
     <result column="payment" jdbcType="VARCHAR" property="payment" />
     <result column="pay_money" jdbcType="DECIMAL" property="payMoney" />
     <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
@@ -19,4 +20,80 @@
     <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
     <result column="contact_tel" jdbcType="INTEGER" property="contactTel" />
   </resultMap>
+  <select id="getOrderList" resultType="map">
+    SELECT
+    order_info.order_id,
+    car_info.car_number,car_info.car_model,car_info.salesman,
+    date_format(order_info.create_time,'%Y-%m-%d') as create_time,
+    date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
+    order_info.account_id,
+    order_info.pay_status,
+    order_info.pay_type,
+    order_info.payment,
+    order_info.pay_money,
+    order_info.car_info_id,
+    order_info.delivery_way,
+    order_info.delivery_address,
+    order_info.contact_name,
+    order_info.contact_tel,
+    insured_info.posted_name,
+    insured_info.insurance_company,
+    insured_info.posted_name,
+    insured_info.insurance_company
+    FROM
+    order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)
+    LEFT JOIN car_info ON (order_info.car_info_id=car_info.car_info_id)
+    <where>
+      <if test="accountId!=null">
+        account_id=#{accountId}
+      </if>
+      <if test="payStatus!=0">
+        and pay_status = #{payStatus}
+      </if>
+    </where>
+  </select>
+  <select id="searchOrderList" resultType="map">
+    SELECT
+    order_info.order_id,
+    car_info.car_number,car_info.car_model,car_info.salesman,
+    date_format(order_info.create_time,'%Y-%m-%d') as create_time,
+    date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
+    order_info.account_id,
+    order_info.pay_status,
+    order_info.pay_type,
+    order_info.payment,
+    order_info.pay_money,
+    order_info.car_info_id,
+    order_info.delivery_way,
+    order_info.delivery_address,
+    order_info.contact_name,
+    order_info.contact_tel,
+    insured_info.posted_name,
+    insured_info.insurance_company,
+    insured_info.posted_name,
+    insured_info.insurance_company
+    FROM
+    order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)
+    LEFT JOIN car_info ON (order_info.car_info_id=car_info.car_info_id)
+    <where>
+      <if test="accountId!=null">
+        account_id=#{accountId}
+      </if>
+      <if test="payStatus!=0">
+        and pay_status = #{payStatus}
+      </if>
+      <if test="carInfoId!=null">
+        and order_info.car_info_id=#{carInfoId}
+      </if>
+      <if test="postedName!=null">
+        and insured_info.posted_name=#{postedName}
+      </if>
+      <if test="deliveryWay!=null">
+        and order_info.delivery_way=#{deliveryWay}
+      </if>
+      <if test="insuranceCompany!=null">
+        and insured_info.insurance_company=#{insuranceCompany}
+      </if>
+    </where>
+  </select>
 </mapper>

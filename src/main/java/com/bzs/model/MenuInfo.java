@@ -1,9 +1,14 @@
 package com.bzs.model;
 
 
+import com.wuwenze.poi.annotation.ExcelField;
+import lombok.Data;
+
 import java.util.Date;
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
+@Data
 @Table(name = "menu_info")
 public class MenuInfo {
     /**
@@ -24,7 +29,17 @@ public class MenuInfo {
      */
     @Column(name = "MENU_NAME")
     private String menuName;
+    @Size(max = 50, message = "{noMoreThan}")
+    @ExcelField(value = "地址")
+    private String path;
 
+    @Size(max = 100, message = "{noMoreThan}")
+    @ExcelField(value = "对应Vue组件")
+    private String component;
+
+    @Size(max = 50, message = "{noMoreThan}")
+    @ExcelField(value = "权限")
+    private String perms;
     /**
      * 菜单URL
      */
@@ -60,12 +75,6 @@ public class MenuInfo {
      */
     @Column(name = "MODIFY_TIME")
     private Date modifyTime;
-
-    /**
-     * 权限标识
-     */
-    @Column(name = "PERMS")
-    private String perms;
 
     /**
      * 获取菜单/按钮ID

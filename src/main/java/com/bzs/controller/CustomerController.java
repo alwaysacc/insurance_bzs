@@ -6,13 +6,14 @@ import com.bzs.service.CustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.poi.hssf.record.formula.functions.T;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by alwaysacc on 2019/04/11.
@@ -25,8 +26,9 @@ public class CustomerController {
 
     @PostMapping("/add")
     public Result add(Customer customer) {
+        System.out.println(ResultGenerator.genSuccessResult(customer));
         customerService.save(customer);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(customer);
     }
 
     @PostMapping("/delete")
@@ -43,9 +45,12 @@ public class CustomerController {
      **/
     @ApiOperation("修改客户信息")
     @PostMapping("/updateCustomer")
-    public Result update(Customer customer) {
-        customerService.update(customer);
-        return ResultGenerator.genSuccessResult();
+    public Result update(String customer , String carInfoId) {
+        JSONObject jsonObject= (JSONObject) JSONObject.parse(customer);
+        System.out.println(customer);
+        Customer c=JSONObject.toJavaObject(jsonObject,Customer.class);
+        customerService.updateCustomer(c,carInfoId);
+        return ResultGenerator.genSuccessResult(customer);
     }
 
     @PostMapping("/detail")

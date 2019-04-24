@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MenuInfoMapper extends Mapper<MenuInfo> {
     List<MenuInfo> getUserPermissions(String username);
+
+    List<MenuInfo> getUserMenu(String username);
 }

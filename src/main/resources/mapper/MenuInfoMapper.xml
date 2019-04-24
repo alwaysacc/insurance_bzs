@@ -24,4 +24,19 @@
     left join menu_info m on(m.menu_id = rm.menu_id )
     where a.login_name = #{username} and m.perms is not null and m.perms &lt;&gt; ''
   </select>
+
+  <select id="getUserMenu" resultMap="menu">
+    select m.*
+    from menu_info m
+    where m.type &lt;&gt; 1
+    and m.MENU_ID in
+    (select distinct rm.menu_id
+    from
+    role_menu rm
+    left join role_info r on (rm.role_id = r.role_id)
+    left join account_role_info ur on (ur.role_id = r.role_id)
+    left join account_info u on (u.account_id = ur.account_id)
+    where u.login_name = #{username})
+    order by m.order_num
+  </select>
 </mapper>

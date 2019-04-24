@@ -19,7 +19,7 @@ import java.util.List;
 * Created by alwaysacc on 2019/04/12.
 */
 @RestController
-@RequestMapping("/order/info")
+@RequestMapping("/orderinfo")
 public class OrderInfoController {
     @Resource
     private OrderInfoService orderInfoService;
@@ -31,6 +31,7 @@ public class OrderInfoController {
      * @Param [accountId, payStatus, page, size]
      * @return com.bzs.utils.Result
      **/
+
     @ApiOperation("获取订单列表")
     @PostMapping("/getOrderList")
     public Result getOrderList(String accountId, @RequestParam(defaultValue = "0")int payStatus,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
@@ -52,12 +53,12 @@ public class OrderInfoController {
         List list=orderInfoService.searchOrderList(accountId,payStatus,carNumber,postedName,deliveryWay,insuranceCompany);
         return ResultGenerator.genSuccessResult(list);
     }
+
     @PostMapping("/add")
     public Result add(OrderInfo orderInfo) {
         orderInfoService.save(orderInfo);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         orderInfoService.deleteById(id);

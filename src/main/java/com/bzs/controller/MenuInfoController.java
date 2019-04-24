@@ -26,7 +26,7 @@ public class MenuInfoController {
     @PostMapping("/asd")
     public Result asd(String username) {
 
-        return ResultGenerator.genSuccessResult(menuInfoService.getUserPermissions(username));
+        return ResultGenerator.genSuccessResult(menuInfoService.getUserMenu(username));
     }
 
     @PostMapping("/delete")

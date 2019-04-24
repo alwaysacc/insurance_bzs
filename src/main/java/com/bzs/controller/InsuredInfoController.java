@@ -28,7 +28,7 @@ import java.util.List;
 * Created by alwaysacc on 2019/04/11.
 */
 @RestController
-@RequestMapping("/insured/info")
+@RequestMapping("/insuredinfo")
 public class InsuredInfoController {
     @Resource
     private InsuredInfoService insuredInfoService;
@@ -42,8 +42,15 @@ public class InsuredInfoController {
         insuredInfoService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
-    @PostMapping("/update")
-    public Result update(InsuredInfo insuredInfo) {
+    /**
+     * @Author 孙鹏程
+     * @Description // 修改车主，投保人，被保险人信息
+     * @Date 2019/4/18/018  14:00
+     * @Param [insuredInfo]
+     * @return com.bzs.utils.Result
+     **/
+    @PostMapping("/updateInsuredInfo")
+    public Result updateInsuredInfo(InsuredInfo insuredInfo) {
         insuredInfoService.update(insuredInfo);
         return ResultGenerator.genSuccessResult();
     }
