@@ -40,6 +40,7 @@ public class OrderInfoController {
         PageHelper.startPage(page, size);
         List list=orderInfoService.getOrderList(accountId,payStatus);
         PageInfo pageInfo = new PageInfo(list);
+        Long currentUserId = (Long) SecurityUtils.getSubject().getSession().getAttribute("currentUserId");
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     /**
