@@ -63,6 +63,8 @@ public class LoginController {
             subject.login(token);
             //修改登录时间
             accountInfoService.updateLoginTime(username);
+            session.setAttribute("userName",username);
+            session.setAttribute("accountInfo",accountInfo);
             return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
         }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
             return ResultGenerator.genFailResult(e.getMessage());

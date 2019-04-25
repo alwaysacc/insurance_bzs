@@ -20,12 +20,25 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * 调用爬虫的报价接口并插入报价信息
      *
      * @param params    报价必传信息
-     * @param list      报价是的投保项
+     * @param list      报价时的投保项
      * @param carInfoId 车辆信息id
      * @param createdBy 创建人id
+     * @param source 报价公司枚举值
      * @return
      */
     Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy, Long source);
+
+    /**
+     * @description 多家公司同时报价
+     * @param params
+     * @param list
+     * @param carInfoId
+     * @param createdBy
+     * @param source 报价公司枚举值集合
+     * @return
+     */
+    Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy,List<Long> source,Long lastYearSource);
+
     /**
      *
      * @param proposalNo 核保单号

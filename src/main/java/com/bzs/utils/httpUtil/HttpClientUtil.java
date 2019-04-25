@@ -279,7 +279,7 @@ public class HttpClientUtil {
     // 更改下面两列配置：
     // httpPost.setEntity(new StringEntity("你的json串"));
     // httpPost.addHeader("Content-Type", "application/json")。
-    public static <T> HttpResult doPost(String url, Map<String, Object> paramMap, String type, Class<T> clz,String jsonStr) {
+    public static <T> HttpResult doPost(String url, Map<String, Object> paramMap, String type, Class<T> clz, String jsonStr) {
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse httpResponse = null;
         HttpResult result = new HttpResult();
@@ -300,7 +300,7 @@ public class HttpClientUtil {
             // 设置请求头
             httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
         }
-        if(StringUtils.isNotBlank(type) && "JSON".equals(type)){
+        if (StringUtils.isNotBlank(type) && "JSON".equals(type)) {
             if (null != paramMap && paramMap.size() > 0) {
                 // 通过map集成entrySet方法获取entity
                 Set<Map.Entry<String, Object>> entrySet = paramMap.entrySet();
@@ -311,19 +311,20 @@ public class HttpClientUtil {
                     Map.Entry<String, Object> mapEntry = iterator.next();
                     object.put(mapEntry.getKey(), mapEntry.getValue().toString());
                 }
-                logger.info(jsonStr);
+                logger.info("请求参数map" + object.toJSONString());
+                logger.info("请求参数map" + jsonStr);
                 StringEntity entity = new StringEntity(object.toJSONString(), "utf-8");
                 entity.setContentEncoding("UTF-8");
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
-            }else if(StringUtils.isNotBlank(jsonStr)) {
-                logger.info(jsonStr);
+            } else if (StringUtils.isNotBlank(jsonStr)) {
+                // logger.info(jsonStr);
                 StringEntity entity = new StringEntity(jsonStr, "utf-8");
                 entity.setContentEncoding("UTF-8");
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
             }
-        }else {
+        } else {
             // 封装post请求参数
             if (null != paramMap && paramMap.size() > 0) {
                 List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -337,10 +338,10 @@ public class HttpClientUtil {
                     nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
                     object.put(mapEntry.getKey(), mapEntry.getValue().toString());
                 }
-                logger.info("请求参数"+object.toJSONString());
+                logger.info("请求参数" + object.toJSONString());
                 // 为httpPost设置封装好的请求参数
                 try {
-                  httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+                    httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     logger.error("调取远程接口异常", e);
                 }
@@ -355,40 +356,53 @@ public class HttpClientUtil {
             String body = EntityUtils.toString(entity);
             result.setCode(code);
             result.setBody(body);
-           // System.out.println(body);
-            logger.info("请求返回的内容>>>"+body);
+            logger.info("请求返回的内容>>>" + body);
             String message = "请求失败";
             if (code == 200) {
                 message = "请求成功";
-                if (null != clz) {
-                    try{
-                        T o = JSON.parseObject(body, clz);
-                        result.setT(o);
-                    }catch(Exception e){
-                        logger.error("请求成功，JSON转换异常", e);
+                if (null != clz && StringUtils.isNotBlank(body)) {
+                    String frequent = body.substring(0, 3);
+                    if ("The".equalsIgnoreCase(frequent)) {//判断是否请求频繁
+                        result.setCode(11000);
+                        result.setMessage("请求频繁,请稍后重试");
+                    } else {
+                        try {
+                            T o = JSON.parseObject(body, clz);
+                            result.setT(o);
+                        } catch (Exception e) {
+                            logger.error("请求成功，JSON转换异常", e);
+                            result.setCode(12000);
+                        }
                     }
+
                 }
-            } else  if(code==404){
+            } else if (code == 404) {
                 result.setMessage("请检查接口地址");
-            }else{
+            } else if (code == 500) {
+                result.setMessage("http请求出错");
+            } else {
                 result.setMessage(message);
             }
 
-        } catch (ClientProtocolException e) {
-            logger.error("调取远程接口异常", e);
-            result.setMessage("接口请求异常");
+        } catch (ClientProtocolException e) {//在http请求时，请求头缺少user-agent字段，user-agent字段是标识着浏览器的类别，版本等
+            //logger.error("请求头缺少user-agent字段", e);
+            result.setMessage("服务器请求超时");
+            result.setCode(13000);
             return result;
-        } catch (SocketTimeoutException e) {
-           // logger.error("调取远程接口时间超时", e);
-            result.setMessage("接口请求超时");
+        } catch (SocketTimeoutException e) {//服务器响应的超时
+            // logger.error("调取远程接口时间超时", e);
+            result.setMessage("服务器响应的超时");
+            result.setCode(14000);
             return result;
-        }catch (HttpHostConnectException e) {
-           // logger.error("调取远程接口时间超时", e);
-            result.setMessage("接口请求超时");
-            logger.info("接口请求异常");
+        } catch (HttpHostConnectException e) {
+            // logger.error("调取远程接口时间超时", e);
+            result.setCode(15000);
+            result.setMessage("服务器拒绝连接,检查IP/端口，查看服务是否启动");
+            logger.info("服务器拒绝连接,检查IP/端口，查看服务是否启动");
             return result;
-        }catch (IOException e) {
-          //  logger.error("调取远程接口异常", e);
+        } catch (IOException e) {
+            //  logger.error("调取远程接口异常", e);
+            result.setCode(10000);
             result.setMessage("接口请求异常");
             logger.info("接口请求异常");
             return result;
@@ -463,8 +477,8 @@ public class HttpClientUtil {
 
     //  CloseableHttpClient httpclient = HttpClients.createDefault();
     public static void main(String[] args) {
-        String body="{\"state\": \"1\", \"data\": {\"underwritingRate\": \"0.85\", \"advDiscountRate\": \"0.487688\", \"ciEcompensationRate\": \"0.7876\", \"carshipTax\": \"300.00\", \"nonClaimDiscountRate\": \"0.85\", \"ciPremium\": \"855.00\", \"biPremium\": \"4,135.52\", \"proposalNo\": \"QNAJV23Y1419F014069H\", \"payInfo\": {\"payTime\": \"2019-04-16\", \"payUrl\": \"https://w.url.cn/s/A6hGmOU\\n\"}, \"biBeginDate\": \"2019-05-23\", \"channelRate\": \"0.750001\", \"ciBeginDate\": \"2019-05-22\", \"realDiscountRate\": \"0.487688\", \"biPremiumByDis\": \"2,016.85\", \"insurancesList\": [{\"amount\": \"113855\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"2521.52\", \"insuredAmount\": \"Y\", \"insuranceCode\": \"A\", \"insuredPremium\": \"1229.72\"}, {\"amount\": \"500000\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"1614.00\", \"insuredAmount\": \"500000\", \"insuranceCode\": \"B\", \"insuredPremium\": \"787.13\"}], \"carList\": [\"{\\\"actualValue\\\":132900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0161\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":132900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8c6a\\u534e\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\", \"{\\\"actualValue\\\":121900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0164\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":121900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8212\\u9002\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\"], \"trafficTransgressRate\": \"0.9\", \"refId\": \"201806241930025376\", \"biEcompensationRate\": \"0.3494\"}, \"sendTime\": \"2019-04-16\", \"retMsg\": \"\", \"retCode\": \"0000\"}";
-        PCICResponseBean o = JSON.parseObject(body,  PCICResponseBean.class);
+        String body = "{\"state\": \"1\", \"data\": {\"underwritingRate\": \"0.85\", \"advDiscountRate\": \"0.487688\", \"ciEcompensationRate\": \"0.7876\", \"carshipTax\": \"300.00\", \"nonClaimDiscountRate\": \"0.85\", \"ciPremium\": \"855.00\", \"biPremium\": \"4,135.52\", \"proposalNo\": \"QNAJV23Y1419F014069H\", \"payInfo\": {\"payTime\": \"2019-04-16\", \"payUrl\": \"https://w.url.cn/s/A6hGmOU\\n\"}, \"biBeginDate\": \"2019-05-23\", \"channelRate\": \"0.750001\", \"ciBeginDate\": \"2019-05-22\", \"realDiscountRate\": \"0.487688\", \"biPremiumByDis\": \"2,016.85\", \"insurancesList\": [{\"amount\": \"113855\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"2521.52\", \"insuredAmount\": \"Y\", \"insuranceCode\": \"A\", \"insuredPremium\": \"1229.72\"}, {\"amount\": \"500000\", \"insuranceName\": \"\", \"flag\": \"\", \"standardPremium\": \"1614.00\", \"insuredAmount\": \"500000\", \"insuranceCode\": \"B\", \"insuredPremium\": \"787.13\"}], \"carList\": [\"{\\\"actualValue\\\":132900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0161\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":132900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8c6a\\u534e\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\", \"{\\\"actualValue\\\":121900,\\\"displacement\\\":\\\"1598\\\",\\\"engineDesc\\\":\\\"1.6L\\\",\\\"enginecapacity\\\":\\\"1598\\\",\\\"fullWeight\\\":\\\"1235\\\",\\\"moldCharacterCode\\\":\\\"SKAAFD0164\\\",\\\"name\\\":\\\"\\u65af\\u67ef\\u8fbeSVW71615GM\\\",\\\"oriEngineCapacity\\\":\\\"1598\\\",\\\"power\\\":\\\"\\\",\\\"purchaseValue\\\":121900,\\\"remark\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53 \\u8212\\u9002\\u7248 \\u56fd\\u2164\\\",\\\"seatCount\\\":\\\"5\\\",\\\"tonnage\\\":\\\"0\\\",\\\"transmission\\\":\\\"\\u624b\\u81ea\\u4e00\\u4f53\\\",\\\"year\\\":\\\"2018\\\"}\"], \"trafficTransgressRate\": \"0.9\", \"refId\": \"201806241930025376\", \"biEcompensationRate\": \"0.3494\"}, \"sendTime\": \"2019-04-16\", \"retMsg\": \"\", \"retCode\": \"0000\"}";
+        PCICResponseBean o = JSON.parseObject(body, PCICResponseBean.class);
         System.out.println(o.toString());
     }
 }

@@ -180,7 +180,7 @@
             <if test="carNumber!=null and carNumber!=''">car_number=#{carNumber} and</if>
             <if test="createdBy!=null and createdBy!=''">CREATED_BY=#{createdBy} and</if>
             <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
-            <if test="engineNumber!=null and engineNumber!=''">engine_umber=#{engineNumber} and</if>
+            <if test="engineNumber!=null and engineNumber!=''">engine_number=#{engineNumber} and</if>
         </trim>
     </sql>
     <select id="findOneBy" parameterType="com.bzs.model.CheckInfo" resultMap="BaseResultMap">
