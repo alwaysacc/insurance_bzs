@@ -10,6 +10,7 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.QuoteInfo;
 import com.bzs.service.QuoteInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.commons.ThirdAPI;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.jsontobean.*;
 import com.github.pagehelper.PageHelper;
@@ -214,6 +215,12 @@ public class QuoteInfoController {
         personInfo.setName(personName);
         personInfo.setSex(personSex);
         data.setPersonInfo(personInfo);
+        if(StringUtils.isBlank(account)){
+            account=ThirdAPI.PAIC_ACCOUNT;
+        }
+        if(StringUtils.isBlank(accountPwd)){
+            accountPwd=ThirdAPI.PAIC_PWD;
+        }
         InsuranceAccountInfo accountInfo = new InsuranceAccountInfo(account, accountPwd);
         data.setAccountInfo(accountInfo);
         String userName = (String) SecurityUtils.getSubject().getSession().getAttribute("userName");

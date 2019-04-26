@@ -29,7 +29,7 @@ public enum InsuranceItems2 {
     MZ("自燃损失险_不计免", "MZ"),
     MX1("发动机涉水损失险_不计免", "MX1"),
     MR("精神损害抚慰金责任险_不计免", "MR"),
-    FORCEPREMIUM("交强险" , "FORCE");
+    FORCEPREMIUM("交强险" , "FORCEPREMIUM");
     private String name;
     private String code;
 
@@ -62,6 +62,10 @@ public enum InsuranceItems2 {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(InsuranceItems2.getName("MB"));
     }
 
 }

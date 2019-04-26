@@ -64,11 +64,17 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             if (StringUtils.isBlank(idCard)) {
                 idCard = "";
             }//身份证号为空时为"";
-            paramMap.put("idCard", idCard);
+            paramMap.put("cardID", idCard);
+            String account = ThirdAPI.PAIC_ACCOUNT;
+            String pwd = ThirdAPI.PAIC_PWD;
+            paramMap.put("account", account);
+            paramMap.put("password", pwd);
             String uuid = UUIDS.getDateUUID();
             CheckInfo checkInfo = new CheckInfo(uuid);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("", idCard);
+            jsonObject.put("cardID", idCard);
+            jsonObject.put("account", account);
+            jsonObject.put("password", pwd);
             if ("0".equals(checkType)) {//车牌续保
                 if (StringUtils.isNotBlank(carNo)) {
                     paramMap.put("carNo", carNo);
@@ -104,21 +110,30 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             String date = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
             checkInfo.setSendTime(date);
             checkInfoService.save(checkInfo);
-            // Map<String, Object> renewalInfo=getRenewalInfo( lastYearSource , carNo,  vinNo,  createdBy);
-            Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
+             Map<String, Object> renewalInfo=getRenewalInfo( lastYearSource , jsonObject.toJSONString(),  createdBy);
+           // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
+            Long source = (Long) renewalInfo.get("source");
             if (StringUtils.isNotBlank(status)) {
                 if ("1".equals(status)) {
                     InsuredInfo insuredInfo = (InsuredInfo) renewalInfo.get("insuredInfo");
+                    insuredInfo.setInsuredId(uuid);//设置续保id
                     insuredInfo.setCreateId(createdBy);
                     insuredInfo.setCarInfoId(uuid);
                     List<InsuranceTypeInfo> insuranceTypeInfoList = (List<InsuranceTypeInfo>) renewalInfo.get("insuranceTypeInfoList");
                     String body = (String) renewalInfo.get("body");
                     RenewalBean dataBean = (RenewalBean) renewalInfo.get("data");
                     CarInfo carInfo = (CarInfo) renewalInfo.get("carInfo");
-                    carInfo.setCarNumber(carNo);
-                    vinNo = carInfo.getFrameNumber();
+                    if(StringUtils.isNotBlank(carNo)){
+                        carInfo.setCarNumber(carNo);
+                    }
+                    if(StringUtils.isNotBlank(vinNo)){
+                        carInfo.setFrameNumber(vinNo);
+                    }
+
+                    //vinNo = carInfo.getFrameNumber();
+                    carInfo.setCreatedBy(createdBy);
                     //List list=carInfoMapper.findOneBy(carInfo);
                     carInfo.setChannelType(checkType + "");
                     carInfo.setCarInfoId(uuid);
@@ -126,8 +141,21 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     if (CollectionUtils.isEmpty(list)) {//未查到
                         /*carInfo.setChannelType(checkType+"");
                         carInfo.setCarInfoId(uuid);*/
+                        if (null != source && source != 0) {
+                            insuredInfo.setLastYearSource(source + "");
+                            insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(source));
+                        } else {
+                            if(lastYearSource!=null&&lastYearSource!=0){
+                                insuredInfo.setLastYearSource(lastYearSource + "");
+                                insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(lastYearSource));
+                            }else{
+                                insuredInfo.setLastYearSource("0");
+                                insuredInfo.setLastYearInsuranceCompany("获取失败");
+                            }
+                        }
                         insuredInfoMapper.insert(insuredInfo);
                         for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
+                            datas.setTypeId(uuid);
                             insuranceTypeInfoService.save(datas);
                         }
                         carInfoService.save(carInfo);
@@ -149,6 +177,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     if (StringUtils.isBlank(carNo)) {
                         carInfo.setCarNumber(vinNo);
                     }
+                    carInfo.setCarNumber(carNo);
                     carInfo.setFrameNumber(vinNo);
                     List list = carInfoMapper.findOneBy(carInfo);
                     if (CollectionUtils.isEmpty(list)) {//未查到
@@ -167,24 +196,23 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     }
 
     //续保三家
-    public Map<String, Object> getRenewalInfo(Long source, String carNo, String vinNo, String createdBy) {
-        Map<String, Object> result = new HashMap<>();
-        JSONObject jsonStr = new JSONObject();
-        if (null == carNo) carNo = "";
-        if (null == vinNo) vinNo = "";
-        jsonStr.put("carNo", carNo);
-        jsonStr.put("frameNo", vinNo);
-        HttpResult httpResult = getDifferentSourceRenewalInfo(source, jsonStr.toJSONString());
-       String uuid=UUIDS.getDateUUID();
-        return getResult(httpResult,uuid,createdBy);
+    public Map<String, Object> getRenewalInfo(Long source, String jsonStr, String createdBy) {
+        HttpResult httpResult = getDifferentSourceRenewalInfo(source, jsonStr);
+        String uuid = UUIDS.getDateUUID();
+        return getResult(httpResult, uuid, createdBy);
     }
 
     //续保结果
-    public Map<String, Object> getResult(HttpResult httpResult,String quoteId,String createdBy ) {
+    public Map<String, Object> getResult(HttpResult httpResult, String quoteId, String createdBy) {
         Map<String, Object> result = new HashMap<>();
         if (httpResult != null) {
             int code = httpResult.getCode();
             Long source = httpResult.getSource();
+            if (null == source) {
+                result.put("source", 0L);
+            } else {
+                result.put("source", source);
+            }
             if (code == 200) {
                 RenewalBean bean = (RenewalBean) httpResult.getT();
                 String body = httpResult.getBody();
@@ -200,7 +228,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     //注意此处为暂时设置,实现登录后可从session 获取
                     // checkInfo.setCheckInfoId(uuid);
                     InsuredInfo insuredInfo = new InsuredInfo();
-                   // insuredInfo.setCarInfoId(uuid);
+                    // insuredInfo.setCarInfoId(uuid);
                     CarInfo carInfo = new CarInfo();
                     //carInfo.setCreatedBy(uuid);
                     String state = bean.getState();
@@ -221,6 +249,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             String tel = data.getMobile();//手机号
                             String licenseOwner = data.getName();//车主
                             String model = data.getVehicleFgwCode();//车辆型号
+                            String carNo=data.getCarNo();
                             carInfo.setFrameNumber(vinNONew);
                             carInfo.setCarModel(model);
                             carInfo.setEngineNumber(engineNoNew);
@@ -228,6 +257,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             carInfo.setLicenseOwnerIdCard(idCardNew);
                             carInfo.setRegisterDate(registerDate);
                             carInfo.setMobile(tel);
+                            carInfo.setCarNumber(carNo);
                             if (StringUtils.isNotBlank(idCardNew)) {
                                 if (idCardNew.indexOf("*") > -1) {//说明获取的值中加密
                                     carInfo.setLicenseOwnerIdCardType("-1");
@@ -336,8 +366,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         jsonStr.put("frameNo", vinNo);
         String URL = host + ":" + port + "/" + api;
         HttpResult httpResult = HttpClientUtil.doPost(URL, param, "JSON", RenewalBean.class, null);
-        String uuid=UUIDS.getDateUUID();
-        return getResult(httpResult,uuid,createdBy);
+        String uuid = UUIDS.getDateUUID();
+        return getResult(httpResult, uuid, createdBy);
     }
 
     /**
@@ -351,7 +381,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         Long start1 = System.currentTimeMillis();
         try {
             String cpicurl = ThirdAPI.CPIC_HOST + ":" + ThirdAPI.CPIC_PORT + "/" + ThirdAPI.CPIC_RENEWAL_NAME;
-            String piccurl = ThirdAPI.PICC_HOST + ":" + ThirdAPI.PICC_PORT + "/" + ThirdAPI.PAIC_RENEWAL_NAME;
+            String piccurl = ThirdAPI.PICC_HOST + ":" + ThirdAPI.PICC_PORT + "/" + ThirdAPI.PICC_RENEWAL_NAME;
             String paiccurl = ThirdAPI.PAIC_HOST + ":" + ThirdAPI.PAIC_PORT + "/" + ThirdAPI.PAIC_RENEWAL_NAME;
             String type = "JSON";
             // if (null == source) {//人太平同时续保

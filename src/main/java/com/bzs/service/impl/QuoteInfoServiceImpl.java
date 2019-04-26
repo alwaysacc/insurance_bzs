@@ -116,6 +116,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             if (null != bean) {
                 String retCode = bean.getRetCode();
                 String retMsg = bean.getRetMsg();
+                if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
                 retMsg = EncodeUtil.unicodeToString(retMsg);
                 logger.info("retCode=" + retCode + ",retMsg=" + retMsg);
                 if (StringUtils.isNotBlank(retCode)) {
@@ -246,7 +247,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                     insuredAmount = insuredAmount.replaceAll(",", "");
                                     insuranceTypeInfo.setInsuranceAmount(new BigDecimal(insuredAmount));
                                 }
-                                insuranceTypeInfo.setInsuranceName(name);
+                                logger.info("保险名称：本名"+name1+"后台统一"+name+"代码："+code);
+                                insuranceTypeInfo.setInsuranceName(name1);
                                 if (StringUtils.isNotBlank(standardPremium)) {
                                     standardPremium = standardPremium.replaceAll(",", "");
                                     insuranceTypeInfo.setStandardPremium(standardPremium);
@@ -266,6 +268,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         return ResultGenerator.gen("成功", bean, ResultCode.SUCCESS);
                     } else {
                         quoteInfoMapper.insert(quoteInfo);
+                        //if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
                         return ResultGenerator.gen(retMsg, "", ResultCode.FAIL);
                     }
                 }
@@ -284,6 +287,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     return ResultGenerator.gen(msg, "", ResultCode.FAIL);
                 }*/
         }
+
         return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
         /*} else {
             return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
@@ -405,7 +409,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         if (null == source || 1 == source) {//太保报价
            host=ThirdAPI.CPIC_HOST;
            port=ThirdAPI.CPIC_PORT;
-            api = ThirdAPI.CPIC_PAY;
+           api = ThirdAPI.CPIC_PAY;
         } else if (2 == source) {//平安
             host=ThirdAPI.PAIC_HOST;
             port=ThirdAPI.PAIC_PORT;
@@ -421,6 +425,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         JSONObject json = new JSONObject();
         json.put("proposalNo", proposalNo);
         json.put("pay", pay);
+        String sendTime=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        json.put("sendTime", sendTime);
         HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", PayInfoBean.class, json.toJSONString());
         if (httpResult != null) {
             int code = httpResult.getCode();
