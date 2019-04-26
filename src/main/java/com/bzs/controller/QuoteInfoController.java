@@ -2,7 +2,6 @@ package com.bzs.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.bzs.model.CarInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.QuoteInfo;
@@ -13,7 +12,7 @@ import com.bzs.utils.jsontobean.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.util.CollectionUtils;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -111,10 +110,13 @@ public class QuoteInfoController {
     @PostMapping("/getQuoteInfoAllParams")
     public Result getQuoteInfo(@RequestParam String personName, @RequestParam String personMobile, @RequestParam String personCardID,
                                @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
-                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, @RequestBody(required = false) List<InsurancesList> list,
+                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, String list,
                                String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
                                String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty,
                                String carColor, String carNoType,String carInfoId, String createdBy, Long source,String account,String accountPwd) {
+        System.out.println(ResultGenerator.genSuccessResult(list));
+        List<InsurancesList> newlist =  JSONObject.parseArray(list, InsurancesList.class);
+        System.out.println(ResultGenerator.genSuccessResult(newlist));
         if (null == ciBeginDate) {
             ciBeginDate = "";
         }
@@ -209,7 +211,8 @@ public class QuoteInfoController {
         data.setPersonInfo(personInfo);
         InsuranceAccountInfo accountInfo=new InsuranceAccountInfo(account,accountPwd);
         data.setAccountInfo(accountInfo);
-        return quoteInfoService.getQuoteDetailsByApi(params, list, carInfoId, createdBy, source);
+        return quoteInfoService.getQuoteDetailsByApi(params, newlist, carInfoId, createdBy, source);
+        //return null;
     }
 
     /**

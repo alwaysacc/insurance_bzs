@@ -365,6 +365,7 @@ public class HttpClientUtil {
                         T o = JSON.parseObject(body, clz);
                         result.setT(o);
                     }catch(Exception e){
+                        result.setMessage("请求成功，返回值不正确");
                         logger.error("请求成功，JSON转换异常", e);
                     }
                 }
