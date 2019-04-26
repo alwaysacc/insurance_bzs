@@ -64,11 +64,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             if (StringUtils.isBlank(idCard)) {
                 idCard = "";
             }//身份证号为空时为"";
-            paramMap.put("cardID", idCard);
+            paramMap.put("cardID", idCard);//平安续保必传
             String account = ThirdAPI.PAIC_ACCOUNT;
             String pwd = ThirdAPI.PAIC_PWD;
-            paramMap.put("account", account);
-            paramMap.put("password", pwd);
+            paramMap.put("account", account);//平安续保必传
+            paramMap.put("password", pwd);//平安续保必传
             String uuid = UUIDS.getDateUUID();
             CheckInfo checkInfo = new CheckInfo(uuid);
             JSONObject jsonObject = new JSONObject();
@@ -110,6 +110,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             String date = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
             checkInfo.setSendTime(date);
             checkInfoService.save(checkInfo);
+            //三家同时续保
              Map<String, Object> renewalInfo=getRenewalInfo( lastYearSource , jsonObject.toJSONString(),  createdBy);
            // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
             String status = (String) renewalInfo.get("status");
@@ -142,6 +143,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         /*carInfo.setChannelType(checkType+"");
                         carInfo.setCarInfoId(uuid);*/
                         if (null != source && source != 0) {
+                            lastYearSource=source;
                             insuredInfo.setLastYearSource(source + "");
                             insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(source));
                         } else {
