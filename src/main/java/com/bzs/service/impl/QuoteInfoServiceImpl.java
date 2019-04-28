@@ -436,13 +436,16 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 PayInfoBean bean = (PayInfoBean) httpResult.getT();
                 if (bean != null) {
                     String state = bean.getState();
-                    if ("1".equals(state)) {
+                    String retCode=bean.getRetCode();
+                    if ("1".equals(state)&&"0000".equals(retCode)) {
                         PayInfoData payinfo = bean.getData();
                         if (payinfo != null) {
                             String payUrl = payinfo.getPayUrl();
                             String payTime = payinfo.getPayTime();
+                            String checkNo=bean.getCheckNo();
+                            String payNo=bean.getPayNo();
                             PayInfo payinfos = payinfo.getPayInfo();
-                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo);
+                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo,payNo,checkNo);
                             OrderInfo orderInfo = new OrderInfo();
                             orderInfo.setOrderId(UUIDS.getDateUUID());
                             orderInfo.setPayType("2");//保单订单
@@ -457,7 +460,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 orderInfo.setPayMoney(new BigDecimal(money));
                             }
                             orderInfoMapper.insert(orderInfo);
-                            return ResultGenerator.gen("获取成功", payinfos, ResultCode.SUCCESS);
+                            return ResultGenerator.gen("获取成功", bean, ResultCode.SUCCESS);
                         }
                     } else {
                         String retMsg = bean.getRetMsg();
@@ -476,7 +479,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Override
     public Map<String, Object> updatePayInfo(String proposalNo) {
         String time = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
-        int code = quoteInfoMapper.updatePayInfo("www.sss", time, proposalNo);
+        int code = quoteInfoMapper.updatePayInfo("www.sss", time, proposalNo,"12121","121212");
         Map<String, Object> result = new HashMap<>();
         if (code > 0) {
             result.put("status", "1");

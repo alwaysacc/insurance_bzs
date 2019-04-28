@@ -378,8 +378,10 @@ public class HttpClientUtil {
 
                 }
             } else if (code == 404) {
-                result.setMessage("请检查接口地址");
+                logger.info("接口地址错误,请检查接口地址");
+                result.setMessage("接口地址错误,请检查接口地址");
             } else if (code == 500) {
+                logger.info("请求的接口出错，联系第三方人员");
                 result.setMessage("http请求出错");
             } else {
                 result.setMessage(message);

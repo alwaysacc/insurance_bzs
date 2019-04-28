@@ -48,8 +48,10 @@
     <result column="biz_premiumBy_dis" jdbcType="VARCHAR" property="bizPremiumByDis" />
     <result column="real_discount_rate" jdbcType="VARCHAR" property="realDiscountRate" />
     <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate" />
+    <result column="check_no" jdbcType="VARCHAR" property="checkNo" />
+    <result column="pay_no" jdbcType="VARCHAR" property="payNo" />
   </resultMap>
   <update id="updatePayInfo">
-    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime} where proposal_no=#{proposalNo}
+    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo} where proposal_no=#{proposalNo}
   </update>
 </mapper>

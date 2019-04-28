@@ -111,8 +111,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             checkInfo.setSendTime(date);
             checkInfoService.save(checkInfo);
             //三家同时续保
-             Map<String, Object> renewalInfo=getRenewalInfo( lastYearSource , jsonObject.toJSONString(),  createdBy);
-           // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
+            Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
             Long source = (Long) renewalInfo.get("source");
@@ -126,10 +126,10 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     String body = (String) renewalInfo.get("body");
                     RenewalBean dataBean = (RenewalBean) renewalInfo.get("data");
                     CarInfo carInfo = (CarInfo) renewalInfo.get("carInfo");
-                    if(StringUtils.isNotBlank(carNo)){
+                    if (StringUtils.isNotBlank(carNo)) {
                         carInfo.setCarNumber(carNo);
                     }
-                    if(StringUtils.isNotBlank(vinNo)){
+                    if (StringUtils.isNotBlank(vinNo)) {
                         carInfo.setFrameNumber(vinNo);
                     }
 
@@ -143,14 +143,14 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         /*carInfo.setChannelType(checkType+"");
                         carInfo.setCarInfoId(uuid);*/
                         if (null != source && source != 0) {
-                            lastYearSource=source;
+                            lastYearSource = source;
                             insuredInfo.setLastYearSource(source + "");
                             insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(source));
                         } else {
-                            if(lastYearSource!=null&&lastYearSource!=0){
+                            if (lastYearSource != null && lastYearSource != 0) {
                                 insuredInfo.setLastYearSource(lastYearSource + "");
                                 insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(lastYearSource));
-                            }else{
+                            } else {
                                 insuredInfo.setLastYearSource("0");
                                 insuredInfo.setLastYearInsuranceCompany("获取失败");
                             }
@@ -251,7 +251,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             String tel = data.getMobile();//手机号
                             String licenseOwner = data.getName();//车主
                             String model = data.getVehicleFgwCode();//车辆型号
-                            String carNo=data.getCarNo();
+                            String carNo = data.getCarNo();
                             carInfo.setFrameNumber(vinNONew);
                             carInfo.setCarModel(model);
                             carInfo.setEngineNumber(engineNoNew);
@@ -261,7 +261,14 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             carInfo.setMobile(tel);
                             carInfo.setCarNumber(carNo);
                             if (StringUtils.isNotBlank(idCardNew)) {
-                                if (idCardNew.indexOf("*") > -1) {//说明获取的值中加密
+                                boolean b = IdCardUtil.validateCardBy14(idCardNew);
+                                if (b) {
+                                    carInfo.setLicenseOwnerIdCardType("1");//身份证
+                                } else {
+                                    carInfo.setLicenseOwnerIdCardType("2"); //组织机构
+                                }
+                               /* if (idCardNew.indexOf("*") > -1) {//说明获取的值中加密
+                                    IdCardUtil.validateCardBy14(idCardNew);
                                     carInfo.setLicenseOwnerIdCardType("-1");
                                 } else {
                                     boolean b = IdCardUtil.validateCard(idCardNew);
@@ -270,7 +277,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                     } else {
                                         carInfo.setLicenseOwnerIdCardType("2"); //组织机构
                                     }
-                                }
+                                }*/
                             }
                             //车辆信息设置结束
                             //投保信息设置开始
@@ -402,27 +409,30 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
 
 
             CompletableFuture<HttpResult> f1 = CompletableFuture.supplyAsync(() -> {
+                logger.info("太保续保开始：");
                 Long start = System.currentTimeMillis();
                 HttpResult httpResult = HttpClientUtil.doPost(cpicurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(1L);
                 Long end = System.currentTimeMillis();
-                logger.info("太保续保时间：" + (start - end));
+                logger.info("太保续保结束，总时间：" + (start - end));
                 return httpResult;
             });
             CompletableFuture<HttpResult> f2 = CompletableFuture.supplyAsync(() -> {
+                logger.info("人保续保开始：");
                 Long start = System.currentTimeMillis();
                 HttpResult httpResult = HttpClientUtil.doPost(piccurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(4L);
                 Long end = System.currentTimeMillis();
-                logger.info("人保续保时间：" + (start - end));
+                logger.info("人保续保结束，总时间：" + (start - end));
                 return httpResult;
             });
             CompletableFuture<HttpResult> f3 = CompletableFuture.supplyAsync(() -> {
+                logger.info("平安续保开始：");
                 Long start = System.currentTimeMillis();
                 HttpResult httpResult = HttpClientUtil.doPost(paiccurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(2L);
                 Long end = System.currentTimeMillis();
-                logger.info("平安续保时间：" + (start - end));
+                logger.info("平安续保结束，总时间：" + (start - end));
                 return httpResult;
             });
             List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();

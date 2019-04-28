@@ -245,6 +245,16 @@ public class QuoteInfo {
      */
     @Column(name = "non_claim_discount_rate")
     private String nonClaim_discountRate;
+    /**
+     * 太保支付单号
+     */
+    @Column(name = "pay_no")
+    private String payNo;
+    /**
+     * 太保校验码
+     */
+    @Column(name = "check_no")
+    private  String checkNo;
 
 
     /**
@@ -871,6 +881,22 @@ public class QuoteInfo {
 
     public void setNonClaim_discountRate(String nonClaim_discountRate) {
         this.nonClaim_discountRate = nonClaim_discountRate;
+    }
+
+    public String getPayNo() {
+        return payNo;
+    }
+
+    public void setPayNo(String payNo) {
+        this.payNo = payNo;
+    }
+
+    public String getCheckNo() {
+        return checkNo;
+    }
+
+    public void setCheckNo(String checkNo) {
+        this.checkNo = checkNo;
     }
 
     public QuoteInfo() {
