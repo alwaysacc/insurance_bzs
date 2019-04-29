@@ -60,27 +60,23 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             return ResultGenerator.genFailResult("参数异常");
         } else {
             String url = ThirdAPI.HOST;
-            Map<String, Object> paramMap = new HashMap<String, Object>();
             if (StringUtils.isBlank(idCard)) {
                 idCard = "";
             }//身份证号为空时为"";
-            paramMap.put("cardID", idCard);//平安续保必传
+
             String account = ThirdAPI.PAIC_ACCOUNT;
             String pwd = ThirdAPI.PAIC_PWD;
-            paramMap.put("account", account);//平安续保必传
-            paramMap.put("password", pwd);//平安续保必传
+
             String uuid = UUIDS.getDateUUID();
             CheckInfo checkInfo = new CheckInfo(uuid);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cardID", idCard);
             jsonObject.put("account", account);
             jsonObject.put("password", pwd);
             if ("0".equals(checkType)) {//车牌续保
                 if (StringUtils.isNotBlank(carNo)) {
-                    paramMap.put("carNo", carNo);
-                    paramMap.put("frameNo", "");
                     jsonObject.put("carNo", carNo);
                     jsonObject.put("frameNo", "");
+                    jsonObject.put("cardID", idCard);
                     checkInfo.setCarNo(carNo);
                     checkInfo.setCheckType(checkType + "");//查询方式
                 } else {
@@ -88,8 +84,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }
             } else if ("1".equals(checkType)) {//车架续保
                 if (StringUtils.isNotBlank(vinNo)) {
-                    paramMap.put("carNo", "");
-                    paramMap.put("frameNo", vinNo);
+                    jsonObject.put("carNo", "");
+                    jsonObject.put("frameNo", vinNo);
+                    jsonObject.put("cardID", "");
                     checkInfo.setVinNo(vinNo);
                     checkInfo.setCheckType(checkType + "");//查询方式
                 } else {
@@ -101,9 +98,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             if (StringUtils.isBlank(createdBy)) {
                 createdBy = UUIDS.getDateUUID();
             }
-          /*  if (null == lastYearSource) {
-                lastYearSource = 1L;
-            }*/
             checkInfo.setCarInfoId(uuid);
             //待修改
             checkInfo.setCreateBy(createdBy);
@@ -112,7 +106,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             checkInfoService.save(checkInfo);
             //三家同时续保
             Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
-            // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, paramMap, carNo, vinNo, createdBy);
+            // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
             Long source = (Long) renewalInfo.get("source");
@@ -132,7 +126,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     if (StringUtils.isNotBlank(vinNo)) {
                         carInfo.setFrameNumber(vinNo);
                     }
-
                     //vinNo = carInfo.getFrameNumber();
                     carInfo.setCreatedBy(createdBy);
                     //List list=carInfoMapper.findOneBy(carInfo);
@@ -247,6 +240,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             String forceStartDate = data.getCiBeginDate();//交强险下次起保日期
                             String forcePreminm = data.getCiPremium();//交强险保额
                             String idCardNew = data.getCardID();//车主证件
+                            logger.info("车主证件号" + idCardNew);
                             String vinNONew = data.getFrameNo();//车架号
                             String tel = data.getMobile();//手机号
                             String licenseOwner = data.getName();//车主
@@ -295,9 +289,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         }
                     } else if ("0099".equals(state)) {//查询返回成功但未获取到续保信息
                         result.put("status", "0099");
-                        result.put("msg", "未获取续保信息");
+                        result.put("msg", "未获取续保信息"+retMsg);
                         return result;
-                    } else if ("0".equals(state)) {//查询返回成功但未获取到续保信息
+                    } /*else if ("0".equals(state)) {//查询返回成功但未获取到续保信息
                         result.put("status", "0099");
                         if (StringUtils.isNotBlank(body)) {
                             JSONObject jsonObject = JSONObject.parseObject(body);
@@ -310,7 +304,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             result.put("msg", "未获取续保信息");
                         }
                         return result;
-                    } else {//续保失败
+                    }*/ else {//续保失败
                         result.put("status", "400");
                         result.put("msg", "续保失败");
                         return result;
@@ -332,12 +326,10 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
 
     /**
      * @param source    保险枚举值1太保2平安4人保
-     * @param param     第三方接口的请求参数
-     * @param carNo     车牌号
      * @param createdBy 创建人id
      * @return
      */
-    public Map<String, Object> getDifferentSourceRenewalInfo(Long source, Map<String, Object> param, String carNo, String vinNo, String createdBy) {
+    public Map<String, Object> getDifferentSourceRenewalInfo(Long source, String jsonStr, String createdBy) {
         Map<String, Object> result = new HashMap<String, Object>();
         if (null == source) {
             result.put("status", "400");
@@ -354,27 +346,26 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             host = ThirdAPI.CPIC_HOST;
             api = ThirdAPI.CPIC_RENEWAL_NAME;
             port = ThirdAPI.CPIC_PORT;
+            logger.info("续保枚举值1：太保");
         } else if (2 == source) {//平安
             host = ThirdAPI.PAIC_HOST;
             port = ThirdAPI.PAIC_PORT;
             api = ThirdAPI.PAIC_RENEWAL_NAME;
+            logger.info("续保枚举值2：平安");
         } else if (4 == source) {//人保
             host = ThirdAPI.PICC_HOST;
             port = ThirdAPI.PICC_PORT;
             api = ThirdAPI.PICC_RENEWAL_NAME;
+            logger.info("续保枚举值4：人保");
         } else {
             result.put("status", "400");
             result.put("msg", "待拓展");
             result.put("data", null);
             return result;
         }
-        JSONObject jsonStr = new JSONObject();
-        if (null == carNo) carNo = "";
-        if (null == vinNo) vinNo = "";
-        jsonStr.put("carNo", carNo);
-        jsonStr.put("frameNo", vinNo);
+
         String URL = host + ":" + port + "/" + api;
-        HttpResult httpResult = HttpClientUtil.doPost(URL, param, "JSON", RenewalBean.class, null);
+        HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", RenewalBean.class, jsonStr);
         String uuid = UUIDS.getDateUUID();
         return getResult(httpResult, uuid, createdBy);
     }
@@ -407,14 +398,13 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                }
                es.shutdown();*/
 
-
             CompletableFuture<HttpResult> f1 = CompletableFuture.supplyAsync(() -> {
                 logger.info("太保续保开始：");
                 Long start = System.currentTimeMillis();
                 HttpResult httpResult = HttpClientUtil.doPost(cpicurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(1L);
                 Long end = System.currentTimeMillis();
-                logger.info("太保续保结束，总时间：" + (start - end));
+                logger.info("人保续保结束，总时间：" + (end - start));
                 return httpResult;
             });
             CompletableFuture<HttpResult> f2 = CompletableFuture.supplyAsync(() -> {
@@ -423,7 +413,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 HttpResult httpResult = HttpClientUtil.doPost(piccurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(4L);
                 Long end = System.currentTimeMillis();
-                logger.info("人保续保结束，总时间：" + (start - end));
+                logger.info("人保续保结束，总时间：" + (end - start));
                 return httpResult;
             });
             CompletableFuture<HttpResult> f3 = CompletableFuture.supplyAsync(() -> {
@@ -432,7 +422,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 HttpResult httpResult = HttpClientUtil.doPost(paiccurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(2L);
                 Long end = System.currentTimeMillis();
-                logger.info("平安续保结束，总时间：" + (start - end));
+                logger.info("平安续保结束，总时间：" + (end - start));
                 return httpResult;
             });
             List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
@@ -443,6 +433,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             boolean flag = false;
             try {
                 lists = CompletableFutureDemo.sequence(list).get();
+                String message = "";
                 for (HttpResult httpResult : lists) {
                     //System.out.println(i);
                     if (null != httpResult) {
@@ -456,13 +447,42 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                     result = httpResult;
                                     flag = true;
                                     break;
+                                } else {//上一年不在此保司投保
+                                    logger.info("续保返回值的状态值" + state);
+                                    if ("0099".equals(state)) {
+                                        message += "保司枚举值" + httpResult.getSource() + ",上一年不在此保司投保";
+                                    } else if ("0".equals(state)) {
+                                        JSONObject jsonObject = JSONObject.parseObject(body);
+                                        if (jsonObject.containsKey("retMsg")) {
+                                            String retMsg = jsonObject.getString("retMsg");
+                                            retMsg = EncodeUtil.unicodeToString(retMsg);
+                                            message += "保司枚举值" + httpResult.getSource() + ","+retMsg;
+                                        }
+                                    } else {
+                                        message += "保司枚举值" + httpResult.getSource() + ",状态值为" + state;
+                                    }
+
                                 }
                             }
+                        } else {//请求失败
+                            logger.info("续保返回值的状态值" + httpResult.getCode());
+                            message += "保司枚举值" + httpResult.getSource() + ",状态值为" + httpResult.getCode();
                         }
                     }
                 }
                 if (!flag) {
-                    result = lists.get(0);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("state", "0099");
+                    jsonObject.put("message", message);
+                    String body=jsonObject.toJSONString();
+                    result = new HttpResult();
+                    result.setCode(200);
+                    result.setMessage(message);
+                    result.setBody(body);
+                    result.setSource(1L);
+                    RenewalBean bean=  JSONObject.parseObject(body,RenewalBean.class);
+                    result.setT(bean);
+                    // result = lists.get(0);
                 }
             } catch (Exception e) {
                 logger.error("三家同时续保异常", e);

@@ -344,7 +344,10 @@ public class HttpClientUtil {
                 try {
                     httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    logger.error("调取远程接口异常", e);
+                    logger.info("编码转换异常", e);
+                    result.setCode(16000);
+                    result.setMessage("编码转换异常");
+                    return result;
                 }
             }
         }

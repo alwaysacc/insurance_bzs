@@ -57,7 +57,7 @@ public enum InsuranceItems2 {
     // 普通方法
     public static String getName(String code) {
         for (InsuranceItems2 c : InsuranceItems2.values()) {
-            if (c.getCode() == code) {
+            if (c.getCode().equals(code)) {
                 return c.name;
             }
         }
