@@ -289,7 +289,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         }
                     } else if ("0099".equals(state)) {//查询返回成功但未获取到续保信息
                         result.put("status", "0099");
-                        result.put("msg", "未获取续保信息"+retMsg);
+                        result.put("msg", "未获取续保信息");
                         return result;
                     } /*else if ("0".equals(state)) {//查询返回成功但未获取到续保信息
                         result.put("status", "0099");
@@ -404,7 +404,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 HttpResult httpResult = HttpClientUtil.doPost(cpicurl, null, "JSON", RenewalBean.class, jsonStr);
                 httpResult.setSource(1L);
                 Long end = System.currentTimeMillis();
-                logger.info("人保续保结束，总时间：" + (end - start));
+                logger.info("太保续保结束，总时间：" + (end - start));
                 return httpResult;
             });
             CompletableFuture<HttpResult> f2 = CompletableFuture.supplyAsync(() -> {
@@ -450,23 +450,23 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 } else {//上一年不在此保司投保
                                     logger.info("续保返回值的状态值" + state);
                                     if ("0099".equals(state)) {
-                                        message += "保司枚举值" + httpResult.getSource() + ",上一年不在此保司投保";
+                                        message += "保司枚举值" + httpResult.getSource() + ",上一年不在此保司投保;";
                                     } else if ("0".equals(state)) {
                                         JSONObject jsonObject = JSONObject.parseObject(body);
                                         if (jsonObject.containsKey("retMsg")) {
                                             String retMsg = jsonObject.getString("retMsg");
                                             retMsg = EncodeUtil.unicodeToString(retMsg);
-                                            message += "保司枚举值" + httpResult.getSource() + ","+retMsg;
+                                            message += "保司枚举值" + httpResult.getSource() + ","+retMsg+";";
                                         }
                                     } else {
-                                        message += "保司枚举值" + httpResult.getSource() + ",状态值为" + state;
+                                        message += "保司枚举值" + httpResult.getSource() + ",状态值为" + state+";";
                                     }
 
                                 }
                             }
                         } else {//请求失败
                             logger.info("续保返回值的状态值" + httpResult.getCode());
-                            message += "保司枚举值" + httpResult.getSource() + ",状态值为" + httpResult.getCode();
+                            message += "保司枚举值" + httpResult.getSource() + ",状态值为" + httpResult.getCode()+";";
                         }
                     }
                 }

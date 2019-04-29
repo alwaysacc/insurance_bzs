@@ -1,4 +1,4 @@
-package com.bzs.utils.jsontobean;
+package com.bzs.utils.enumUtil;
 
 /**
  * @program: insurance_bzs

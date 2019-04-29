@@ -1,7 +1,5 @@
 package com.bzs.utils.enumUtil;
 
-import com.bzs.utils.jsontobean.InsuranceItems2;
-
 /**
  * @program: insurance_bzs
  * @description: 枚举类型
