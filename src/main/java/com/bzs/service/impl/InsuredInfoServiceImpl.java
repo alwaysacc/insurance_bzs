@@ -95,9 +95,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             } else {//待拓展
                 return ResultGenerator.genParamsErrorResult("参数异常,目前仅支持车牌或者车架号续保");
             }
-            if (StringUtils.isBlank(createdBy)) {
-                createdBy = UUIDS.getDateUUID();
-            }
             checkInfo.setCarInfoId(uuid);
             //待修改
             checkInfo.setCreateBy(createdBy);
@@ -105,8 +102,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             checkInfo.setSendTime(date);
             checkInfoService.save(checkInfo);
             //三家同时续保
-            Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
-            // Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+          // Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+           Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
             Long source = (Long) renewalInfo.get("source");
@@ -450,23 +447,23 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 } else {//上一年不在此保司投保
                                     logger.info("续保返回值的状态值" + state);
                                     if ("0099".equals(state)) {
-                                        message += "保司枚举值" + httpResult.getSource() + ",上一年不在此保司投保;";
+                                        message +="上一年不在"+InsuranceNameEnum.getName(httpResult.getSource())+"续保;";
                                     } else if ("0".equals(state)) {
                                         JSONObject jsonObject = JSONObject.parseObject(body);
                                         if (jsonObject.containsKey("retMsg")) {
                                             String retMsg = jsonObject.getString("retMsg");
                                             retMsg = EncodeUtil.unicodeToString(retMsg);
-                                            message += "保司枚举值" + httpResult.getSource() + ","+retMsg+";";
+                                            message += InsuranceNameEnum.getName(httpResult.getSource())+"续保："+retMsg+";";
                                         }
                                     } else {
-                                        message += "保司枚举值" + httpResult.getSource() + ",状态值为" + state+";";
+                                        message += InsuranceNameEnum.getName(httpResult.getSource())+"续保：" + "状态值为" + state+";";
                                     }
 
                                 }
                             }
                         } else {//请求失败
                             logger.info("续保返回值的状态值" + httpResult.getCode());
-                            message += "保司枚举值" + httpResult.getSource() + ",状态值为" + httpResult.getCode()+";";
+                            message += InsuranceNameEnum.getName(httpResult.getSource())+"续保："+ "状态值为" + httpResult.getCode()+";";
                         }
                     }
                 }

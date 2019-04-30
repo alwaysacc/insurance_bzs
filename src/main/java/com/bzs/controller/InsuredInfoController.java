@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.model.AccountInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.InsuredInfo;
@@ -7,6 +8,9 @@ import com.bzs.utils.UUIDS;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -86,6 +90,14 @@ public class InsuredInfoController {
 
     @PostMapping("/checkByCarNoOrVinNo")
     public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createdBy) {
+       if(StringUtils.isBlank(createdBy)){
+           AccountInfo a=(AccountInfo)  SecurityUtils.getSubject().getPrincipal();
+           if(null!=a){
+               createdBy=  a.getAccountId();
+           }else{
+               createdBy=UUIDS.getDateUUID();
+           }
+       }
         return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy );
     }
     @GetMapping("/httpGetTest")
