@@ -54,4 +54,35 @@
   <update id="updatePayInfo">
     update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo} where proposal_no=#{proposalNo}
   </update>
+  <select id="getInsurance" resultType="map">
+    SELECT
+      insurance_type_info.insurance_type_id,
+      insurance_type_info.REVISION,
+      insurance_type_info.CREATED_BY,
+      insurance_type_info.CREATED_TIME,
+      insurance_type_info.UPDATED_BY,
+      insurance_type_info.UPDATED_TIME,
+      insurance_type_info.insurance_name,
+      insurance_type_info.insurance_amount,
+      insurance_type_info.insurance_premium,
+      insurance_type_info.info_type,
+      insurance_type_info.type_id,
+      insurance_type_info.excluding_deductible,
+      insurance_type_info.send_time,
+      insurance_type_info.standard_premium
+      FROM
+      insurance_type_info
+      <where>
+        type_id=#{quoteId}
+        <if test="infoType!=null">
+          and info_type=#{infoType}
+        </if>
+      </where>
+  </select>
+  <!-- 获取最新报价信息-->
+  <select id="getQuote" resultMap="BaseResultMap">
+    SELECT *  from
+      (SELECT * FROM quote_info ORDER BY CREATED_TIME DESC LIMIT 99999) q  WHERE car_info_id=#{carInfoId}
+      GROUP BY QUOTE_SOURCE
+  </select>
 </mapper>

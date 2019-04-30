@@ -65,6 +65,7 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         userInfo.put("user",accountInfo);
         userInfo.put("roles",roleInfoService.getUserRole(accountInfo.getLoginName()));
         userInfo.put("permissions",menuInfoService.getUserPermissions(accountInfo.getLoginName()));
+        System.out.println( ResultGenerator.genSuccessResult(roleInfoService.getUserRole(accountInfo.getLoginName())));
         return userInfo;
     }
 }

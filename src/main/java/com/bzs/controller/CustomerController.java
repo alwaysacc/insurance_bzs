@@ -38,7 +38,7 @@ public class CustomerController {
     }
     /**
      * @Author 孙鹏程
-     * @Description //TODO 修改客户信息
+     * @Description  修改客户信息
      * @Date 2019/4/11/011  15:55 
      * @Param [customer]
      * @return com.bzs.utils.Result

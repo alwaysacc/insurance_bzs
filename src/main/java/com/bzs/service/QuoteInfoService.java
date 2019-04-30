@@ -5,6 +5,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 import com.bzs.utils.jsontobean.InsurancesList;
 import com.bzs.utils.jsontobean.QuoteParmasBean;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -53,4 +54,5 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
     Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId,Long source);
 
     Map<String,Object>updatePayInfo(String proposalNo);
+
 }

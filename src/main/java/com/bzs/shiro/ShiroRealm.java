@@ -33,6 +33,7 @@ public class ShiroRealm extends AuthorizingRealm {
         //AccountInfo accountInfo= (AccountInfo) SecurityUtils.getSubject().getPrincipal();
         AccountInfo accountInfo=(AccountInfo)principalCollection.getPrimaryPrincipal();
         String username=accountInfo.getLoginName();
+        System.out.println("username"+username);
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
         //获取用户角色集
         List<RoleInfo> roleInfoList=roleInfoService.getUserRole(username);

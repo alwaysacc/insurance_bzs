@@ -58,24 +58,52 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Override
     public Map quoteDetails(String carInfoId) {
         //报价信息
-        QuoteInfo quoteInfo = quoteInfoService.findBy("carInfoId", carInfoId);
+        List<QuoteInfo> quoteInfo=quoteInfoMapper.getQuote(carInfoId);
         //车辆信息
-        CarInfo carInfo = carInfoService.findBy("carInfoId", carInfoId);
+        CarInfo carInfo=carInfoService.findBy("carInfoId",carInfoId);
         //客户信息
-        Customer customer = null;
-        if (carInfo.getCustomerId() != "" && carInfo.getCustomerId() != null) {
-            customer = customerService.findBy("customerId", carInfo.getCustomerId());
+        Customer customer=null;
+        if (carInfo.getCustomerId()!="" && carInfo.getCustomerId()!=null){
+            customer=customerService.findBy("customerId",carInfo.getCustomerId());
         }
         //跟进信息
-        InsuranceFollowInfo insuranceFollowInfo = insuranceFollowInfoService.findBy("carInfoId", carInfoId);
+        InsuranceFollowInfo insuranceFollowInfo=insuranceFollowInfoService.findBy("carInfoId",carInfoId);
         //投保信息
-        InsuredInfo insuredInfo = insuredInfoService.findBy("carInfoId", carInfoId);
-        Map map = new HashMap();
-        map.put("quote", quoteInfo);
-        map.put("customer", customer);
-        map.put("carInfo", carInfo);
-        map.put("insuranceFollowInfo", insuranceFollowInfo);
-        map.put("insuredInfo", insuredInfo);
+        InsuredInfo insuredInfo=insuredInfoService.findBy("carInfoId",carInfoId);
+        List insuredList=null;
+        if (insuredInfo!=null){
+            insuredList=quoteInfoMapper.getInsurance(insuredInfo.getInsuredId(),0);
+        }
+        List TquoteList=null;
+        List RquoteList=null;
+        List PquoteList=null;
+        System.out.println(quoteInfo.size());
+        System.out.println(ResultGenerator.genSuccessResult(quoteInfo));
+        QuoteInfo quote=null;
+        for (int i=0;i<quoteInfo.size();i++){
+            System.out.println(quoteInfo.get(i).getQuoteSource());
+            switch (quoteInfo.get(i).getQuoteSource()){
+                case "1":
+                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    break;
+                case "2":
+                    PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    break;
+                case "4":
+                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    break;
+            }
+        }
+        Map map=new HashMap();
+        map.put("quote",quoteInfo);
+        map.put("customer",customer);
+        map.put("carInfo",carInfo);
+        map.put("insuranceFollowInfo",insuranceFollowInfo);
+        map.put("insuredInfo",insuredInfo);
+        map.put("insuredList",insuredList);
+        map.put("TquoteList",TquoteList);
+        map.put("PquoteList",PquoteList);
+        map.put("TquoteList",TquoteList);
         return map;
     }
 

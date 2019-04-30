@@ -12,8 +12,8 @@
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
 
-  <select id="getUserRole" resultType="RoleInfo">
-    select r.* from role_info r
+  <select id="getUserRole" resultMap="role">
+    select r.ROLE_ID,r.ROLE_NAME,r.REMARK,r.CREATE_TIME,r.UPDATE_TIME from role_info r
   	left join account_role_info ur on(r.role_id = ur.role_id)
 	left join account_info u on(u.account_id = ur.account_id)
 	where u.login_name = #{username}

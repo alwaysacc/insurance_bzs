@@ -99,6 +99,7 @@
             <if test="plan!=null and plan!=''">
                 and car_info.plan_return_time !=null
             </if>
+            ORDER BY CREATED_TIME desc
         </where>
     </select>
 
