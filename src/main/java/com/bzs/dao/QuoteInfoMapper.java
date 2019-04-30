@@ -19,4 +19,5 @@ public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
     List getInsurance(@Param("quoteId")String quoteId,@Param("infoType")int infoType);
 
     List getQuote(String carInfoId);
+    public int updatePayInfo (@Param("payUrl") String payUrl,@Param("payTime") String payTime,@Param("proposalNo") String proposalNo,@Param("payNo")String payNo,@Param("checkNo")String checkNo);
 }

@@ -285,12 +285,13 @@ public class HttpClientUtil {
         HttpResult result = new HttpResult();
         // 创建httpClient实例
         httpClient = HttpClients.createDefault();
+        logger.info("请求的URL:"+url);
         // 创建httpPost远程连接实例
         HttpPost httpPost = new HttpPost(url);
         // 配置请求参数实例
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(120000)// 设置连接主机服务超时时间
-                .setConnectionRequestTimeout(120000)// 设置连接请求超时时间
-                .setSocketTimeout(120000)// 设置读取数据连接超时时间
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(240000)// 设置连接主机服务超时时间
+                .setConnectionRequestTimeout(240000)// 设置连接请求超时时间
+                .setSocketTimeout(240000)// 设置读取数据连接超时时间
                 .build();
         // 为httpPost实例设置配置
         httpPost.setConfig(requestConfig);
@@ -311,14 +312,14 @@ public class HttpClientUtil {
                     Map.Entry<String, Object> mapEntry = iterator.next();
                     object.put(mapEntry.getKey(), mapEntry.getValue().toString());
                 }
-                logger.info("请求参数map" + object.toJSONString());
-                logger.info("请求参数map" + jsonStr);
+                logger.info("请求参数使用map" + object.toJSONString());
+
                 StringEntity entity = new StringEntity(object.toJSONString(), "utf-8");
                 entity.setContentEncoding("UTF-8");
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
             } else if (StringUtils.isNotBlank(jsonStr)) {
-                // logger.info(jsonStr);
+                logger.info("请求参数使用JSONString" + jsonStr);
                 StringEntity entity = new StringEntity(jsonStr, "utf-8");
                 entity.setContentEncoding("UTF-8");
                 entity.setContentType("application/json");
@@ -343,7 +344,10 @@ public class HttpClientUtil {
                 try {
                     httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    logger.error("调取远程接口异常", e);
+                    logger.info("编码转换异常", e);
+                    result.setCode(16000);
+                    result.setMessage("编码转换异常");
+                    return result;
                 }
             }
         }
@@ -377,31 +381,31 @@ public class HttpClientUtil {
 
                 }
             } else if (code == 404) {
-                result.setMessage("请检查接口地址");
+                logger.info("接口地址错误,请检查接口地址");
+                result.setMessage("接口地址错误,请检查接口地址");
             } else if (code == 500) {
+                logger.info("请求的接口出错，联系第三方人员");
                 result.setMessage("http请求出错");
             } else {
                 result.setMessage(message);
             }
 
         } catch (ClientProtocolException e) {//在http请求时，请求头缺少user-agent字段，user-agent字段是标识着浏览器的类别，版本等
-            //logger.error("请求头缺少user-agent字段", e);
+            logger.info("服务器请求超时");
             result.setMessage("服务器请求超时");
             result.setCode(13000);
             return result;
         } catch (SocketTimeoutException e) {//服务器响应的超时
-            // logger.error("调取远程接口时间超时", e);
+            logger.info("服务器响应的超时");
             result.setMessage("服务器响应的超时");
             result.setCode(14000);
             return result;
         } catch (HttpHostConnectException e) {
-            // logger.error("调取远程接口时间超时", e);
             result.setCode(15000);
             result.setMessage("服务器拒绝连接,检查IP/端口，查看服务是否启动");
             logger.info("服务器拒绝连接,检查IP/端口，查看服务是否启动");
             return result;
         } catch (IOException e) {
-            //  logger.error("调取远程接口异常", e);
             result.setCode(10000);
             result.setMessage("接口请求异常");
             logger.info("接口请求异常");

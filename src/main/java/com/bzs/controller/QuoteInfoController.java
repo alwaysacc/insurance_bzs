@@ -1,7 +1,10 @@
 package com.bzs.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bzs.model.AccountInfo;
+import com.bzs.model.CarInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.QuoteInfo;
@@ -12,10 +15,12 @@ import com.bzs.utils.jsontobean.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.expression.spel.ast.NullLiteral;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -110,13 +115,13 @@ public class QuoteInfoController {
     @PostMapping("/getQuoteInfoAllParams")
     public Result getQuoteInfo(@RequestParam String personName, @RequestParam String personMobile, @RequestParam String personCardID,
                                @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
-                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, String list,
+                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, @RequestBody(required = false) List<InsurancesList> list,String lists,
                                String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
                                String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty,
-                               String carColor, String carNoType,String carInfoId, String createdBy, Long source,String account,String accountPwd) {
-        System.out.println(ResultGenerator.genSuccessResult(list));
-        List<InsurancesList> newlist =  JSONObject.parseArray(list, InsurancesList.class);
-        System.out.println(ResultGenerator.genSuccessResult(newlist));
+                               String carColor, String carNoType, String carInfoId, String createdBy, Long source, String account, String accountPwd) {
+        /*if(StringUtils.isNotBlank(lists)){
+           list= (List)JSONArray.parseObject(lists);
+        }*/
         if (null == ciBeginDate) {
             ciBeginDate = "";
         }
@@ -209,10 +214,20 @@ public class QuoteInfoController {
         personInfo.setName(personName);
         personInfo.setSex(personSex);
         data.setPersonInfo(personInfo);
-        InsuranceAccountInfo accountInfo=new InsuranceAccountInfo(account,accountPwd);
+        if(StringUtils.isBlank(account)){
+            account=ThirdAPI.PAIC_ACCOUNT;
+        }
+        if(StringUtils.isBlank(accountPwd)){
+            accountPwd=ThirdAPI.PAIC_PWD;
+        }
+        InsuranceAccountInfo accountInfo = new InsuranceAccountInfo(account, accountPwd);
         data.setAccountInfo(accountInfo);
-        return quoteInfoService.getQuoteDetailsByApi(params, newlist, carInfoId, createdBy, source);
-        //return null;
+        String userName = (String) SecurityUtils.getSubject().getSession().getAttribute("userName");
+        //或者(String) request.getSession().getAttribute("userName");
+        //账号信息
+        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getSession().getAttribute("accountInfo");
+
+        return quoteInfoService.getQuoteDetailsByApi(params, list, carInfoId, createdBy, source);
     }
 
     /**
