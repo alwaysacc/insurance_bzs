@@ -806,4 +806,19 @@ public class CarInfo {
     public CarInfo(String carInfoId) {
         this.carInfoId = carInfoId;
     }
+
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
+    }
+
+    public String getIsAddtion() {
+        return isAddtion;
+    }
+    public void setIsAddtion(String isAddtion) {
+        this.isAddtion = isAddtion;
+    }
 }

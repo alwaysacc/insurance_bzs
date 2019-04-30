@@ -41,10 +41,12 @@ public class LoginController {
             return ResultGenerator.genFailResult("验证码不能为空");
         }
         Session session=SecurityUtils.getSubject().getSession();
+
         String sessionCode= (String) session.getAttribute(CODE_KEY);
 //        if (!code.equalsIgnoreCase(sessionCode)){
 //            return ResultGenerator.genFailResult("验证码错误");
 //        }
+
         password=MD5Utils.encrypt(username.toLowerCase(),password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
@@ -63,6 +65,8 @@ public class LoginController {
             subject.login(token);
             //修改登录时间
             accountInfoService.updateLoginTime(username);
+            session.setAttribute("userName",username);
+            session.setAttribute("accountInfo",accountInfo);
             return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
         }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
             return ResultGenerator.genFailResult(e.getMessage());
@@ -75,5 +79,6 @@ public class LoginController {
 
         return userInfo;
     }
+
 
 }

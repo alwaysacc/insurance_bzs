@@ -17,6 +17,8 @@ public class HttpResult<T> {
     private String message;
     //将body转换成实体类
     private T t;
+    //续保枚举值
+    private  Long source;
 
     public int getCode() {
         return code;
@@ -75,5 +77,13 @@ public class HttpResult<T> {
                 ", message='" + message + '\'' +
                 ", t=" + t +
                 '}';
+    }
+
+    public Long getSource() {
+        return source;
+    }
+
+    public void setSource(Long source) {
+        this.source = source;
     }
 }
