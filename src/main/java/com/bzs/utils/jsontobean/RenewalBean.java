@@ -1,5 +1,8 @@
 package com.bzs.utils.jsontobean;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Date;
 
 /**
@@ -8,6 +11,7 @@ import java.util.Date;
  * @author: dengl
  * @create: 2019-04-11 15:56
  */
+@Data
 public class RenewalBean {
     private String state;
     private RenewalData data;

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
-    public int updatePayInfo (@Param("payUrl") String payUrl,@Param("payTime") String payTime,@Param("proposalNo") String proposalNo);
 
     /**
      * @Author 孙鹏程
@@ -19,5 +18,6 @@ public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
     List getInsurance(@Param("quoteId")String quoteId,@Param("infoType")int infoType);
 
     List getQuote(String carInfoId);
-    public int updatePayInfo (@Param("payUrl") String payUrl,@Param("payTime") String payTime,@Param("proposalNo") String proposalNo,@Param("payNo")String payNo,@Param("checkNo")String checkNo);
+
+    int updatePayInfo (@Param("payUrl") String payUrl,@Param("payTime") String payTime,@Param("proposalNo") String proposalNo,@Param("payNo")String payNo,@Param("checkNo")String checkNo);
 }

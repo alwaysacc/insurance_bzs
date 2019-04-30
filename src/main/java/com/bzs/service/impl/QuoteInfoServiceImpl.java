@@ -90,7 +90,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
                 case "4":
-                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    RquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
             }
         }
@@ -103,7 +103,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         map.put("insuredList",insuredList);
         map.put("TquoteList",TquoteList);
         map.put("PquoteList",PquoteList);
-        map.put("TquoteList",TquoteList);
+        map.put("RquoteList",RquoteList);
         return map;
     }
 
@@ -111,6 +111,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     public Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
         /* if (CollectionUtils.isNotEmpty(list)) {*/
         ParamsData data = params.getData();
+
         if (null != data) {
             data.setInsurancesList(list);
             //---------------------------  注意修改开始
@@ -173,6 +174,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             quoteInfo.setQuoteResult(retMsg);//报价结果
                             quoteInfo.setSubmitresult(retMsg);
                         }
+
                     } else if ("0001".equals(retCode)) {//重复投保
                         logger.info("code=" + retCode + "," + retMsg);
                                   /* boolean forceIndex= retMsg.indexOf("交强险")>-1;
@@ -293,6 +295,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         }
                         System.out.println("报价成功，输出信息：" + msg);
                         quoteInfoMapper.insert(quoteInfo);
+                        if (bean.getRetCode().equals("0099")){
+                            return ResultGenerator.gen("失败", bean.getRetMsg(), ResultCode.FAIL);
+                        }
                         return ResultGenerator.gen("成功", bean, ResultCode.SUCCESS);
                     } else {
                         quoteInfoMapper.insert(quoteInfo);
@@ -450,6 +455,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             return ResultGenerator.genFailResult("参数异常");
         }
         String URL = host + ":" + port + "/" + api;
+        System.out.println(URL);
         JSONObject json = new JSONObject();
         json.put("proposalNo", proposalNo);
         json.put("pay", pay);

@@ -20,6 +20,8 @@ public interface ThirdAPI {
     public static final String PICC_PAY="picc_payConfirm";//人保支付
 
     public static  final String CPIC_HOST="http://192.168.1.103";
+
+
     public static final String CPIC_PORT="5000";
     public static final String CPIC_RENEWAL_NAME="cpic_xubao";//太保续保接口
     public static final String CPIC_QUOTE_NAME="cpic_kuaisubaojia";//太保报价接口
