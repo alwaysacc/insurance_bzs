@@ -90,7 +90,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
                 case "4":
-                    RquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
             }
         }
@@ -103,7 +103,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         map.put("insuredList",insuredList);
         map.put("TquoteList",TquoteList);
         map.put("PquoteList",PquoteList);
-        map.put("RquoteList",RquoteList);
+        map.put("TquoteList",TquoteList);
         return map;
     }
 
@@ -111,7 +111,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     public Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
         /* if (CollectionUtils.isNotEmpty(list)) {*/
         ParamsData data = params.getData();
-
         if (null != data) {
             data.setInsurancesList(list);
             //---------------------------  注意修改开始
@@ -149,48 +148,54 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 retMsg = EncodeUtil.unicodeToString(retMsg);
                 logger.info("retCode=" + retCode + ",retMsg=" + retMsg);
                 if (StringUtils.isNotBlank(retCode)) {
-                    if ("0000".equals(retCode)) {//报价 核保
-                        logger.info("code=" + retCode + "," + retMsg);
-                        quoteInfo.setQuoteStatus(1);
-                        quoteInfo.setQuoteResult("报价成功");//报价结果
-                        quoteInfo.setSubmitStatus(1);
-                        quoteInfo.setSubmitresult("核保成功");
-                    } else if ("0099".equals(retCode)) {//报价失败，报价成功但是核保失败
-                        logger.info("code=" + retCode + "," + retMsg);
-                        if (StringUtils.isNotBlank(retMsg)) {
-                            if (retMsg.indexOf("报价失败") > -1) {
-                                quoteInfo.setQuoteResult(retMsg);//报价结果
-                                quoteInfo.setSubmitresult(retMsg);
-                            } else if (retMsg.indexOf("核保失败") > -1) {
-                                //核保失败
-                                quoteInfo.setQuoteStatus(1);
-                                quoteInfo.setQuoteResult("报价成功");//报价结果
-                                quoteInfo.setSubmitresult(retMsg);
+                    ResponseData rdata = bean.getData();
+                    if (null != rdata) {
+                        String ciPremium = rdata.getCiPremium();//交强险保费合计
+                        String biPremium = rdata.getBiPremium();//商业险标准保费
+                        String proposalNo = rdata.getProposalNo();//报价单号
+                        if ("0000".equals(retCode)) {//报价 核保
+                            logger.info("code=" + retCode + "," + retMsg);
+                            quoteInfo.setQuoteStatus(1);
+                            quoteInfo.setQuoteResult("报价成功");//报价结果
+                            quoteInfo.setSubmitStatus(1);
+                            quoteInfo.setSubmitresult("核保成功");
+                        } else if ("0099".equals(retCode)) {//报价失败，报价成功但是核保失败
+                            logger.info("code=" + retCode + "," + retMsg);
+                            if (StringUtils.isNotBlank(retMsg)) {
+                                if (retMsg.indexOf("报价失败") > -1) {
+                                    quoteInfo.setQuoteResult(retMsg);//报价结果
+                                    quoteInfo.setSubmitresult(retMsg);
+                                } else if (retMsg.indexOf("核保失败") > -1) {
+                                    //核保失败
+                                    quoteInfo.setQuoteStatus(1);
+                                    quoteInfo.setQuoteResult("报价成功");//报价结果
+                                    quoteInfo.setSubmitresult(retMsg);
+                                } else {
+                                    //当交强险合计和商业险合计有一个不为0或者空则报价成功，核保失败
+                                   // if(((StringUtils.isNotBlank(ciPremium)&&Double.valueOf(ciPremium)>0)||(StringUtils.isNotBlank(biPremium)&&Double.valueOf(ciPremium)>0))&&StringUtils.isBlank(proposalNo))
+                                    if((StringUtils.isNotBlank(ciPremium)&&Double.valueOf(ciPremium)>0)||(StringUtils.isNotBlank(biPremium)&&Double.valueOf(ciPremium)>0)){
+                                        quoteInfo.setQuoteStatus(1);
+                                        quoteInfo.setQuoteResult("报价成功");//报价结果
+                                        quoteInfo.setSubmitresult(retMsg);
+                                    }else{
+                                        quoteInfo.setQuoteResult(retMsg);//报价结果
+                                        quoteInfo.setSubmitresult(retMsg);
+                                    }
+
+                                }
                             } else {
                                 quoteInfo.setQuoteResult(retMsg);//报价结果
                                 quoteInfo.setSubmitresult(retMsg);
                             }
+                        } else if ("0001".equals(retCode)) {//重复投保
+                            logger.info("code=" + retCode + "," + retMsg);
+                            quoteInfo.setQuoteResult(retMsg);//报价结果
+                            quoteInfo.setSubmitresult(retMsg);
                         } else {
+                            logger.info("code=" + retCode + "," + retMsg);
                             quoteInfo.setQuoteResult(retMsg);//报价结果
                             quoteInfo.setSubmitresult(retMsg);
                         }
-
-                    } else if ("0001".equals(retCode)) {//重复投保
-                        logger.info("code=" + retCode + "," + retMsg);
-                                  /* boolean forceIndex= retMsg.indexOf("交强险")>-1;
-                                   boolean bizIndex=retMsg.indexOf("商业险")>-1;
-                                    if(forceIndex&&bizIndex){
-                                        quoteInfo.getSubmitresult();
-                                    }*/
-                        quoteInfo.setQuoteResult(retMsg);//报价结果
-                        quoteInfo.setSubmitresult(retMsg);
-                    } else {
-                        logger.info("code=" + retCode + "," + retMsg);
-                        quoteInfo.setQuoteResult(retMsg);//报价结果
-                        quoteInfo.setSubmitresult(retMsg);
-                    }
-                    ResponseData rdata = bean.getData();
-                    if (null != rdata) {
                         List<InsuranceTypeInfo> insuranceTypeInfoList = new ArrayList<InsuranceTypeInfo>();
                         PayInfo payinfo = rdata.getPayInfo();
                         if (null != payinfo) {
@@ -199,13 +204,13 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         }
                         String advDiscountRate = rdata.getAdvDiscountRate();//建议折扣率
                         String refId = rdata.getRefId();//报价流水号
-                        String ciPremium = rdata.getCiPremium();//交强险保费合计
+
                         String ciBeginDate = rdata.getCiBeginDate();//交强险起保日期
-                        String proposalNo = rdata.getProposalNo();//报价单号'
+
                         String ciEcompensationRate = rdata.getCiEcompensationRate();//交强险预期赔付率
                         String carshipTax = rdata.getCarshipTax();//车船税金额
                         String biBeginDate = rdata.getBiBeginDate();//商业险起期
-                        String biPremium = rdata.getBiPremium();//商业险标准保费
+
                         String biPremiumByDis = rdata.getBiPremiumByDis();//商业险折后保费
                         String realDiscountRate = rdata.getRealDiscountRate();//实际折扣率
                         String nonClaimDiscountRate = rdata.getNonClaimDiscountRate(); //无赔款折扣系数
@@ -455,7 +460,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             return ResultGenerator.genFailResult("参数异常");
         }
         String URL = host + ":" + port + "/" + api;
-        System.out.println(URL);
         JSONObject json = new JSONObject();
         json.put("proposalNo", proposalNo);
         json.put("pay", pay);
