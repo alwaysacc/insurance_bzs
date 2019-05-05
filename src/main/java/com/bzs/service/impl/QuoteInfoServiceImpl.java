@@ -486,7 +486,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             String paymentNotice=payinfo.getPaymentNotice();
                             String serialNo=payinfo.getSerialNo();
                             retMsg=EncodeUtil.unicodeToString(retMsg);
+                            payinfo.setPayMsg(retMsg);
                             String payEndDate=DateUtil.getDateStringFromString(retMsg);
+                            payinfo.setPayEndDate(payEndDate);
                             bean.setPaymentNotice(paymentNotice);
                             bean.setSerialNo(serialNo);
                            // PayInfo payinfos = payinfo.getPayInfo();

@@ -12,6 +12,8 @@ public class PayInfoData {
     private PayInfo payInfo;
     private String paymentNotice;
     private String serialNo;
+    private  String payMsg;
+    private String payEndDate;
     public String getPayTime() {
         return payTime;
     }
@@ -50,5 +52,21 @@ public class PayInfoData {
 
     public void setSerialNo(String serialNo) {
         this.serialNo = serialNo;
+    }
+
+    public String getPayMsg() {
+        return payMsg;
+    }
+
+    public void setPayMsg(String payMsg) {
+        this.payMsg = payMsg;
+    }
+
+    public String getPayEndDate() {
+        return payEndDate;
+    }
+
+    public void setPayEndDate(String payEndDate) {
+        this.payEndDate = payEndDate;
     }
 }
