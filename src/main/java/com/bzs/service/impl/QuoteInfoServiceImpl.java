@@ -476,14 +476,21 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     String state = bean.getState();
                     String retCode=bean.getRetCode();
                     if ("1".equals(state)&&"0000".equals(retCode)) {
+                        String retMsg = bean.getRetMsg();
                         PayInfoData payinfo = bean.getData();
                         if (payinfo != null) {
                             String payUrl = payinfo.getPayUrl();
                             String payTime = payinfo.getPayTime();
                             String checkNo=bean.getCheckNo();
                             String payNo=bean.getPayNo();
-                            PayInfo payinfos = payinfo.getPayInfo();
-                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo,payNo,checkNo);
+                            String paymentNotice=payinfo.getPaymentNotice();
+                            String serialNo=payinfo.getSerialNo();
+                            retMsg=EncodeUtil.unicodeToString(retMsg);
+                            String payEndDate=DateUtil.getDateStringFromString(retMsg);
+                            bean.setPaymentNotice(paymentNotice);
+                            bean.setSerialNo(serialNo);
+                           // PayInfo payinfos = payinfo.getPayInfo();
+                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo,payNo,checkNo,paymentNotice,serialNo,payEndDate,retMsg);
                             OrderInfo orderInfo = new OrderInfo();
                             orderInfo.setOrderId(UUIDS.getDateUUID());
                             orderInfo.setPayType("2");//保单订单
@@ -517,7 +524,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Override
     public Map<String, Object> updatePayInfo(String proposalNo) {
         String time = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
-        int code = quoteInfoMapper.updatePayInfo("www.sss", time, proposalNo,"12121","121212");
+        int code = 1;
         Map<String, Object> result = new HashMap<>();
         if (code > 0) {
             result.put("status", "1");

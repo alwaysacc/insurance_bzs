@@ -256,6 +256,29 @@ public class QuoteInfo {
     @Column(name = "check_no")
     private  String checkNo;
 
+    /**
+     * 交费通知单
+     */
+    @Column(name = "payment_notice")
+    private  String paymentNotice;
+
+    /**
+     * 流水号
+     */
+    @Column(name = "serial_no")
+    private String serialNo;
+    /**
+     * 最后支付日期
+     */
+    @Column(name = "pay_end_date")
+    private  String payEndDate;
+
+    /**
+     * 支付描述-人保
+     */
+    @Column(name = "pay_msg")
+    private String payMsg;
+
 
     /**
      * 获取乐观锁
@@ -897,6 +920,38 @@ public class QuoteInfo {
 
     public void setCheckNo(String checkNo) {
         this.checkNo = checkNo;
+    }
+
+    public String getPaymentNotice() {
+        return paymentNotice;
+    }
+
+    public void setPaymentNotice(String paymentNotice) {
+        this.paymentNotice = paymentNotice;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public String getPayEndDate() {
+        return payEndDate;
+    }
+
+    public void setPayEndDate(String payEndDate) {
+        this.payEndDate = payEndDate;
+    }
+
+    public String getPayMsg() {
+        return payMsg;
+    }
+
+    public void setPayMsg(String payMsg) {
+        this.payMsg = payMsg;
     }
 
     public QuoteInfo() {
