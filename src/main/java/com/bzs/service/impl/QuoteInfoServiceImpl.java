@@ -300,6 +300,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         }
                         System.out.println("报价成功，输出信息：" + msg);
                         quoteInfoMapper.insert(quoteInfo);
+                        if (bean.getRetCode().equals("0099")){
+                            return ResultGenerator.gen("失败", bean.getRetMsg(), ResultCode.FAIL);
+                        }
                         return ResultGenerator.gen("成功", bean, ResultCode.SUCCESS);
                     } else {
                         quoteInfoMapper.insert(quoteInfo);
@@ -365,10 +368,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String jsonStrs = JSON.toJSONString(params);
             logger.info("报价请求参数" + jsonStrs);
             String jsonStrs2 = jsonStrs.replace("noType", "NoType");
-            Long  start=System.currentTimeMillis();
             HttpResult httpResult = HttpClientUtil.doPost(url, null, "JSON", PCICResponseBean.class, jsonStrs2);
-            Long end=System.currentTimeMillis();
-            System.out.println("报价总时长："+(end-start));
             int code = httpResult.getCode();
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();

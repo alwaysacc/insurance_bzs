@@ -160,6 +160,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
                     maps.put("carNo", carNo);
                     maps.put("source", lastYearSource);
+                    maps.put("carInfoId",uuid);
                     return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
                 } else if ("0099".equals(status)) {//续保选择的保险公司不对,重新续保
                     String body = (String) renewalInfo.get("body");
@@ -177,6 +178,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         carInfo.setCarInfoId(uuid);
                         carInfoService.save(carInfo);
                     }
+
                     return ResultGenerator.gen(msg, dataBean, ResultCode.FAIL);
                 } else {
                     return ResultGenerator.genFailResult(msg);

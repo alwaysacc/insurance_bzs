@@ -38,7 +38,7 @@
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
     </resultMap>
     <select id="getUserList" resultType="map">
-        SELECT
+        SELECT distinct
         car_info.car_info_id,
         car_info.car_number,
         car_info.engine_number,
