@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.ThirdInsuranceAccountInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.ThirdInsuranceAccountInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="third_insurance_id" jdbcType="VARCHAR" property="thirdInsuranceId" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="account_pwd" jdbcType="VARCHAR" property="accountPwd" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="vpn" jdbcType="VARCHAR" property="vpn" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="is_pay" jdbcType="VARCHAR" property="isPay" />
+    <result column="account_type" jdbcType="VARCHAR" property="accountType" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="port" jdbcType="VARCHAR" property="port" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="enable_start_date" jdbcType="VARCHAR" property="enableStartDate" />
+    <result column="enable_end_date" jdbcType="VARCHAR" property="enableEndDate" />
+  </resultMap>
+</mapper>

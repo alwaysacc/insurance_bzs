@@ -17,6 +17,8 @@ public class PayInfoBean {
     private String retCode;
     private String payNo;
     private String checkNo;
+    private String paymentNotice;
+    private String serialNo;
 
     public String getState() {
         return state;
@@ -72,5 +74,21 @@ public class PayInfoBean {
 
     public void setCheckNo(String checkNo) {
         this.checkNo = checkNo;
+    }
+
+    public String getPaymentNotice() {
+        return paymentNotice;
+    }
+
+    public void setPaymentNotice(String paymentNotice) {
+        this.paymentNotice = paymentNotice;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 }

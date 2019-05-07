@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -19,8 +21,10 @@ public class DateUtil {
 		 * int status=compareDate("2018-12-12 9:12:12","2018-12-18",null);
 		 * System.out.println(status);
 		 */
-		stringToDate("2018-12-12 9:12:12");
-		getStringDate(null);
+		/*stringToDate("2018-12-12 9:12:12");
+		getStringDate(null);*/
+	String s=	getDateStringFromString("*温馨提示：请于2019-5-14之前使用微信扫一扫通过微信公众号进行支付！");
+		System.out.println(s);
 	}
 	public static Date getDateToDate(Date date, String style) {
 		DateFormat dFormat3 = new SimpleDateFormat(style);
@@ -255,7 +259,11 @@ public class DateUtil {
 		return date;
 
 	}
-	
+
+	/**
+	 * 获取标准的北京时间-String
+	 * @return
+	 */
 	public  static String getStandardBJDate(){
 		  Calendar calendar = Calendar.getInstance(Locale.CHINA);
 	        Date date = calendar.getTime();
@@ -263,5 +271,28 @@ public class DateUtil {
 	        String dateString = dateFormat.format(date);
 	        System.out.println(dateString);
 		return null;
+	}
+
+	/**
+	 * 从字符串中获取日期 仅能获取形式如"yyyy-MM-dd HH:mm:ss" 的日期。并且仅能获取一个
+	 * @return
+	 */
+	public static String getDateStringFromString(String str){
+		String result=null;
+		if(StringUtils.isNotBlank(str)){
+			String reg = "[1-9]\\d{3}(((0[13578]|1[02])([0-2]\\d|3[01]))|((0[469]|11)([0-2]\\d|30))|(02([01]\\d|2[0-8])))";
+			String reg2="[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}";
+			Pattern pattern = Pattern.compile (reg2);
+			Matcher matcher = pattern.matcher (str);
+			while (matcher.find ())
+			{
+				System.out.println (matcher.group ());
+				result=matcher.group ();
+			}
+			return result;
+		}else{
+			return null;
+		}
+
 	}
 }

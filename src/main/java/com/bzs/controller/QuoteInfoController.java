@@ -106,6 +106,7 @@ public class QuoteInfoController {
      * @param personName
      * @param personMobile
      * @param personCardID
+     * @param lists
      * @param carInfoId
      * @param createdBy
      * @param source
@@ -119,10 +120,9 @@ public class QuoteInfoController {
                                String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
                                String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty,
                                String carColor, String carNoType, String carInfoId, String createdBy, Long source, String account, String accountPwd) {
-        List list=null;
-        System.out.println(lists);
+        List  list=null;
         if(StringUtils.isNotBlank(lists)){
-            list= JSON.parseArray(lists);
+           list= (List)JSON.parseArray(lists);
         }
         if (null == ciBeginDate) {
             ciBeginDate = "";

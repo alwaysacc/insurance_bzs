@@ -285,7 +285,7 @@ public class HttpClientUtil {
         HttpResult result = new HttpResult();
         // 创建httpClient实例
         httpClient = HttpClients.createDefault();
-        logger.info("请求的URL:"+url);
+        logger.info("请求的URL:" + url);
         // 创建httpPost远程连接实例
         HttpPost httpPost = new HttpPost(url);
         // 配置请求参数实例
@@ -362,30 +362,37 @@ public class HttpClientUtil {
             result.setBody(body);
             logger.info("请求返回的内容>>>" + body);
             String message = "请求失败";
-            if (code == 200) {
+            if (code == 200) {//
                 message = "请求成功";
-                if (null != clz && StringUtils.isNotBlank(body)) {
+                if (StringUtils.isNotBlank(body)) {
                     String frequent = body.substring(0, 3);
                     if ("The".equalsIgnoreCase(frequent)) {//判断是否请求频繁
                         result.setCode(11000);
                         result.setMessage("请求频繁,请稍后重试");
                     } else {
-                        try {
-                            T o = JSON.parseObject(body, clz);
-                            result.setT(o);
-                        } catch (Exception e) {
-                            logger.error("请求成功，JSON转换异常", e);
-                            result.setCode(12000);
+                        //只有返回code=200才是请求成功
+                        if (null != clz) {
+                            try {
+                                T o = JSON.parseObject(body, clz);
+                                result.setT(o);
+                                result.setMessage(message);
+                            } catch (Exception e) {
+                                logger.error("请求成功，JSON转换异常", e);
+                                result.setCode(12000);
+                            }
                         }
                     }
 
+                } else {
+                    result.setMessage(message + ",请求成功，返回结果失败");
+                    result.setCode(17000);
                 }
             } else if (code == 404) {
                 logger.info("接口地址错误,请检查接口地址");
                 result.setMessage("接口地址错误,请检查接口地址");
             } else if (code == 500) {
                 logger.info("请求的接口出错，联系第三方人员");
-                result.setMessage("http请求出错");
+                result.setMessage("远程请求异常");
             } else {
                 result.setMessage(message);
             }

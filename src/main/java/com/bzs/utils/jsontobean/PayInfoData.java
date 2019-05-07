@@ -10,6 +10,10 @@ public class PayInfoData {
     private String payTime;
     private String payUrl;
     private PayInfo payInfo;
+    private String paymentNotice;
+    private String serialNo;
+    private  String payMsg;
+    private String payEndDate;
     public String getPayTime() {
         return payTime;
     }
@@ -32,5 +36,37 @@ public class PayInfoData {
 
     public void setPayInfo(PayInfo payInfo) {
         this.payInfo = payInfo;
+    }
+
+    public String getPaymentNotice() {
+        return paymentNotice;
+    }
+
+    public void setPaymentNotice(String paymentNotice) {
+        this.paymentNotice = paymentNotice;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public String getPayMsg() {
+        return payMsg;
+    }
+
+    public void setPayMsg(String payMsg) {
+        this.payMsg = payMsg;
+    }
+
+    public String getPayEndDate() {
+        return payEndDate;
+    }
+
+    public void setPayEndDate(String payEndDate) {
+        this.payEndDate = payEndDate;
     }
 }

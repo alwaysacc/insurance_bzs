@@ -50,9 +50,13 @@
     <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate" />
     <result column="check_no" jdbcType="VARCHAR" property="checkNo" />
     <result column="pay_no" jdbcType="VARCHAR" property="payNo" />
+    <result column="payment_notice" jdbcType="VARCHAR" property="paymentNotice" />
+    <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate" />
   </resultMap>
   <update id="updatePayInfo">
-    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo} where proposal_no=#{proposalNo}
+    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo},payment_notice=#{paymentNotice},serial_no=#{serialNo},pay_end_date=#{payEndDate},pay_msg=#{payMsg} where proposal_no=#{proposalNo}
   </update>
   <select id="getInsurance" resultType="map">
     SELECT
