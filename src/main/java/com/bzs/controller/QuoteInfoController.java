@@ -106,7 +106,7 @@ public class QuoteInfoController {
      * @param personName
      * @param personMobile
      * @param personCardID
-     * @param list
+     * @param lists
      * @param carInfoId
      * @param createdBy
      * @param source
@@ -116,13 +116,14 @@ public class QuoteInfoController {
     @PostMapping("/getQuoteInfoAllParams")
     public Result getQuoteInfo(@RequestParam String personName, @RequestParam String personMobile, @RequestParam String personCardID,
                                @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
-                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, @RequestBody(required = false) List<InsurancesList> list,String lists,
+                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate,String lists,
                                String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
                                String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty,
                                String carColor, String carNoType, String carInfoId, String createdBy, Long source, String account, String accountPwd) {
-        /*if(StringUtils.isNotBlank(lists)){
-           list= (List)JSONArray.parseObject(lists);
-        }*/
+        List  list=null;
+        if(StringUtils.isNotBlank(lists)){
+           list= (List)JSON.parseArray(lists);
+        }
         if (null == ciBeginDate) {
             ciBeginDate = "";
         }

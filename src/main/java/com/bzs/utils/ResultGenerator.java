@@ -40,4 +40,5 @@ public class ResultGenerator {
     public static <T>Result<T> gen(String message,T data,ResultCode code){
         return  new Result().setCode(code).setMessage(message).setData(data);
     }
+
 }

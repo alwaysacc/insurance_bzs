@@ -9,9 +9,17 @@ package com.bzs.utils.enumUtil;
 public enum InsuranceNameEnum {
     CPIC("太平洋保险",1L),
     PAIC("平安保险",2L),
-    PICC("人民保险",4L)
+    PICC("人民保险",4L),
+    ZKIC("紫金保险",8L),
+    YGBX("阳光保险",16L),
+    CCIC("大地保险",32L),
+    CLPC("国寿财保险",64L),
+    HAIC("华安保险",128L),
+    HTIC("华泰保险",256L),
+    TPIC("太平保险",512L),
+    TAIC("天安保险",1024L),//安盛天安
+    CICP("中华联合保险",2048L)
     ;
-
     private  Long code;
     private String name;
     private InsuranceNameEnum(String name,Long code){

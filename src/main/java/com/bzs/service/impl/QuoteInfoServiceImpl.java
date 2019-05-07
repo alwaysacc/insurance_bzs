@@ -139,7 +139,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
            logger.info("当前时间+"+date);
             quoteInfo.setCreatedTime(new Date());
             // if ("1".equals(status)||"0".equals(status)) {//报价成功,其他均为报价失败
-            String body = (String) quoteMap.get("body");//爬虫返回的数据
+            //String body = (String) quoteMap.get("body");//爬虫返回的数据
             PCICResponseBean bean = (PCICResponseBean) quoteMap.get("data");//body 转为实体对象
             if (null != bean) {
                 String retCode = bean.getRetCode();
@@ -147,13 +147,35 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
                 retMsg = EncodeUtil.unicodeToString(retMsg);
                 logger.info("retCode=" + retCode + ",retMsg=" + retMsg);
+                int resultCode=400;
                 if (StringUtils.isNotBlank(retCode)) {
                     ResponseData rdata = bean.getData();
                     if (null != rdata) {
                         String ciPremium = rdata.getCiPremium();//交强险保费合计
                         String biPremium = rdata.getBiPremium();//商业险标准保费
                         String proposalNo = rdata.getProposalNo();//报价单号
-                        if ("0000".equals(retCode)) {//报价 核保
+
+                        if(StringUtils.isNotBlank(proposalNo)){//报价单号获取成功，说明报价+核保成功
+                            quoteInfo.setQuoteStatus(1);
+                            quoteInfo.setQuoteResult("报价成功");//报价结果
+                            quoteInfo.setSubmitStatus(1);
+                            quoteInfo.setSubmitresult("核保成功");
+                            resultCode=200;
+                        }else{
+                            //报价成功-核保失败
+                            if((StringUtils.isNotBlank(ciPremium)&&Double.valueOf(ciPremium)>0)||(StringUtils.isNotBlank(biPremium)&&Double.valueOf(ciPremium)>0)){
+                                quoteInfo.setQuoteStatus(1);
+                                quoteInfo.setQuoteResult("报价成功");//报价结果
+                                quoteInfo.setSubmitresult(retMsg);
+                                resultCode=300;
+                            }else{//报价+核保失败
+                                quoteInfo.setQuoteResult(retMsg);
+                                quoteInfo.setSubmitresult(retMsg);
+                                resultCode=400;
+                            }
+
+                        }
+                        /*if ("0000".equals(retCode)) {//报价 核保
                             logger.info("code=" + retCode + "," + retMsg);
                             quoteInfo.setQuoteStatus(1);
                             quoteInfo.setQuoteResult("报价成功");//报价结果
@@ -195,7 +217,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             logger.info("code=" + retCode + "," + retMsg);
                             quoteInfo.setQuoteResult(retMsg);//报价结果
                             quoteInfo.setSubmitresult(retMsg);
-                        }
+                        }*/
                         List<InsuranceTypeInfo> insuranceTypeInfoList = new ArrayList<InsuranceTypeInfo>();
                         PayInfo payinfo = rdata.getPayInfo();
                         if (null != payinfo) {
@@ -300,14 +322,22 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         }
                         System.out.println("报价成功，输出信息：" + msg);
                         quoteInfoMapper.insert(quoteInfo);
-                        if (bean.getRetCode().equals("0099")){
+                       /* if (bean.getRetCode().equals("0099")){
                             return ResultGenerator.gen("失败", bean.getRetMsg(), ResultCode.FAIL);
-                        }
-                        return ResultGenerator.gen("成功", bean, ResultCode.SUCCESS);
+                        }*/
+                       if(200==resultCode)
+                            return ResultGenerator.gen("报价核保成功", bean, ResultCode.SUCCESS);
+                       else if(300==resultCode)
+                           return ResultGenerator.gen("报价成功,核保失败", bean, ResultCode.SUBMIT);
+                       else {
+                           return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
+                       }
                     } else {
                         quoteInfoMapper.insert(quoteInfo);
                         //if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
-                        return ResultGenerator.gen(retMsg, "", ResultCode.FAIL);
+                        PCICResponseBean resultBean=new  PCICResponseBean();
+                        resultBean.setRetMsg("报价失败:"+msg);
+                        return ResultGenerator.gen(retMsg, resultBean, ResultCode.FAIL);
                     }
                 }
 
@@ -316,30 +346,24 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 quoteInfo.setQuoteResult(msg);
                 quoteInfo.setSubmitresult(msg);
                 quoteInfoMapper.insert(quoteInfo);
-                return ResultGenerator.gen("报价失败", bean, ResultCode.FAIL);
+                PCICResponseBean resultBean=new  PCICResponseBean();
+                resultBean.setRetMsg("报价失败:"+msg);
+                return ResultGenerator.gen("报价失败:"+msg, resultBean, ResultCode.FAIL);
             }
-              /*  } else {//400
-                    quoteInfo.setQuoteResult("报价失败");
-                    quoteInfo.setSubmitresult("核保失败");
-                    quoteInfoMapper.insert(quoteInfo);
-                    return ResultGenerator.gen(msg, "", ResultCode.FAIL);
-                }*/
         }
-
-        return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
-        /*} else {
-            return ResultGenerator.gen("参数异常", "", ResultCode.FAIL);
-        }*/
+        PCICResponseBean resultBean=new  PCICResponseBean();
+        resultBean.setRetMsg("报价失败:参数异常");
+        return ResultGenerator.gen("参数异常", resultBean, ResultCode.FAIL);
     }
 
     public Map<String, Object> getQuoteDetailsByApi(Long source, String createdBy, QuoteParmasBean params) {
         Map<String, Object> result = new HashMap<>();
         String jsonStr = JSON.toJSONString(params);
         String api = "";
-        String host = ThirdAPI.HOST;
+        String host = "";
         String port = "";
         if (null == source) {
-            result.put("status", "400");
+            result.put("status", "18000");
             result.put("msg", "参数错误");
             return result;
         } else {
@@ -357,8 +381,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 api = ThirdAPI.PICC_QUOTE_ALL;
                 port = ThirdAPI.PICC_PORT;
             } else {
-                result.put("status", "400");
-                result.put("msg", "参数错误");
+                result.put("status", "18000");
+                result.put("msg", "参数错误,待拓展项");
                 return result;
             }
         }
@@ -373,29 +397,22 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();
             if (200 == code) {//远程请求成功
-                PCICResponseBean bean = (PCICResponseBean) httpResult.getT();
-                String state = bean.getState();
-                String retCode = bean.getRetCode();
+                PCICResponseBean bean =JSONObject.parseObject(body,PCICResponseBean.class);
                 String retMsg = bean.getRetMsg();
+                String state=bean.getState();
                 retMsg = EncodeUtil.unicodeToString(retMsg);
-                /*if(StringUtils.isNotBlank(state)&&"1".equals(state)){
-                    result.put("status", "1");
-                }
-                if(StringUtils.isNotBlank(retCode)&&retCode.equals("0099")||retCode.equals("0002")||retCode.equals("0001")){
-                    result.put("status", retCode);
-                }*/
                 result.put("status", state);
                 result.put("msg", retMsg);
                 result.put("data", bean);
                 result.put("body", body);
                 return result;
-            } else {
+            } else {//code!=200请求失败
                 result.put("status", code + "");
                 result.put("msg", "报价失败，报错代码：" + code);
                 return result;
             }
         } else {
-            result.put("status", "400");
+            result.put("status", "18000");
             result.put("msg", "参数错误");
             return result;
         }

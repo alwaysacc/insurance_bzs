@@ -362,7 +362,7 @@ public class HttpClientUtil {
             result.setBody(body);
             logger.info("请求返回的内容>>>" + body);
             String message = "请求失败";
-            if (code == 200) {
+            if (code == 200) {//
                 message = "请求成功";
                 if (StringUtils.isNotBlank(body)) {
                     String frequent = body.substring(0, 3);
@@ -370,10 +370,12 @@ public class HttpClientUtil {
                         result.setCode(11000);
                         result.setMessage("请求频繁,请稍后重试");
                     } else {
+                        //只有返回code=200才是请求成功
                         if (null != clz) {
                             try {
                                 T o = JSON.parseObject(body, clz);
                                 result.setT(o);
+                                result.setMessage(message);
                             } catch (Exception e) {
                                 logger.error("请求成功，JSON转换异常", e);
                                 result.setCode(12000);

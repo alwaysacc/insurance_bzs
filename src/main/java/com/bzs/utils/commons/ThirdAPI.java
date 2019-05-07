@@ -11,7 +11,7 @@ public interface ThirdAPI {
     public static  final String HOST="http://192.168.1.106";
     public static  final String PORT="5000";
 
-    public static  final String PICC_HOST="http://192.168.1.106";
+    public static  final String PICC_HOST="http://192.168.1.102";
     public static final String PICC_PORT="5001";
     public static final String PICC_RENEWAL_NAME="picc_xubao";//人保续保接口
     public static final String PICC_QUOTE_NAME="picc_kuaisubaojia";//人保报价接口
