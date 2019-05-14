@@ -102,8 +102,13 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             checkInfo.setSendTime(date);
             checkInfoService.save(checkInfo);
             //三家同时续保
-          // Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
-           Map<String, Object> renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            // Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            Map<String, Object> renewalInfo = null;
+            if (lastYearSource == null) {
+                renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            } else {
+                renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            }
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
             Long source = (Long) renewalInfo.get("source");
@@ -160,7 +165,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
                     maps.put("carNo", carNo);
                     maps.put("source", lastYearSource);
-                    maps.put("carInfoId",uuid);
+                    maps.put("carInfoId", uuid);
                     return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
                 } else if ("0099".equals(status)) {//续保选择的保险公司不对,重新续保
                     String body = (String) renewalInfo.get("body");
@@ -415,19 +420,19 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 logger.info("人保续保结束，总时间：" + (end - start));
                 return httpResult;
             });
-            CompletableFuture<HttpResult> f3 = CompletableFuture.supplyAsync(() -> {
-                logger.info("平安续保开始：");
-                Long start = System.currentTimeMillis();
-                HttpResult httpResult = HttpClientUtil.doPost(paiccurl, null, "JSON", RenewalBean.class, jsonStr);
-                httpResult.setSource(2L);
-                Long end = System.currentTimeMillis();
-                logger.info("平安续保结束，总时间：" + (end - start));
-                return httpResult;
-            });
+//            CompletableFuture<HttpResult> f3 = CompletableFuture.supplyAsync(() -> {
+//                logger.info("平安续保开始：");
+//                Long start = System.currentTimeMillis();
+//                HttpResult httpResult = HttpClientUtil.doPost(paiccurl, null, "JSON", RenewalBean.class, jsonStr);
+//                httpResult.setSource(2L);
+//                Long end = System.currentTimeMillis();
+//                logger.info("平安续保结束，总时间：" + (end - start));
+//                return httpResult;
+//            });
             List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
             list.add(f1);
             list.add(f2);
-            list.add(f3);
+            //list.add(f3);
             List<HttpResult> lists = null;
             boolean flag = false;
             try {
@@ -449,23 +454,23 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 } else {//上一年不在此保司投保
                                     logger.info("续保返回值的状态值" + state);
                                     if ("0099".equals(state)) {
-                                        message +="上一年不在"+InsuranceNameEnum.getName(httpResult.getSource())+"续保;";
+                                        message += "上一年不在" + InsuranceNameEnum.getName(httpResult.getSource()) + "续保;";
                                     } else if ("0".equals(state)) {
                                         JSONObject jsonObject = JSONObject.parseObject(body);
                                         if (jsonObject.containsKey("retMsg")) {
                                             String retMsg = jsonObject.getString("retMsg");
                                             retMsg = EncodeUtil.unicodeToString(retMsg);
-                                            message += InsuranceNameEnum.getName(httpResult.getSource())+"续保："+retMsg+";";
+                                            message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + retMsg + ";";
                                         }
                                     } else {
-                                        message += InsuranceNameEnum.getName(httpResult.getSource())+"续保：" + "状态值为" + state+";";
+                                        message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + "状态值为" + state + ";";
                                     }
 
                                 }
                             }
                         } else {//请求失败
                             logger.info("续保返回值的状态值" + httpResult.getCode());
-                            message += InsuranceNameEnum.getName(httpResult.getSource())+"续保："+ "状态值为" + httpResult.getCode()+";";
+                            message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + "状态值为" + httpResult.getCode() + ";";
                         }
                     }
                 }
@@ -473,13 +478,13 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("state", "0099");
                     jsonObject.put("message", message);
-                    String body=jsonObject.toJSONString();
+                    String body = jsonObject.toJSONString();
                     result = new HttpResult();
                     result.setCode(200);
                     result.setMessage(message);
                     result.setBody(body);
                     result.setSource(1L);
-                    RenewalBean bean=  JSONObject.parseObject(body,RenewalBean.class);
+                    RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
                     result.setT(bean);
                     // result = lists.get(0);
                 }
