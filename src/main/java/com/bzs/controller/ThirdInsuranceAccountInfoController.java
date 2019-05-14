@@ -69,16 +69,27 @@ public class ThirdInsuranceAccountInfoController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
+    /**
+     *
+     * @param source 要查询的保司的枚举值 1太保2平安4人保
+     * @param accountId 账号id
+     * @return
+     */
     @ApiOperation("查询账号下的指定保司的可用保险账号")
     @PostMapping("/findEnbaleAccount")
-    public Map findEnbaleAccount(Long source,String type,String accountId){
-     return thirdInsuranceAccountInfoService.findEnbaleAccount(source,type,accountId);
+    public Map findEnbaleAccount(Long source,String accountId){
+     return thirdInsuranceAccountInfoService.findEnbaleAccount(source,"2",accountId);
     }
 
+    /**
+     *
+     * @param accountId
+     * @return
+     */
     @ApiOperation("获取指定账号下的每家保险公司的可用账号")
     @PostMapping("/findDifferSourceAccount")
-    public Map findDifferSourceAccount(String status,String accountId){
-        return thirdInsuranceAccountInfoService.findDifferSourceAccount(accountId,status);
+    public Map findDifferSourceAccount(String accountId){
+        return thirdInsuranceAccountInfoService.findDifferSourceAccount(accountId,"2");
     }
 
 
