@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static sun.plugin.javascript.navig.JSType.URL;
 
 /**
  * @program: insurance_bzs
@@ -18,18 +17,18 @@ import static sun.plugin.javascript.navig.JSType.URL;
  * @create: 2019-04-22 11:37
  */
 public class RenewalThreadCallable implements Callable<HttpResult> {
-    private String Url;
+    private String url;
     private Map<String,Object>param;
     private String type;
     private Class<T> bean;
     private String jsonStr;
 
     public String getUrl() {
-        return Url;
+        return url;
     }
 
     public void setUrl(String url) {
-        Url = url;
+        this.url = url;
     }
 
     public Map<String, Object> getParam() {
@@ -65,7 +64,7 @@ public class RenewalThreadCallable implements Callable<HttpResult> {
     }
 
     public RenewalThreadCallable(String url, Map<String, Object> param, String type, Class<T> bean, String jsonStr) {
-        Url = url;
+        this.url = url;
         this.param = param;
         this.type = type;
         this.bean = bean;
@@ -74,7 +73,7 @@ public class RenewalThreadCallable implements Callable<HttpResult> {
 
     @Override
     public HttpResult call() throws Exception {
-        HttpResult httpResult = HttpClientUtil.doPost(URL, param, "JSON", RenewalBean.class, null);
+        HttpResult httpResult = HttpClientUtil.doPost(url, param, "JSON", RenewalBean.class, null);
         return httpResult;
     }
 }

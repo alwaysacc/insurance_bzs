@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="third_insurance_id" jdbcType="VARCHAR" property="thirdInsuranceId" />
+    <id column="third_insurance_id" jdbcType="VARCHAR" property="thirdInsuranceId" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
     <result column="account_pwd" jdbcType="VARCHAR" property="accountPwd" />
@@ -21,4 +21,40 @@
     <result column="enable_start_date" jdbcType="VARCHAR" property="enableStartDate" />
     <result column="enable_end_date" jdbcType="VARCHAR" property="enableEndDate" />
   </resultMap>
+<!--根据账号id修改  开始-->
+  <sql id="updateItems">
+    <trim prefix="Set" suffixOverrides=",">
+      <if test="accountName!=null and accountName!=''"> account_name=#{accountName},</if>
+      <if test="accountPwd!=null and accountPwd!=''"> account_pwd=#{accountPwd},</if>
+      <if test="vpn!=null and vpn!=''"> vpn=#{vpn},</if>
+      <if test="isPay!=null and isPay!=''"> is_pay=#{isPay},</if>
+      <if test="accountType!=null and accountType!=''">account_type=#{accountType},</if>
+      <if test="ip!=null and ip!=''"> ip=#{ip},</if>
+      <if test="status!=null and status!=''">status=#{status},</if>
+      <if test="enableStartDate!=null and enableStartDate!=''"> enable_start_date=#{enableStartDate},</if>
+      <if test="enableEndDate!=null and enableEndDate!=''"> enable_end_date=#{enableEndDate},</if>
+    </trim>
+  </sql>
+  <update id="updateById" parameterType="com.bzs.model.ThirdInsuranceAccountInfo">
+    update third_insurance_account_info <include refid="updateItems"/> where  third_insurance_id=#{thirdInsuranceId}
+  </update>
+  <!--根据账号id修改  结束-->
+  <!--根据条件查询  开始-->
+  <sql id="queryConditions">
+    <trim prefix="where" prefixOverrides="where" suffixOverrides="and">
+      <if test="thirdInsuranceId!=null and thirdInsuranceId!=''"> third_insurance_id=#{thirdInsuranceId} and </if>
+      <if test="createId!=null and createId!=''"> create_id=#{createId} and </if>
+      <if test="status!=null and status!=''"> status=#{status} and </if>
+      <if test="accountType!=null and accountType!=''"> account_type=#{accountType} and </if>
+    </trim>
+  </sql>
+  <select id="queryConditions" parameterType="com.bzs.model.ThirdInsuranceAccountInfo" resultMap="BaseResultMap">
+    select * from  third_insurance_account_info <include refid="queryConditions"/> order  by  create_time desc
+  </select>
+  <!--根据条件查询  结束-->
+  <!--获取每个保司下可用的账号最新添加的账号 开始-->
+  <select id="findDifferSourceAccount" resultMap="BaseResultMap">
+    SELECT m.* FROM(select *from third_insurance_account_info WHERE account_id=#{accountId} and status=#{status} ORDER BY create_time DESC LIMIT 100)m GROUP BY m.account_type
+  </select>
+  <!--获取每个保司下可用的账号最新添加的账号 结束-->
 </mapper>

@@ -1,9 +1,12 @@
 package com.bzs.model;
 
+import org.apache.ibatis.type.Alias;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
-
+@Alias("accountInfo")
 @Table(name = "account_info")
 public class AccountInfo implements Serializable {
     public static final String STATUS_VALID = "0";
@@ -465,5 +468,15 @@ public class AccountInfo implements Serializable {
      */
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+   @Transient
+    private List<ThirdInsuranceAccountInfo> thridAccounts;//第三方账号
+
+    public List<ThirdInsuranceAccountInfo> getThridAccounts() {
+        return thridAccounts;
+    }
+
+    public void setThridAccounts(List<ThirdInsuranceAccountInfo> thridAccounts) {
+        this.thridAccounts = thridAccounts;
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 * Created by dl on 2019/05/06.
 */
 @RestController
-@RequestMapping("/thirdAccount")
+@RequestMapping("/thirdAccountDate")
 public class ThirdInsuranceAccountDateInfoController {
     @Resource
     private ThirdInsuranceAccountDateInfoService thirdInsuranceAccountDateInfoService;
