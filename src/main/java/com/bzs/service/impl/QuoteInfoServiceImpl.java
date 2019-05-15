@@ -634,7 +634,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             if(200==codes){
                                 String body=httpResult.getBody();
                                 System.out.println("body打印"+body);
-                                
+                                JSONObject jsonObjects = JSONObject.parseObject(body);
+                                if (jsonObjects.containsKey("state")) {
+                                    String state = jsonObjects.getString("state");
+                                    String retMsg = jsonObjects.getString("retMsg");
+                                    retMsg=EncodeUtil.unicodeToString(retMsg);
+                                    if("1".equals(state)){
+                                        return ResultGenerator.genSuccessResult(retMsg);
+                                    }else{
+                                        return ResultGenerator.genFailResult(retMsg);
+                                    }
+                                }
+
 
                             }else{
                                 String msg=httpResult.getMessage();
@@ -657,9 +668,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         }
 
         if(null!=source){
-
-
-
             return null;
         }else{
             return ResultGenerator.genFailResult("请选择作废的保险公司");
