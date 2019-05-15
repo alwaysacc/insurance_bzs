@@ -170,7 +170,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     dataBean.getData().setCarNo(carNo);
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
                     maps.put("carNo", carNo);
-                    maps.put("source", lastYearSource);
+                    maps.put("source", lastYearSource+"");
                     maps.put("carInfoId", uuid);
                    /* CarInfo carInfo1=carInfoService.findBy("carInfoId",uuid);
                     customerService.findBy("customerId",carInfo.getCustomerId());*/
