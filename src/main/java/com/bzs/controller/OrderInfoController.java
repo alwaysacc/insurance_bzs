@@ -40,7 +40,7 @@ public class OrderInfoController {
     @PostMapping("/getOrderList")
     public Result getOrderList(String accountId, @RequestParam(defaultValue = "0")int payStatus,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List list=orderInfoService.getOrderList(accountId,payStatus);
+        List<OrderInfo> list=orderInfoService.getOrderList(accountId,payStatus);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

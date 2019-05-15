@@ -6,6 +6,7 @@ import com.bzs.service.AccountInfoService;
 import com.bzs.service.MenuInfoService;
 import com.bzs.service.RoleInfoService;
 import com.bzs.utils.AbstractService;
+import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,5 +68,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         userInfo.put("permissions",menuInfoService.getUserPermissions(accountInfo.getLoginName()));
         System.out.println( ResultGenerator.genSuccessResult(roleInfoService.getUserRole(accountInfo.getLoginName())));
         return userInfo;
+    }
+
+    @Override
+    public Result getAccountAndThridAccount(String accountId) {
+        return null;
     }
 }

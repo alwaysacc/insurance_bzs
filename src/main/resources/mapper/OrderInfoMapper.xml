@@ -37,8 +37,6 @@
     order_info.contact_name,
     order_info.contact_tel,
     insured_info.posted_name,
-    insured_info.insurance_company,
-    insured_info.posted_name,
     insured_info.insurance_company
     FROM
     order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)

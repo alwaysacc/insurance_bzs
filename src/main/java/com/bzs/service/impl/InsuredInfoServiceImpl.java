@@ -2,6 +2,7 @@ package com.bzs.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.CarInfoMapper;
+import com.bzs.dao.CustomerMapper;
 import com.bzs.dao.InsuredInfoMapper;
 import com.bzs.model.*;
 import com.bzs.service.*;
@@ -18,7 +19,6 @@ import com.bzs.utils.jsontobean.InsuranceTypeBase;
 import com.bzs.utils.jsontobean.RenewalBean;
 import com.bzs.utils.jsontobean.RenewalData;
 import com.bzs.utils.threadUtil.CompletableFutureDemo;
-import com.bzs.utils.threadUtil.RenewalThreadCallable;
 import org.apache.commons.lang.StringUtils;
 
 import org.slf4j.Logger;
@@ -53,7 +53,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     private InsuranceTypeInfoService insuranceTypeInfoService;
     @Resource
     private CarInfoMapper carInfoMapper;
-
+    @Resource
+    private CustomerService customerService;
     @Override
     public Result checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy) {
         if (StringUtils.isBlank(checkType)) {
@@ -112,6 +113,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             String status = (String) renewalInfo.get("status");
             String msg = (String) renewalInfo.get("msg");
             Long source = (Long) renewalInfo.get("source");
+            System.out.println("11111111111111");
+            System.out.println(renewalInfo);
             if (StringUtils.isNotBlank(status)) {
                 if ("1".equals(status)) {
                     InsuredInfo insuredInfo = (InsuredInfo) renewalInfo.get("insuredInfo");
@@ -121,6 +124,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     List<InsuranceTypeInfo> insuranceTypeInfoList = (List<InsuranceTypeInfo>) renewalInfo.get("insuranceTypeInfoList");
                     String body = (String) renewalInfo.get("body");
                     RenewalBean dataBean = (RenewalBean) renewalInfo.get("data");
+                    System.out.println(dataBean);
                     CarInfo carInfo = (CarInfo) renewalInfo.get("carInfo");
                     if (StringUtils.isNotBlank(carNo)) {
                         carInfo.setCarNumber(carNo);
@@ -133,6 +137,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     //List list=carInfoMapper.findOneBy(carInfo);
                     carInfo.setChannelType(checkType + "");
                     carInfo.setCarInfoId(uuid);
+                    carInfo.setBrandModel(dataBean.getData().getCarName());
+                    //carInfo.setBrandModel(body);
                     List list = carInfoMapper.findOneBy(carInfo);
                     if (CollectionUtils.isEmpty(list)) {//未查到
                         /*carInfo.setChannelType(checkType+"");
@@ -166,6 +172,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     maps.put("carNo", carNo);
                     maps.put("source", lastYearSource);
                     maps.put("carInfoId", uuid);
+                   /* CarInfo carInfo1=carInfoService.findBy("carInfoId",uuid);
+                    customerService.findBy("customerId",carInfo.getCustomerId());*/
                     return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
                 } else if ("0099".equals(status)) {//续保选择的保险公司不对,重新续保
                     String body = (String) renewalInfo.get("body");
