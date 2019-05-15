@@ -202,7 +202,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     public Map<String, Object> getRenewalInfo(JSONObject jsonStr, String createdBy) {
         Long[] source = {1L, 2L, 4L};
         List<Long> sources = Arrays.asList(source);
-        HttpResult httpResult = getDifferentSourceRenewalInfo(sources, jsonStr);
+        HttpResult httpResult = getDifferentSourceRenewalInfo(sources, jsonStr,createdBy);
         String uuid = UUIDS.getDateUUID();
         return getResult(httpResult, uuid, createdBy);
     }
@@ -363,21 +363,21 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         String api = "";
         String port = "";
         String host = "";
-        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        if (null == a) {
+        //AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+        /*if (null == a) {
             result.put("status", "400");
             result.put("msg", "请先登录账号");
             result.put("data", null);
             return result;
-        } else {
-            String accountId = a.getAccountId();
+        } else {*/
+         /*   String accountId = a.getAccountId();
             if (StringUtils.isBlank(accountId)) {
                 result.put("status", "400");
                 result.put("msg", "此账号异常,无法续保");
                 result.put("data", null);
                 return result;
-            } else {
-                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+            } else {*/
+                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
                 String code = (String) map.get("code");
                 if ("200".equals(code)) {
                     ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
@@ -420,8 +420,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     return result;
                 }
 
-            }
-        }
+           /* }*/
+        /*}*/
         if (1 == source) {//太保
             // host = ThirdAPI.CPIC_HOST;
             // port = ThirdAPI.CPIC_PORT;
@@ -457,13 +457,13 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
      * @return
      * @description 启用线程续保
      */
-    public HttpResult getDifferentSourceRenewalInfo(List<Long> source, JSONObject jsonStr) {
+    public HttpResult getDifferentSourceRenewalInfo(List<Long> source, JSONObject jsonStr,String creatBy) {
         HttpResult result = null;
         Long start1 = System.currentTimeMillis();
-        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        String msg = "";
+       /* AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+        String msg = "";*/
         JSONObject jsonObject = new JSONObject();
-        String accountId = null;
+       /* String accountId = null;
         if (null == a) {
             msg = "请先登录账号";
         } else {
@@ -485,14 +485,14 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
             result.setT(bean);
             return result;
-        }
+        }*/
 
         List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
 
         for (Long sour : source) {
             if (null != sour) {
                 String name = InsuranceNameEnum.getName(sour);
-                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(sour, "1", accountId);
+                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(sour, "1", creatBy);
                 String code = (String) map.get("code");
                 if ("200".equals(code)) {
                     ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
@@ -509,8 +509,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         else if (2L == sour) {
                             api = ThirdAPI.PAIC_RENEWAL_NAME;
                             if(StringUtils.isNotBlank(accountName)&&StringUtils.isNotBlank(accountPwd)){
-                                jsonObject.put("account", accountName);
-                                jsonObject.put("password", accountPwd);
+                                jsonStr.put("account", accountName);
+                                jsonStr.put("password", accountPwd);
                             }else{
                                 flag=false;
                             }
@@ -638,7 +638,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                         logger.info("续保返回值的状态值" + state);
                                         if ("0099".equals(state)) {
                                             message += "上一年不在" + InsuranceNameEnum.getName(httpResult.getSource()) + "续保;";
-                                        }if ("19000".equals(state)) {
+                                        }else if ("19000".equals(state)) {
                                             message +=  InsuranceNameEnum.getName(httpResult.getSource()) + "账号异常："+httpResult.getMessage();
                                         } else if ("0".equals(state)) {
                                             JSONObject jsonObjects = JSONObject.parseObject(body);

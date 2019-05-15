@@ -10,6 +10,7 @@ import com.bzs.model.CarInfo;
 import com.bzs.service.*;
 import com.bzs.utils.*;
 import com.bzs.utils.commons.ThirdAPI;
+import com.bzs.utils.commons.TwoPower;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.encodeUtil.EncodeUtil;
 import com.bzs.utils.enumUtil.InsuranceItems2;
@@ -20,6 +21,7 @@ import com.bzs.utils.jsontobean.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,58 +57,60 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Resource
     private OrderInfoMapper orderInfoMapper;
     @Resource
-    private  ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
+    private OrderInfoService orderInfoService;
+    @Resource
+    private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
 
 
     @Override
     public Map quoteDetails(String carInfoId) {
         //报价信息
-        List<QuoteInfo> quoteInfo=quoteInfoMapper.getQuote(carInfoId);
+        List<QuoteInfo> quoteInfo = quoteInfoMapper.getQuote(carInfoId);
         //车辆信息
-        CarInfo carInfo=carInfoService.findBy("carInfoId",carInfoId);
+        CarInfo carInfo = carInfoService.findBy("carInfoId", carInfoId);
         //客户信息
-        Customer customer=null;
-        if (StringUtils.isNotBlank(carInfo.getCustomerId())){
-            customer=customerService.findBy("customerId",carInfo.getCustomerId());
+        Customer customer = null;
+        if (StringUtils.isNotBlank(carInfo.getCustomerId())) {
+            customer = customerService.findBy("customerId", carInfo.getCustomerId());
         }
         //跟进信息
-        InsuranceFollowInfo insuranceFollowInfo=insuranceFollowInfoService.findBy("carInfoId",carInfoId);
+        InsuranceFollowInfo insuranceFollowInfo = insuranceFollowInfoService.findBy("carInfoId", carInfoId);
         //投保信息
-        InsuredInfo insuredInfo=insuredInfoService.findBy("carInfoId",carInfoId);
-        List insuredList=null;
-        if (insuredInfo!=null){
-            insuredList=quoteInfoMapper.getInsurance(insuredInfo.getInsuredId(),0);
+        InsuredInfo insuredInfo = insuredInfoService.findBy("carInfoId", carInfoId);
+        List insuredList = null;
+        if (insuredInfo != null) {
+            insuredList = quoteInfoMapper.getInsurance(insuredInfo.getInsuredId(), 0);
         }
-        List TquoteList=null;
-        List RquoteList=null;
-        List PquoteList=null;
+        List TquoteList = null;
+        List RquoteList = null;
+        List PquoteList = null;
         System.out.println(quoteInfo.size());
         System.out.println(ResultGenerator.genSuccessResult(quoteInfo));
-        QuoteInfo quote=null;
-        for (int i=0;i<quoteInfo.size();i++){
+        QuoteInfo quote = null;
+        for (int i = 0; i < quoteInfo.size(); i++) {
             System.out.println(quoteInfo.get(i).getQuoteSource());
-            switch (quoteInfo.get(i).getQuoteSource()){
+            switch (quoteInfo.get(i).getQuoteSource()) {
                 case "1":
-                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    TquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
                 case "2":
-                    PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    PquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
                 case "4":
-                    RquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    RquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
             }
         }
-        Map map=new HashMap();
-        map.put("quote",quoteInfo);
-        map.put("customer",customer);
-        map.put("carInfo",carInfo);
-        map.put("insuranceFollowInfo",insuranceFollowInfo);
-        map.put("insuredInfo",insuredInfo);
-        map.put("insuredList",insuredList);
-        map.put("TquoteList",TquoteList);
-        map.put("PquoteList",PquoteList);
-        map.put("RquoteList",RquoteList);
+        Map map = new HashMap();
+        map.put("quote", quoteInfo);
+        map.put("customer", customer);
+        map.put("carInfo", carInfo);
+        map.put("insuranceFollowInfo", insuranceFollowInfo);
+        map.put("insuredInfo", insuredInfo);
+        map.put("insuredList", insuredList);
+        map.put("TquoteList", TquoteList);
+        map.put("PquoteList", PquoteList);
+        map.put("RquoteList", RquoteList);
         return map;
     }
 
@@ -117,7 +121,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         if (null != data) {
             data.setInsurancesList(list);
             //---------------------------  注意修改开始
-            if(StringUtils.isBlank(createdBy)){
+            if (StringUtils.isBlank(createdBy)) {
                 createdBy = UUIDS.getDateUUID();
             }
             if (StringUtils.isBlank(carInfoId)) {
@@ -139,7 +143,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             quoteInfo.setQuoteStatus(0);
             quoteInfo.setSubmitStatus(0);
             Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
-           logger.info("当前时间+"+date);
+            logger.info("当前时间+" + date);
             quoteInfo.setCreatedTime(new Date());
             // if ("1".equals(status)||"0".equals(status)) {//报价成功,其他均为报价失败
             //String body = (String) quoteMap.get("body");//爬虫返回的数据
@@ -147,10 +151,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             if (null != bean) {
                 String retCode = bean.getRetCode();
                 String retMsg = bean.getRetMsg();
-                if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
+                if (retMsg.indexOf("需双录") > -1) retMsg += ",请人工核保";
                 retMsg = EncodeUtil.unicodeToString(retMsg);
                 logger.info("retCode=" + retCode + ",retMsg=" + retMsg);
-                int resultCode=400;
+                int resultCode = 400;
                 if (StringUtils.isNotBlank(retCode)) {
                     ResponseData rdata = bean.getData();
                     if (null != rdata) {
@@ -158,23 +162,23 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         String biPremium = rdata.getBiPremium();//商业险标准保费
                         String proposalNo = rdata.getProposalNo();//报价单号
 
-                        if(StringUtils.isNotBlank(proposalNo)){//报价单号获取成功，说明报价+核保成功
+                        if (StringUtils.isNotBlank(proposalNo)) {//报价单号获取成功，说明报价+核保成功
                             quoteInfo.setQuoteStatus(1);
                             quoteInfo.setQuoteResult("报价成功");//报价结果
                             quoteInfo.setSubmitStatus(1);
                             quoteInfo.setSubmitresult("核保成功");
-                            resultCode=200;
-                        }else{
+                            resultCode = 200;
+                        } else {
                             //报价成功-核保失败
-                            if((StringUtils.isNotBlank(ciPremium)&&Double.valueOf(ciPremium)>0)||(StringUtils.isNotBlank(biPremium)&&Double.valueOf(ciPremium)>0)){
+                            if ((StringUtils.isNotBlank(ciPremium) && Double.valueOf(ciPremium) > 0) || (StringUtils.isNotBlank(biPremium) && Double.valueOf(ciPremium) > 0)) {
                                 quoteInfo.setQuoteStatus(1);
                                 quoteInfo.setQuoteResult("报价成功");//报价结果
                                 quoteInfo.setSubmitresult(retMsg);
-                                resultCode=300;
-                            }else{//报价+核保失败
+                                resultCode = 300;
+                            } else {//报价+核保失败
                                 quoteInfo.setQuoteResult(retMsg);
                                 quoteInfo.setSubmitresult(retMsg);
-                                resultCode=400;
+                                resultCode = 400;
                             }
 
                         }
@@ -307,7 +311,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                     insuredAmount = insuredAmount.replaceAll(",", "");
                                     insuranceTypeInfo.setInsuranceAmount(new BigDecimal(insuredAmount));
                                 }
-                                logger.info("保险名称：本名"+name1+"后台统一"+name+"代码："+code);
+                                logger.info("保险名称：本名" + name1 + "后台统一" + name + "代码：" + code);
                                 insuranceTypeInfo.setInsuranceName(name1);
                                 if (StringUtils.isNotBlank(standardPremium)) {
                                     standardPremium = standardPremium.replaceAll(",", "");
@@ -328,18 +332,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                        /* if (bean.getRetCode().equals("0099")){
                             return ResultGenerator.gen("失败", bean.getRetMsg(), ResultCode.FAIL);
                         }*/
-                       if(200==resultCode)
+                        if (200 == resultCode)
                             return ResultGenerator.gen("报价核保成功", bean, ResultCode.SUCCESS);
-                       else if(300==resultCode)
-                           return ResultGenerator.gen("报价成功,核保失败", bean, ResultCode.SUBMIT);
-                       else {
-                           return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
-                       }
+                        else if (300 == resultCode)
+                            return ResultGenerator.gen("报价成功,核保失败", bean, ResultCode.SUBMIT);
+                        else {
+                            return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
+                        }
                     } else {
                         quoteInfoMapper.insert(quoteInfo);
                         //if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
-                        PCICResponseBean resultBean=new  PCICResponseBean();
-                        resultBean.setRetMsg("报价失败:"+msg);
+                        PCICResponseBean resultBean = new PCICResponseBean();
+                        resultBean.setRetMsg("报价失败:" + msg);
                         return ResultGenerator.gen(retMsg, resultBean, ResultCode.FAIL);
                     }
                 }
@@ -349,12 +353,12 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 quoteInfo.setQuoteResult(msg);
                 quoteInfo.setSubmitresult(msg);
                 quoteInfoMapper.insert(quoteInfo);
-                PCICResponseBean resultBean=new  PCICResponseBean();
-                resultBean.setRetMsg("报价失败:"+msg);
-                return ResultGenerator.gen("报价失败:"+msg, resultBean, ResultCode.FAIL);
+                PCICResponseBean resultBean = new PCICResponseBean();
+                resultBean.setRetMsg("报价失败:" + msg);
+                return ResultGenerator.gen("报价失败:" + msg, resultBean, ResultCode.FAIL);
             }
         }
-        PCICResponseBean resultBean=new  PCICResponseBean();
+        PCICResponseBean resultBean = new PCICResponseBean();
         resultBean.setRetMsg("报价失败:参数异常");
         return ResultGenerator.gen("参数异常", resultBean, ResultCode.FAIL);
     }
@@ -371,60 +375,60 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             return result;
         } else {
             AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-            String accountId=null;
+            String accountId = null;
             if (null == a) {
                 result.put("status", "400");
                 result.put("msg", "请先登录账号");
                 result.put("data", null);
                 return result;
-            }else{
-                 accountId=a.getAccountId();
-                 if(StringUtils.isBlank(accountId)){
-                     result.put("status", "400");
-                     result.put("msg", "报价的保险公司账号异常");
-                     result.put("data", null);
-                     return result;
-                 }
-            }
-           Map map= thirdInsuranceAccountInfoService.findEnbaleAccount(source,"1",accountId);
-            String code=(String)map.get("code");
-            boolean aflag=false;
-            String message=null;
-            String name=InsuranceNameEnum.getName(source);
-            if("200".equals(code)){
-                ThirdInsuranceAccountInfo accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
-                host=accountInfo.getIp();
-                port=accountInfo.getPort();
-                if(StringUtils.isNotBlank(host)&&StringUtils.isNotBlank(port)){
-                    aflag=true;
-                }else{
-                    message=name+"账号信息不完整";
+            } else {
+                accountId = a.getAccountId();
+                if (StringUtils.isBlank(accountId)) {
+                    result.put("status", "400");
+                    result.put("msg", "报价的保险公司账号异常");
+                    result.put("data", null);
+                    return result;
                 }
-            }else{
-               message=(String)map.get("msg");
+            }
+            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+            String code = (String) map.get("code");
+            boolean aflag = false;
+            String message = null;
+            String name = InsuranceNameEnum.getName(source);
+            if ("200".equals(code)) {
+                ThirdInsuranceAccountInfo accountInfo = (ThirdInsuranceAccountInfo) map.get("data");
+                host = accountInfo.getIp();
+                port = accountInfo.getPort();
+                if (StringUtils.isNotBlank(host) && StringUtils.isNotBlank(port)) {
+                    aflag = true;
+                } else {
+                    message = name + "账号信息不完整";
+                }
+            } else {
+                message = (String) map.get("msg");
             }
 
             if (1 == source) {
                 // api = ThirdAPI.CPIC_QUOTE_NAME;
-               // host = ThirdAPI.CPIC_HOST;
+                // host = ThirdAPI.CPIC_HOST;
                 api = ThirdAPI.CPIC_QUOTE_ALL;
-             //   port = ThirdAPI.CPIC_PORT;
-                aflag=true;
+                //   port = ThirdAPI.CPIC_PORT;
+                aflag = true;
 
             } else if (2 == source) {
-             //   host = ThirdAPI.PAIC_HOST;
+                //   host = ThirdAPI.PAIC_HOST;
                 api = ThirdAPI.PAIC_QUOTE_NAME;
-            //    port = ThirdAPI.PAIC_PORT;
-                aflag=true;
+                //    port = ThirdAPI.PAIC_PORT;
+                aflag = true;
             } else if (4 == source) {
-             //   host = ThirdAPI.PICC_HOST;
+                //   host = ThirdAPI.PICC_HOST;
                 api = ThirdAPI.PICC_QUOTE_ALL;
-            //    port = ThirdAPI.PICC_PORT;
-                aflag=true;
+                //    port = ThirdAPI.PICC_PORT;
+                aflag = true;
             } else {
-                message=name+"报价业务待拓展";
+                message = name + "报价业务待拓展";
             }
-            if(!aflag){
+            if (!aflag) {
                 result.put("status", "400");
                 result.put("msg", message);
                 result.put("data", null);
@@ -442,9 +446,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();
             if (200 == code) {//远程请求成功
-                PCICResponseBean bean =JSONObject.parseObject(body,PCICResponseBean.class);
+                PCICResponseBean bean = JSONObject.parseObject(body, PCICResponseBean.class);
                 String retMsg = bean.getRetMsg();
-                String state=bean.getState();
+                String state = bean.getState();
                 retMsg = EncodeUtil.unicodeToString(retMsg);
                 result.put("status", state);
                 result.put("msg", retMsg);
@@ -495,37 +499,86 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
     @Override
     public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source) {
-        if (StringUtils.isBlank(proposalNo)) {
+        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+        if (null == a) {
+            return ResultGenerator.genFailResult("请先登录账号");
+        }
+        String accountId = a.getAccountId();
+        if (StringUtils.isNotBlank(pay) && "1".equals(pay)) {
+            pay = "alipay";
+        } else {
+            pay = "weixin";
+        }
+        String api=null;
+        String host=null;
+        String port=null;
+        if (null != source) {
+            if(1L==source){
+                api = ThirdAPI.CPIC_PAY;
+            }else if(2L==source){
+                api = ThirdAPI.PAIC_PAY;
+            }else if(4L==source){
+                api = ThirdAPI.PICC_PAY;
+            }else{
+                int is=  TwoPower.anotherIs2Power(source);
+                if(1==is)
+                return ResultGenerator.genFailResult("待拓展业务");
+                else return ResultGenerator.genFailResult("参数异常");
+            }
+            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+            String code=(String )map.get("code");
+            if("200".equals(code)){
+                ThirdInsuranceAccountInfo accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
+                host=accountInfo.getIp();
+                port=accountInfo.getPort();
+                if(StringUtils.isBlank(host)||StringUtils.isBlank(port)){
+                    return ResultGenerator.genFailResult("参数异常");
+                }
+                if (StringUtils.isBlank(proposalNo)) {
+                    return ResultGenerator.genFailResult("参数异常");
+                }
+
+
+            }else{
+                String msg=(String)map.get("msg");
+                return ResultGenerator.genFailResult(msg);
+            }
+        } else {
+            return ResultGenerator.genFailResult("参数异常");
+        }
+
+     /*   if (StringUtils.isBlank(proposalNo)) {
             return ResultGenerator.genFailResult("参数异常");
         }
         if (StringUtils.isNotBlank(pay) && "1".equals(pay)) {
             pay = "alipay";
         } else {
             pay = "weixin";
-        }
-        String host = "";
+        }*/
+       /* String host = "";
         String port = "";
         String api = "";
+
         if (null == source || 1 == source) {//太保报价
-           host=ThirdAPI.CPIC_HOST;
-           port=ThirdAPI.CPIC_PORT;
-           api = ThirdAPI.CPIC_PAY;
+            host = ThirdAPI.CPIC_HOST;
+            port = ThirdAPI.CPIC_PORT;
+            api = ThirdAPI.CPIC_PAY;
         } else if (2 == source) {//平安
-            host=ThirdAPI.PAIC_HOST;
-            port=ThirdAPI.PAIC_PORT;
+            host = ThirdAPI.PAIC_HOST;
+            port = ThirdAPI.PAIC_PORT;
             api = ThirdAPI.PAIC_PAY;
         } else if (4 == source) {//人保
-            host=ThirdAPI.PICC_HOST;
-            port=ThirdAPI.PICC_PORT;
+            host = ThirdAPI.PICC_HOST;
+            port = ThirdAPI.PICC_PORT;
             api = ThirdAPI.PICC_PAY;
         } else {
             return ResultGenerator.genFailResult("参数异常");
-        }
+        }*/
         String URL = host + ":" + port + "/" + api;
         JSONObject json = new JSONObject();
         json.put("proposalNo", proposalNo);
         json.put("pay", pay);
-        String sendTime=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        String sendTime = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
         json.put("sendTime", sendTime);
         HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", PayInfoBean.class, json.toJSONString());
         if (httpResult != null) {
@@ -536,25 +589,25 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 PayInfoBean bean = (PayInfoBean) httpResult.getT();
                 if (bean != null) {
                     String state = bean.getState();
-                    String retCode=bean.getRetCode();
-                    if ("1".equals(state)&&"0000".equals(retCode)) {
+                    String retCode = bean.getRetCode();
+                    if ("1".equals(state) && "0000".equals(retCode)) {
                         String retMsg = bean.getRetMsg();
                         PayInfoData payinfo = bean.getData();
                         if (payinfo != null) {
                             String payUrl = payinfo.getPayUrl();
                             String payTime = payinfo.getPayTime();
-                            String checkNo=bean.getCheckNo();//校验码
-                            String payNo=bean.getPayNo();//支付号
-                            String paymentNotice=payinfo.getPaymentNotice();//交费通知单
-                            String serialNo=payinfo.getSerialNo();//流水号
-                            retMsg=EncodeUtil.unicodeToString(retMsg);
+                            String checkNo = bean.getCheckNo();//校验码
+                            String payNo = bean.getPayNo();//支付号
+                            String paymentNotice = payinfo.getPaymentNotice();//交费通知单
+                            String serialNo = payinfo.getSerialNo();//流水号
+                            retMsg = EncodeUtil.unicodeToString(retMsg);
                             payinfo.setPayMsg(retMsg);
-                            String payEndDate=DateUtil.getDateStringFromString(retMsg);
+                            String payEndDate = DateUtil.getDateStringFromString(retMsg);
                             payinfo.setPayEndDate(payEndDate);
                             bean.setPaymentNotice(paymentNotice);
                             bean.setSerialNo(serialNo);
-                           // PayInfo payinfos = payinfo.getPayInfo();
-                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo,payNo,checkNo,paymentNotice,serialNo,payEndDate,retMsg);
+                            // PayInfo payinfos = payinfo.getPayInfo();
+                            quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo, payNo, checkNo, paymentNotice, serialNo, payEndDate, retMsg);
                             OrderInfo orderInfo = new OrderInfo();
                             orderInfo.setOrderId(UUIDS.getDateUUID());
                             orderInfo.setPayType("2");//保单订单
@@ -564,11 +617,14 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
                             orderInfo.setCreateTime(date);
                             orderInfo.setPayment("2");//微信支付
+                            orderInfo.setCarInfoId(carInfoId);
+                            orderInfo.setPayTypeId(quoteId);
                             if (StringUtils.isNotBlank(money)) {
                                 money = money.replaceAll(",", "");
                                 orderInfo.setPayMoney(new BigDecimal(money));
                             }
-                            orderInfoMapper.insert(orderInfo);
+                            //  orderInfoMapper.insert(orderInfo);
+                            orderInfoService.save(orderInfo);
                             return ResultGenerator.gen("获取成功", payinfo, ResultCode.SUCCESS);
                         }
                     } else {
@@ -601,77 +657,71 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source) {
+    public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orederNo) {
         AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        if(null==a){
+        if (null == a) {
             return ResultGenerator.genFailResult("请先登录账号");
-        }else{
-            String  accountId=a.getAccountId();
-            if(null!=source){
-                Map map= thirdInsuranceAccountInfoService.findEnbaleAccount(source,"1",accountId);
-                String code=(String)map.get("code");
-                if("200".equals(code)){
-                    ThirdInsuranceAccountInfo  accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
-                    String host=accountInfo.getIp();
-                    String port =accountInfo.getPort();
-                    String api="";
-                    if(1L==source){
-                        api=ThirdAPI.CPIC_PAY_CANCEL;
-                    }else if(2L==source){
-                        api=ThirdAPI.PAIC_PAY_CANCEL;
-                    }else if(4L==source){
-                        api=ThirdAPI.PICC_PAY_CANCEL;
-                    }else{
+        } else {
+            String accountId = a.getAccountId();
+            if (null != source) {
+                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+                String code = (String) map.get("code");
+                if ("200".equals(code)) {
+                    ThirdInsuranceAccountInfo accountInfo = (ThirdInsuranceAccountInfo) map.get("data");
+                    String host = accountInfo.getIp();
+                    String port = accountInfo.getPort();
+                    String api = "";
+                    if (1L == source) {
+                        api = ThirdAPI.CPIC_PAY_CANCEL;
+                    } else if (2L == source) {
+                        api = ThirdAPI.PAIC_PAY_CANCEL;
+                    } else if (4L == source) {
+                        api = ThirdAPI.PICC_PAY_CANCEL;
+                    } else {
                         return ResultGenerator.genFailResult("待拓展业务");
                     }
-                    if(StringUtils.isNotBlank(proposalNo)){
-                        JSONObject jsonObject=new JSONObject();
-                        jsonObject.put("proposalNo",proposalNo);
-                        if(1L==source){
-                            String URL = host + ":" + port + "/" + api;
-                            HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", null, jsonObject.toJSONString());
-                            int codes=httpResult.getCode();
-                            if(200==codes){
-                                String body=httpResult.getBody();
-                                System.out.println("body打印"+body);
-                                JSONObject jsonObjects = JSONObject.parseObject(body);
-                                if (jsonObjects.containsKey("state")) {
-                                    String state = jsonObjects.getString("state");
-                                    String retMsg = jsonObjects.getString("retMsg");
-                                    retMsg=EncodeUtil.unicodeToString(retMsg);
-                                    if("1".equals(state)){
-                                        return ResultGenerator.genSuccessResult(retMsg);
-                                    }else{
-                                        return ResultGenerator.genFailResult(retMsg);
+                    if (StringUtils.isNotBlank(proposalNo)) {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("proposalNo", proposalNo);
+                        String URL = host + ":" + port + "/" + api;
+                        HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", null, jsonObject.toJSONString());
+                        int codes = httpResult.getCode();
+                        if (200 == codes) {
+                            String body = httpResult.getBody();
+                            System.out.println("body打印" + body);
+                            JSONObject jsonObjects = JSONObject.parseObject(body);
+                            if (jsonObjects.containsKey("state")) {
+                                String state = jsonObjects.getString("state");
+                                String retMsg = jsonObjects.getString("retMsg");
+                                retMsg = EncodeUtil.unicodeToString(retMsg);
+                                if ("1".equals(state)) {
+                                    if (StringUtils.isNotBlank(orederNo)) {//修改订单状态值
+                                        int reslut = orderInfoService.updatePayStatus(orederNo);
                                     }
+                                    return ResultGenerator.genSuccessResult(retMsg);
+                                } else {
+                                    return ResultGenerator.genFailResult(retMsg);
                                 }
-
-
-                            }else{
-                                String msg=httpResult.getMessage();
-                                return ResultGenerator.genFailResult(msg);
+                            } else {
+                                return ResultGenerator.genFailResult("失败");
                             }
-
+                        } else {
+                            String msg = httpResult.getMessage();
+                            return ResultGenerator.genFailResult(msg);
                         }
-                    }else{
+
+                    } else {
                         return ResultGenerator.genFailResult("参数不能为空");
                     }
 
 
-                }else{
-                    String msg=(String)map.get("msg");
+                } else {
+                    String msg = (String) map.get("msg");
                     return ResultGenerator.genFailResult(msg);
                 }
+            } else {
+                return ResultGenerator.genFailResult("请选择作废的保险公司");
             }
-
-
         }
-
-        if(null!=source){
-            return null;
-        }else{
-            return ResultGenerator.genFailResult("请选择作废的保险公司");
-        }
-
     }
 }

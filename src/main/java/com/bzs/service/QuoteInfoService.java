@@ -64,5 +64,5 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @return
      */
 
-    Result payCancel(String proposalNo, String createdBy, String quoteId, Long source);
+    Result payCancel(String proposalNo, String createdBy, String quoteId, Long source,String orderNo);
 }

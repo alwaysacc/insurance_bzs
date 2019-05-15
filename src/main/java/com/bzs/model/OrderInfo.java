@@ -74,6 +74,24 @@ public class OrderInfo {
 
     @Column(name = "contact_tel")
     private Integer contactTel;
+    @Column(name = "create_by")
+    private String createBy;
+    /**
+     * 获取创建人
+     *
+     * @return create_by - 创建人
+     */
+    public String getCreateBy() {
+        return createBy;
+    }
+    /**
+     * 设置创建人
+     *
+     * @param createBy 创建人
+     */
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
     /**
      * 获取订单号

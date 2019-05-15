@@ -39,4 +39,14 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
         }
         return orderInfoMapper.searchOrderList(accountId,payStatus,carInfoId,postedName,deliveryWay,insuranceCompany);
     }
+
+    @Override
+    public int updatePayStatus(OrderInfo orderInfo) {
+        return orderInfoMapper.updatePayStatus(orderInfo);
+    }
+
+    @Override
+    public int updatePayStatus(String orderId) {
+        return orderInfoMapper.updatePayStatus(orderId);
+    }
 }

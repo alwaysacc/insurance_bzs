@@ -17,4 +17,12 @@ public interface OrderInfoService extends Service<OrderInfo> {
                          @Param("deliveryWay") int deliveryWay, @Param("insuranceCompany") String insuranceCompany
     );
 
+    /**
+     * 根据订单id修改订单状态
+     * @param orderInfo
+     * @return
+     */
+    int  updatePayStatus(OrderInfo orderInfo);
+    int  updatePayStatus(String  orderId);
+
 }
