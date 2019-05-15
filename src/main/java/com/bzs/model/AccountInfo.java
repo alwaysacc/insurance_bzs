@@ -469,7 +469,7 @@ public class AccountInfo implements Serializable {
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
-   @Transient
+  /* @Transient
     private List<ThirdInsuranceAccountInfo> thridAccounts;//第三方账号
 
     public List<ThirdInsuranceAccountInfo> getThridAccounts() {
@@ -478,5 +478,5 @@ public class AccountInfo implements Serializable {
 
     public void setThridAccounts(List<ThirdInsuranceAccountInfo> thridAccounts) {
         this.thridAccounts = thridAccounts;
-    }
+    }*/
 }

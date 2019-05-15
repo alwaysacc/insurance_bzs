@@ -14,6 +14,8 @@ public class PayInfoData {
     private String serialNo;
     private  String payMsg;
     private String payEndDate;
+    private String payNo;
+    private String checkNo;
     public String getPayTime() {
         return payTime;
     }
@@ -68,5 +70,21 @@ public class PayInfoData {
 
     public void setPayEndDate(String payEndDate) {
         this.payEndDate = payEndDate;
+    }
+
+    public String getPayNo() {
+        return payNo;
+    }
+
+    public void setPayNo(String payNo) {
+        this.payNo = payNo;
+    }
+
+    public String getCheckNo() {
+        return checkNo;
+    }
+
+    public void setCheckNo(String checkNo) {
+        this.checkNo = checkNo;
     }
 }

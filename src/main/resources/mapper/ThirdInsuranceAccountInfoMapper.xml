@@ -21,6 +21,9 @@
     <result column="enable_start_date" jdbcType="VARCHAR" property="enableStartDate" />
     <result column="enable_end_date" jdbcType="VARCHAR" property="enableEndDate" />
   </resultMap>
+
+
+
 <!--根据账号id修改  开始-->
   <sql id="updateItems">
     <trim prefix="Set" suffixOverrides=",">
@@ -57,4 +60,61 @@
     SELECT m.* FROM(select *from third_insurance_account_info WHERE account_id=#{accountId} and status=#{status} ORDER BY create_time DESC LIMIT 100)m GROUP BY m.account_type
   </select>
   <!--获取每个保司下可用的账号最新添加的账号 结束-->
+  <!--修改或添加 开始-->
+  <sql id="insertItems">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      third_insurance_id,
+      <if test="createId!=null and ''!=createId ">create_id,</if>
+      <if test="accountName!=null and ''!=accountName ">account_name,</if>
+      <if test="accountPwd!=null and ''!=accountPwd ">account_pwd,</if>
+      <if test="createTime!=null and ''!=createTime ">create_time,</if>
+
+      <if test="vpn!=null and ''!=vpn ">vpn,</if>
+      <if test="accountId!=null and ''!=accountId ">account_id,</if>
+      <if test="isPay!=null and ''!=isPay ">is_pay,</if>
+      <if test="accountType!=null and ''!=accountType ">account_type,</if>
+      <if test="ip!=null and ''!=ip ">ip,</if>
+
+      <if test="port!=null and ''!=port ">port,</if>
+      <if test="status!=null and ''!=status ">status,</if>
+      <if test="enableStartDate!=null and ''!=enableStartDate ">enable_start_date,</if>
+      <if test="enableEndDate!=null and ''!=enableEndDate ">enable_end_date,</if>
+    </trim>
+  </sql>
+
+  <sql id="insertValues">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      #{thirdInsuranceId},
+      <if test="createId!=null and ''!=createId ">#{createId},</if>
+      <if test="accountName!=null and ''!=accountName ">#{accountName},</if>
+      <if test="accountPwd!=null and ''!=accountPwd ">#{accountPwd},</if>
+      <if test="createTime!=null and ''!=createTime ">#{createTime},</if>
+
+      <if test="vpn!=null and ''!=vpn ">#{vpn},</if>
+      <if test="accountId!=null and ''!=accountId ">#{accountId},</if>
+      <if test="isPay!=null and ''!=isPay ">#{isPay},</if>
+      <if test="accountType!=null and ''!=accountType ">#{accountType},</if>
+      <if test="ip!=null and ''!=ip ">#{ip},</if>
+
+      <if test="port!=null and ''!=port ">#{port},</if>
+      <if test="status!=null and ''!=status ">#{status},</if>
+      <if test="enableStartDate!=null and ''!=enableStartDate ">#{enableStartDate},</if>
+      <if test="enableEndDate!=null and ''!=enableEndDate ">#{enableEndDate},</if>
+    </trim>
+  </sql>
+  <insert id="addOrUpdate" parameterType="com.bzs.model.AccountInfo">
+    insert into third_insurance_account_info <include refid="insertItems"/> values <include refid="insertValues"/>
+    ON DUPLICATE KEY UPDATE
+    create_id=values(create_id),
+    account_name=values(account_name),
+    account_pwd=values(account_pwd),
+    vpn=values(vpn),
+    ip=values(ip),
+    port=values(port),
+    status=values(status),
+    enable_start_date=values(enable_start_date),
+    enable_end_date=values(enable_end_date)
+  </insert>
+
+  <!--修改或添加 结束-->
 </mapper>

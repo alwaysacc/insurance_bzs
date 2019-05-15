@@ -93,4 +93,27 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }
     }
 
+    @Override
+    public Result insertOrUpdate(AccountInfo accountInfo,String type) {
+        if(null!=accountInfo){
+            String  msg="";
+            if(StringUtils.isNotBlank(type)){
+                if("0".equals(type)){
+                    msg="添加";
+                }else if("1".equals(type)){
+                    msg="修改";
+                }
+            }
+            try{
+                int result= accountInfoMapper.addOrUpdate(accountInfo);
+                return ResultGenerator.genSuccessResult(result,msg+"成功");
+            }catch(Exception e){
+                logger.error("插入或者更新异常",e);
+                return ResultGenerator.genFailResult(msg+"异常");
+            }
+
+        }else{
+            return ResultGenerator.genFailResult("参数为空");
+        }
+    }
 }

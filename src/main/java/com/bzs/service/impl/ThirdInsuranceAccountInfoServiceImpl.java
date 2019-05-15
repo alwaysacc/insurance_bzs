@@ -6,6 +6,8 @@ import com.bzs.service.ThirdInsuranceAccountInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
+import com.bzs.utils.UUIDS;
+import com.bzs.utils.commons.ObjectUtil;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.enumUtil.InsuranceNameEnum2;
 import org.apache.commons.collections.CollectionUtils;
@@ -68,10 +70,10 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         }else{
             msg="请指定保险公司枚举值";
         }
-        if(StringUtils.isNotBlank(status)&&!"2".equals(status)){
+        if(StringUtils.isNotBlank(status)&&!"1".equals(status)){
             accountInfo.setStatus(status);
         }else{
-            accountInfo.setStatus("2");//可用的
+            accountInfo.setStatus("1");//可用的
         }
 
         if(StringUtils.isNotBlank(accountId)){
@@ -110,7 +112,7 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             msg="参数为空，请指定账号";
         }
         if(StringUtils.isBlank(status)){
-            status="2";
+            status="1";
         }
         if(StringUtils.isNotBlank(msg)){
             result.put("code",code);
@@ -130,5 +132,32 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             result.put("data",null);
             return result;
         }
+    }
+
+    @Override
+    public Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String type) {
+       String msg="";
+        if(StringUtils.isNotBlank(type)){
+            if("0".equals(type))msg="添加";
+            else if("1".equals(type))msg="修改";
+        }
+        //初始化后的对象不为null,根据属性值判断，属性值如果是 "" 则释为空
+        //if(!ObjectUtil.isEmptyIncludeQuotationMark(accountInfo)){
+        if(null!=accountInfo){
+           String id= accountInfo.getThirdInsuranceId();
+            if(StringUtils.isNotBlank(id)){
+                msg="修改";
+            }else{
+                String uuid=UUIDS.getDateUUID();
+                accountInfo.setThirdInsuranceId(uuid);
+                msg="添加";
+            }
+            int result=  thirdInsuranceAccountInfoMapper.addOrUpdate(accountInfo);
+            return  ResultGenerator.genSuccessResult(result,msg+"成功");
+        }else {
+            String msg2="参数异常,"+msg+"失败";
+            return ResultGenerator.genFailResult(msg2);
+        }
+
     }
 }

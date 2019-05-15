@@ -17,6 +17,8 @@ public class RenewalBean {
     private RenewalData data;
     private String sendTime;
     private String message;
+    private String retMsg;//人保出险 不在续保期内
+    private  String retCode;//人保出险 不在续保期内
     public void setState(String state) {
         this.state = state;
     }

@@ -45,4 +45,13 @@ public interface ThirdInsuranceAccountInfoService extends Service<ThirdInsurance
      */
     public Map<String,Object>findDifferSourceAccount(String accountId,String status);
 
+    /**
+     * 添加或修改
+     * @param accountInfo
+     * @param type 0添加1修改 空不反回
+     * @return
+     */
+    Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String type);
+
+
 }

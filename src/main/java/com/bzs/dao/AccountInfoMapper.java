@@ -15,4 +15,11 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
      */
     List getUserInfo(@Param("username") String username, @Param("password") String password);
     List<AccountInfo> getAccountAndThridAccount (AccountInfo accountInfo);
+
+    /**
+     * 插入或更新
+     * @param accountInfo
+     * @return
+     */
+    int addOrUpdate(AccountInfo accountInfo);
 }

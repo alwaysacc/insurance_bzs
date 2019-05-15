@@ -1,9 +1,11 @@
 package com.bzs.controller;
 import com.bzs.shiro.FebsProperties;
+import com.bzs.utils.MD5Utils;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
+import com.bzs.utils.saltEncryptionutil.SaltEncryptionUtil;
 import com.bzs.utils.vcode.Captcha;
 import com.bzs.utils.vcode.GifCaptcha;
 import com.github.pagehelper.PageHelper;
@@ -101,6 +103,8 @@ public class AccountInfoController {
             return ResultGenerator.genFailResult("登录账号或者密码为空");
         }
         Subject subject = SecurityUtils.getSubject();
+        //password  =SaltEncryptionUtil.getEncryptionByName(userName,password);
+        password=MD5Utils.encrypt(userName.toLowerCase(),password);
         UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
         String failMsg = "";
         if (!subject.isAuthenticated()) {//是否通过login()进行了身份验证
@@ -151,5 +155,17 @@ public class AccountInfoController {
     @PostMapping("/getAccountAndThridAccount")
     public Result getAccountAndThridAccount(String accountId){
         return accountInfoService.getAccountAndThridAccount(accountId);
+    }
+
+    /**
+     *
+     * @param accountInfo
+     * @param type 0 添加1修改
+     * @return
+     */
+    @ApiOperation("插入或更新")
+    @PostMapping("/insertOrUpdate")
+    public Result insertOrUpdate(AccountInfo accountInfo,String type){
+        return accountInfoService.insertOrUpdate(accountInfo ,type);
     }
 }
