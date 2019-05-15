@@ -168,7 +168,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     dataBean.getData().setCarNo(carNo);
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
                     maps.put("carNo", carNo);
-                    maps.put("source", lastYearSource);
+                    maps.put("source", lastYearSource+"");
                     maps.put("carInfoId", uuid);
                     return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
                 } else if ("0099".equals(status)) {//续保选择的保险公司不对,重新续保
