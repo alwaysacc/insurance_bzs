@@ -1,62 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.AccountInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
-    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
-    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-    <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId" />
-    <result column="account_state" jdbcType="VARCHAR" property="accountState" />
-    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
-    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
-    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
-    <result column="wechat" jdbcType="VARCHAR" property="wechat" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="delete_status" jdbcType="TINYINT" property="deleteStatus" />
-    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
-    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-  </resultMap>
-  <select id="getRoleIdByAccountId" resultType="String">
+    <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="account_id" jdbcType="VARCHAR" property="accountId"/>
+        <result column="role_id" jdbcType="VARCHAR" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId"/>
+        <result column="account_state" jdbcType="VARCHAR" property="accountState"/>
+        <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
+        <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="wechat" jdbcType="VARCHAR" property="wechat"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="delete_status" jdbcType="TINYINT" property="deleteStatus"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="login_time" jdbcType="TIMESTAMP" property="loginTime"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+
+
+
+    <select id="getRoleIdByAccountId" resultType="String">
     select role_id from account_id where account_id=#{account_id}
   </select>
 
-  <select id="getUserInfo" resultType="map">
+    <select id="getUserInfo" resultType="map">
         SELECT
-account_info.account_id,
-account_info.role_id,
-account_info.role_name,
-account_info.parent_id,
-account_info.ancestor_id,
-account_info.account_state,
-account_info.login_name,
-account_info.login_pwd,
-account_info.user_name,
-account_info.area_code,
-account_info.mobile,
-account_info.id_card,
-account_info.wechat,
-account_info.email,
-account_info.delete_status,
-account_info.UPDATED_BY,
-account_info.CREATED_BY,
-account_info.REVISION,
-account_info.CREATED_TIME,
-account_info.UPDATED_TIME
-FROM
-account_info
-where
-account_info.login_name = #{username},
-account_info.login_pwd = #{password},
-account_info.delete_status = 0,
+            account_info.account_id,
+            account_info.role_id,
+            account_info.role_name,
+            account_info.parent_id,
+            account_info.ancestor_id,
+            account_info.account_state,
+            account_info.login_name,
+            account_info.login_pwd,
+            account_info.user_name,
+            account_info.area_code,
+            account_info.mobile,
+            account_info.id_card,
+            account_info.wechat,
+            account_info.email,
+            account_info.delete_status,
+            account_info.UPDATED_BY,
+            account_info.CREATED_BY,
+            account_info.REVISION,
+            account_info.CREATED_TIME,
+            account_info.UPDATED_TIME
+            FROM
+            account_info
+            where
+            account_info.login_name = #{username},
+            account_info.login_pwd = #{password},
+            account_info.delete_status = 0,
     </select>
+
+    <!--查询 账号和对应的第三方账号 开始-->
+    <resultMap id="accountAndThridAccountResultMap" type="com.bzs.model.AccountInfo" extends="BaseResultMap">
+        <collection property="thridAccounts" ofType="com.bzs.model.ThirdInsuranceAccountInfo" resultMap="com.bzs.dao.ThirdInsuranceAccountInfoMapper.BaseResultMap" columnPrefix="b_"/>
+    </resultMap>
+    <select id="getAccountAndThridAccount" resultMap="accountAndThridAccountResultMap" parameterType="com.bzs.model.AccountInfo" >
+      select
+        a.* ,
+        b.third_insurance_id as  b_third_insurance_id,
+        b.account_id  as b_account_id
+        from account_info a
+        left  join  third_insurance_account_info b
+        on a.account_id = b.account_id
+      <if test="accountId!=null and accountId!=''"> where a.account_id=#{accountId}</if>
+    </select>
+    <!--查询 账号和对应的第三方账号 结束-->
 </mapper>

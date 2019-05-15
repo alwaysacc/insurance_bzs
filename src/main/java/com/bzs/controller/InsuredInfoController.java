@@ -100,13 +100,5 @@ public class InsuredInfoController {
        }
         return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy );
     }
-    @GetMapping("/httpGetTest")
-    public Map<String,Object>result(String name,String age){
-        Map<String,Object> result=new HashMap<String,Object>();
-        result.put("status",1);
-        result.put("msg","成功");
-        result.put("data",name);
-        return result;
-    }
 
 }

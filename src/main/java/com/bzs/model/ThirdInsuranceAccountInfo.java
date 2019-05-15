@@ -1,5 +1,7 @@
 package com.bzs.model;
 
+import org.apache.ibatis.type.Alias;
+
 import java.util.Date;
 import javax.persistence.*;
 
