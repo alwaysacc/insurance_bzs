@@ -117,18 +117,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Override
     public Result getQuoteDetailsByApi(QuoteParmasBean params, List<InsurancesList> list, String carInfoId, String createdBy, Long source) {
         /* if (CollectionUtils.isNotEmpty(list)) {*/
+        if(StringUtils.isBlank(createdBy)){
+            return   ResultGenerator.genFailResult("参数错误,未获取账号信息");
+        }
+        if(source == null){
+            return   ResultGenerator.genFailResult("参数错误");
+        }
         ParamsData data = params.getData();
         if (null != data) {
             data.setInsurancesList(list);
             //---------------------------  注意修改开始
-            if (StringUtils.isBlank(createdBy)) {
-                createdBy = UUIDS.getDateUUID();
-            }
             if (StringUtils.isBlank(carInfoId)) {
                 carInfoId = UUIDS.getDateUUID();
-            }
-            if (source == null) {
-                source = 1L;
             }
             //---------------------------  注意修改结束
             Map<String, Object> quoteMap = getQuoteDetailsByApi(source, createdBy, params);
@@ -374,7 +374,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             result.put("msg", "参数错误");
             return result;
         } else {
-            AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+          /*  AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
             String accountId = null;
             if (null == a) {
                 result.put("status", "400");
@@ -389,8 +389,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     result.put("data", null);
                     return result;
                 }
-            }
-            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+            }*/
+
+            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
             String code = (String) map.get("code");
             boolean aflag = false;
             String message = null;
@@ -499,11 +500,11 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
     @Override
     public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source) {
-        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+      /*  AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
         if (null == a) {
             return ResultGenerator.genFailResult("请先登录账号");
         }
-        String accountId = a.getAccountId();
+        String accountId = a.getAccountId();*/
         if (StringUtils.isNotBlank(pay) && "1".equals(pay)) {
             pay = "alipay";
         } else {
@@ -525,7 +526,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 return ResultGenerator.genFailResult("待拓展业务");
                 else return ResultGenerator.genFailResult("参数异常");
             }
-            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+            if(StringUtils.isBlank(createdBy)){
+                return ResultGenerator.genFailResult("未获取账号信息");
+            }
+            Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
             String code=(String )map.get("code");
             if("200".equals(code)){
                 ThirdInsuranceAccountInfo accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
@@ -659,12 +663,15 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Override
     public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orederNo) {
         AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        if (null == a) {
+        /*if (null == a) {
             return ResultGenerator.genFailResult("请先登录账号");
-        } else {
-            String accountId = a.getAccountId();
+        } else {*/
+            //String accountId = a.getAccountId();
+        if(StringUtils.isBlank(createdBy)){
+            return ResultGenerator.genFailResult("未获取账号信息");
+        }
             if (null != source) {
-                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", accountId);
+                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
                 String code = (String) map.get("code");
                 if ("200".equals(code)) {
                     ThirdInsuranceAccountInfo accountInfo = (ThirdInsuranceAccountInfo) map.get("data");
@@ -722,6 +729,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             } else {
                 return ResultGenerator.genFailResult("请选择作废的保险公司");
             }
-        }
+        /*}*/
     }
 }
