@@ -2,6 +2,7 @@ package com.bzs.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.CarInfoMapper;
+import com.bzs.dao.CustomerMapper;
 import com.bzs.dao.InsuredInfoMapper;
 import com.bzs.model.*;
 import com.bzs.service.*;
@@ -19,7 +20,6 @@ import com.bzs.utils.jsontobean.P;
 import com.bzs.utils.jsontobean.RenewalBean;
 import com.bzs.utils.jsontobean.RenewalData;
 import com.bzs.utils.threadUtil.CompletableFutureDemo;
-import com.bzs.utils.threadUtil.RenewalThreadCallable;
 import org.apache.commons.lang.StringUtils;
 
 import org.apache.shiro.SecurityUtils;
@@ -58,6 +58,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     @Resource
     private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
 
+    @Resource
+    private CustomerService customerService;
     @Override
     public Result checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy) {
         if (StringUtils.isBlank(checkType)) {
@@ -133,6 +135,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     //List list=carInfoMapper.findOneBy(carInfo);
                     carInfo.setChannelType(checkType + "");
                     carInfo.setCarInfoId(uuid);
+                    carInfo.setBrandModel(dataBean.getData().getCarName());
+                    //carInfo.setBrandModel(body);
                     List list = carInfoMapper.findOneBy(carInfo);
                     if (CollectionUtils.isEmpty(list)) {//未查到
                         /*carInfo.setChannelType(checkType+"");

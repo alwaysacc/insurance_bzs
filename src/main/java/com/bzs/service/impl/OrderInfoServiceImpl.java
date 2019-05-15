@@ -27,7 +27,6 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
 
     @Override
     public List getOrderList(String accountId, int payStatus) {
-        List list=orderInfoMapper.getOrderList(accountId,payStatus);
         return orderInfoMapper.getOrderList(accountId,payStatus);
     }
 

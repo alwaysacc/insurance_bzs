@@ -50,7 +50,7 @@ public class CustomerController {
         System.out.println(customer);
         Customer c=JSONObject.toJavaObject(jsonObject,Customer.class);
         customerService.updateCustomer(c,carInfoId);
-        return ResultGenerator.genSuccessResult(customer);
+        return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/detail")

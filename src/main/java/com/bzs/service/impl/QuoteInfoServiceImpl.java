@@ -66,7 +66,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         CarInfo carInfo=carInfoService.findBy("carInfoId",carInfoId);
         //客户信息
         Customer customer=null;
-        if (carInfo.getCustomerId()!="" && carInfo.getCustomerId()!=null){
+        if (StringUtils.isNotBlank(carInfo.getCustomerId())){
             customer=customerService.findBy("customerId",carInfo.getCustomerId());
         }
         //跟进信息
@@ -93,7 +93,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
                 case "4":
-                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    RquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
                     break;
             }
         }
@@ -106,7 +106,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         map.put("insuredList",insuredList);
         map.put("TquoteList",TquoteList);
         map.put("PquoteList",PquoteList);
-        map.put("TquoteList",TquoteList);
+        map.put("RquoteList",RquoteList);
         return map;
     }
 

@@ -36,4 +36,5 @@ server:
     whitelabel:
       enabled: false
   port: 8082
+#port: 8008
 

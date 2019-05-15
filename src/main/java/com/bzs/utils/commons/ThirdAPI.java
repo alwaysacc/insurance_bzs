@@ -29,7 +29,7 @@ public interface ThirdAPI {
     public static final String CPIC_PAY_CANCEL="cpic_zuofei";//太保作废
 
     public static  final String PAIC_HOST="http://47.103.61.241";
-    public static final String PAIC_PORT="5005";
+    public static final String PAIC_PORT="8080";
     public static final String PAIC_RENEWAL_NAME="paic_xubao";//平安续保接口
     public static final String PAIC_QUOTE_NAME="paic_kuaisubaojia";//平安报价接口
     public static final String PAIC_QUOTE_ALL="paic_xubaoOffer";//上一年续保平安，则使用此报价

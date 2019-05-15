@@ -33,7 +33,7 @@ public class MenuInfoServiceImpl extends AbstractService<MenuInfo> implements Me
     public ArrayList<VueRouter<MenuInfo>> getUserMenu(String username) {
         List<VueRouter<MenuInfo>> routes = new ArrayList<>();
         List<MenuInfo> menus = this.menuInfoMapper.getUserMenu(username);
-        menus.forEach(menu -> {
+        /*menus.forEach(menu -> {
             VueRouter<MenuInfo> route = new VueRouter<>();
             route.setId(menu.getMenuId().toString());
             route.setParentId(menu.getParentId().toString());
@@ -43,7 +43,7 @@ public class MenuInfoServiceImpl extends AbstractService<MenuInfo> implements Me
             route.setName(menu.getMenuName());
             route.setMeta(new RouterMeta(true, null));
             routes.add(route);
-        });
+        });*/
         return TreeUtil.buildVueRouter(routes);
     }
 }

@@ -1,6 +1,7 @@
 package com.bzs.utils.jsontobean;
 
 import com.bzs.model.InsuranceTypeInfo;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author: dengl
  * @create: 2019-04-11 16:08
  */
+@Data
 public class RenewalData {
     private A a;
     private String frameNo;//车架号
@@ -45,6 +47,7 @@ public class RenewalData {
     private String jiaoqiangxian;//交强险；
    private String source;//上年续保枚举值
    private  String carNo;//车牌号
+    private  String carName;
    private List<InsuranceTypeInfo>list=new ArrayList<>();
 
 
@@ -313,5 +316,13 @@ public class RenewalData {
 
     public void setCiEndDate(String ciEndDate) {
         this.ciEndDate = ciEndDate;
+    }
+
+    public String getCarName() {
+        return carName;
+    }
+
+    public void setCarName(String carName) {
+        this.carName = carName;
     }
 }
