@@ -28,4 +28,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
     Map<String,Object> getUserInfo(AccountInfo accountInfo);
 
     public Result getAccountAndThridAccount(String accountId);
+
+    /**
+     * 插入或更新
+     * @param accountInfo
+     * @return
+     */
+    public Result insertOrUpdate(AccountInfo accountInfo,String type);
 }

@@ -2,6 +2,7 @@ package com.bzs.dao;
 
 import com.bzs.model.ThirdInsuranceAccountInfo;
 import com.bzs.utils.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,5 +26,12 @@ public interface ThirdInsuranceAccountInfoMapper extends Mapper<ThirdInsuranceAc
      * @param status
      * @return
      */
-    public List findDifferSourceAccount(String accountId,String status);
+    public List findDifferSourceAccount(@Param("accountId") String accountId, @Param("status")String status);
+
+    /**
+     * 修改或添加
+     * @param accountInfo
+     * @return
+     */
+    int addOrUpdate(ThirdInsuranceAccountInfo accountInfo);
 }

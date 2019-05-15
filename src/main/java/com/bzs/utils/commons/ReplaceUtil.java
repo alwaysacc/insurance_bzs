@@ -70,7 +70,6 @@ public class ReplaceUtil {
         String s1="车辆损失险";
         String s2="机动车损失险";
         levenshtein(s1,s2);
-
     }
 
 }

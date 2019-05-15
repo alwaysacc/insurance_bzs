@@ -298,7 +298,6 @@
         car_info_id=values(car_info_id),
         car_number=values(car_number),
         engine_number=values(engine_number),
-        frame_number=values(frame_number),
         frame_number=values(frame_number)
     </insert>
     <!-- 根据车辆信息id 存在则更新 结束-->

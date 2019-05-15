@@ -60,6 +60,13 @@ public class ThirdInsuranceAccountInfoController {
     public Result updateById (ThirdInsuranceAccountInfo thirdInsuranceAccountInfo){
         return thirdInsuranceAccountInfoService.updateById(thirdInsuranceAccountInfo);
     }
+    @ApiOperation("添加或者修改，数据为空不修改")
+    @PostMapping("/addOrUpdate")
+    public Result addOrUpdate (ThirdInsuranceAccountInfo accountInfo,String type){
+        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,type);
+    }
+
+
     @ApiOperation("查询账号下的所有保险账号")
     @PostMapping("/queryConditions")
     public Result queryConditionsPage(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,ThirdInsuranceAccountInfo accountInfo) {
@@ -78,7 +85,7 @@ public class ThirdInsuranceAccountInfoController {
     @ApiOperation("查询账号下的指定保司的可用保险账号")
     @PostMapping("/findEnbaleAccount")
     public Map findEnbaleAccount(Long source,String accountId){
-     return thirdInsuranceAccountInfoService.findEnbaleAccount(source,"2",accountId);
+     return thirdInsuranceAccountInfoService.findEnbaleAccount(source,"1",accountId);
     }
 
     /**
@@ -89,7 +96,7 @@ public class ThirdInsuranceAccountInfoController {
     @ApiOperation("获取指定账号下的每家保险公司的可用账号")
     @PostMapping("/findDifferSourceAccount")
     public Map findDifferSourceAccount(String accountId){
-        return thirdInsuranceAccountInfoService.findDifferSourceAccount(accountId,"2");
+        return thirdInsuranceAccountInfoService.findDifferSourceAccount(accountId,"1");
     }
 
 

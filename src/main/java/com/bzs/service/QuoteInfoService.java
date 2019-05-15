@@ -55,4 +55,14 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
 
     Map<String,Object>updatePayInfo(String proposalNo);
 
+    /**
+     * 作废支付
+     * @param proposalNo
+     * @param createdBy
+     * @param quoteId
+     * @param source
+     * @return
+     */
+
+    Result payCancel(String proposalNo, String createdBy, String quoteId, Long source);
 }
