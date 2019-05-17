@@ -77,7 +77,6 @@ public class LoginController {
     }
     private Map<String,Object> getUserInfo(String username){
         Map<String,Object> userInfo=null;
-
         return userInfo;
     }
 

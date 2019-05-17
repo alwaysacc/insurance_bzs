@@ -90,7 +90,7 @@
             </if>
             <if test="roleId==3">
                 and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
             </if>
             <if test="salesman!=null  and salesman!=''">
                 and car_info.salesman != #{salesman}
@@ -170,7 +170,7 @@
                 and car_info.customer_tel = #{customerTel}
             </if>
             <if test="lincenseOwner!=null">
-                and car_info.lincense_owner = #{lincenseOwner}
+                and car_info.license_owner = #{lincenseOwner}
             </if>
         </where>
 

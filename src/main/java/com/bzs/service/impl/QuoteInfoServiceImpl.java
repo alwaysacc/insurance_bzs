@@ -41,15 +41,15 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Resource
     private QuoteInfoMapper quoteInfoMapper;
     @Resource
-    private QuoteInfoService quoteInfoService;
-    @Resource
-    private CarInfoService carInfoService;
-    @Resource
     private CustomerService customerService;
     @Resource
     private InsuranceFollowInfoService insuranceFollowInfoService;
     @Resource
     private InsuredInfoService insuredInfoService;
+    @Resource
+    private QuoteInfoService quoteInfoService;
+    @Resource
+    private CarInfoService carInfoService;
     @Resource
     private InsuranceTypeInfoMapper insuranceTypeInfoMapper;
     @Resource
@@ -365,7 +365,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String api = "";
         String host = "";
         String port = "";
-        if (null == source) {
+       /* if (null == source) {
             result.put("status", "400");
             result.put("msg", "参数错误");
             return result;
@@ -386,51 +386,52 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                      return result;
                  }
             }
-           Map map= thirdInsuranceAccountInfoService.findEnbaleAccount(source,"1",accountId);
-            String code=(String)map.get("code");
-            boolean aflag=false;
-            String message=null;
-            String name=InsuranceNameEnum.getName(source);
+        }*/
+    String accountId=createdBy;
+    Map map= thirdInsuranceAccountInfoService.findEnbaleAccount(source,"1",accountId);
+    String code=(String)map.get("code");
+    boolean aflag=false;
+    String message=null;
+    String name=InsuranceNameEnum.getName(source);
             if("200".equals(code)){
-                ThirdInsuranceAccountInfo accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
-                host=accountInfo.getIp();
-                port=accountInfo.getPort();
-                if(StringUtils.isNotBlank(host)&&StringUtils.isNotBlank(port)){
-                    aflag=true;
-                }else{
-                    message=name+"账号信息不完整";
-                }
-            }else{
-               message=(String)map.get("msg");
-            }
+        ThirdInsuranceAccountInfo accountInfo=(ThirdInsuranceAccountInfo)map.get("data");
+        host=accountInfo.getIp();
+        port=accountInfo.getPort();
+        if(StringUtils.isNotBlank(host)&&StringUtils.isNotBlank(port)){
+            aflag=true;
+        }else{
+            message=name+"账号信息不完整";
+        }
+    }else{
+        message=(String)map.get("msg");
+    }
 
             if (1 == source) {
-                // api = ThirdAPI.CPIC_QUOTE_NAME;
-               // host = ThirdAPI.CPIC_HOST;
-                api = ThirdAPI.CPIC_QUOTE_ALL;
-             //   port = ThirdAPI.CPIC_PORT;
-                aflag=true;
+        // api = ThirdAPI.CPIC_QUOTE_NAME;
+        // host = ThirdAPI.CPIC_HOST;
+        api = ThirdAPI.CPIC_QUOTE_ALL;
+        //   port = ThirdAPI.CPIC_PORT;
+        aflag=true;
 
-            } else if (2 == source) {
-             //   host = ThirdAPI.PAIC_HOST;
-                api = ThirdAPI.PAIC_QUOTE_NAME;
-            //    port = ThirdAPI.PAIC_PORT;
-                aflag=true;
-            } else if (4 == source) {
-             //   host = ThirdAPI.PICC_HOST;
-                api = ThirdAPI.PICC_QUOTE_ALL;
-            //    port = ThirdAPI.PICC_PORT;
-                aflag=true;
-            } else {
-                message=name+"报价业务待拓展";
-            }
+    } else if (2 == source) {
+        //   host = ThirdAPI.PAIC_HOST;
+        api = ThirdAPI.PAIC_QUOTE_NAME;
+        //    port = ThirdAPI.PAIC_PORT;
+        aflag=true;
+    } else if (4 == source) {
+        //   host = ThirdAPI.PICC_HOST;
+        api = ThirdAPI.PICC_QUOTE_ALL;
+        //    port = ThirdAPI.PICC_PORT;
+        aflag=true;
+    } else {
+        message=name+"报价业务待拓展";
+    }
             if(!aflag){
-                result.put("status", "400");
-                result.put("msg", message);
-                result.put("data", null);
-                return result;
-            }
-        }
+        result.put("status", "400");
+        result.put("msg", message);
+        result.put("data", null);
+        return result;
+    }
         if (StringUtils.isNotBlank(host) && StringUtils.isNotBlank(port)) {
             String url = host + ":" + port + "/" + api;
             logger.info("保司枚举值:" + source + "，报价请求接口" + url);
@@ -438,10 +439,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             logger.info("报价请求参数" + jsonStrs);
             String jsonStrs2 = jsonStrs.replace("noType", "NoType");
             HttpResult httpResult = HttpClientUtil.doPost(url, null, "JSON", PCICResponseBean.class, jsonStrs2);
-            int code = httpResult.getCode();
+            int code1 = httpResult.getCode();
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();
-            if (200 == code) {//远程请求成功
+            if (200 == code1) {//远程请求成功
                 PCICResponseBean bean =JSONObject.parseObject(body,PCICResponseBean.class);
                 String retMsg = bean.getRetMsg();
                 String state=bean.getState();
@@ -559,6 +560,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             orderInfo.setOrderId(UUIDS.getDateUUID());
                             orderInfo.setPayType("2");//保单订单
                             orderInfo.setPayTypeId(quoteId);
+                            orderInfo.setCreateBy(createdBy);
                             orderInfo.setCarInfoId(carInfoId);
                             orderInfo.setPayStatus(0);
                             Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -568,6 +570,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 money = money.replaceAll(",", "");
                                 orderInfo.setPayMoney(new BigDecimal(money));
                             }
+                            System.out.println(ResultGenerator.genSuccessResult(orderInfo));
                             orderInfoMapper.insert(orderInfo);
                             return ResultGenerator.gen("获取成功", payinfo, ResultCode.SUCCESS);
                         }

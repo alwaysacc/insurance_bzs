@@ -69,11 +69,9 @@ public class ThirdInsuranceAccountInfoController {
 
     @ApiOperation("查询账号下的所有保险账号")
     @PostMapping("/queryConditions")
-    public Result queryConditionsPage(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,ThirdInsuranceAccountInfo accountInfo) {
-        PageHelper.startPage(page, size);
+    public Result queryConditionsPage(ThirdInsuranceAccountInfo accountInfo) {
         List<ThirdInsuranceAccountInfo> list = thirdInsuranceAccountInfoService.queryConditions(accountInfo);
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+        return ResultGenerator.genSuccessResult(list);
     }
 
     /**

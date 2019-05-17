@@ -5,6 +5,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
+import com.bzs.utils.UUIDS;
 import com.bzs.utils.saltEncryptionutil.SaltEncryptionUtil;
 import com.bzs.utils.vcode.Captcha;
 import com.bzs.utils.vcode.GifCaptcha;
@@ -48,8 +49,12 @@ public class AccountInfoController {
 
     @PostMapping("/add")
     public Result add(AccountInfo accountInfo) {
+        accountInfo.setAccountId(UUIDS.getDateUUID());
+        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(),accountInfo.getLoginPwd()));
+        accountInfo.setRoleId("3");
+        accountInfo.setAccountState("0");
         accountInfoService.save(accountInfo);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(accountInfo);
     }
 
     @PostMapping("/delete")
@@ -167,5 +172,11 @@ public class AccountInfoController {
     @PostMapping("/insertOrUpdate")
     public Result insertOrUpdate(AccountInfo accountInfo,String type){
         return accountInfoService.insertOrUpdate(accountInfo ,type);
+    }
+    @PostMapping("/getUserList")
+    public Result getUserList(String roleId, String accountId,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size){
+        PageHelper.startPage(page, size);
+        PageInfo pageInfo = new PageInfo(accountInfoService.getUserList(roleId,accountId));
+        return ResultGenerator.genSuccessResult(pageInfo);
     }
 }

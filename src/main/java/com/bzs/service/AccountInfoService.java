@@ -35,4 +35,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     public Result insertOrUpdate(AccountInfo accountInfo,String type);
+
+    List getUserList(String roleId,String accountId);
 }

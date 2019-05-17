@@ -22,4 +22,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
      * @return
      */
     int addOrUpdate(AccountInfo accountInfo);
+
+    List getUserList(@Param("roleId") String roleId, @Param("accountId") String accountId);
 }
