@@ -13,4 +13,16 @@ public interface OrderInfoMapper extends Mapper<OrderInfo> {
                       @Param("carInfoId")String carInfoId, @Param("postedName")String postedName,
                       @Param("deliveryWay") int deliveryWay,@Param("insuranceCompany") String insuranceCompany
                       );
+    /**
+     * 根据订单id修改订单状态
+     * @param orderInfo
+     * @return
+     */
+    int  updatePayStatus(OrderInfo orderInfo);
+    /**
+     * 根据订单id修改订单状态
+     * @param orderId
+     * @return
+     */
+    int  updatePayStatus(@Param("orderId") String  orderId);
 }

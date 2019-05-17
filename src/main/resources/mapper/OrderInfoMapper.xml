@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <id column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -19,6 +19,7 @@
     <result column="delivery_address" jdbcType="VARCHAR" property="deliveryAddress" />
     <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
     <result column="contact_tel" jdbcType="INTEGER" property="contactTel" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
   </resultMap>
   <select id="getOrderList" resultType="map">
     SELECT
@@ -94,4 +95,10 @@
       </if>
     </where>
   </select>
+  <update id="updatePayStatus" parameterType="com.bzs.model.OrderInfo" >
+    update order_info set pay_status=#{payStatus} where  order_id=#{orderId}
+  </update>
+  <update id="updatePayStatusById" >
+    update order_info set pay_status='2' where  order_id=#{orderId}
+  </update>
 </mapper>

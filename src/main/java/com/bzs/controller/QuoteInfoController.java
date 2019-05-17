@@ -245,12 +245,13 @@ public class QuoteInfoController {
      */
     @PostMapping("/pay")
     public Result getPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source) {
+
         return quoteInfoService.getPayMentgetPayMent(proposalNo, pay, money, createdBy, carInfoId, quoteId, source);
     }
     @ApiOperation("作废支付")
     @PostMapping("/payCancel")
-    public Result payCancel(String proposalNo,String createdBy,String quoteId,Long source){
-        return quoteInfoService.payCancel(proposalNo,createdBy,quoteId,source);
+    public Result payCancel(String proposalNo,String createdBy,String quoteId,Long source,String orderId){
+        return quoteInfoService.payCancel(proposalNo,createdBy,quoteId,source,orderId);
     }
 
     @PostMapping("/updatePayInfo")
