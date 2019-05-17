@@ -5,6 +5,7 @@ import com.bzs.dao.CarInfoMapper;
 import com.bzs.dao.CustomerMapper;
 import com.bzs.dao.InsuredInfoMapper;
 import com.bzs.model.*;
+import com.bzs.model.query.CarInfoAndInsuranceInfo;
 import com.bzs.service.*;
 import com.bzs.utils.*;
 
@@ -20,6 +21,7 @@ import com.bzs.utils.jsontobean.P;
 import com.bzs.utils.jsontobean.RenewalBean;
 import com.bzs.utils.jsontobean.RenewalData;
 import com.bzs.utils.threadUtil.CompletableFutureDemo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import org.apache.shiro.SecurityUtils;
@@ -27,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 
@@ -60,8 +61,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
 
     @Resource
     private CustomerService customerService;
+
     @Override
-    public Result checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy) {
+    public Result checkByCarNoOrVinNo2(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy) {
         if (StringUtils.isBlank(checkType)) {
             return ResultGenerator.genFailResult("参数异常");
         } else {
@@ -72,8 +74,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             String uuid = UUIDS.getDateUUID();
             CheckInfo checkInfo = new CheckInfo(uuid);
             JSONObject jsonObject = new JSONObject();
-            /*jsonObject.put("account", account);
-            jsonObject.put("password", pwd);*/
             if ("0".equals(checkType)) {//车牌续保
                 if (StringUtils.isNotBlank(carNo)) {
                     jsonObject.put("carNo", carNo);
@@ -156,8 +156,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         }
                         insuredInfoMapper.insert(insuredInfo);
                         for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
-                            datas.setTypeId(uuid);
-                            insuranceTypeInfoService.save(datas);
+                            if (null != datas) {
+                                datas.setTypeId(uuid);
+                                insuranceTypeInfoService.save(datas);
+                            }
+
                         }
                         carInfoService.save(carInfo);
                     } else {//查到急及需要修改
@@ -168,7 +171,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     dataBean.getData().setCarNo(carNo);
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
                     maps.put("carNo", carNo);
-                    maps.put("source", lastYearSource+"");
+                    maps.put("source", lastYearSource + "");
                     maps.put("carInfoId", uuid);
                     return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
                 } else if ("0099".equals(status)) {//续保选择的保险公司不对,重新续保
@@ -187,7 +190,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         carInfo.setCarInfoId(uuid);
                         carInfoService.save(carInfo);
                     }
-
                     return ResultGenerator.gen(msg, dataBean, ResultCode.FAIL);
                 } else {
                     return ResultGenerator.genFailResult(msg);
@@ -202,7 +204,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     public Map<String, Object> getRenewalInfo(JSONObject jsonStr, String createdBy) {
         Long[] source = {1L, 2L, 4L};
         List<Long> sources = Arrays.asList(source);
-        HttpResult httpResult = getDifferentSourceRenewalInfo(sources, jsonStr,createdBy);
+        HttpResult httpResult = getDifferentSourceRenewalInfo(sources, jsonStr, createdBy);
         String uuid = UUIDS.getDateUUID();
         return getResult(httpResult, uuid, createdBy);
     }
@@ -322,7 +324,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             result.put("msg", "未获取续保信息");
                         }
                         return result;
-                    }else if("19000".equals(state)){
+                    } else if ("19000".equals(state)) {
                         result.put("status", "400");
                         result.put("msg", retMsg);
                         return result;
@@ -363,65 +365,58 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         String api = "";
         String port = "";
         String host = "";
-        //AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        /*if (null == a) {
-            result.put("status", "400");
-            result.put("msg", "请先登录账号");
-            result.put("data", null);
-            return result;
-        } else {*/
-         /*   String accountId = a.getAccountId();
-            if (StringUtils.isBlank(accountId)) {
+        Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
+        String code = (String) map.get("code");
+        if ("200".equals(code)) {
+            ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
+            host = data.getIp();
+            port = data.getPort();
+            if (StringUtils.isBlank(host) || StringUtils.isBlank(port)) {
                 result.put("status", "400");
-                result.put("msg", "此账号异常,无法续保");
+                result.put("msg", "用于续保的账号信息不完整,无法续保");
                 result.put("data", null);
                 return result;
-            } else {*/
-                Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
-                String code = (String) map.get("code");
-                if ("200".equals(code)) {
-                    ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
-                    host = data.getIp();
-                    port = data.getPort();
-                    if (StringUtils.isBlank(host) || StringUtils.isBlank(port)) {
-                        result.put("status", "400");
-                        result.put("msg", "用于续保的账号信息不完整,无法续保");
-                        result.put("data", null);
-                        return result;
+            }
+            String dataType = data.getAccountType();
+            if (StringUtils.isBlank(dataType)) {
+                result.put("status", "400");
+                result.put("msg", "用于续保的账号信息不完整,无法续保");
+                result.put("data", null);
+                return result;
+            } else {
+                if ("2".equals(dataType)) {//平安需要账号
+                    String accountName = data.getAccountName();
+                    String accountPwd = data.getAccountPwd();
+                    String idcard=jsonObject.getString("cardID");
+                    if(StringUtils.isNotBlank(idcard)){
+                       boolean isIdCard=IdCardUtil.validateCard(idcard);
+                       if(!isIdCard){
+                           result.put("status", "400");
+                           result.put("msg", "平安续保请填写正确的身份证号");
+                           result.put("data", null);
+                           return result;
+                       }
                     }
-                    String dataType = data.getAccountType();
-                    if (StringUtils.isBlank(dataType)) {
-                        result.put("status", "400");
-                        result.put("msg", "用于续保的账号信息不完整,无法续保");
-                        result.put("data", null);
-                        return result;
+                    if (StringUtils.isNotBlank(accountName) && StringUtils.isNotBlank(accountPwd)) {
+                        jsonObject.put("account", accountName);
+                        jsonObject.put("password", accountPwd);
                     } else {
-                        if ("2".equals(dataType)) {//平安需要账号
-                            String accountName = data.getAccountName();
-                            String accountPwd = data.getAccountPwd();
-                            if (StringUtils.isNotBlank(accountName) && StringUtils.isNotBlank(accountPwd)) {
-                                jsonObject.put("account", accountName);
-                                jsonObject.put("password", accountPwd);
-                            } else {
-                                result.put("status", "400");
-                                result.put("msg", "用于续保的平安账号信息不完整,无法续保");
-                                result.put("data", null);
-                                return result;
-                            }
-
-                        }
+                        result.put("status", "400");
+                        result.put("msg", "用于续保的平安账号信息不完整,无法续保");
+                        result.put("data", null);
+                        return result;
                     }
 
-                } else {
-                    String msg = (String) map.get("msg");
-                    result.put("status", "400");
-                    result.put("msg", msg);
-                    result.put("data", null);
-                    return result;
                 }
+            }
 
-           /* }*/
-        /*}*/
+        } else {
+            String msg = (String) map.get("msg");
+            result.put("status", "400");
+            result.put("msg", msg);
+            result.put("data", null);
+            return result;
+        }
         if (1 == source) {//太保
             // host = ThirdAPI.CPIC_HOST;
             // port = ThirdAPI.CPIC_PORT;
@@ -457,7 +452,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
      * @return
      * @description 启用线程续保
      */
-    public HttpResult getDifferentSourceRenewalInfo(List<Long> source, JSONObject jsonStr,String creatBy) {
+    public HttpResult getDifferentSourceRenewalInfo(List<Long> source, JSONObject jsonStr, String creatBy) {
         HttpResult result = null;
         Long start1 = System.currentTimeMillis();
        /* AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
@@ -498,37 +493,47 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
                     String host = data.getIp();
                     String port = data.getPort();
-                    String accountName=data.getAccountName();
-                    String accountPwd=data.getAccountPwd();
+                    String accountName = data.getAccountName();
+                    String accountPwd = data.getAccountPwd();
                     CompletableFuture<HttpResult> f = CompletableFuture.supplyAsync(() -> {
                         logger.info(name + "开始：");
                         Long start = System.currentTimeMillis();
                         String api = "";
-                        boolean flag=true;
-                        if (1L == sour) {api = ThirdAPI.CPIC_RENEWAL_NAME;}
-                        else if (2L == sour) {
+                        boolean flag = true;
+                        String mm="";
+                        if (1L == sour) {
+                            api = ThirdAPI.CPIC_RENEWAL_NAME;
+                        } else if (2L == sour) {
                             api = ThirdAPI.PAIC_RENEWAL_NAME;
-                            if(StringUtils.isNotBlank(accountName)&&StringUtils.isNotBlank(accountPwd)){
+                            if (StringUtils.isNotBlank(accountName) && StringUtils.isNotBlank(accountPwd)) {
                                 jsonStr.put("account", accountName);
                                 jsonStr.put("password", accountPwd);
-                            }else{
-                                flag=false;
+                            } else {
+                                flag = false;
+                                mm="用于续保的平安账号信息不完整,无法续保";
                             }
-
+                            String idcard=jsonStr.getString("idCard");
+                            if(!IdCardUtil.validateCard(idcard)){//身份证是不否符合规范
+                                flag = false;
+                                mm="平安续保,未填写身份证号,无法续保";
+                            }
+                        } else if (4L == sour) {
+                            api = ThirdAPI.PICC_RENEWAL_NAME;
+                        }else{
+                            mm="待拓展公司";
                         }
-                        else if (4L == sour) {api = ThirdAPI.PICC_RENEWAL_NAME;}
                         HttpResult httpResult = null;
-                        if (StringUtils.isNotBlank(host) && StringUtils.isNotBlank(port) && StringUtils.isNotBlank(api)&&flag) {
+                        if (StringUtils.isNotBlank(host) && StringUtils.isNotBlank(port) && StringUtils.isNotBlank(api) && flag) {
                             String url = host + ":" + port + "/" + api;
                             httpResult = HttpClientUtil.doPost(url, null, "JSON", RenewalBean.class, jsonStr.toJSONString());
                         } else {
-                            String m = "用于续保的账号信息不完整,无法续保";
+                            //String m = "用于续保的账号信息不完整,无法续保";
                             jsonObject.put("state", "19000");
-                            jsonObject.put("message", m);
+                            jsonObject.put("message", mm);
                             String body = jsonObject.toJSONString();
                             httpResult = new HttpResult();
                             httpResult.setCode(200);
-                            httpResult.setMessage(m);
+                            httpResult.setMessage(mm);
                             httpResult.setBody(body);
                             RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
                             httpResult.setT(bean);
@@ -563,12 +568,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }
             }
         }
-            try {
+        try {
 
-                //  String cpicurl = ThirdAPI.CPIC_HOST + ":" + ThirdAPI.CPIC_PORT + "/" + ThirdAPI.CPIC_RENEWAL_NAME;
-                //  String piccurl = ThirdAPI.PICC_HOST + ":" + ThirdAPI.PICC_PORT + "/" + ThirdAPI.PICC_RENEWAL_NAME;
-                //  String paiccurl = ThirdAPI.PAIC_HOST + ":" + ThirdAPI.PAIC_PORT + "/" + ThirdAPI.PAIC_RENEWAL_NAME;
-                // if (null == source) {//人太平同时续保
+            //  String cpicurl = ThirdAPI.CPIC_HOST + ":" + ThirdAPI.CPIC_PORT + "/" + ThirdAPI.CPIC_RENEWAL_NAME;
+            //  String piccurl = ThirdAPI.PICC_HOST + ":" + ThirdAPI.PICC_PORT + "/" + ThirdAPI.PICC_RENEWAL_NAME;
+            //  String paiccurl = ThirdAPI.PAIC_HOST + ":" + ThirdAPI.PAIC_PORT + "/" + ThirdAPI.PAIC_RENEWAL_NAME;
+            // if (null == source) {//人太平同时续保
               /* Callable pciccallable = new RenewalThreadCallable(cpicurl, null, type, null, jsonStr);
                Callable picccallable = new RenewalThreadCallable(piccurl, null, type, null, jsonStr);
                Callable paiccallable = new RenewalThreadCallable(paiccurl, null, type, null, jsonStr);
@@ -615,87 +620,232 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
               /*  List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
                 list.add(f1);
                 list.add(f2);*/
-                //list.add(f3);
-                List<HttpResult> lists = null;
-                boolean flag = false;
-                try {
-                    lists = CompletableFutureDemo.sequence(list).get();
-                    String message = "";
-                    for (HttpResult httpResult : lists) {
-                        //System.out.println(i);
-                        if (null != httpResult) {
-                            int code = httpResult.getCode();
-                            if (200 == code) {
-                                String body = httpResult.getBody();
-                                if (StringUtils.isNotBlank(body)) {
-                                    RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
-                                    String state = bean.getState();
-                                    if ("1".equals(state)) {
-                                        result = httpResult;
-                                        flag = true;
-                                        break;
-                                    } else {//上一年不在此保司投保
-                                        logger.info("续保返回值的状态值" + state);
-                                        if ("0099".equals(state)) {
-                                            message += "上一年不在" + InsuranceNameEnum.getName(httpResult.getSource()) + "续保;";
-                                        }else if ("19000".equals(state)) {
-                                            message +=  InsuranceNameEnum.getName(httpResult.getSource()) + "账号异常："+httpResult.getMessage();
-                                        } else if ("0".equals(state)) {
-                                            JSONObject jsonObjects = JSONObject.parseObject(body);
-                                            if (jsonObjects.containsKey("retMsg")) {
-                                                String retMsg = jsonObjects.getString("retMsg");
-                                                if(StringUtils.isNotBlank(retMsg)){
-                                                    retMsg = EncodeUtil.unicodeToString(retMsg);
-                                                    message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + retMsg + ";";
-                                                }else{
-                                                    message+=InsuranceNameEnum.getName(httpResult.getSource()) + "续保：未获取续保信息";
-                                                }
-                                                  }
-                                        } else {
-                                            message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保失败：" + "状态值为" + state + ";";
+            //list.add(f3);
+            List<HttpResult> lists = null;
+            boolean flag = false;
+            try {
+                lists = CompletableFutureDemo.sequence(list).get();
+                String message = "";
+                for (HttpResult httpResult : lists) {
+                    //System.out.println(i);
+                    if (null != httpResult) {
+                        int code = httpResult.getCode();
+                        if (200 == code) {
+                            String body = httpResult.getBody();
+                            if (StringUtils.isNotBlank(body)) {
+                                RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
+                                String state = bean.getState();
+                                if ("1".equals(state)) {
+                                    result = httpResult;
+                                    flag = true;
+                                    break;
+                                } else {//上一年不在此保司投保
+                                    logger.info("续保返回值的状态值" + state);
+                                    if ("0099".equals(state)) {
+                                        message += "上一年不在" + InsuranceNameEnum.getName(httpResult.getSource()) + "续保;";
+                                    } else if ("19000".equals(state)) {
+                                        message += InsuranceNameEnum.getName(httpResult.getSource()) + "账号异常：" + httpResult.getMessage();
+                                    } else if ("0".equals(state)) {
+                                        JSONObject jsonObjects = JSONObject.parseObject(body);
+                                        if (jsonObjects.containsKey("retMsg")) {
+                                            String retMsg = jsonObjects.getString("retMsg");
+                                            if (StringUtils.isNotBlank(retMsg)) {
+                                                retMsg = EncodeUtil.unicodeToString(retMsg);
+                                                message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + retMsg + ";";
+                                            } else {
+                                                message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：未获取续保信息";
+                                            }
                                         }
-
+                                    } else {
+                                        message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保失败：" + "状态值为" + state + ";";
                                     }
+
                                 }
-                            } else {//请求失败
-                                logger.info("续保返回值的状态值" + httpResult.getCode());
-                                message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + "状态值为" + httpResult.getCode() + ";";
                             }
+                        } else {//请求失败
+                            logger.info("续保返回值的状态值" + httpResult.getCode());
+                            message += InsuranceNameEnum.getName(httpResult.getSource()) + "续保：" + "状态值为" + httpResult.getCode() + ";";
                         }
                     }
-                    if (!flag) {
-                        JSONObject jsonObjects = new JSONObject();
-                        jsonObject.put("state", "0099");
-                        jsonObject.put("message", message);
-                        String body = jsonObject.toJSONString();
-                        result = new HttpResult();
-                        result.setCode(200);
-                        result.setMessage(message);
-                        result.setBody(body);
-                        result.setSource(1L);
-                        RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
-                        result.setT(bean);
-                        // result = lists.get(0);
-                    }
-                } catch (Exception e) {
-                    logger.error("三家同时续保异常", e);
                 }
-                Long end = System.currentTimeMillis();
-                System.out.println("总耗时:" + (end - start1));
-                return result;
+                if (!flag) {
+                    JSONObject jsonObjects = new JSONObject();
+                    jsonObject.put("state", "0099");
+                    jsonObject.put("message", message);
+                    String body = jsonObject.toJSONString();
+                    result = new HttpResult();
+                    result.setCode(200);
+                    result.setMessage(message);
+                    result.setBody(body);
+                    result.setSource(1L);
+                    RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
+                    result.setT(bean);
+                    // result = lists.get(0);
+                }
+            } catch (Exception e) {
+                logger.error("三家同时续保异常", e);
+            }
+            Long end = System.currentTimeMillis();
+            System.out.println("总耗时:" + (end - start1));
+            return result;
           /* } else {//一家续保
 
            }
            return result;*/
 
-            } catch (Exception e) {
-                result = new HttpResult();
-                result.setMessage("续保失败");
-                result.setCode(400);
-                return result;
-
-            }
+        } catch (Exception e) {
+            result = new HttpResult();
+            result.setMessage("续保失败");
+            result.setCode(400);
+            return result;
 
         }
 
     }
+
+    @Override
+    public Result checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy) {
+        if (StringUtils.isBlank(checkType)) {
+            return ResultGenerator.genFailResult("参数异常");
+        } else {
+            if (StringUtils.isBlank(idCard)) {
+                //身份证号为空时为"";
+                idCard = "";
+            }
+            String uuid = UUIDS.getDateUUID();
+            CheckInfo checkInfo = new CheckInfo(uuid);
+            JSONObject jsonObject = new JSONObject();
+            if ("0".equals(checkType)) {//车牌续保
+                if (StringUtils.isNotBlank(carNo)) {
+                    jsonObject.put("carNo", carNo);
+                    jsonObject.put("frameNo", "");
+                    jsonObject.put("cardID", idCard);
+                    checkInfo.setCarNo(carNo);
+                    checkInfo.setCheckType(checkType + "");//查询方式
+                } else {
+                    return ResultGenerator.genFailResult("参数异常,车牌号不能为空");
+                }
+            } else if ("1".equals(checkType)) {//车架续保
+                if (StringUtils.isNotBlank(vinNo)) {
+                    jsonObject.put("carNo", "");
+                    jsonObject.put("frameNo", vinNo);
+                    jsonObject.put("cardID", "");
+                    checkInfo.setVinNo(vinNo);
+                    checkInfo.setCheckType(checkType + "");//查询方式
+                } else {
+                    return ResultGenerator.genParamsErrorResult("参数异常,车架号不能为空");
+                }
+            } else {//待拓展
+                return ResultGenerator.genParamsErrorResult("参数异常,目前仅支持车牌或者车架号续保");
+            }
+
+            checkInfo.setCreateBy(createdBy);
+            String date = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
+            checkInfo.setSendTime(date);
+
+            //三家同时续保
+            // Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
+            Map<String, Object> renewalInfo = null;
+            if (lastYearSource == null) {//续保三家
+                renewalInfo = getRenewalInfo(jsonObject, createdBy);
+            } else {//指定一家续保
+                renewalInfo = getDifferentSourceRenewalInfo(lastYearSource, jsonObject, createdBy);
+            }
+            String status = (String) renewalInfo.get("status");
+            String msg = (String) renewalInfo.get("msg");
+            Long source = (Long) renewalInfo.get("source");
+            if (StringUtils.isNotBlank(status)) {
+                if ("1".equals(status)) {
+                    InsuredInfo insuredInfo = (InsuredInfo) renewalInfo.get("insuredInfo");
+                    insuredInfo.setInsuredId(uuid);//设置续保id
+                    insuredInfo.setCreateId(createdBy);
+                    insuredInfo.setCarInfoId(uuid);
+                    List<InsuranceTypeInfo> insuranceTypeInfoList = (List<InsuranceTypeInfo>) renewalInfo.get("insuranceTypeInfoList");
+                    String body = (String) renewalInfo.get("body");
+                    RenewalBean dataBean = (RenewalBean) renewalInfo.get("data");
+                    CarInfo carInfo = (CarInfo) renewalInfo.get("carInfo");
+                    if (StringUtils.isNotBlank(carNo)) {
+                        carInfo.setCarNumber(carNo);
+                    }
+                    if (StringUtils.isNotBlank(vinNo)) {
+                        carInfo.setFrameNumber(vinNo);
+                    }
+                    carInfo.setIsEnable("0");//是否作废0默认使用1作废
+                    carInfo.setIsRenewSuccess("1");//是否续保成功的数据1续保成功0失败
+                    logger.info("车辆信息：" + carInfo.toString());
+                    List<CarInfoAndInsuranceInfo> list = carInfoMapper.getCarInfoAndInsurance(carInfo);
+                    carInfo.setCreatedBy(createdBy);
+                    carInfo.setChannelType(checkType + "");
+                    carInfo.setCarInfoId(uuid);
+                    carInfo.setBrandModel(dataBean.getData().getCarName());
+                    if (CollectionUtils.isNotEmpty(list)) {//存在则先作废然后直接添加
+                        List<String> lists = new ArrayList<>();
+                        for (CarInfoAndInsuranceInfo info : list) {
+                            lists.add(info.getCarInfoId());
+                        }
+                        carInfoMapper.updateBatchIsEnable(lists, "1");//作废
+                    }
+                    if (null != source && source != 0) {
+                        lastYearSource = source;
+                        insuredInfo.setLastYearSource(source + "");
+                        insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(source));
+                    } else {
+                        if (lastYearSource != null && lastYearSource != 0) {
+                            insuredInfo.setLastYearSource(lastYearSource + "");
+                            insuredInfo.setLastYearInsuranceCompany(InsuranceNameEnum.getName(lastYearSource));
+                        } else {
+                            insuredInfo.setLastYearSource("0");
+                            insuredInfo.setLastYearInsuranceCompany("获取失败");
+                        }
+                    }
+                    insuredInfoMapper.insert(insuredInfo);
+                    for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
+                        if (null != datas) {
+                            datas.setTypeId(uuid);
+                            insuranceTypeInfoService.save(datas);
+                        }
+
+                    }
+                    //待修改
+                    checkInfo.setCarInfoId(uuid);
+                    checkInfo.setIsRenewSuccess("1");//是否续保成功
+                    //checkInfo.setIsCheckSuccess("1");
+                    checkInfoService.save(checkInfo);
+                    carInfoService.save(carInfo);
+                    dataBean.getData().setSource(lastYearSource + "");
+                    dataBean.getData().setList(insuranceTypeInfoList);
+                    dataBean.getData().setCarNo(carNo);
+                    Map maps = JsonToMapUtil.bodyJsonToMap(body);
+                    maps.put("carNo", carNo);
+                    maps.put("source", lastYearSource + "");
+                    maps.put("carInfoId", uuid);
+                    return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
+                } else if ("0099".equals(status)) {//续保失败
+                    String body = (String) renewalInfo.get("body");
+                    RenewalBean dataBean = (RenewalBean) renewalInfo.get("data");
+                    CarInfo carInfo = new CarInfo();
+                    carInfo.setCarNumber(carNo);
+                    carInfo.setFrameNumber(vinNo);
+                    List<CarInfoAndInsuranceInfo> list = carInfoMapper.getCarInfoAndInsurance(carInfo);
+                    if (StringUtils.isBlank(carNo)) {//车牌号为空则存储车架号
+                        carInfo.setCarNumber(vinNo);
+                    }
+                    carInfo.setCreatedBy(createdBy);
+                    if (CollectionUtils.isEmpty(list)) {//未查到  不存在
+                        carInfo.setChannelType(checkType + "");
+                        carInfo.setCarInfoId(uuid);
+                        carInfoService.save(carInfo);
+                        checkInfo.setCarInfoId(uuid);
+                    }
+                    checkInfoService.save(checkInfo);
+                    return ResultGenerator.gen(msg, dataBean, ResultCode.FAIL);
+                } else {
+                    checkInfo.setIsCheckSuccess("0");
+                    checkInfoService.save(checkInfo);
+                    return ResultGenerator.genFailResult(msg);
+                }
+            }
+            return ResultGenerator.genFailResult("获取失败");
+        }
+    }
+}

@@ -90,13 +90,9 @@ public class InsuredInfoController {
 
     @PostMapping("/checkByCarNoOrVinNo")
     public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createdBy) {
-        AccountInfo a=(AccountInfo)  SecurityUtils.getSubject().getPrincipal();
-       /* if(null==a){
-            return ResultGenerator.genFailResult("请先登录账号");
-        }else{
-            createdBy=a.getAccountId();
-        }*/
-        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy );
+       if(StringUtils.isNotBlank(createdBy))
+        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy);
+        else  return ResultGenerator.genFailResult("未获取到账号信息");
     }
 
 }

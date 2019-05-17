@@ -49,6 +49,7 @@
       <if test="createId!=null and createId!=''"> create_id=#{createId} and </if>
       <if test="status!=null and status!=''"> status=#{status} and </if>
       <if test="accountType!=null and accountType!=''"> account_type=#{accountType} and </if>
+      <if test="accountId!=null and accountId!=''"> account_id=#{accountId} and </if>
     </trim>
   </sql>
   <select id="queryConditions" parameterType="com.bzs.model.ThirdInsuranceAccountInfo" resultMap="BaseResultMap">
@@ -68,7 +69,6 @@
       <if test="accountName!=null and ''!=accountName ">account_name,</if>
       <if test="accountPwd!=null and ''!=accountPwd ">account_pwd,</if>
       <if test="createTime!=null and ''!=createTime ">create_time,</if>
-
       <if test="vpn!=null and ''!=vpn ">vpn,</if>
       <if test="accountId!=null and ''!=accountId ">account_id,</if>
       <if test="isPay!=null and ''!=isPay ">is_pay,</if>

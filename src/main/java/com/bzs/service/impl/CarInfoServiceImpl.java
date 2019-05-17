@@ -4,15 +4,17 @@ import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.CarInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.model.CarInfo;
+import com.bzs.model.query.CarInfoAndInsuranceInfo;
 import com.bzs.service.CarInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultCode;
 import com.bzs.utils.ResultGenerator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
@@ -64,7 +66,7 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
 
     @Override
     public Result getCarInfoIdInfo(String carNo, String vinNo, String operatorId) {
-        if(StringUtils.isBlank(carNo)||StringUtils.isBlank(vinNo)){
+        if(StringUtils.isBlank(carNo)&&StringUtils.isBlank(vinNo)){
            return ResultGenerator.genFailResult("车牌号和车架号不能同时为空");
         }
         CarInfo carInfo=new CarInfo();
@@ -87,26 +89,18 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
     }
 
     @Override
-    public Map<String, Object> getCarInfoIdByCarNoAndVinNo(String carNo, String vinNo, String operatorId) {
+    public Map<String, Object> getCarInfoIdByCarNoOrVinNo(String carNo, String vinNo, String operatorId) {
         Map<String,Object> result=new HashMap<>();
-
-        if(StringUtils.isNotBlank(carNo)&&StringUtils.isNotBlank(vinNo)){
-            CarInfo data= carInfoMapper.getCarInfoIdByCarNoAndVinNo(carNo,vinNo);
-            if(data!=null){
+            List<CarInfo> list= carInfoMapper.getCarInfoIdByCarNoOrVinNo(carNo,vinNo);
+            if(CollectionUtils.isNotEmpty(list)){
                 result.put("status","200");
                 result.put("msg","获取成功");
-                result.put("data",data);
+                result.put("data",list);
             }else{
                 result.put("status","1");
                 result.put("msg","请求成功，但是未查询到数据");
                 result.put("data",null);
             }
-        }else{
-            result.put("status","400");
-            result.put("msg","参数异常");
-            result.put("data",null);
-        }
-
         return result;
     }
 
@@ -124,5 +118,47 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
            result.put("data",null);
        }
         return result;
+    }
+
+    @Override
+    public Map<String, Object> getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,String isEable,String isRenewSuccess) {
+        CarInfo carInfo=new CarInfo();
+        carInfo.setCarInfoId(carInfoId);
+        carInfo.setCreatedBy(createBy);
+        carInfo.setCarNumber(carNo);
+        carInfo.setFrameNumber(vinNo);
+        carInfo.setIsEnable(isEable);
+        carInfo.setIsRenewSuccess(isRenewSuccess);
+        Map<String, Object> result=new HashMap<>();
+       List<CarInfoAndInsuranceInfo>  list=carInfoMapper.getCarInfoAndInsurance(carInfo);
+       if(CollectionUtils.isNotEmpty(list)){
+            result.put("code","200");
+            result.put("msg","获取成功");
+            result.put("data",list);
+        }else{
+            result.put("code","400");
+            result.put("msg","获取失败");
+            result.put("data",list);
+        }
+        return result;
+    }
+
+    @Override
+    public Map updateBatchIsEnable(List ids, String isEnable) {
+        Map<String,Object> resultMap=new HashedMap();
+        String code="400";
+        String msg="获取";
+        int result=-1;
+        if(CollectionUtils.isNotEmpty(ids)&&StringUtils.isNotBlank(isEnable)){
+            code="200";
+            msg+="成功";
+            result= carInfoMapper.updateBatchIsEnable(ids,isEnable);
+        }else{
+            msg+="失败";
+        }
+        resultMap.put("code",code);
+        resultMap.put("msg",msg);
+        resultMap.put("data",result);
+        return resultMap;
     }
 }

@@ -20,4 +20,11 @@ public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
     List getQuote(String carInfoId);
 
     int updatePayInfo (@Param("payUrl") String payUrl,@Param("payTime") String payTime,@Param("proposalNo") String proposalNo,@Param("payNo")String payNo,@Param("checkNo")String checkNo,@Param("paymentNotice")String paymentNotice,@Param("serialNo")String serialNo,@Param("payEndDate")String payEndDate,@Param("payMsg")String payMsg);
+
+    /**
+     * 条件查询
+     * @param quoteInfo
+     * @return
+     */
+    List findListByDifferCondition(QuoteInfo quoteInfo);
 }

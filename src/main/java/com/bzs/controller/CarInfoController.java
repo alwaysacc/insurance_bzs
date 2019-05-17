@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -123,4 +124,26 @@ public class CarInfoController {
        Map<String,Object> result=carInfoService.insertOrUpdate(carInfo);
         return ResultGenerator.genSuccessResult("成功");
     }
+    @PostMapping("/getCarInfoIdByCarNoOrVinNo")
+    public Result getCarInfoIdByCarNoOrVinNo(String carNo,String  vinNo,String createBy){
+        Map<String,Object> result=carInfoService.getCarInfoIdByCarNoOrVinNo(carNo,vinNo,createBy);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+    @ApiOperation("获取车辆信息和续保信息")
+    @PostMapping("/getCarInfoAndInsurance")
+    public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,String isEnable,String isRenewSuccess){
+        Map<String,Object> result=carInfoService.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+    @ApiOperation("*批量修改 isEnable")
+    @PostMapping("/updateBatchIsEnable")
+    public Result updateBatchIsEnable(String isEnable){
+        List list=new ArrayList();
+        list.add("20190513181648237458");
+        list.add("20190514092846860906");
+        Map<String,Object> result=carInfoService.updateBatchIsEnable(list,isEnable);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+
+
 }

@@ -212,6 +212,19 @@ public class CarInfo {
     private String isAddtion;
 
     /**
+     * 是否续保成功,默认0失败,1成功
+     */
+    @Column(name="is_renew_success")
+    private String isRenewSuccess;
+
+    /**
+     * 是否作废,默认0,1作废
+     */
+    @Column(name="is_enable")
+    private String isEnable;
+
+
+    /**
      * 获取ID
      *
      * @return car_info_id - ID
@@ -820,5 +833,21 @@ public class CarInfo {
     }
     public void setIsAddtion(String isAddtion) {
         this.isAddtion = isAddtion;
+    }
+
+    public String getIsRenewSuccess() {
+        return isRenewSuccess;
+    }
+
+    public void setIsRenewSuccess(String isRenewSuccess) {
+        this.isRenewSuccess = isRenewSuccess;
+    }
+
+    public String getIsEnable() {
+        return isEnable;
+    }
+
+    public void setIsEnable(String isEnable) {
+        this.isEnable = isEnable;
     }
 }

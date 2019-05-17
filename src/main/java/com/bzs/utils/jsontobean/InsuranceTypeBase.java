@@ -103,7 +103,6 @@ public class InsuranceTypeBase {
             insuranceTypeBasesList.add(e);
             insuranceTypeBasesList.add(f);
             insuranceTypeBasesList.add(g);
-
             insuranceTypeBasesList.add(h);
             insuranceTypeBasesList.add(i);
             insuranceTypeBasesList.add(j);
@@ -127,8 +126,13 @@ public class InsuranceTypeBase {
                     InsuranceTypeInfo info = new InsuranceTypeInfo(uuids);
                     //险种名称
                    // info.setInsuranceTypeId(uuids);
-                    String name = EncodeUtil.unicodeToString(base.getInsuranceName());
-                    info.setInsuranceName(name);
+                    String name=base.getInsuranceName();
+                    if(StringUtils.isNotBlank(name)){
+                        name = EncodeUtil.unicodeToString(base.getInsuranceName());
+                        info.setInsuranceName(name);
+                    }else{
+                       continue;
+                    }
                     //保额
                     String account=base.getAmount();
                     if(StringUtils.isNotBlank(account)){

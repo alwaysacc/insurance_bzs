@@ -36,7 +36,41 @@
         <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard"/>
         <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="channel_type" jdbcType="VARCHAR" property="channelType"/>
+        <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
+        <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
+        <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
     </resultMap>
+    <!--查询车辆、续保、续保险种 开始-->
+    <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
+        <association property="insuredInfo" javaType="com.bzs.model.InsuredInfo"
+                     resultMap="com.bzs.dao.InsuredInfoMapper.BaseResultMap" columnPrefix="b_"/>
+    <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap" ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+    </resultMap>
+    <select id="getCarInfoAndInsurance" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
+        select a.*,b.insured_id as b_insured_id,b.busines_expire_date as b_busines_expire_date,b.force_expire_date as
+        b_force_expire_date ,c.insurance_name as c_insurance_name,c.insurance_amount as c_insurance_amount,c.insurance_premium as c_insurance_premium from car_info a left join insured_info b on a.car_info_id =b.car_info_id  left  join  insurance_type_info c on a.car_info_id = c.type_id
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carInfoId!=null and carInfoId!=''">
+                a.car_info_id=#{carInfoId} and
+            </if>
+            <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">a.CREATED_BY=#{createdBy} and</if>
+            <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
+            <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
+            <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
+        </trim>
+    </select>
+    <!--查询车辆、续保、续保险种 结束-->
+    <!--批量更新isEnable-->
+    <update id="updateBatchIsEnable">
+        update car_info set is_enable=#{isEnable} where car_info_id in
+        <foreach item="item" index="index" collection="carInfoIds" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--一对一查询 结束-->
     <select id="getUserList" resultType="map">
         SELECT distinct
         car_info.car_info_id,
@@ -186,11 +220,11 @@
             <if test="engineNumber!=null and engineNumber!=''">engine_number=#{engineNumber} and</if>
         </trim>
     </sql>
-    <select id="findOneBy" parameterType="com.bzs.model.CheckInfo" resultMap="BaseResultMap">
+    <select id="findOneBy" parameterType="com.bzs.model.CarInfo" resultMap="BaseResultMap">
         select
-        <include refid="selectCarInfoId" />
+        <include refid="selectCarInfoId"/>
         from car_info
-        <include refid="findParams" />
+        <include refid="findParams"/>
     </select>
     <!--根据车牌或者车架和创建人查询  结束-->
 
@@ -242,18 +276,18 @@
         car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
         left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
         <where>
-        car_info.status=1
-        <if test="roleId==1">
-        </if>
-        <if test="roleId==2">
-            and car_info.car_info_id in (
-            SELECT car_info_id FROM check_info WHERE create_by in
-            (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
-        </if>
-        <if test="roleId==3">
-            and car_info.car_info_id in (
-            SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
-        </if>
+            car_info.status=1
+            <if test="roleId==1">
+            </if>
+            <if test="roleId==2">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by in
+                (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
+            </if>
+            <if test="roleId==3">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+            </if>
         </where>
     </select>
 
@@ -270,10 +304,16 @@
     </update>
     <!-- 根据车牌和车架更新 开始-->
     <!-- 根据车牌和车架获取车辆信息 开始 by dl-->
-    <select id="getCarInfoIdByCarNoAndVinNo">
-        <if test="vinNo!=null and ''!=vinNo and carNo!=null and !''=carNo">
-            select * FROM car_info where frame_number=#{vinNo} and car_number=#{carNo}
-        </if>
+    <sql id="find1">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carNumber!=null and carNumber=!''">car_number=#{carNumber}</if>
+            <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
+        </trim>
+    </sql>
+    <select id="getCarInfoIdByCarNoOrVinNo" resultMap="BaseResultMap">
+        select * FROM car_info
+        <include refid="find1"/>
+
     </select>
     <!-- 根据车牌和车架获取车辆信息 结束-->
     <!-- 根据车辆信息id 存在则更新 开始-->
@@ -295,7 +335,10 @@
 
     </sql>
     <insert id="insertOrUpdate" parameterType="com.bzs.model.CarInfo">
-        insert into car_info <include refid="insertItems"/> values <include refid="insertValues"/>
+        insert into car_info
+        <include refid="insertItems"/>
+        values
+        <include refid="insertValues"/>
         ON DUPLICATE KEY UPDATE
         car_info_id=values(car_info_id),
         car_number=values(car_number),

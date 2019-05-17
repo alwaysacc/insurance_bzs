@@ -15,5 +15,7 @@
     <result column="SEND_TIME" jdbcType="VARCHAR" property="sendTime" />
     <result column="car_no" jdbcType="VARCHAR" property="carNo" />
     <result column="vin_no" jdbcType="VARCHAR" property="vinNo" />
+    <result column="is_check_success" jdbcType="VARCHAR" property="isCheckSuccess" />
+    <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess" />
   </resultMap>
 </mapper>

@@ -75,11 +75,10 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         }else{
             accountInfo.setStatus("1");//可用的
         }
-
         if(StringUtils.isNotBlank(accountId)){
             accountInfo.setAccountId(accountId);
         }else{
-            msg="请指定保险公司枚举值";
+            msg="未获取账号信息";
         }
         if(StringUtils.isNotBlank(msg)){//参数异常
             result.put("code",code);
@@ -88,7 +87,6 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             return result;
         }
         List list= thirdInsuranceAccountInfoMapper.queryConditions(accountInfo);
-
         if(CollectionUtils.isNotEmpty(list)){
             ThirdInsuranceAccountInfo data=(ThirdInsuranceAccountInfo)list.get(0);
             result.put("code","200");

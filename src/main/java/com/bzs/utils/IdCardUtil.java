@@ -176,6 +176,9 @@ public class IdCardUtil {
      */
     public static boolean validateCard(String idCard) {
         String card = idCard.trim();
+        if(StringUtils.isBlank(card)){
+            return false;
+        }
         if (validateIdCard18(card)) {
             return true;
         }

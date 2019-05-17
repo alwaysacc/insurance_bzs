@@ -65,4 +65,14 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      */
 
     Result payCancel(String proposalNo, String createdBy, String quoteId, Long source,String orderNo);
+
+    /**
+     * 根据条件查询
+     * @param quoteId 报价id
+     * @param createBy 创建人
+     * @param carInfoId 车辆id
+     * @param proposalNo 支付单号
+     * @return
+     */
+    Map findListByDifferCondition(String quoteId, String createBy, String carInfoId, String proposalNo);
 }

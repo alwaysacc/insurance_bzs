@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -225,10 +226,6 @@ public class QuoteInfoController {
         }
         InsuranceAccountInfo accountInfo = new InsuranceAccountInfo(account, accountPwd);
         data.setAccountInfo(accountInfo);
-        String userName = (String) SecurityUtils.getSubject().getSession().getAttribute("userName");
-        //或者(String) request.getSession().getAttribute("userName");
-        //账号信息
-        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getSession().getAttribute("accountInfo");
 
         return quoteInfoService.getQuoteDetailsByApi(params, list, carInfoId, createdBy, source);
     }
@@ -260,5 +257,21 @@ public class QuoteInfoController {
         String status = (String) result.get("status");
         return ResultGenerator.genSuccessResult(status);
     }
+    @ApiOperation("根据不同条件获取")
+    @PostMapping("/findListByDifferCondition")
+    public Result findListByDifferCondition(String quoteId,String createBy,String carInfoId,String proposalNo){
+        Map map=quoteInfoService.findListByDifferCondition(quoteId,createBy,carInfoId,proposalNo);
+        String code=(String)map.get("code");
+        String msg=(String)map.get("msg");
 
+        Condition c=new Condition(QuoteInfo.class);
+        c.createCriteria().andCondition("quoteId",quoteId).andCondition("createBy",createBy);
+       List lists= quoteInfoService.findByCondition(c);
+        if("200".equals(code)){
+            List  list=(List)map.get("data");
+            return ResultGenerator.genSuccessResult(list,msg);
+        }else{
+            return ResultGenerator.genFailResult(msg);
+        }
+    }
 }

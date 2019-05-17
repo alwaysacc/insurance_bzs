@@ -37,7 +37,7 @@ public interface CarInfoService extends Service<CarInfo> {
      * @return
      */
 
-    Map<String,Object>getCarInfoIdByCarNoAndVinNo(String carNo,String vinNo,String operatorId);
+    Map<String,Object>getCarInfoIdByCarNoOrVinNo(String carNo,String vinNo,String operatorId);
 
     /**
      * 更新或者插入
@@ -46,4 +46,23 @@ public interface CarInfoService extends Service<CarInfo> {
      */
     Map<String,Object>insertOrUpdate(CarInfo carInfo);
 
+    /**
+     *
+     * @param carInfoId 车辆信息id
+     * @param createBy 创建人
+     * @param carNo 车牌号
+     * @param vinNo 车架号
+     * @param isEnable 是否作废0可使用 1作废
+     * @param isRenewSuccess 是否续保成功 0失败 1成功
+     * @return
+     */
+    Map<String,Object>getCarInfoAndInsurance(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,String  isRenewSuccess);
+
+    /**
+     * 批量修改 isEnable
+     * @param ids
+     * @param isEnable
+     * @return
+     */
+    Map updateBatchIsEnable(List ids,String isEnable);
 }
