@@ -47,6 +47,7 @@
     <trim prefix="where" prefixOverrides="where" suffixOverrides="and">
       <if test="thirdInsuranceId!=null and thirdInsuranceId!=''"> third_insurance_id=#{thirdInsuranceId} and </if>
       <if test="createId!=null and createId!=''"> create_id=#{createId} and </if>
+      <if test="accountId!=null and accountId!=''"> account_id=#{accountId} and </if>
       <if test="status!=null and status!=''"> status=#{status} and </if>
       <if test="accountType!=null and accountType!=''"> account_type=#{accountType} and </if>
       <if test="accountId!=null and accountId!=''"> account_id=#{accountId} and </if>
@@ -88,14 +89,11 @@
       <if test="createId!=null and ''!=createId ">#{createId},</if>
       <if test="accountName!=null and ''!=accountName ">#{accountName},</if>
       <if test="accountPwd!=null and ''!=accountPwd ">#{accountPwd},</if>
-      <if test="createTime!=null and ''!=createTime ">#{createTime},</if>
-
       <if test="vpn!=null and ''!=vpn ">#{vpn},</if>
       <if test="accountId!=null and ''!=accountId ">#{accountId},</if>
       <if test="isPay!=null and ''!=isPay ">#{isPay},</if>
       <if test="accountType!=null and ''!=accountType ">#{accountType},</if>
       <if test="ip!=null and ''!=ip ">#{ip},</if>
-
       <if test="port!=null and ''!=port ">#{port},</if>
       <if test="status!=null and ''!=status ">#{status},</if>
       <if test="enableStartDate!=null and ''!=enableStartDate ">#{enableStartDate},</if>

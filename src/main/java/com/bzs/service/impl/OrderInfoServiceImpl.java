@@ -2,16 +2,23 @@ package com.bzs.service.impl;
 
 import com.bzs.dao.CarInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
+import com.bzs.dao.QuoteInfoMapper;
 import com.bzs.model.CarInfo;
+import com.bzs.model.InsuredInfo;
 import com.bzs.model.OrderInfo;
+import com.bzs.model.QuoteInfo;
 import com.bzs.service.CarInfoService;
+import com.bzs.service.InsuredInfoService;
 import com.bzs.service.OrderInfoService;
+import com.bzs.service.QuoteInfoService;
 import com.bzs.utils.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -23,7 +30,15 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     @Resource
     private OrderInfoMapper orderInfoMapper;
     @Resource
+    private OrderInfoService orderInfoServices;
+    @Resource
     private CarInfoService carInfoService;
+    @Resource
+    private QuoteInfoService quoteInfoService;
+    @Resource
+    private QuoteInfoMapper quoteInfoMapper;
+    @Resource
+    private InsuredInfoService insuredInfoService;
 
     @Override
     public List getOrderList(String accountId, int payStatus) {
@@ -41,12 +56,19 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     }
 
     @Override
-    public int updatePayStatus(OrderInfo orderInfo) {
-        return orderInfoMapper.updatePayStatus(orderInfo);
-    }
-
-    @Override
-    public int updatePayStatus(String orderId) {
-        return orderInfoMapper.updatePayStatus(orderId);
+    public Map orderDetails(String orderId) {
+        Map map=new HashMap();
+        OrderInfo orderInfo=orderInfoServices.findBy("orderId",orderId);
+        //车辆信息
+        CarInfo carInfo=carInfoService.findBy("carInfoId",orderInfo.getCarInfoId());
+        QuoteInfo quoteInfo=quoteInfoService.findBy("quoteId",orderInfo.getPayTypeId());
+        List insuredList=quoteInfoMapper.getInsurance(orderInfo.getPayTypeId(),1);
+        InsuredInfo insuredInfo=insuredInfoService.findBy("carInfoId",orderInfo.getCarInfoId());
+        map.put("orderInfo",orderInfo);
+        map.put("carInfo",carInfo);
+        map.put("quoteInfo",quoteInfo);
+        map.put("insuredList",insuredList);
+        map.put("insuredInfo",insuredInfo);
+        return map;
     }
 }

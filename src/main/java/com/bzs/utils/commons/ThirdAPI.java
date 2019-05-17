@@ -28,14 +28,15 @@ public interface ThirdAPI {
     public static final String CPIC_PAY="cpic_zhifu";//太平洋支付
     public static final String CPIC_PAY_CANCEL="cpic_zuofei";//太保作废
 
-    public static  final String PAIC_HOST="http://47.103.61.241";
-    public static final String PAIC_PORT="8080";
+//    public static  final String PAIC_HOST="http://47.103.61.241";
+    public static  final String PAIC_HOST="http://192.168.1.106";
+    public static final String PAIC_PORT="4000";
     public static final String PAIC_RENEWAL_NAME="paic_xubao";//平安续保接口
     public static final String PAIC_QUOTE_NAME="paic_kuaisubaojia";//平安报价接口
     public static final String PAIC_QUOTE_ALL="paic_xubaoOffer";//上一年续保平安，则使用此报价
     //public static final String PAIC_QUOTE_ALL="paic_accurateOffer";
     public static final String PAIC_PAY="paic_zhifu";//平安支付
     public static final String PAIC_ACCOUNT="JSHSBXDL-00002";
-    public static final String PAIC_PWD="bzsbzs2019";
+    public static final String PAIC_PWD="NJXXKJ147";
     public static final String PAIC_PAY_CANCEL="cpic_zuofei";//平安作废
 }

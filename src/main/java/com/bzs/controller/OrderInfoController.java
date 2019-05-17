@@ -57,7 +57,11 @@ public class OrderInfoController {
         List list=orderInfoService.searchOrderList(accountId,payStatus,carNumber,postedName,deliveryWay,insuranceCompany);
         return ResultGenerator.genSuccessResult(list);
     }
-
+    @ApiOperation("获取订单详情")
+    @PostMapping("/getOrderDetail")
+    public Result getOrderDetail(String orderId) {
+        return ResultGenerator.genSuccessResult(orderInfoService.orderDetails(orderId));
+    }
     @PostMapping("/add")
     public Result add(OrderInfo orderInfo) {
         orderInfoService.save(orderInfo);

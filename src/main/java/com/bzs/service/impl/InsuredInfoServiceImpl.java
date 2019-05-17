@@ -693,11 +693,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
            }
            return result;*/
 
-        } catch (Exception e) {
-            result = new HttpResult();
-            result.setMessage("续保失败");
-            result.setCode(400);
-            return result;
+            } catch (Exception e) {
+                result = new HttpResult();
+                result.setMessage("续保失败");
+                result.setCode(400);
+                return result;
 
         }
 

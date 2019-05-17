@@ -61,7 +61,11 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new IncorrectCredentialsException("用户名或密码错误");
         if (AccountInfo.STATUS_LOCK.equals(accountInfo.getAccountState()))
             throw new LockedAccountException("账号已锁定");
-        return new SimpleAuthenticationInfo(accountInfo,pass,getName());
+       /* List<Object> list=new ArrayList<Object>();
+        list.add(username);
+        list.add(accountInfo);
+        return new SimpleAuthenticationInfo(accountInfo,pass,getName());*/
+      return new SimpleAuthenticationInfo(accountInfo,pass,getName());
     }
     /**
      * 清除权限缓存

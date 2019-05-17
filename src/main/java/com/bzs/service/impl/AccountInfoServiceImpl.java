@@ -116,4 +116,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             return ResultGenerator.genFailResult("参数为空");
         }
     }
+
+    @Override
+    public List getUserList(String roleId, String accountId) {
+        return accountInfoMapper.getUserList(roleId,accountId);
+    }
 }

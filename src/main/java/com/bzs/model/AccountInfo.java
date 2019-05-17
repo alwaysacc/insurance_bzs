@@ -1,12 +1,10 @@
 package com.bzs.model;
 
-import org.apache.ibatis.type.Alias;
-
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
-@Alias("accountInfo")
+
+
 @Table(name = "account_info")
 public class AccountInfo implements Serializable {
     public static final String STATUS_VALID = "0";
@@ -89,6 +87,9 @@ public class AccountInfo implements Serializable {
      */
     private String email;
 
+    /**
+     * 是否删除0默认1删除
+     */
     @Column(name = "delete_status")
     private Byte deleteStatus;
 
@@ -367,14 +368,18 @@ public class AccountInfo implements Serializable {
     }
 
     /**
-     * @return delete_status
+     * 获取是否删除0默认1删除
+     *
+     * @return delete_status - 是否删除0默认1删除
      */
     public Byte getDeleteStatus() {
         return deleteStatus;
     }
 
     /**
-     * @param deleteStatus
+     * 设置是否删除0默认1删除
+     *
+     * @param deleteStatus 是否删除0默认1删除
      */
     public void setDeleteStatus(Byte deleteStatus) {
         this.deleteStatus = deleteStatus;
@@ -469,14 +474,4 @@ public class AccountInfo implements Serializable {
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
-  /* @Transient
-    private List<ThirdInsuranceAccountInfo> thridAccounts;//第三方账号
-
-    public List<ThirdInsuranceAccountInfo> getThridAccounts() {
-        return thridAccounts;
-    }
-
-    public void setThridAccounts(List<ThirdInsuranceAccountInfo> thridAccounts) {
-        this.thridAccounts = thridAccounts;
-    }*/
 }
