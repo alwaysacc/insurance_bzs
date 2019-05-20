@@ -8,7 +8,6 @@
     <id column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
     <result column="pay_type" jdbcType="VARCHAR" property="payType" />
     <result column="pay_type_id" jdbcType="VARCHAR" property="payTypeId" />

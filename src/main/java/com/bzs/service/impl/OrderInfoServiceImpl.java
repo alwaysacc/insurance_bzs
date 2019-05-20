@@ -71,4 +71,16 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
         map.put("insuredInfo",insuredInfo);
         return map;
     }
+
+    @Override
+    public int updatePayStatus(OrderInfo orderInfo) {
+        return orderInfoMapper.updatePayStatus(orderInfo);
+    }
+
+    @Override
+    public int updatePayStatusById(String orderId) {
+        return orderInfoMapper.updatePayStatus(orderId);
+    }
+
+
 }

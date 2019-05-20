@@ -94,16 +94,7 @@ public class OrderInfo {
         this.createBy = createBy;
     }
 
-    @Column(name = "create_by")
-    private String createBy;
 
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
 
     /**
      * 获取订单号
