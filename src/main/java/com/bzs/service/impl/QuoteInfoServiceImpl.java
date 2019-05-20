@@ -671,7 +671,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             retMsg = EncodeUtil.unicodeToString(retMsg);
                             if ("1".equals(state)) {
                                 if (StringUtils.isNotBlank(orederNo)) {//修改订单状态值
-                                    int reslut = orderInfoService.updatePayStatus(orederNo);
+                                    int reslut = orderInfoService.updatePayStatusById(orederNo);
                                 }
                                 return ResultGenerator.genSuccessResult(retMsg);
                             } else {

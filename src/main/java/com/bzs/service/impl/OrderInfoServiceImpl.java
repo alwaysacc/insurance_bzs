@@ -81,6 +81,4 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     public int updatePayStatusById(String orderId) {
         return orderInfoMapper.updatePayStatus(orderId);
     }
-
-
 }
