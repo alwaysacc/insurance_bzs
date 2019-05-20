@@ -27,7 +27,7 @@ public interface ThirdAPI {
     public static final String CPIC_QUOTE_NAME="cpic_kuaisubaojia";//太保报价接口
     public static final String CPIC_QUOTE_ALL="cpic_accurateOffer";//太平洋报价核保
     public static final String CPIC_PAY="cpic_zhifu";//太平洋支付
-    public static final String CPIC_PAY_CANCEL="cpic_zuofei";//太保作废
+    public static final String CPIC_PAY_CANCEL="cpic_reject";//太保作废
 
 //    public static  final String PAIC_HOST="http://47.103.61.241";
     public static  final String PAIC_HOST="http://192.168.1.106";

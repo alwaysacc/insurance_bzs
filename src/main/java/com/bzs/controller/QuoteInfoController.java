@@ -241,9 +241,8 @@ public class QuoteInfoController {
      * @return
      */
     @PostMapping("/pay")
-    public Result getPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source) {
-
-        return quoteInfoService.getPayMentgetPayMent(proposalNo, pay, money, createdBy, carInfoId, quoteId, source);
+    public Result getPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source,String deliveryWay,String deliveryAddress,String contactName,String contactTel) {
+        return quoteInfoService.getPayMentgetPayMent(proposalNo, pay, money, createdBy, carInfoId, quoteId, source, deliveryWay, deliveryAddress, contactName, contactTel);
     }
     @ApiOperation("作废支付")
     @PostMapping("/payCancel")

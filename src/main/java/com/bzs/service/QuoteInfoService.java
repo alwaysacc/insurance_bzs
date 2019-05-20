@@ -51,7 +51,7 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      *  @param source 保司枚举值 默认太保
      * @return
      */
-    Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId,Long source);
+    Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId,Long source,String deliveryWay,String deliveryAddress,String contactName,String contactTel);
 
     Map<String,Object>updatePayInfo(String proposalNo);
 

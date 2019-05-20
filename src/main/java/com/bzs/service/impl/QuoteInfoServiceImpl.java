@@ -339,12 +339,15 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
                         }
                     } else {
+                        String submitResult="";
                         if(StringUtils.isNotBlank(retMsg)){
                             quoteInfo.setQuoteResult(retMsg);
+                            submitResult=retMsg+",核保失败";
                         }else{
+                            submitResult="报价失败"+",核保失败";
                             quoteInfo.setQuoteResult("报价失败");
                         }
-                        quoteInfo.setSubmitresult("核保失败");
+                        quoteInfo.setSubmitresult(submitResult);
                         quoteInfoMapper.insert(quoteInfo);
                         //if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
                         PCICResponseBean resultBean = new PCICResponseBean();
@@ -486,7 +489,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source) {
+    public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source,String deliveryWay,String deliveryAddress,String contactName,String contactTel) {
 
         if (StringUtils.isNotBlank(pay) && "1".equals(pay)) {
             pay = "alipay";
@@ -514,7 +517,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             if (StringUtils.isBlank(createdBy)) {
                 return ResultGenerator.genFailResult("未获取账号信息");
             }
-            if (!bflag) {
+            if (bflag) {
                 Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(source, "1", createdBy);
                 String code = (String) map.get("code");
                 if ("200".equals(code)) {
@@ -672,7 +675,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 if (StringUtils.isNotBlank(orederNo)) {//修改订单状态值
                                     int reslut = orderInfoService.updatePayStatusById(orederNo);
                                 }
-                                return ResultGenerator.genSuccessResult(retMsg);
+                                if(StringUtils.isNotBlank(retMsg)){
+                                    return ResultGenerator.genSuccessResult(retMsg);
+                                }
+                                return ResultGenerator.genSuccessResult("作废成功");
                             } else {
                                 return ResultGenerator.genFailResult(retMsg);
                             }
