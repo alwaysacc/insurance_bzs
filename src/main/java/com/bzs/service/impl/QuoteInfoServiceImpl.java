@@ -60,6 +60,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     private OrderInfoMapper orderInfoMapper;
     @Resource
     private  ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
+    @Resource
+    private  OrderInfoService orderInfoService;
 
 
     @Override
