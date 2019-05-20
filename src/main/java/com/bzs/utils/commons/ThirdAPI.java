@@ -10,6 +10,7 @@ public interface ThirdAPI {
     //以下是爬虫调用接口
     public static  final String HOST="http://192.168.1.106";
     public static  final String PORT="5000";
+    public static final String salesPerson="杨杰";
 
     public static  final String PICC_HOST="http://192.168.1.102";
     public static final String PICC_PORT="5001";

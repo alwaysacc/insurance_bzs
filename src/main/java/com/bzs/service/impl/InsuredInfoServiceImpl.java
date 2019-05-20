@@ -74,6 +74,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             String uuid = UUIDS.getDateUUID();
             CheckInfo checkInfo = new CheckInfo(uuid);
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("checkType",checkType);
             if ("0".equals(checkType)) {//车牌续保
                 if (StringUtils.isNotBlank(carNo)) {
                     jsonObject.put("carNo", carNo);
@@ -277,17 +278,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 } else {
                                     carInfo.setLicenseOwnerIdCardType("2"); //组织机构
                                 }
-                               /* if (idCardNew.indexOf("*") > -1) {//说明获取的值中加密
-                                    IdCardUtil.validateCardBy14(idCardNew);
-                                    carInfo.setLicenseOwnerIdCardType("-1");
-                                } else {
-                                    boolean b = IdCardUtil.validateCard(idCardNew);
-                                    if (b) {
-                                        carInfo.setLicenseOwnerIdCardType("1");//身份证
-                                    } else {
-                                        carInfo.setLicenseOwnerIdCardType("2"); //组织机构
-                                    }
-                                }*/
                             }
                             //车辆信息设置结束
                             //投保信息设置开始
@@ -387,16 +377,20 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 if ("2".equals(dataType)) {//平安需要账号
                     String accountName = data.getAccountName();
                     String accountPwd = data.getAccountPwd();
-                    String idcard=jsonObject.getString("cardID");
-                    if(StringUtils.isNotBlank(idcard)){
-                       boolean isIdCard=IdCardUtil.validateCard(idcard);
-                       if(!isIdCard){
-                           result.put("status", "400");
-                           result.put("msg", "平安续保请填写正确的身份证号");
-                           result.put("data", null);
-                           return result;
-                       }
+                    String checkType=jsonObject.getString("checkType");
+                    if("0".equals(checkType)){//身份证是不否符合规范
+                        String idcard=jsonObject.getString("cardID");
+                        if(StringUtils.isNotBlank(idcard)){
+                            boolean isIdCard=IdCardUtil.validateCard(idcard);
+                            if(!isIdCard){
+                                result.put("status", "400");
+                                result.put("msg", "平安续保请填写正确的身份证号");
+                                result.put("data", null);
+                                return result;
+                            }
+                        }
                     }
+
                     if (StringUtils.isNotBlank(accountName) && StringUtils.isNotBlank(accountPwd)) {
                         jsonObject.put("account", accountName);
                         jsonObject.put("password", accountPwd);
@@ -455,33 +449,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     public HttpResult getDifferentSourceRenewalInfo(List<Long> source, JSONObject jsonStr, String creatBy) {
         HttpResult result = null;
         Long start1 = System.currentTimeMillis();
-       /* AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        String msg = "";*/
         JSONObject jsonObject = new JSONObject();
-       /* String accountId = null;
-        if (null == a) {
-            msg = "请先登录账号";
-        } else {
-            accountId = a.getAccountId();
-            if (StringUtils.isBlank(accountId)) {
-                msg = "此账号异常,无法续保";
-            }
-        }
-
-        if (StringUtils.isNotBlank(msg)) {
-            jsonObject.put("state", "19000");
-            jsonObject.put("message", msg);
-            String body = jsonObject.toJSONString();
-            result = new HttpResult();
-            result.setCode(200);
-            result.setMessage(msg);
-            result.setBody(body);
-            result.setSource(1L);
-            RenewalBean bean = JSONObject.parseObject(body, RenewalBean.class);
-            result.setT(bean);
-            return result;
-        }*/
-
         List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
 
         for (Long sour : source) {
@@ -510,13 +478,19 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 jsonStr.put("password", accountPwd);
                             } else {
                                 flag = false;
-                                mm="用于续保的平安账号信息不完整,无法续保";
+                                mm="用于续保的平安账号信息不完整,无法续保;";
                             }
-                            String idcard=jsonStr.getString("idCard");
-                            if(!IdCardUtil.validateCard(idcard)){//身份证是不否符合规范
-                                flag = false;
-                                mm="平安续保,未填写身份证号,无法续保";
+                            String checkType=jsonStr.getString("checkType");
+                            if("0".equals(checkType)){
+                                String idcard=jsonStr.getString("cardID");
+                                logger.info("获取身份证号:"+idcard);
+                                if(!IdCardUtil.validateCard(idcard)){//身份证是不否符合规范
+                                    flag = false;
+                                    mm="平安续保,未填写身份证号,无法续保;";
+                                }
                             }
+
+
                         } else if (4L == sour) {
                             api = ThirdAPI.PICC_RENEWAL_NAME;
                         }else{
@@ -778,6 +752,16 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     carInfo.setChannelType(checkType + "");
                     carInfo.setCarInfoId(uuid);
                     carInfo.setBrandModel(dataBean.getData().getCarName());
+                    if(StringUtils.isNotBlank(idCard)){
+                        String cardID=carInfo.getLicenseOwnerIdCard();
+                        if(StringUtils.isNotBlank(cardID)){
+                            int index =cardID.indexOf("*");
+                            if(index>-1){
+                                carInfo.setLicenseOwnerIdCard(idCard);
+                            }
+                        }
+                    }
+
                     if (CollectionUtils.isNotEmpty(list)) {//存在则先作废然后直接添加
                         List<String> lists = new ArrayList<>();
                         for (CarInfoAndInsuranceInfo info : list) {
@@ -836,6 +820,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         carInfo.setCarInfoId(uuid);
                         carInfoService.save(carInfo);
                         checkInfo.setCarInfoId(uuid);
+                    }else{
+                        checkInfo.setIsFirstTime("1");
                     }
                     checkInfoService.save(checkInfo);
                     return ResultGenerator.gen(msg, dataBean, ResultCode.FAIL);

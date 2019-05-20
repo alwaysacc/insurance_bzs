@@ -84,14 +84,14 @@ public class InsuredInfoController {
      * @param lastYearSource 上年续保公司
      * @param insuredArea
      * @param request
-     * @param createdBy 创建人
+     * @param createBy 创建人
      * @return
      */
 
     @PostMapping("/checkByCarNoOrVinNo")
-    public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createdBy) {
-       if(StringUtils.isNotBlank(createdBy))
-        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createdBy);
+    public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createBy) {
+       if(StringUtils.isNotBlank(createBy))
+        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createBy);
         else  return ResultGenerator.genFailResult("未获取到账号信息");
     }
 

@@ -175,10 +175,10 @@ public class IdCardUtil {
      * 验证身份证是否合法
      */
     public static boolean validateCard(String idCard) {
-        String card = idCard.trim();
-        if(StringUtils.isBlank(card)){
+        if(StringUtils.isBlank(idCard)){
             return false;
         }
+        String card = idCard.trim();
         if (validateIdCard18(card)) {
             return true;
         }

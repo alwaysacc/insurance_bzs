@@ -28,6 +28,18 @@ public interface InsuredInfoService extends Service<InsuredInfo> {
      */
     public Result checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy);
 
+    /**
+     * 废弃 在使用 checkByCarNoOrVinNo
+     * @param checkType
+     * @param carNo
+     * @param idCard
+     * @param vinNo
+     * @param engineNo
+     * @param lastYearSource
+     * @param insuredArea
+     * @param createdBy
+     * @return
+     */
     public Result checkByCarNoOrVinNo2(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy);
 
 }

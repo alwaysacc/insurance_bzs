@@ -348,7 +348,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         return ResultGenerator.gen(retMsg, resultBean, ResultCode.FAIL);
                     }
                 }
-
             } else {
                 logger.info("报价内容获取为空:" + msg);
                 quoteInfo.setQuoteResult(msg);
@@ -397,6 +396,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 } else if (1 == source) {
                     api = ThirdAPI.CPIC_QUOTE_ALL;
                     aflag = true;
+                    params.getData().setSalesPerson(ThirdAPI.salesPerson);
                 } else if (4 == source) {
                     api = ThirdAPI.PICC_QUOTE_ALL;
                     aflag = true;
@@ -630,11 +630,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
     @Override
     public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orederNo) {
-        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
-        /*if (null == a) {
-            return ResultGenerator.genFailResult("请先登录账号");
-        } else {*/
-        //String accountId = a.getAccountId();
         if (StringUtils.isBlank(createdBy)) {
             return ResultGenerator.genFailResult("未获取账号信息");
         }

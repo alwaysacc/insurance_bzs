@@ -218,12 +218,12 @@ public class QuoteInfoController {
         personInfo.setName(personName);
         personInfo.setSex(personSex);
         data.setPersonInfo(personInfo);
-        if(StringUtils.isBlank(account)){
+      /*  if(StringUtils.isBlank(account)){
             account=ThirdAPI.PAIC_ACCOUNT;
         }
         if(StringUtils.isBlank(accountPwd)){
             accountPwd=ThirdAPI.PAIC_PWD;
-        }
+        }*/
         InsuranceAccountInfo accountInfo = new InsuranceAccountInfo(account, accountPwd);
         data.setAccountInfo(accountInfo);
 
