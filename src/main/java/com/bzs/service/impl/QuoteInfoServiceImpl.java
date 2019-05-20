@@ -164,7 +164,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         String biPremium = rdata.getBiPremium();//商业险标准保费
                         String proposalNo = rdata.getProposalNo();//报价单号
                         String payUrl = rdata.getPayUrl();//平安直接获取支付地址
-
                         if (StringUtils.isNotBlank(proposalNo) || StringUtils.isNotBlank(payUrl)) {//报价单号获取成功，说明报价+核保成功
                             quoteInfo.setQuoteStatus(1);
                             quoteInfo.setQuoteResult("报价成功");//报价结果
@@ -321,7 +320,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 insuranceTypeInfo.setCreatedBy(createdBy);
                                 insuranceTypeInfo.setTypeId(uuids);//报价的id
                                 insuranceTypeInfoList.add(insuranceTypeInfo);
-
                             }
                         }
                         //插入报价的投保项
@@ -341,10 +339,16 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
                         }
                     } else {
+                        if(StringUtils.isNotBlank(retMsg)){
+                            quoteInfo.setQuoteResult(retMsg);
+                        }else{
+                            quoteInfo.setQuoteResult("报价失败");
+                        }
+                        quoteInfo.setSubmitresult("核保失败");
                         quoteInfoMapper.insert(quoteInfo);
                         //if(retMsg.indexOf("需双录")>-1)retMsg+=",请人工核保";
                         PCICResponseBean resultBean = new PCICResponseBean();
-                        resultBean.setRetMsg("报价失败:" + msg);
+                        resultBean.setRetMsg("报价内容:" + msg);
                         return ResultGenerator.gen(retMsg, resultBean, ResultCode.FAIL);
                     }
                 }
