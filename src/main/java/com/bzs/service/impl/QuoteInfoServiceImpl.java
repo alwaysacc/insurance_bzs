@@ -177,7 +177,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             resultCode = 200;
                         } else {
                             //报价成功-核保失败
-                            if ((StringUtils.isNotBlank(ciPremium) && Double.valueOf(ciPremium) > 0) || (StringUtils.isNotBlank(biPremium) && Double.valueOf(ciPremium) > 0)) {
+                            if ((StringUtils.isNotBlank(ciPremium) && Double.valueOf(ciPremium) > 0) || (StringUtils.isNotBlank(biPremium) && Double.valueOf(biPremium) > 0)) {
                                 quoteInfo.setQuoteStatus(1);
                                 quoteInfo.setQuoteResult("报价成功");//报价结果
                                 quoteInfo.setSubmitresult(retMsg);
@@ -544,6 +544,23 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 payinfo.setPaymentNotice(paymentNotice);//交费通知单
                 if (StringUtils.isNotBlank(payUrl)) {
                     payinfo.setPayMsg("获取成功");
+                    OrderInfo orderInfo = new OrderInfo();
+                    orderInfo.setOrderId(UUIDS.getDateUUID());
+                    orderInfo.setPayType("2");//保单订单
+                    orderInfo.setPayTypeId(quoteId);
+                    orderInfo.setCarInfoId(carInfoId);
+                    orderInfo.setPayStatus(0);
+                    Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+                    orderInfo.setCreateTime(date);
+                    orderInfo.setPayment("2");//微信支付
+                    if (StringUtils.isNotBlank(money)) {
+                        money = money.replaceAll(",", "");
+                        orderInfo.setPayMoney(new BigDecimal(money));
+                    }
+                    //  orderInfoMapper.insert(orderInfo);
+                    orderInfoService.save(orderInfo);
+
+
                 } else {
                     payinfo.setPayMsg("获取失败");
                 }
@@ -569,7 +586,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if (bean != null) {
                     String state = bean.getState();
                     String retCode = bean.getRetCode();
-                    if ("1".equals(state) && "0000".equals(retCode)) {
+                    if ("1".equals(state)) {
                         String retMsg = bean.getRetMsg();
                         PayInfoData payinfo = bean.getData();
                         if (payinfo != null) {
@@ -596,8 +613,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
                             orderInfo.setCreateTime(date);
                             orderInfo.setPayment("2");//微信支付
-                            orderInfo.setCarInfoId(carInfoId);
-                            orderInfo.setPayTypeId(quoteId);
                             if (StringUtils.isNotBlank(money)) {
                                 money = money.replaceAll(",", "");
                                 orderInfo.setPayMoney(new BigDecimal(money));

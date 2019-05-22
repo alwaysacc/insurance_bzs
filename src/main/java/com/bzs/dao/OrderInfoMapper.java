@@ -24,5 +24,5 @@ public interface OrderInfoMapper extends Mapper<OrderInfo> {
      * @param orderId
      * @return
      */
-    int  updatePayStatus(@Param("orderId") String  orderId);
+    int  updatePayStatusById(@Param("orderId") String  orderId);
 }
