@@ -1,12 +1,7 @@
 package com.bzs.shiro;
 
-import com.alibaba.fastjson.JSON;
 import com.bzs.model.AccountInfo;
-import com.bzs.model.MenuInfo;
-import com.bzs.model.RoleInfo;
 import com.bzs.service.AccountInfoService;
-import com.bzs.service.MenuInfoService;
-import com.bzs.service.RoleInfoService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -14,19 +9,10 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import sun.rmi.runtime.Log;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     private AccountInfoService accountInfoService;
-    @Autowired
-    private RoleInfoService roleInfoService;
-    @Autowired
-    private MenuInfoService menuInfoService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -35,7 +21,7 @@ public class ShiroRealm extends AuthorizingRealm {
         String username=accountInfo.getLoginName();
         System.out.println("username"+username);
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
-        //获取用户角色集
+     /*   //获取用户角色集
         List<RoleInfo> roleInfoList=roleInfoService.getUserRole(username);
         Set<String> roleSet=roleInfoList.stream().map(RoleInfo::getRoleName).collect(Collectors.toSet());
         simpleAuthorizationInfo.setRoles(roleSet);
@@ -44,7 +30,7 @@ public class ShiroRealm extends AuthorizingRealm {
         List<MenuInfo> menuInfoList=menuInfoService.getUserPermissions(username);
         Set<String> menuSet=menuInfoList.stream().map(MenuInfo::getMenuName).collect(Collectors.toSet());
         simpleAuthorizationInfo.setStringPermissions(menuSet);
-        System.out.println(JSON.parse(String.valueOf(menuInfoList)));
+        System.out.println(JSON.parse(String.valueOf(menuInfoList)));*/
         return simpleAuthorizationInfo;
     }
 

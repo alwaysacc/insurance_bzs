@@ -3,8 +3,6 @@ package com.bzs.service.impl;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
-import com.bzs.service.MenuInfoService;
-import com.bzs.service.RoleInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultCode;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
@@ -37,10 +34,6 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private AccountInfoMapper accountInfoMapper;
     @Autowired
     private AccountInfoService accountInfoService;
-    @Autowired
-    private RoleInfoService roleInfoService;
-    @Autowired
-    private MenuInfoService menuInfoService;
 
     @Override
     public String getRoleIdByAccountId(String account_id) {
@@ -70,9 +63,6 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     public Map<String, Object> getUserInfo(AccountInfo accountInfo) {
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("user", accountInfo);
-        userInfo.put("roles", roleInfoService.getUserRole(accountInfo.getLoginName()));
-        userInfo.put("permissions", menuInfoService.getUserPermissions(accountInfo.getLoginName()));
-        System.out.println(ResultGenerator.genSuccessResult(roleInfoService.getUserRole(accountInfo.getLoginName())));
         return userInfo;
     }
 

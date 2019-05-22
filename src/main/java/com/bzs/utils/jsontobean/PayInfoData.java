@@ -16,6 +16,16 @@ public class PayInfoData {
     private String payEndDate;
     private String payNo;
     private String checkNo;
+    private String orderId;
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
     public String getPayTime() {
         return payTime;
     }

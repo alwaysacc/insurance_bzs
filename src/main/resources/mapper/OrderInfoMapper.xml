@@ -24,7 +24,7 @@
     SELECT
     order_info.order_id,
     car_info.car_number,car_info.car_model,car_info.salesman,
-    date_format(order_info.create_time,'%Y-%m-%d') as create_time,
+    order_info.create_time,
     date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
     order_info.create_by,
     order_info.pay_status,

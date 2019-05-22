@@ -569,7 +569,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if (bean != null) {
                     String state = bean.getState();
                     String retCode = bean.getRetCode();
-                    if ("1".equals(state) && "0000".equals(retCode)) {
+//                    if ("1".equals(state) && "0000".equals(retCode)) {
+                    if ("1".equals(state)) {
                         String retMsg = bean.getRetMsg();
                         PayInfoData payinfo = bean.getData();
                         if (payinfo != null) {
@@ -588,20 +589,19 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             // PayInfo payinfos = payinfo.getPayInfo();
                             quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo, payNo, checkNo, paymentNotice, serialNo, payEndDate, retMsg);
                             OrderInfo orderInfo = new OrderInfo();
-                            orderInfo.setOrderId(UUIDS.getDateUUID());
+                            String oid=UUIDS.getDateUUID();
+                            orderInfo.setOrderId(oid);
                             orderInfo.setPayType("2");//保单订单
                             orderInfo.setPayTypeId(quoteId);
                             orderInfo.setCarInfoId(carInfoId);
                             orderInfo.setPayStatus(0);
-                            Date date = DateUtil.getDateToDate(new Date(), "yyyy-MM-dd HH:mm:ss");
-                            orderInfo.setCreateTime(date);
                             orderInfo.setPayment("2");//微信支付
-                            orderInfo.setCarInfoId(carInfoId);
-                            orderInfo.setPayTypeId(quoteId);
+                            orderInfo.setCreateBy(createdBy);
                             if (StringUtils.isNotBlank(money)) {
                                 money = money.replaceAll(",", "");
                                 orderInfo.setPayMoney(new BigDecimal(money));
                             }
+                            payinfo.setOrderId(oid);
                             //  orderInfoMapper.insert(orderInfo);
                             orderInfoService.save(orderInfo);
                             return ResultGenerator.gen("获取成功", payinfo, ResultCode.SUCCESS);
