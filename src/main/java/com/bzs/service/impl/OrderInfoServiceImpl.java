@@ -79,6 +79,6 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
 
     @Override
     public int updatePayStatusById(String orderId) {
-        return orderInfoMapper.updatePayStatus(orderId);
+        return orderInfoMapper.updatePayStatusById(orderId);
     }
 }

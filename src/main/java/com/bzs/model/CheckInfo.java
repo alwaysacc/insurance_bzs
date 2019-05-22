@@ -37,6 +37,8 @@ public class CheckInfo {
     private String checkType;
     @Column(name = "send_time")
     private String sendTime;
+    @Column(name = "UPDATE_TIME")
+    private Date updateTime;
 
     @Column(name = "car_no")
     private String carNo;

@@ -100,4 +100,5 @@
   <update id="updatePayStatusById" >
     update order_info set pay_status='2' where  order_id=#{orderId}
   </update>
+
 </mapper>
