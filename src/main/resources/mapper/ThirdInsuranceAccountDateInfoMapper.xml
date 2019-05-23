@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.ThirdInsuranceAccountDateInfoMapper">
+    <resultMap id="BaseResultMap" type="com.bzs.model.ThirdInsuranceAccountDateInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="enable_years" jdbcType="INTEGER" property="enableYears"/>
+        <result column="enable_months" jdbcType="INTEGER" property="enableMonths"/>
+        <result column="enable_days" jdbcType="INTEGER" property="enableDays"/>
+        <result column="account_id" jdbcType="VARCHAR" property="accountId"/>
+    </resultMap>
+    <!--使用了存储过程保存信息-->
+    <select id="saveByProcedure" parameterType="com.bzs.model.ThirdInsuranceAccountDateInfo" statementType="CALLABLE">
+        {
+          call saveThirdAccountForEndTime(
+          #{createBy,mode=IN,jdbcType=VARCHAR},
+          #{startTime,mode=IN,jdbcType=VARCHAR},
+          #{endTime,mode=IN,jdbcType=VARCHAR},
+          #{enableDays,mode=IN,jdbcType=NUMERIC},
+          #{enableMonths,mode=IN,jdbcType=NUMERIC},
+          #{enableYears,mode=IN,jdbcType=NUMERIC},
+          #{accountId,mode=IN,jdbcType=VARCHAR}
+          )
+
+        }
+  </select>
+
+
+</mapper>

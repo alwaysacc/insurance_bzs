@@ -3,7 +3,9 @@ package com.bzs.model;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
+import lombok.Data;
 
+@Data
 @Table(name = "car_info")
 public class CarInfo {
     /**
@@ -184,8 +186,43 @@ public class CarInfo {
      */
     @Column(name = "license_owner_id_card_type")
     private String licenseOwnerIdCardType;
+
+    /**
+     * 客户id
+     */
+    @Column(name = "customer_Id")
+    private String customerId;
+
+    private Integer status;
+
+    /**
+     * 手机号
+     */
     @Column(name = "mobile")
     private String mobile;
+    /**
+     * 车辆信息获取方式默认-1手动添加还未查询过，0使用车牌1使用车架2车牌和车架均使用
+     */
+    @Column(name="channel_type")
+    private String  channelType;
+    /**
+     * 是否手动添加,默认0=查询获取,1是
+     */
+    @Column(name="is_addtion")
+    private String isAddtion;
+
+    /**
+     * 是否续保成功,默认0失败,1成功
+     */
+    @Column(name="is_renew_success")
+    private String isRenewSuccess;
+
+    /**
+     * 是否作废,默认0,1作废
+     */
+    @Column(name="is_enable")
+    private String isEnable;
+
 
     /**
      * 获取ID
@@ -727,18 +764,90 @@ public class CarInfo {
         this.licenseOwnerIdCardType = licenseOwnerIdCardType;
     }
 
-    public CarInfo() {
+    /**
+     * 获取客户id
+     *
+     * @return customer_Id - 客户id
+     */
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public CarInfo(String carInfoId) {
-        this.carInfoId = carInfoId;
+    /**
+     * 设置客户id
+     *
+     * @param customerId 客户id
+     */
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
+    /**
+     * @return status
+     */
+    public Integer getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status
+     */
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    /**
+     * 获取手机号
+     *
+     * @return mobile - 手机号
+     */
     public String getMobile() {
         return mobile;
     }
 
+    /**
+     * 设置手机号
+     *
+     * @param mobile 手机号
+     */
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+    public CarInfo() {
+
+    }
+    public CarInfo(String carInfoId) {
+        this.carInfoId = carInfoId;
+    }
+
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
+    }
+
+    public String getIsAddtion() {
+        return isAddtion;
+    }
+    public void setIsAddtion(String isAddtion) {
+        this.isAddtion = isAddtion;
+    }
+
+    public String getIsRenewSuccess() {
+        return isRenewSuccess;
+    }
+
+    public void setIsRenewSuccess(String isRenewSuccess) {
+        this.isRenewSuccess = isRenewSuccess;
+    }
+
+    public String getIsEnable() {
+        return isEnable;
+    }
+
+    public void setIsEnable(String isEnable) {
+        this.isEnable = isEnable;
     }
 }

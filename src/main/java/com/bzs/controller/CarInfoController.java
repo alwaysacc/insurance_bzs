@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by alwaysacc on 2019/04/10.
@@ -26,7 +28,6 @@ public class CarInfoController {
 
     @PostMapping("/add")
      public Result add(CarInfo carInfo) {
-        carInfo.setCarInfoId("1213");
         carInfoService.save(carInfo);
         return ResultGenerator.genSuccessResult();
     }
@@ -59,15 +60,18 @@ public class CarInfoController {
     /**
      * @Author 孙鹏程
      * @Description  获取客户列表，salesman是否分配0未分配，customerStatus客户状态，0未回访
-     * @Date 2019/4/12/012  11:15 
+     * @Date 2019/4/12/012  11:15
      * @Param [page, size, accountId, roleId, salesman, customerStatus]
      * @return com.bzs.utils.Result
      **/
     @ApiOperation("获取客户列表")
     @PostMapping("/getUserList")
-    public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,String roleId,String salesman,String customerStatus) {
+    public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,
+                              String roleId,String salesman,String customerStatus,
+                              String plan
+                              ) {
         PageHelper.startPage(page, size);
-        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus);
+        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus,plan);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -80,9 +84,9 @@ public class CarInfoController {
      **/
     @ApiOperation("搜索客户列表")
     @PostMapping("/searchUserList")
-    public Result searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel) {
+    public Result searchUserList(String accountId, String roleId, String carNumber, String frameNumber,String customerName, String customerTel,String lincenseOwner) {
         List<CarInfo> list = carInfoService.searchUserList(
-                accountId,roleId,carNumber,frameNumber,customerName,customerTel);
+                accountId,roleId,carNumber,frameNumber,customerName,customerTel,lincenseOwner);
         return ResultGenerator.genSuccessResult(list);
     }
     /**
@@ -98,11 +102,48 @@ public class CarInfoController {
     }
     @ApiOperation("回收客户")
     @PostMapping("/recoverUser")
-    public Result recoverUser(String[] carInfoId) {
+    public Result recoverUser(String[] carInfoIds,int status) {
         //carInfoService.recoverUser(carInfoId);
         //System.out.println(carInfoId);
         //System.out.println(ResultGenerator.genSuccessResult(id));
-        return ResultGenerator.genSuccessResult( carInfoService.recoverUser(carInfoId));
+        return ResultGenerator.genSuccessResult( carInfoService.recoverUser(carInfoIds,status));
     }
+    @ApiOperation("获取回收客户")
+    @PostMapping("/getRecoverUser")
+    public Result getRecoverUser(String accountId, String roleId) {
+        return ResultGenerator.genSuccessResult( carInfoService.getRecoverUser(accountId,roleId));
+    }
+
+    /**
+     * 插入或者更新
+     * @param carInfo
+     * @return
+     */
+    @PostMapping("/insertOrUpdate")
+    public Result insertOrUpdate(CarInfo carInfo){
+       Map<String,Object> result=carInfoService.insertOrUpdate(carInfo);
+        return ResultGenerator.genSuccessResult("成功");
+    }
+    @PostMapping("/getCarInfoIdByCarNoOrVinNo")
+    public Result getCarInfoIdByCarNoOrVinNo(String carNo,String  vinNo,String createBy){
+        Map<String,Object> result=carInfoService.getCarInfoIdByCarNoOrVinNo(carNo,vinNo,createBy);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+    @ApiOperation("获取车辆信息和续保信息")
+    @PostMapping("/getCarInfoAndInsurance")
+    public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,String isEnable,String isRenewSuccess){
+        Map<String,Object> result=carInfoService.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+    @ApiOperation("*批量修改 isEnable")
+    @PostMapping("/updateBatchIsEnable")
+    public Result updateBatchIsEnable(String isEnable){
+        List list=new ArrayList();
+        list.add("20190513181648237458");
+        list.add("20190514092846860906");
+        Map<String,Object> result=carInfoService.updateBatchIsEnable(list,isEnable);
+        return ResultGenerator.genSuccessResult(result,"成功");
+    }
+
 
 }

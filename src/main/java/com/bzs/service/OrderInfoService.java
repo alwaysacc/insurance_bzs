@@ -4,6 +4,7 @@ import com.bzs.utils.Service;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -16,5 +17,7 @@ public interface OrderInfoService extends Service<OrderInfo> {
                          @Param("carInfoId") String carInfoId, @Param("postedName") String postedName,
                          @Param("deliveryWay") int deliveryWay, @Param("insuranceCompany") String insuranceCompany
     );
-
+    Map orderDetails(String orderId);
+    int updatePayStatus(OrderInfo orederNo);
+    int updatePayStatusById(String orederNo);
 }

@@ -37,18 +37,21 @@ public class LoginController {
     @PostMapping("/login")
     @ResponseBody
     public Result login(String username,String password,String code,boolean rememberMe) {
+        System.out.println(username);
+        System.out.println(password);
         if (StringUtils.isBlank(code)){
             return ResultGenerator.genFailResult("验证码不能为空");
         }
         Session session=SecurityUtils.getSubject().getSession();
+
         String sessionCode= (String) session.getAttribute(CODE_KEY);
 //        if (!code.equalsIgnoreCase(sessionCode)){
 //            return ResultGenerator.genFailResult("验证码错误");
 //        }
+
         password=MD5Utils.encrypt(username.toLowerCase(),password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
-        System.out.println(accountInfo.getLoginPwd());
         if (accountInfo==null)
             return ResultGenerator.genFailResult("用户名或密码错误");
         if (!accountInfo.getLoginPwd().equals(password))
@@ -63,6 +66,8 @@ public class LoginController {
             subject.login(token);
             //修改登录时间
             accountInfoService.updateLoginTime(username);
+            //session.setAttribute("userName",username);
+            //session.setAttribute("accountInfo",accountInfo);
             return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
         }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
             return ResultGenerator.genFailResult(e.getMessage());
@@ -72,8 +77,8 @@ public class LoginController {
     }
     private Map<String,Object> getUserInfo(String username){
         Map<String,Object> userInfo=null;
-
         return userInfo;
     }
+
 
 }

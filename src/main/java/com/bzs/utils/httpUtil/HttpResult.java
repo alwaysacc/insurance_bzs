@@ -8,11 +8,17 @@ import org.apache.poi.hssf.record.formula.functions.T;
  * @author: dengl
  * @create: 2019-04-11 13:18
  */
-public class HttpResult {
+public class HttpResult<T> {
+    //请求码200 500 404 等
     private int code;
+    //存储请求返回的内容
     private String body;
+    //描述信息
     private String message;
+    //将body转换成实体类
     private T t;
+    //续保枚举值
+    private  Long source;
 
     public int getCode() {
         return code;
@@ -71,5 +77,13 @@ public class HttpResult {
                 ", message='" + message + '\'' +
                 ", t=" + t +
                 '}';
+    }
+
+    public Long getSource() {
+        return source;
+    }
+
+    public void setSource(Long source) {
+        this.source = source;
     }
 }

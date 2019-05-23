@@ -1,8 +1,8 @@
 package com.bzs.controller;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
-import com.bzs.model.RoleInfo;
-import com.bzs.service.RoleInfoService;
+import com.bzs.model.ThirdInsuranceAccountDateInfo;
+import com.bzs.service.ThirdInsuranceAccountDateInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,43 +14,48 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by alwaysacc on 2019/04/15.
+* Created by dl on 2019/05/06.
 */
 @RestController
-@RequestMapping("/role/info")
-public class RoleInfoController {
+@RequestMapping("/thirdAccountDate")
+public class ThirdInsuranceAccountDateInfoController {
     @Resource
-    private RoleInfoService roleInfoService;
+    private ThirdInsuranceAccountDateInfoService thirdInsuranceAccountDateInfoService;
 
     @PostMapping("/add")
-    public Result add(RoleInfo roleInfo) {
-        roleInfoService.save(roleInfo);
+    public Result add(ThirdInsuranceAccountDateInfo thirdInsuranceAccountDateInfo) {
+        thirdInsuranceAccountDateInfoService.save(thirdInsuranceAccountDateInfo);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
-        roleInfoService.deleteById(id);
+        thirdInsuranceAccountDateInfoService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/update")
-    public Result update(RoleInfo roleInfo) {
-        roleInfoService.update(roleInfo);
+    public Result update(ThirdInsuranceAccountDateInfo thirdInsuranceAccountDateInfo) {
+        thirdInsuranceAccountDateInfoService.update(thirdInsuranceAccountDateInfo);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
-        RoleInfo roleInfo = roleInfoService.findById(id);
-        return ResultGenerator.genSuccessResult(roleInfo);
+        ThirdInsuranceAccountDateInfo thirdInsuranceAccountDateInfo = thirdInsuranceAccountDateInfoService.findById(id);
+        return ResultGenerator.genSuccessResult(thirdInsuranceAccountDateInfo);
     }
 
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<RoleInfo> list = roleInfoService.findAll();
+        List<ThirdInsuranceAccountDateInfo> list = thirdInsuranceAccountDateInfoService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @PostMapping("/savebyProcedure")
+    public Result save(ThirdInsuranceAccountDateInfo info){
+        return thirdInsuranceAccountDateInfoService.saveByProcedure(info);
     }
 }

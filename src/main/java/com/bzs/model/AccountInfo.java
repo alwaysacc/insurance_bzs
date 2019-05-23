@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
+
 @Table(name = "account_info")
 public class AccountInfo implements Serializable {
     public static final String STATUS_VALID = "0";
@@ -86,6 +87,9 @@ public class AccountInfo implements Serializable {
      */
     private String email;
 
+    /**
+     * 是否删除0默认1删除
+     */
     @Column(name = "delete_status")
     private Byte deleteStatus;
 
@@ -364,14 +368,18 @@ public class AccountInfo implements Serializable {
     }
 
     /**
-     * @return delete_status
+     * 获取是否删除0默认1删除
+     *
+     * @return delete_status - 是否删除0默认1删除
      */
     public Byte getDeleteStatus() {
         return deleteStatus;
     }
 
     /**
-     * @param deleteStatus
+     * 设置是否删除0默认1删除
+     *
+     * @param deleteStatus 是否删除0默认1删除
      */
     public void setDeleteStatus(Byte deleteStatus) {
         this.deleteStatus = deleteStatus;

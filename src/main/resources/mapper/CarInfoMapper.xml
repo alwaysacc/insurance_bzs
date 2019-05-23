@@ -36,9 +36,43 @@
         <result column="license_owner_id_card" jdbcType="VARCHAR" property="licenseOwnerIdCard"/>
         <result column="license_owner_id_card_type" jdbcType="VARCHAR" property="licenseOwnerIdCardType"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="channel_type" jdbcType="VARCHAR" property="channelType"/>
+        <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
+        <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
+        <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
     </resultMap>
+    <!--查询车辆、续保、续保险种 开始-->
+    <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
+        <association property="insuredInfo" javaType="com.bzs.model.InsuredInfo"
+                     resultMap="com.bzs.dao.InsuredInfoMapper.BaseResultMap" columnPrefix="b_"/>
+    <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap" ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+    </resultMap>
+    <select id="getCarInfoAndInsurance" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
+        select a.*,b.insured_id as b_insured_id,b.busines_expire_date as b_busines_expire_date,b.force_expire_date as
+        b_force_expire_date ,c.insurance_name as c_insurance_name,c.insurance_amount as c_insurance_amount,c.insurance_premium as c_insurance_premium from car_info a left join insured_info b on a.car_info_id =b.car_info_id  left  join  insurance_type_info c on a.car_info_id = c.type_id
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carInfoId!=null and carInfoId!=''">
+                a.car_info_id=#{carInfoId} and
+            </if>
+            <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">a.CREATED_BY=#{createdBy} and</if>
+            <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
+            <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
+            <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
+        </trim>
+    </select>
+    <!--查询车辆、续保、续保险种 结束-->
+    <!--批量更新isEnable-->
+    <update id="updateBatchIsEnable">
+        update car_info set is_enable=#{isEnable} where car_info_id in
+        <foreach item="item" index="index" collection="carInfoIds" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--一对一查询 结束-->
     <select id="getUserList" resultType="map">
-        SELECT
+        SELECT distinct
         car_info.car_info_id,
         car_info.car_number,
         car_info.engine_number,
@@ -59,10 +93,10 @@
         car_info.customer_status,
         car_info.customer_type,
         car_info.salesman,
+        date_format(car_info.CREATED_TIME,'%Y-%m-%d') as CREATED_TIME,
+        date_format(car_info.UPDATED_TIME,'%Y-%m-%d') as UPDATED_TIME,
         car_info.CREATED_BY,
-        car_info.CREATED_TIME,
         car_info.UPDATED_BY,
-        car_info.UPDATED_TIME,
         car_info.choice_last_year_insurance_name,
         car_info.choice_last_year_source,
         car_info.insured_area,
@@ -71,23 +105,37 @@
         car_info.license_owner_id_card_type,
         quote_info.quote_status,
         quote_info.submit_status,
-        quote_info.car_info_id
+        insured_info.busines_expire_date,
+        insured_info.force_expire_date,
+        insured_info.next_force_start_date,
+        insured_info.next_busines_start_date
         FROM
-        car_info ,
-        quote_info
+        car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
+        left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
         <where>
-            car_info.car_info_id = quote_info.car_info_id
+            car_info.status=0
             <if test="roleId==1">
             </if>
             <if test="roleId==2">
                 and car_info.car_info_id in (
                 SELECT car_info_id FROM check_info WHERE create_by in
                 (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
+
             </if>
             <if test="roleId==3">
                 and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
             </if>
+            <if test="salesman!=null  and salesman!=''">
+                and car_info.salesman != #{salesman}
+            </if>
+            <if test="customerStatus!=null and customerStatus!=''">
+                and car_info.customer_status = #{customerStatus}
+            </if>
+            <if test="plan!=null and plan!=''">
+                and car_info.plan_return_time !=null
+            </if>
+            ORDER BY CREATED_TIME desc
         </where>
     </select>
 
@@ -113,10 +161,10 @@
         car_info.customer_status,
         car_info.customer_type,
         car_info.salesman,
+        date_format(car_info.CREATED_TIME,'%Y-%m-%d') as CREATED_TIME,
+        date_format(car_info.UPDATED_TIME,'%Y-%m-%d') as UPDATED_TIME,
         car_info.CREATED_BY,
-        car_info.CREATED_TIME,
         car_info.UPDATED_BY,
-        car_info.UPDATED_TIME,
         car_info.choice_last_year_insurance_name,
         car_info.choice_last_year_source,
         car_info.insured_area,
@@ -125,10 +173,13 @@
         car_info.license_owner_id_card_type,
         quote_info.quote_status,
         quote_info.submit_status,
-        quote_info.car_info_id FROM
-        car_info ,
-        quote_info
+        insured_info.busines_expire_date,
+        insured_info.force_expire_date
+        FROM
+        car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
+        left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
         <where>
+            car_info.status=0
             <if test="roleId==1">
             </if>
             <if test="roleId==2">
@@ -140,14 +191,20 @@
                 and car_info.car_info_id in (
                 SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
             </if>
-            <if test="car_number!=null">
+            <if test="carNumber!=null">
                 and car_info.car_number = #{carNumber}
             </if>
-            <if test="frame_number!=null">
+            <if test="frameNumber!=null">
                 and car_info.frame_number = #{frameNumber}
             </if>
-            <if test="frame_number!=null">
-                and frame_number = #{frameNumber}
+            <if test="customerName!=null">
+                and car_info.customer_name = #{customerName}
+            </if>
+            <if test="customerTel!=null">
+                and car_info.customer_tel = #{customerTel}
+            </if>
+            <if test="lincenseOwner!=null">
+                and car_info.license_owner = #{lincenseOwner}
             </if>
         </where>
 
@@ -156,19 +213,137 @@
     <!--根据车牌或者车架和创建人查询   开始-->
     <sql id="selectCarInfoId"> car_info_id</sql>
     <sql id="findParams">
-        <trim prefix="WHERE" suffixOverrides="and " >
-            <if test="carNumber!=null and carNumber!=''"> car_number=#{carNumber} and</if>
-            <if test="createdBy!=null and createdBy!=''"> CREATED_BY=#{createdBy} and</if>
-            <if test="frameNumber!=null and frameNumber!=''"> frame_number=#{frameNumber} and</if>
-            <if test="engineNumber!=null and engineNumber!=''"> engine_umber=#{engineNumber} and </if>
+        <trim prefix="WHERE" suffixOverrides="and ">
+            <if test="carNumber!=null and carNumber!=''">car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">CREATED_BY=#{createdBy} and</if>
+            <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
+            <if test="engineNumber!=null and engineNumber!=''">engine_number=#{engineNumber} and</if>
         </trim>
-
     </sql>
-    <select id="findOneBy" parameterType="com.bzs.model.CheckInfo" resultMap="BaseResultMap">
+    <select id="findOneBy" parameterType="com.bzs.model.CarInfo" resultMap="BaseResultMap">
         select
         <include refid="selectCarInfoId"/>
         from car_info
         <include refid="findParams"/>
     </select>
     <!--根据车牌或者车架和创建人查询  结束-->
+
+    <!--回收客户-->
+    <update id="recoverUser">
+        update car_info set status=#{status} where car_info_id in
+        <foreach item="item" collection="carInfoId" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <select id="getRecoverUser" resultType="map">
+        SELECT
+        car_info.car_info_id,
+        car_info.car_number,
+        car_info.engine_number,
+        car_info.frame_number,
+        car_info.register_date,
+        car_info.brand_model,
+        car_info.car_model,
+        car_info.purchase_price,
+        car_info.seat_number,
+        car_info.displacement,
+        car_info.isTransfer_car,
+        car_info.isLoan_car,
+        car_info.remarks_car,
+        car_info.follow_count,
+        car_info.follow_time,
+        car_info.follow_content,
+        car_info.plan_return_time,
+        car_info.customer_status,
+        car_info.customer_type,
+        car_info.salesman,
+        date_format(car_info.CREATED_TIME,'%Y-%m-%d') as CREATED_TIME,
+        date_format(car_info.UPDATED_TIME,'%Y-%m-%d') as UPDATED_TIME,
+        car_info.CREATED_BY,
+        car_info.UPDATED_BY,
+        car_info.choice_last_year_insurance_name,
+        car_info.choice_last_year_source,
+        car_info.insured_area,
+        car_info.license_owner,
+        car_info.license_owner_id_card,
+        car_info.license_owner_id_card_type,
+        quote_info.quote_status,
+        quote_info.submit_status,
+        insured_info.busines_expire_date,
+        insured_info.force_expire_date,
+        insured_info.last_year_insurance_company
+        FROM
+        car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
+        left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
+        <where>
+            car_info.status=1
+            <if test="roleId==1">
+            </if>
+            <if test="roleId==2">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by in
+                (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
+            </if>
+            <if test="roleId==3">
+                and car_info.car_info_id in (
+                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+            </if>
+        </where>
+    </select>
+
+    <!--取消回收客户-->
+    <update id="cancelRecoverUser">
+        update car_info set status=0 where car_info_id in
+        <foreach item="item" collection="array" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!-- 根据车牌和车架更新 开始-->
+    <update id="updateByCarNoAndVinNo">
+
+    </update>
+    <!-- 根据车牌和车架更新 开始-->
+    <!-- 根据车牌和车架获取车辆信息 开始 by dl-->
+    <sql id="find1">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carNumber!=null and carNumber=!''">car_number=#{carNumber}</if>
+            <if test="frameNumber!=null and frameNumber!=''">frame_number=#{frameNumber} and</if>
+        </trim>
+    </sql>
+    <select id="getCarInfoIdByCarNoOrVinNo" resultMap="BaseResultMap">
+        select * FROM car_info
+        <include refid="find1"/>
+
+    </select>
+    <!-- 根据车牌和车架获取车辆信息 结束-->
+    <!-- 根据车辆信息id 存在则更新 开始-->
+    <sql id="insertItems">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            car_info_id,
+            <if test="carNumber!=null and ''!=carNumber ">car_number,</if>
+            <if test="engineNumber!=null and ''!=engineNumber ">engine_number,</if>
+            <if test="frameNumber!=null and ''!=frameNumber ">frame_number,</if>
+        </trim>
+    </sql>
+    <sql id="insertValues">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{carInfoId},
+            <if test="carNumber!=null and ''!=carNumber ">#{carNumber},</if>
+            <if test="engineNumber!=null and ''!=engineNumber ">#{engineNumber},</if>
+            <if test="frameNumber!=null and ''!=frameNumber ">#{frameNumber},</if>
+        </trim>
+
+    </sql>
+    <insert id="insertOrUpdate" parameterType="com.bzs.model.CarInfo">
+        insert into car_info
+        <include refid="insertItems"/>
+        values
+        <include refid="insertValues"/>
+        ON DUPLICATE KEY UPDATE
+        car_info_id=values(car_info_id),
+        car_number=values(car_number),
+        engine_number=values(engine_number),
+        frame_number=values(frame_number)
+    </insert>
+    <!-- 根据车辆信息id 存在则更新 结束-->
 </mapper>

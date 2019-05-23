@@ -24,7 +24,7 @@ spring:
         max-idle: 800
         min-idle: 10
     # 连接超时时间（毫秒）
-    timeout: 0
+    timeout: 1000
   servlet:
     multipart:
       max-file-size: 100MB
@@ -36,4 +36,5 @@ server:
     whitelabel:
       enabled: false
   port: 8082
+#  port: 8008
 

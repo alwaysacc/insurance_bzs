@@ -1,14 +1,20 @@
 package com.bzs.controller;
+import com.bzs.model.AccountInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.InsuredInfo;
 import com.bzs.service.InsuredInfoService;
+import com.bzs.utils.UUIDS;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +34,7 @@ import java.util.List;
 * Created by alwaysacc on 2019/04/11.
 */
 @RestController
-@RequestMapping("/insured/info")
+@RequestMapping("/insuredinfo")
 public class InsuredInfoController {
     @Resource
     private InsuredInfoService insuredInfoService;
@@ -42,8 +48,15 @@ public class InsuredInfoController {
         insuredInfoService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
-    @PostMapping("/update")
-    public Result update(InsuredInfo insuredInfo) {
+    /**
+     * @Author 孙鹏程
+     * @Description // 修改车主，投保人，被保险人信息
+     * @Date 2019/4/18/018  14:00
+     * @Param [insuredInfo]
+     * @return com.bzs.utils.Result
+     **/
+    @PostMapping("/updateInsuredInfo")
+    public Result updateInsuredInfo(InsuredInfo insuredInfo) {
         insuredInfoService.update(insuredInfo);
         return ResultGenerator.genSuccessResult();
     }
@@ -61,18 +74,25 @@ public class InsuredInfoController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
-    @PostMapping("/checkByCarNoOrVinNo")
-    public Result list(@RequestParam  String checkType,  String carNo,String idCard,String vinNo,String engineNo,String lastYearSource,String insuredArea ) {
-        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea);
-    }
-    @GetMapping("/httpGetTest")
-    public Map<String,Object>result(String name,String age){
-        Map<String,Object> result=new HashMap<String,Object>();
-        result.put("status",1);
-        result.put("msg","成功");
-        result.put("data",name);
-        return result;
+    /**
+     *
+     * @param checkType 查询类型0车牌1车架
+     * @param carNo 车牌号
+     * @param idCard 身份证后6位
+     * @param vinNo 车架号
+     * @param engineNo 发动机号
+     * @param lastYearSource 上年续保公司
+     * @param insuredArea
+     * @param request
+     * @param createBy 创建人
+     * @return
+     */
 
+    @PostMapping("/checkByCarNoOrVinNo")
+    public Result list(@RequestParam  String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request,String createBy) {
+       if(StringUtils.isNotBlank(createBy))
+        return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea,createBy);
+        else  return ResultGenerator.genFailResult("未获取到账号信息");
     }
 
 }

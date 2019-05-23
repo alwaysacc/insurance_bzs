@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.model.AccountInfo;
 import com.bzs.model.OrderInfo;
 import com.bzs.service.OrderInfoService;
 import com.bzs.utils.Result;
@@ -7,6 +8,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,8 +22,9 @@ import java.util.List;
 /**
 * Created by alwaysacc on 2019/04/12.
 */
+
 @RestController
-@RequestMapping("/order/info")
+@RequestMapping("/orderinfo")
 public class OrderInfoController {
     @Resource
     private OrderInfoService orderInfoService;
@@ -35,7 +40,7 @@ public class OrderInfoController {
     @PostMapping("/getOrderList")
     public Result getOrderList(String accountId, @RequestParam(defaultValue = "0")int payStatus,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List list=orderInfoService.getOrderList(accountId,payStatus);
+        List<OrderInfo> list=orderInfoService.getOrderList(accountId,payStatus);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -52,12 +57,16 @@ public class OrderInfoController {
         List list=orderInfoService.searchOrderList(accountId,payStatus,carNumber,postedName,deliveryWay,insuranceCompany);
         return ResultGenerator.genSuccessResult(list);
     }
+    @ApiOperation("获取订单详情")
+    @PostMapping("/getOrderDetail")
+    public Result getOrderDetail(String orderId) {
+        return ResultGenerator.genSuccessResult(orderInfoService.orderDetails(orderId));
+    }
     @PostMapping("/add")
     public Result add(OrderInfo orderInfo) {
         orderInfoService.save(orderInfo);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         orderInfoService.deleteById(id);

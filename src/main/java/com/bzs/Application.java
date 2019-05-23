@@ -14,7 +14,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        System.out.println(MD5Utils.encrypt("admin".toLowerCase(),"123456"));
         SpringApplication.run(Application.class, args);
     }
     @Override//为了打包springboot项目

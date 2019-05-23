@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.SessionListener;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -13,10 +14,13 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
@@ -46,6 +50,34 @@ public class ShiroConfig {
 
     @Value("${spring.redis.timeout}")
     private int timeout;
+
+    // 下面两个方法对 注解权限起作用有很大的关系，请把这两个方法，放在配置的最上面,
+
+    /**
+     * Shiro生命周期处理器
+     *
+     * @return
+     */
+    @Bean(name = "lifecycleBeanPostProcessor")
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
+        System.out.println("===============(1)Shiro生命周期周期处理器设置");
+        return new LifecycleBeanPostProcessor();
+    }
+    /**
+     * 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),
+     * 需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     * 配置以下两个bean(DefaultAdvisorAutoProxyCreator(可选)
+     * 和AuthorizationAttributeSourceAdvisor)即可实现此功能
+     *
+     * @return
+     */
+    //@Bean
+    /*@DependsOn("lifecycleBeanPostProcessor")*/
+    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator autoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        autoProxyCreator.setProxyTargetClass(true);
+        return autoProxyCreator;
+    }
 
     /**
      * shiro 中配置 redis 缓存
@@ -116,11 +148,23 @@ public class ShiroConfig {
         //securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
-
+    /**
+     * 自定义身份认证 realm
+     * 需要将自定义的密码匹配器注入到Realm中
+     * realm就是一个安全数据源。可以将其看作为数据库的另一层封装，连接了应用和db
+     *
+     * @return
+     */
     @Bean
+    /*@DependsOn("lifecycleBeanPostProcessor")
+    @ConditionalOnMissingBean*/
     public ShiroRealm shiroRealm() {
         // 配置 Realm，需自己实现
-        return new ShiroRealm();
+       // ShiroRealm authRealm = new ShiroRealm();
+        //根据情况使用缓存器
+     //   authRealm.setCacheManager(cacheManager());
+       // return authRealm;
+       return new ShiroRealm();
     }
 
     /**
@@ -149,6 +193,11 @@ public class ShiroConfig {
         return cookieRememberMeManager;
     }
 
+    /**
+     * 开启shiro的后台注解
+     * @param securityManager
+     * @return
+     */
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();

@@ -37,6 +37,23 @@ public class CheckInfo {
     private String checkType;
     @Column(name = "send_time")
     private String sendTime;
+    @Column(name = "UPDATE_TIME")
+    private Date updateTime;
+
+    @Column(name = "car_no")
+    private String carNo;
+    @Column(name = "vin_no")
+    private String vinNo;
+    /**
+     * 查询是否成功 0失败1成功
+     */
+    @Column(name = "is_check_success")
+    private String isCheckSuccess;
+    /**
+     * 续保是否成功 0失败1成功
+     */
+    @Column(name = "is_renew_success")
+    private  String isRenewSuccess;
 
     /**
      * @return check_info_id
@@ -151,5 +168,37 @@ public class CheckInfo {
 
     public CheckInfo(String checkInfoId) {
         this.checkInfoId = checkInfoId;
+    }
+
+    public String getCarNo() {
+        return carNo;
+    }
+
+    public void setCarNo(String carNo) {
+        this.carNo = carNo;
+    }
+
+    public String getVinNo() {
+        return vinNo;
+    }
+
+    public void setVinNo(String vinNo) {
+        this.vinNo = vinNo;
+    }
+
+    public String getIsCheckSuccess() {
+        return isCheckSuccess;
+    }
+
+    public void setIsCheckSuccess(String isCheckSuccess) {
+        this.isCheckSuccess = isCheckSuccess;
+    }
+
+    public String getIsRenewSuccess() {
+        return isRenewSuccess;
+    }
+
+    public void setIsRenewSuccess(String isRenewSuccess) {
+        this.isRenewSuccess = isRenewSuccess;
     }
 }

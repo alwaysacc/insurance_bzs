@@ -60,12 +60,6 @@ public class Customer {
     private String customerRemarks2;
 
     /**
-     * 车辆信息ID
-     */
-    @Column(name = "car_info_id")
-    private String carInfoId;
-
-    /**
      * 乐观锁
      */
     @Column(name = "REVISION")
@@ -267,18 +261,12 @@ public class Customer {
      *
      * @return car_info_id - 车辆信息ID
      */
-    public String getCarInfoId() {
-        return carInfoId;
-    }
 
     /**
      * 设置车辆信息ID
      *
      * @param carInfoId 车辆信息ID
      */
-    public void setCarInfoId(String carInfoId) {
-        this.carInfoId = carInfoId;
-    }
 
     /**
      * 获取乐观锁

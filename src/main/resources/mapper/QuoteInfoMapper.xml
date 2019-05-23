@@ -34,5 +34,70 @@
     <result column="force_no" jdbcType="VARCHAR" property="forceNo" />
     <result column="quote_result" jdbcType="LONGVARCHAR" property="quoteResult" />
     <result column="SubmitResult" jdbcType="LONGVARCHAR" property="submitresult" />
+    <result column="proposal_no" jdbcType="VARCHAR" property="proposalNo" />
+    <result column="pay_url" jdbcType="VARCHAR" property="payUrl" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="ref_id" jdbcType="VARCHAR" property="refId" />
+    <result column="adv_discount_rate" jdbcType="VARCHAR" property="advDiscountRate" />
+    <result column="force_start_time" jdbcType="VARCHAR" property="forceStartTime" />
+    <result column="biz_start_time" jdbcType="VARCHAR" property="bizStartTime" />
+    <result column="force_ecompensation_rate" jdbcType="VARCHAR" property="forceEcompensationRate" />
+    <result column="biz_ecompensation_rate" jdbcType="VARCHAR" property="bizEcompensationRate" />
+    <result column="biz_premium" jdbcType="VARCHAR" property="bizPremium" />
+    <result column="biz_premiumBy_dis" jdbcType="VARCHAR" property="bizPremiumByDis" />
+    <result column="real_discount_rate" jdbcType="VARCHAR" property="realDiscountRate" />
+    <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate" />
+    <result column="check_no" jdbcType="VARCHAR" property="checkNo" />
+    <result column="pay_no" jdbcType="VARCHAR" property="payNo" />
+    <result column="payment_notice" jdbcType="VARCHAR" property="paymentNotice" />
+    <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate" />
   </resultMap>
+  <update id="updatePayInfo">
+    update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo},payment_notice=#{paymentNotice},serial_no=#{serialNo},pay_end_date=#{payEndDate},pay_msg=#{payMsg} where proposal_no=#{proposalNo}
+  </update>
+  <select id="getInsurance" resultType="map">
+    SELECT
+      insurance_type_info.insurance_type_id,
+      insurance_type_info.REVISION,
+      insurance_type_info.CREATED_BY,
+      insurance_type_info.CREATED_TIME,
+      insurance_type_info.UPDATED_BY,
+      insurance_type_info.UPDATED_TIME,
+      insurance_type_info.insurance_name,
+      insurance_type_info.insurance_amount,
+      insurance_type_info.insurance_premium,
+      insurance_type_info.info_type,
+      insurance_type_info.type_id,
+      insurance_type_info.excluding_deductible,
+      insurance_type_info.send_time,
+      insurance_type_info.standard_premium
+      FROM
+      insurance_type_info
+      <where>
+        type_id=#{quoteId}
+        <if test="infoType!=null">
+          and info_type=#{infoType}
+        </if>
+      </where>
+  </select>
+  <!-- 获取最新报价信息-->
+  <select id="getQuote" resultMap="BaseResultMap">
+    SELECT *  from
+      (SELECT * FROM quote_info ORDER BY CREATED_TIME DESC LIMIT 99999) q  WHERE car_info_id=#{carInfoId}
+      GROUP BY QUOTE_SOURCE
+  </select>
+  <!--多条件查询-->
+  <sql id="differCondition">
+    <trim prefix="where" suffixOverrides="and" >
+      <if test="createdBy!=null and createdBy!=''"> CREATED_BY=#{createdBy} and </if>
+      <if test="quoteId!=null and quoteId!=''"> quote_id=#{quoteId} and </if>
+      <if test="carInfoId!=null and carInfoId!=''"> car_info_id=#{carInfoId} and </if>
+      <if test="proposalNo!=null and proposalNo!=''"> proposal_no=#{proposalNo} and </if>
+    </trim>
+  </sql>
+  <select id="findListByDifferCondition" parameterType="com.bzs.model.CarInfo" resultMap="BaseResultMap">
+        select * from  quote_info <include refid="differCondition"/>
+    </select>
 </mapper>

@@ -1,9 +1,12 @@
 package com.bzs.model;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
+@Data
 @Table(name = "order_info")
 public class OrderInfo {
     /**
@@ -28,8 +31,6 @@ public class OrderInfo {
     /**
      * 创建者id
      */
-    @Column(name = "account_id")
-    private String accountId;
 
     /**
      * 支付状态0待支付,1完成2取消3退款4支付超时5支付失败
@@ -42,6 +43,12 @@ public class OrderInfo {
      */
     @Column(name = "pay_type")
     private String payType;
+
+    /**
+     * 支付用途1=账号id,2=报价id
+     */
+    @Column(name = "pay_type_id")
+    private String payTypeId;
 
     /**
      * 支付方式1支付宝2微信3pos
@@ -68,6 +75,26 @@ public class OrderInfo {
 
     @Column(name = "contact_tel")
     private Integer contactTel;
+    @Column(name = "create_by")
+    private String createBy;
+    /**
+     * 获取创建人
+     *
+     * @return create_by - 创建人
+     */
+    public String getCreateBy() {
+        return createBy;
+    }
+    /**
+     * 设置创建人
+     *
+     * @param createBy 创建人
+     */
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+
 
     /**
      * 获取订单号
@@ -128,18 +155,6 @@ public class OrderInfo {
      *
      * @return account_id - 创建者id
      */
-    public String getAccountId() {
-        return accountId;
-    }
-
-    /**
-     * 设置创建者id
-     *
-     * @param accountId 创建者id
-     */
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
 
     /**
      * 获取支付状态0待支付,1完成2取消3退款4支付超时5支付失败
@@ -281,5 +296,13 @@ public class OrderInfo {
      */
     public void setContactTel(Integer contactTel) {
         this.contactTel = contactTel;
+    }
+
+    public String getPayTypeId() {
+        return payTypeId;
+    }
+
+    public void setPayTypeId(String payTypeId) {
+        this.payTypeId = payTypeId;
     }
 }

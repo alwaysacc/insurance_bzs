@@ -1,6 +1,11 @@
 package com.bzs.utils.jsontobean;
 
+import com.bzs.model.InsuranceTypeInfo;
+import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: insurance_bzs
@@ -8,6 +13,7 @@ import java.util.Date;
  * @author: dengl
  * @create: 2019-04-11 16:08
  */
+@Data
 public class RenewalData {
     private A a;
     private String frameNo;//车架号
@@ -36,6 +42,14 @@ public class RenewalData {
     private String biBeginDate;//商业险下次起保日期
     private String ciPremium;//交强险保费
     private String ciBeginDate;//交强险下次起保日期
+    private String biEndDate;//商业险到期日期
+    private  String ciEndDate;//交强险到期日期
+    private String jiaoqiangxian;//交强险；
+   private String source;//上年续保枚举值
+   private  String carNo;//车牌号
+    private  String carName;
+   private List<InsuranceTypeInfo>list=new ArrayList<>();
+
 
     public RenewalData() {
     }
@@ -254,5 +268,61 @@ public class RenewalData {
 
     public void setCiBeginDate(String ciBeginDate) {
         this.ciBeginDate = ciBeginDate;
+    }
+
+    public String getJiaoqiangxian() {
+        return jiaoqiangxian;
+    }
+
+    public void setJiaoqiangxian(String jiaoqiangxian) {
+        this.jiaoqiangxian = jiaoqiangxian;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public List<InsuranceTypeInfo> getList() {
+        return list;
+    }
+
+    public void setList(List<InsuranceTypeInfo> list) {
+        this.list = list;
+    }
+
+    public String getCarNo() {
+        return carNo;
+    }
+
+    public void setCarNo(String carNo) {
+        this.carNo = carNo;
+    }
+
+    public String getBiEndDate() {
+        return biEndDate;
+    }
+
+    public void setBiEndDate(String biEndDate) {
+        this.biEndDate = biEndDate;
+    }
+
+    public String getCiEndDate() {
+        return ciEndDate;
+    }
+
+    public void setCiEndDate(String ciEndDate) {
+        this.ciEndDate = ciEndDate;
+    }
+
+    public String getCarName() {
+        return carName;
+    }
+
+    public void setCarName(String carName) {
+        this.carName = carName;
     }
 }
