@@ -136,8 +136,18 @@ public class InsuranceTypeBase {
                     //保额
                     String account=base.getAmount();
                     if(StringUtils.isNotBlank(account)){
-                        account=account.replaceAll(",","");
-                        info.setInsuranceAmount(new BigDecimal(account));
+                        account=account.replaceAll(",","");//0国产1进口
+                        boolean b=EncodeUtil.isContainChinese(account);
+                        if(b){
+                            if("国产".equals(account)){
+                                info.setInsuranceAmount(new BigDecimal("0"));
+                            }else{
+                                info.setInsuranceAmount(new BigDecimal("1"));
+                            }
+                        }else{
+                            info.setInsuranceAmount(new BigDecimal(account));
+                        }
+
                     }
 
                     //保费

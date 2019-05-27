@@ -40,6 +40,14 @@ public interface InsuredInfoService extends Service<InsuredInfo> {
      * @param createdBy
      * @return
      */
-    public Result checkByCarNoOrVinNo2(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy);
+    public Result checkByCarNoOrVinNo2(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy,String carInfoId);
+    public Result checkByCarNoOrVinNo3(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy);
+
+    /**
+     * 插入或者 更新
+     * @param insuredInfo
+     * @return
+     */
+    public int insertOrUpdate(InsuredInfo insuredInfo);
 
 }

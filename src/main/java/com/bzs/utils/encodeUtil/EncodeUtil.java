@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @program: insurance_bzs
@@ -162,11 +164,101 @@ public class EncodeUtil {
         String s = EncodeUtil.stringToUnicode(EncodeUtil.convertUTF8ToString(utf8Code));
         return s;
     }
+
+    /**
+     * 过滤掉中文
+     * @param str 待过滤中文的字符串
+     * @return 过滤掉中文后字符串
+     */
+    public static String filterChinese(String str) {
+        // 用于返回结果
+        String result = str;
+        boolean flag = isContainChinese(str);
+        if (flag) {// 包含中文
+            // 用于拼接过滤中文后的字符
+            StringBuffer sb = new StringBuffer();
+            // 用于校验是否为中文
+            boolean flag2 = false;
+            // 用于临时存储单字符
+            char chinese = 0;
+            // 5.去除掉文件名中的中文
+            // 将字符串转换成char[]
+            char[] charArray = str.toCharArray();
+            // 过滤到中文及中文字符
+            for (int i = 0; i < charArray.length; i++) {
+                chinese = charArray[i];
+                flag2 = isChinese(chinese);
+                if (!flag2) {// 不是中日韩文字及标点符号
+                    sb.append(chinese);
+                }
+            }
+            result = sb.toString();
+        }
+        return result;
+    }
+    /**
+     * 判定输入的是否是汉字
+     *
+     * @param c
+     *  被校验的字符
+     * @return true代表是汉字
+     */
+    public static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 校验String是否全是中文
+     *
+     * @param name
+     *  被校验的字符串
+     * @return true代表全是汉字
+     */
+    public static boolean checkNameChese(String name) {
+        boolean res = true;
+        char[] cTemp = name.toCharArray();
+        for (int i = 0; i < name.length(); i++) {
+            if (!isChinese(cTemp[i])) {
+                res = false;
+                break;
+            }
+        }
+        return res;
+    }
+    /**
+     * 判断字符串中是否包含中文
+     * @param str
+     * 待校验字符串
+     * @return 是否为中文
+     * @warn 不能校验是否为中文标点符号
+     */
+    public static boolean isContainChinese(String str) {
+        if(StringUtils.isBlank(str)){
+            return false;
+        }
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            return true;
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         String unicode = "\\u673a\\u52a8\\u8f66\\u635f\\u5931\\u4fdd\\u9669\\u5b98\\u65b9\\u56de\\u590d\\u56de\\u590d \\uff1b\\u2018\\uff1b\\u2018\\u2019\\u20194545枚举";
         String cn = unicodeToString(unicode);
         String unicode2 = stringToUnicode(cn);
         System.out.println(cn);
         System.out.println(unicode2);
+        System.out.println(isContainChinese("中国s"));
     }
 }

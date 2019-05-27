@@ -8,6 +8,7 @@ import com.bzs.utils.UUIDS;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,7 +81,18 @@ public class CheckInfoController {
         } else {
             return ResultGenerator.genFailResult(msg);
         }
+    }
 
-
+    @ApiOperation("通过车辆id或者创建人查询")
+    @PostMapping("/checkByCreateByOrCarInfoId")
+    public Result checkByCreateByOrCarInfoId(String createBy,String carInfoId) {
+        Map map=checkInfoService.checkByCreateByOrCarInfoId(createBy,carInfoId);
+        String code=(String)map.get("code");
+        String msg=(String)map.get("msg");
+        if("200".equals(code)){
+            return ResultGenerator.genSuccessResult(msg);
+        }else{
+            return ResultGenerator.genFailResult(msg);
+        }
     }
 }

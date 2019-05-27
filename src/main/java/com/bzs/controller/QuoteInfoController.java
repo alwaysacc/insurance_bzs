@@ -184,6 +184,9 @@ public class QuoteInfoController {
         if (StringUtils.isBlank(refId)) {
             refId = UUIDS.getDateUUID();
         }
+        if(StringUtils.isBlank(personMobile)){
+            personMobile="15051820077";
+        }
         params.setRefId(refId);
         String sendTime = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
         params.setSendTime(sendTime);

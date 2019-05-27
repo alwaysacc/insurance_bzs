@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="insured_id" jdbcType="VARCHAR" property="insuredId" />
+    <id column="insured_id" jdbcType="VARCHAR" property="insuredId" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
@@ -28,7 +28,7 @@
     <result column="holder_id_card" jdbcType="VARCHAR" property="holderIdCard" />
     <result column="holder_id_card_type" jdbcType="VARCHAR" property="holderIdCardType" />
     <result column="insured_name" jdbcType="VARCHAR" property="insuredName" />
-    <result column="insured__id_card" jdbcType="INTEGER" property="insuredIdCard" />
+    <result column="insured_id_card" jdbcType="INTEGER" property="insuredIdCard" />
     <result column="insured_id_card_type" jdbcType="INTEGER" property="insuredIdCardType" />
     <result column="busines_number" jdbcType="INTEGER" property="businesNumber" />
     <result column="traffic_number" jdbcType="INTEGER" property="trafficNumber" />
@@ -38,4 +38,58 @@
     <result column="biz_last_year_out_danger" jdbcType="VARCHAR" property="bizLastYearOutDanger" />
     <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
   </resultMap>
+  <sql id="insertItems">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      insured_id,
+      <if test="createId!=null and ''!=createId ">create_id,</if>
+      <if test="updateBy!=null and ''!=updateBy ">update_by,</if>
+      <if test="insuranceCompany!=null and ''!=insuranceCompany ">insurance_company,</if>
+      <if test="mechanismNumber!=null and ''!=mechanismNumber ">mechanism_number,</if>
+      <if test="businesExpireDate!=null and ''!=businesExpireDate ">busines_expire_date,</if>
+      <if test="forceExpireDate!=null and ''!=forceExpireDate ">force_expire_date,</if>
+      <if test="nextBusinesStartDate!=null and ''!=nextBusinesStartDate ">next_busines_start_date,</if>
+      <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">next_force_start_date,</if>
+      <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">last_year_insurance_company,</if>
+      <if test="lastYearSource!=null and ''!=lastYearSource ">last_year_source,</if>
+    </trim>
+  </sql>
+  <sql id="insertValues">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      #{insuredId},
+      <if test="createId!=null and ''!=createId ">#{createId},</if>
+      <if test="updateBy!=null and ''!=updateBy ">#{updateBy},</if>
+      <if test="insuranceCompany!=null and ''!=insuranceCompany ">#{insuranceCompany},</if>
+      <if test="mechanismNumber!=null and ''!=mechanismNumber ">#{mechanismNumber},</if>
+      <if test="businesExpireDate!=null and ''!=businesExpireDate ">#{businesExpireDate},</if>
+      <if test="forceExpireDate!=null and ''!=forceExpireDate ">#{forceExpireDate},</if>
+      <if test="nextBusinesStartDate!=null and ''!=nextBusinesStartDate ">#{nextBusinesStartDate},</if>
+      <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">#{nextForceStartDate},</if>
+      <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">#{lastYearInsuranceCompany},</if>
+      <if test="lastYearSource!=null and ''!=lastYearSource ">#{lastYearSource},</if>
+    </trim>
+  </sql>
+  <sql id="updateOrAdd_update">
+    <trim suffixOverrides=",">
+      insuredId=values(insured_id),
+      <if test="createId!=null and ''!=createId ">create_id=#{createId},</if>
+      <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
+      <if test="insuranceCompany!=null and ''!=insuranceCompany ">insurance_company=#{insuranceCompany},</if>
+      <if test="mechanismNumber!=null and ''!=mechanismNumber ">mechanism_number=#{mechanismNumber},</if>
+      <if test="businesExpireDate!=null and ''!=businesExpireDate ">busines_expire_date=#{businesExpireDate},</if>
+      <if test="forceExpireDate!=null and ''!=forceExpireDate ">force_expire_date=#{forceExpireDate},</if>
+      <if test="nextBusinesStartDate!=null and ''!=nextBusinesStartDate ">next_busines_start_date=#{nextBusinesStartDate},</if>
+      <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">next_force_start_date=#{nextForceStartDate},</if>
+      <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">last_year_insurance_company=#{lastYearInsuranceCompany},</if>
+      <if test="lastYearSource!=null and ''!=lastYearSource ">last_year_source=#{lastYearSource},</if>
+    </trim>
+  </sql>
+
+  <insert id="insertOrUpdate" parameterType="com.bzs.model.InsuredInfo">
+    insert into check_info
+    <include refid="insertItems"/>
+    values
+    <include refid="insertValues"/>
+    ON DUPLICATE KEY UPDATE
+    <include refid="updateOrAdd_update"/>
+  </insert>
 </mapper>

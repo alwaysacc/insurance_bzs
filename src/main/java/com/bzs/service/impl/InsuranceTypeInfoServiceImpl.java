@@ -24,4 +24,9 @@ public class InsuranceTypeInfoServiceImpl extends AbstractService<InsuranceTypeI
     public int insertBatch(List<InsuranceTypeInfo> list) {
         return insuranceTypeInfoMapper.insertBatch(list);
     }
+
+    @Override
+    public Boolean  batchInsertOrUpdateList(List<InsuranceTypeInfo> info) {
+       return  insuranceTypeInfoMapper.batchInsertOrUpdateList2(info);
+    }
 }

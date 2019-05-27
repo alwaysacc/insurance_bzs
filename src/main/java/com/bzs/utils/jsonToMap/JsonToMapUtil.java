@@ -120,6 +120,9 @@ public class JsonToMapUtil {
         }
     }
     public static Map bodyJsonToMap(String jsonStr){
+        if(StringUtils.isBlank(jsonStr)){
+            return null;
+        }
         Map maps = jsonToMapThree(jsonStr);
         Map result=new HashMap<String,Object>();
         // List<InsuranceTypeBase> lnsuranceTypeBaseList=new ArrayList<>();
