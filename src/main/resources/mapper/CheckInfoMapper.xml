@@ -1,89 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.CheckInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.CheckInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="check_info_id" jdbcType="VARCHAR" property="checkInfoId" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
-    <result column="is_first_time" jdbcType="VARCHAR" property="isFirstTime" />
-    <result column="check_type" jdbcType="VARCHAR" property="checkType" />
-    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="SEND_TIME" jdbcType="VARCHAR" property="sendTime" />
-    <result column="car_no" jdbcType="VARCHAR" property="carNo" />
-    <result column="vin_no" jdbcType="VARCHAR" property="vinNo" />
-    <result column="is_check_success" jdbcType="VARCHAR" property="isCheckSuccess" />
-    <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess" />
-  </resultMap>
-  <!-- 根据车辆信息id 存在则更新 开始-->
-  <sql id="insertItems">
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      check_info_id,
-      <if test="createBy!=null and ''!=createBy ">create_by,</if>
-      <if test="carInfoId!=null and ''!=carInfoId ">car_info_id,</if>
-      <if test="isFirstTime!=null and ''!=isFirstTime ">is_first_time,</if>
-      <if test="updateTime!=null ">UPDATE_TIME,</if>
-      <if test="checkType!=null and ''!=checkType ">check_type,</if>
-      <if test="sendTime!=null and ''!=sendTime" >SEND_TIME,</if>
-      <if test="carNo!=null and ''!=carNo" >car_no,</if>
-      <if test="vinNo!=null and ''!=vinNo" >vin_no,</if>
-      <if test="isCheckSuccess!=null and ''!=isCheckSuccess" >is_check_success,</if>
-      <if test="isRenewSuccess!=null and ''!=isRenewSuccess" >is_renew_success,</if>
-    </trim>
-  </sql>
-  <sql id="insertValues">
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      #{checkInfoId},
-      <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
-      <if test="carInfoId!=null and ''!=carInfoId ">#{carInfoId},</if>
-      <if test="isFirstTime!=null and ''!=isFirstTime ">#{isFirstTime},</if>
-      <if test="updateTime!=null ">#{updateTime},</if>
-      <if test="checkType!=null and ''!=checkType ">#{checkType},</if>
-      <if test="sendTime!=null and ''!=sendTime" >#{sendTime},</if>
-      <if test="carNo!=null and ''!=carNo" >#{carNo},</if>
-      <if test="vinNo!=null and ''!=vinNo" >#{vinNo},</if>
-      <if test="isCheckSuccess!=null and ''!=isCheckSuccess" >#{isCheckSuccess},</if>
-      <if test="isRenewSuccess!=null and ''!=isRenewSuccess" >#{isRenewSuccess},</if>
-    </trim>
-  </sql>
-  <sql id="updateOrAdd_update">
-    <trim >
-      check_info_id=values(check_info_id)
-      <if test="createBy!=null and ''!=createBy ">,create_by=#{createBy}</if>
-      <if test="carInfoId!=null and ''!=carInfoId ">,car_info_id=#{carInfoId}</if>
-      <if test="isFirstTime!=null and ''!=isFirstTime ">,is_first_time=#{isFirstTime}</if>
-      <if test="checkType!=null and ''!=checkType ">,check_type=#{checkType}</if>
-      <if test="sendTime!=null and ''!=sendTime" >,SEND_TIME=#{sendTime}</if>
-      <if test="carNo!=null and ''!=carNo" >,car_no=#{carNo}</if>
-      <if test="vinNo!=null and ''!=vinNo" >,vin_no=#{vinNo}</if>
-      <if test="isCheckSuccess!=null and ''!=isCheckSuccess" >,is_check_success=#{isCheckSuccess}</if>
-      <if test="isRenewSuccess!=null and ''!=isRenewSuccess" >,is_renew_success=#{isRenewSuccess}</if>
-    </trim>
-  </sql>
-  <sql id="updateOrAdd_update1">
-    <trim >
-      check_info_id=values(check_info_id),
-      create_by=values(create_by),
-      car_info_id=values(car_info_id),
-      is_first_time=values(is_first_time),
-      check_type=values(check_type),
-      SEND_TIME=values(SEND_TIME),
-      car_no=values(car_no),
-      vin_no=values(vin_no),
-      is_check_success=values(is_check_success),
-      is_renew_success=values(is_renew_success)
-    </trim>
-  </sql>
-  <insert id="updateOrAdd" parameterType="com.bzs.model.CheckInfo">
-    insert into check_info
-    <include refid="insertItems"/>
-    values
-    <include refid="insertValues"/>
-    ON DUPLICATE KEY UPDATE
-    <include refid="updateOrAdd_update"/>
-  </insert>
-  <!-- 根据车辆信息id 存在则更新 结束-->
+    <resultMap id="BaseResultMap" type="com.bzs.model.CheckInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="check_info_id" jdbcType="VARCHAR" property="checkInfoId"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId"/>
+        <result column="is_first_time" jdbcType="VARCHAR" property="isFirstTime"/>
+        <result column="check_type" jdbcType="VARCHAR" property="checkType"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="SEND_TIME" jdbcType="VARCHAR" property="sendTime"/>
+        <result column="car_no" jdbcType="VARCHAR" property="carNo"/>
+        <result column="vin_no" jdbcType="VARCHAR" property="vinNo"/>
+        <result column="is_check_success" jdbcType="VARCHAR" property="isCheckSuccess"/>
+        <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
+    </resultMap>
+    <!-- 根据车辆信息id 存在则更新 开始-->
+    <sql id="insertItems">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            check_info_id,
+            <if test="createBy!=null and ''!=createBy ">create_by,</if>
+            <if test="carInfoId!=null and ''!=carInfoId ">car_info_id,</if>
+            <if test="isFirstTime!=null and ''!=isFirstTime ">is_first_time,</if>
+            <if test="updateTime!=null ">UPDATE_TIME,</if>
+            <if test="checkType!=null and ''!=checkType ">check_type,</if>
+            <if test="sendTime!=null and ''!=sendTime">SEND_TIME,</if>
+            <if test="carNo!=null and ''!=carNo">car_no,</if>
+            <if test="vinNo!=null and ''!=vinNo">vin_no,</if>
+            <if test="isCheckSuccess!=null and ''!=isCheckSuccess">is_check_success,</if>
+            <if test="isRenewSuccess!=null and ''!=isRenewSuccess">is_renew_success,</if>
+        </trim>
+    </sql>
+    <sql id="insertValues">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{checkInfoId},
+            <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
+            <if test="carInfoId!=null and ''!=carInfoId ">#{carInfoId},</if>
+            <if test="isFirstTime!=null and ''!=isFirstTime ">#{isFirstTime},</if>
+            <if test="updateTime!=null ">#{updateTime},</if>
+            <if test="checkType!=null and ''!=checkType ">#{checkType},</if>
+            <if test="sendTime!=null and ''!=sendTime">#{sendTime},</if>
+            <if test="carNo!=null and ''!=carNo">#{carNo},</if>
+            <if test="vinNo!=null and ''!=vinNo">#{vinNo},</if>
+            <if test="isCheckSuccess!=null and ''!=isCheckSuccess">#{isCheckSuccess},</if>
+            <if test="isRenewSuccess!=null and ''!=isRenewSuccess">#{isRenewSuccess},</if>
+        </trim>
+    </sql>
+    <sql id="updateOrAdd_update">
+        <trim>
+            check_info_id=values(check_info_id)
+            <if test="createBy!=null and ''!=createBy ">,create_by=#{createBy}</if>
+            <if test="carInfoId!=null and ''!=carInfoId ">,car_info_id=#{carInfoId}</if>
+            <if test="isFirstTime!=null and ''!=isFirstTime ">,is_first_time=#{isFirstTime}</if>
+            <if test="checkType!=null and ''!=checkType ">,check_type=#{checkType}</if>
+            <if test="sendTime!=null and ''!=sendTime">,SEND_TIME=#{sendTime}</if>
+            <if test="carNo!=null and ''!=carNo">,car_no=#{carNo}</if>
+            <if test="vinNo!=null and ''!=vinNo">,vin_no=#{vinNo}</if>
+            <if test="isCheckSuccess!=null and ''!=isCheckSuccess">,is_check_success=#{isCheckSuccess}</if>
+            <if test="isRenewSuccess!=null and ''!=isRenewSuccess">,is_renew_success=#{isRenewSuccess}</if>
+        </trim>
+    </sql>
+
+    <insert id="updateOrAdd" parameterType="com.bzs.model.CheckInfo">
+        insert into check_info
+        <include refid="insertItems"/>
+        values
+        <include refid="insertValues"/>
+        ON DUPLICATE KEY UPDATE
+        <include refid="updateOrAdd_update"/>
+    </insert>
+    <!-- 根据车辆信息id 存在则更新 结束-->
+    <sql id="queryConditions">
+        <trim prefixOverrides="where" prefix="where" suffixOverrides="and">
+            <if test="checkInfoId!=null and ''!=checkInfoId ">check_info_id=#{checkInfoId} and</if>
+            <if test="createBy!=null and ''!=createBy ">create_by=#{createBy} and</if>
+            <if test="carInfoId!=null and ''!=carInfoId ">car_info_id=#{carInfoId} and</if>
+            <if test="isFirstTime!=null and ''!=isFirstTime ">is_first_time=#{isFirstTime} and</if>
+            <if test="checkType!=null and ''!=checkType ">check_type=#{checkType} and</if>
+            <if test="sendTime!=null and ''!=sendTime">SEND_TIME=#{sendTime} and</if>
+            <if test="carNo!=null and ''!=carNo">car_no=#{carNo} and</if>
+            <if test="vinNo!=null and ''!=vinNo">vin_no=#{vinNo} and</if>
+            <if test="updateTime!=null ">UPDATE_TIME=#{updateTime} and</if>
+            <if test="createTime!=null ">create_time=#{createTime} and</if>
+            <if test="isCheckSuccess!=null and ''!=isCheckSuccess">is_check_success=#{isCheckSuccess} and</if>
+            <if test="isRenewSuccess!=null and ''!=isRenewSuccess">is_renew_success=#{isRenewSuccess} and</if>
+        </trim>
+
+    </sql>
+    <select id="getListByDifferConditions" resultMap="BaseResultMap" parameterType="com.bzs.model.CheckInfo">
+        select *from check_info
+        <include refid="queryConditions"/>
+    </select>
+    <select id="checkByDifferConditions" resultMap="BaseResultMap" parameterType="com.bzs.model.CheckInfo">
+        select *from check_info
+        <include refid="queryConditions"/>
+    </select>
 </mapper>

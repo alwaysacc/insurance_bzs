@@ -16,4 +16,12 @@ public interface InsuranceTypeInfoService extends Service<InsuranceTypeInfo> {
      * @return 返回值插入数目
      */
     public int insertBatch(List<InsuranceTypeInfo> list);
+
+    /**
+     * 批量插入或者更新
+     * @param info
+     * @return
+     */
+    Boolean  batchInsertOrUpdateList(List <InsuranceTypeInfo> info);
+
 }

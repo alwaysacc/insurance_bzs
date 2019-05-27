@@ -1,4 +1,6 @@
 package com.bzs.controller;
+
+import com.bzs.redis.RedisUtil;
 import com.bzs.shiro.FebsProperties;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.Result;
@@ -22,6 +24,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -33,24 +36,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* Created by alwaysacc on 2019/04/15.
-*/
+ * Created by alwaysacc on 2019/04/15.
+ */
 @RestController
 @RequestMapping("/account/info")
 public class AccountInfoController {
     private static final String CODE_KEY = "_code";
 
-    private Logger log=LoggerFactory.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Resource
     private AccountInfoService accountInfoService;
 
     @Autowired
     private FebsProperties febsProperties;
+    @Autowired
+    private RedisUtil redisUtil;
+
 
     @PostMapping("/add")
     public Result add(AccountInfo accountInfo) {
         accountInfo.setAccountId(UUIDS.getDateUUID());
-        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(),accountInfo.getLoginPwd()));
+        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
         accountInfo.setRoleId("3");
         accountInfo.setAccountState("0");
         accountInfoService.save(accountInfo);
@@ -81,6 +87,7 @@ public class AccountInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
     @GetMapping(value = "gifCode")
     public void getGifCode(HttpServletResponse response, HttpServletRequest request) {
         try {
@@ -104,12 +111,13 @@ public class AccountInfoController {
 
     @PostMapping("/testLogin")
     public Result testLogin(String userName, String password) {
+     //   redisUtil.set("accountInfo", userName);
         if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)) {
             return ResultGenerator.genFailResult("登录账号或者密码为空");
         }
         Subject subject = SecurityUtils.getSubject();
         //password  =SaltEncryptionUtil.getEncryptionByName(userName,password);
-        password=MD5Utils.encrypt(userName.toLowerCase(),password);
+        password = MD5Utils.encrypt(userName.toLowerCase(), password);
         UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
         String failMsg = "";
         if (!subject.isAuthenticated()) {//是否通过login()进行了身份验证
@@ -136,47 +144,50 @@ public class AccountInfoController {
                 failMsg = "您没有得到相应的授权！";
             } catch (Exception e) {
                 log.error("系统内部异常！！{}", e);
-                failMsg="系统异常";
+                failMsg = "系统异常";
             }
             return ResultGenerator.genFailResult(failMsg);
         }
         return ResultGenerator.genSuccessResult("已经登录");
     }
-    @RequestMapping(value="test1",method = RequestMethod.GET)
+
+    @RequestMapping(value = "test1", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object>test1(HttpServletRequest request){
-      AccountInfo a=(AccountInfo)  SecurityUtils.getSubject().getPrincipal();
-      Map<String,Object> map=new HashMap<>();
-        if(a!=null){
-            map.put("status","400");
-            map.put("msg",a.getLoginName()+"已登录");
-        }else{
-            map.put("status","400");
-            map.put("msg","还未登录");
+    public Map<String, Object> test1(HttpServletRequest request) {
+      // System.out.println(redisUtil.get("accountInfo"));
+        AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+        Map<String, Object> map = new HashMap<>();
+        if (a != null) {
+            map.put("status", "400");
+            map.put("msg", a.getLoginName() + "已登录");
+        } else {
+            map.put("status", "400");
+            map.put("msg", "还未登录");
         }
         return map;
     }
+
     @ApiOperation("获取所有账号以及获取账号下的第三方账号")
     @PostMapping("/getAccountAndThridAccount")
-    public Result getAccountAndThridAccount(String accountId){
+    public Result getAccountAndThridAccount(String accountId) {
         return accountInfoService.getAccountAndThridAccount(accountId);
     }
 
     /**
-     *
      * @param accountInfo
-     * @param type 0 添加1修改
+     * @param type        0 添加1修改
      * @return
      */
     @ApiOperation("插入或更新")
     @PostMapping("/insertOrUpdate")
-    public Result insertOrUpdate(AccountInfo accountInfo,String type){
-        return accountInfoService.insertOrUpdate(accountInfo ,type);
+    public Result insertOrUpdate(AccountInfo accountInfo, String type) {
+        return accountInfoService.insertOrUpdate(accountInfo, type);
     }
+
     @PostMapping("/getUserList")
-    public Result getUserList(String roleId, String accountId,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size){
+    public Result getUserList(String roleId, String accountId, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        PageInfo pageInfo = new PageInfo(accountInfoService.getUserList(roleId,accountId));
+        PageInfo pageInfo = new PageInfo(accountInfoService.getUserList(roleId, accountId));
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 }
