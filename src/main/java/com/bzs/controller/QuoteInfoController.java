@@ -214,6 +214,7 @@ public class QuoteInfoController {
         personInfo.setAddress(personAddress);
         personInfo.setAge(personAge);
         personInfo.setCardID(personCardID);
+        personMobile="15518727891";
         personInfo.setMobile(personMobile);
         personInfo.setName(personName);
         personInfo.setSex(personSex);

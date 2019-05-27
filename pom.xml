@@ -190,7 +190,7 @@
         <dependency>
             <groupId>org.crazycake</groupId>
             <artifactId>shiro-redis</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.3</version>
         </dependency>
         <!-- java http请求-->
         <dependency>

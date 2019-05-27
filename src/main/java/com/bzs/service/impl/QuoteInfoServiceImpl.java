@@ -181,7 +181,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 quoteInfo.setQuoteStatus(1);
                                 quoteInfo.setQuoteResult("报价成功");//报价结果
                                 quoteInfo.setSubmitresult(retMsg);
-                                resultCode = 300;
+                                resultCode = 301;
                             } else {//报价+核保失败
                                 quoteInfo.setQuoteResult(retMsg);
                                 quoteInfo.setSubmitresult(retMsg);
@@ -331,10 +331,12 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                        /* if (bean.getRetCode().equals("0099")){
                             return ResultGenerator.gen("失败", bean.getRetMsg(), ResultCode.FAIL);
                         }*/
-                        if (200 == resultCode)
-                            return ResultGenerator.gen("报价核保成功", bean, ResultCode.SUCCESS);
-                        else if (300 == resultCode)
+                        if (200 == resultCode){
+                            return ResultGenerator.gen("报价核保成功123123123", bean, ResultCode.SUCCESS);
+                        }
+                        else if (301 == resultCode){
                             return ResultGenerator.gen("报价成功,核保失败", bean, ResultCode.SUBMIT);
+                        }
                         else {
                             return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
                         }

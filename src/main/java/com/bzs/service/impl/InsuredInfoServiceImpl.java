@@ -47,6 +47,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     @Resource
     private InsuredInfoMapper insuredInfoMapper;
     @Resource
+    private InsuredInfoService insuredInfoService;
+    @Resource
     private CheckInfoService checkInfoService;
     @Resource
     private CarInfoService carInfoService;
@@ -58,7 +60,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     private CarInfoMapper carInfoMapper;
     @Resource
     private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
-
     @Resource
     private CustomerService customerService;
 
@@ -155,7 +156,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                                 insuredInfo.setLastYearInsuranceCompany("获取失败");
                             }
                         }
-                        insuredInfoMapper.insert(insuredInfo);
+                        insuredInfoService.save(insuredInfo);
                         for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
                             if (null != datas) {
                                 datas.setTypeId(uuid);
@@ -452,6 +453,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         JSONObject jsonObject = new JSONObject();
         List<CompletableFuture<HttpResult>> list = new ArrayList<CompletableFuture<HttpResult>>();
 
+
         for (Long sour : source) {
             if (null != sour) {
                 String name = InsuranceNameEnum.getName(sour);
@@ -712,11 +714,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             } else {//待拓展
                 return ResultGenerator.genParamsErrorResult("参数异常,目前仅支持车牌或者车架号续保");
             }
-
             checkInfo.setCreateBy(createdBy);
             String date = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
             checkInfo.setSendTime(date);
-
             //三家同时续保
             // Map<String, Object> renewalInfo = getRenewalInfo(lastYearSource, jsonObject.toJSONString(), createdBy);
             Map<String, Object> renewalInfo = null;
@@ -782,7 +782,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             insuredInfo.setLastYearInsuranceCompany("获取失败");
                         }
                     }
-                    insuredInfoMapper.insert(insuredInfo);
+                    insuredInfoService.save(insuredInfo);
                     for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
                         if (null != datas) {
                             datas.setTypeId(uuid);
