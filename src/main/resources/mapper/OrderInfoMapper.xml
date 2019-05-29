@@ -24,11 +24,13 @@
     SELECT
     order_info.order_id,
     car_info.car_number,car_info.car_model,car_info.salesman,
+    car_info.license_owner,
     order_info.create_time,
     date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
     order_info.create_by,
     order_info.pay_status,
     order_info.pay_type,
+    order_info.pay_type_id,
     order_info.payment,
     order_info.pay_money,
     order_info.car_info_id,
@@ -37,15 +39,17 @@
     order_info.contact_name,
     order_info.contact_tel,
     insured_info.posted_name,
-    insured_info.insurance_company
+    insured_info.insurance_company,
+    quote_info.quote_insurance_name
     FROM
     order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)
     LEFT JOIN car_info ON (order_info.car_info_id=car_info.car_info_id)
+    left join quote_info on (order_info.pay_type_id=quote_info.quote_id)
     <where>
       <if test="accountId!=null">
         create_by=#{accountId}
       </if>
-      <if test="payStatus!=0">
+      <if test="payStatus!=9">
         and pay_status = #{payStatus}
       </if>
     </where>

@@ -10,7 +10,9 @@ spring:
 #    url: jdbc:mysql://127.0.0.1:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT
     url: jdbc:mysql://192.168.1.102:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT
     username: root
+#    username: insurance_bzs
     password: bzs820077
+#    password: trpShzYSTmztzKW6
     druid:
       # 连接池的配置信息
       # 初始化大小，最小，最大

@@ -7,7 +7,7 @@ public enum ResultCode {
     SUCCESS_NULL(100),//查询成功，但未查询到数据
     PARAMS_ERROR(-100),
     SUCCESS(200),//成功 (报价+核保成功)
-    SUBMIT(300),//报价成功+核保失败
+    SUBMIT(301),//报价成功+核保失败
     FAIL(400),//失败 （报价+核保失败）
     UNAUTHORIZED(401),//未认证（签名错误）
     NOT_FOUND(404),//接口不存在
