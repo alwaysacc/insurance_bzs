@@ -116,10 +116,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     @Override
     public Result getParentOrChildList(String id, Integer deep, String isOwner,String type) {
         if(StringUtils.isNotBlank(id)){
-            if(StringUtils.isBlank(type)||"1".equals(type)){
+            if(StringUtils.isBlank(type)||!"1".equals(type)){
                 type="0";//父节点
             }
-            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,null,type);
+            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,isOwner,type);
             if(CollectionUtils.isNotEmpty(list)){
                 return ResultGenerator.genSuccessResult(list,"成功");
             }

@@ -196,7 +196,7 @@
     </select>
     <select id="getParentOrChildList" resultMap="BaseResultMap">
         select * from account_info
-        <choose>
+         <choose>
             <when test="type=='0'">
                 where FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep}))
             </when>

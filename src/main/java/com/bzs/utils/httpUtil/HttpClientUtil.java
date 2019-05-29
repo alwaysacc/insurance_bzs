@@ -2,6 +2,7 @@ package com.bzs.utils.httpUtil;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bzs.utils.encodeUtil.EncodeUtil;
 import com.bzs.utils.jsontobean.PCICResponseBean;
 import com.bzs.utils.jsontobean.RenewalBean;
 import org.apache.commons.lang.StringUtils;
@@ -367,13 +368,17 @@ public class HttpClientUtil {
                 if (StringUtils.isNotBlank(body)) {
                     String frequent = body.substring(0, 3);
                     int index=body.indexOf("Wrong frameNo");
+                    boolean b= EncodeUtil.isEnglish(body);
                     if ("The".equalsIgnoreCase(frequent)) {//判断是否请求频繁
                         result.setCode(11000);
                         result.setMessage("请求频繁,请稍后重试");
                     } else if(index>-1){
                         result.setCode(20000);
-                        result.setMessage("Wrong frameNo");
-                    }else {
+                        result.setMessage("车架号异常，确认无误后重新操作");
+                    }/*else if(b){
+                        result.setCode(21000);
+                        result.setMessage(body);
+                    }*/else {
                         //只有返回code=200才是请求成功
                         if (null != clz) {
                             try {
@@ -383,6 +388,7 @@ public class HttpClientUtil {
                             } catch (Exception e) {
                                 logger.error("请求成功，JSON转换异常", e);
                                 result.setCode(12000);
+                                result.setMessage(body);
                             }
                         }
                     }

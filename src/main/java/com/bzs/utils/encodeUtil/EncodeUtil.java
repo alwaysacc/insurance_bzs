@@ -253,6 +253,19 @@ public class EncodeUtil {
         return false;
     }
 
+    /**
+     * 校验是否为全英文包括标点符号
+     * @param str
+     * @return
+     */
+    public static boolean isEnglish(String str) {
+        byte[] bytes = str.getBytes();
+        int i = bytes.length;// i为字节长度
+        int j = str.length();// j为字符长度
+        boolean result = i == j ? true : false;
+        return result;
+    }
+
     public static void main(String[] args) {
         String unicode = "\\u673a\\u52a8\\u8f66\\u635f\\u5931\\u4fdd\\u9669\\u5b98\\u65b9\\u56de\\u590d\\u56de\\u590d \\uff1b\\u2018\\uff1b\\u2018\\u2019\\u20194545枚举";
         String cn = unicodeToString(unicode);
