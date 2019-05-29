@@ -24,4 +24,24 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     int addOrUpdate(AccountInfo accountInfo);
 
     List getUserList(@Param("roleId") String roleId, @Param("accountId") String accountId);
+
+    /**
+     * 获取父节点
+     * @param id
+     * @param deep
+     * @param isOwner
+     * @return
+     */
+    List<AccountInfo> getParentList(@Param("id")String id,@Param("deep") Integer deep,@Param("isOwner")String isOwner);
+
+    /**
+     * 获取子节点
+     * @param id
+     * @param deep
+     * @param isOwner
+     * @return
+     */
+    List<AccountInfo> getChildList(@Param("id")String id,@Param("deep") Integer deep,@Param("isOwner")String isOwner);
+
+    List<AccountInfo> getParentOrChildList(@Param("id")String id,@Param("deep") Integer deep,@Param("isOwner")String isOwner,@Param("type")String type);
 }

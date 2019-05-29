@@ -1,12 +1,14 @@
 package com.bzs.redis;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.apache.poi.hssf.record.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -628,9 +630,15 @@ public class RedisUtil {
             return (T) Long.valueOf(value);
         } else if (clazz == String.class) {
             return (T) value;
-        } else {
+        }else if (clazz == List.class) {
+            return (T) JSONArray.parseArray(value,String.class);
+        }  else {
             return JSON.toJavaObject(JSON.parseObject(value), clazz);
         }
+    }
+    /**/
+    private <T>List<T> StringToList(String json,Class<T> clazz){
+       return  (List<T>)JSONArray.parseArray(json,String.class);
     }
 
 

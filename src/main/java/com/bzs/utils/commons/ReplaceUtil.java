@@ -67,9 +67,13 @@ public class ReplaceUtil {
         return min;
     }
     public static void main(String[] args) {
-        String s1="车辆损失险";
+        /*String s1="车辆损失险";
         String s2="机动车损失险";
-        levenshtein(s1,s2);
+        levenshtein(s1,s2);*/
+        String a="100+";
+        int b=a.indexOf("+");
+       a= a.substring(0,b)+"0000";
+        System.out.println(a);
     }
 
 }

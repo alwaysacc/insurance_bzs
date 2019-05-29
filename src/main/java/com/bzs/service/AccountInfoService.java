@@ -37,4 +37,16 @@ public interface AccountInfoService extends Service<AccountInfo> {
     public Result insertOrUpdate(AccountInfo accountInfo,String type);
 
     List getUserList(String roleId,String accountId);
+
+
+
+    /**
+     * 获取父节点或者子节点
+     * @param id
+     * @param deep 深度
+     * @param isOwner 是否包括自己在内
+     * @param type 默认0父节点1子节点
+     * @return
+     */
+    Result getParentOrChildList(String id, Integer deep,String isOwner,String type);
 }

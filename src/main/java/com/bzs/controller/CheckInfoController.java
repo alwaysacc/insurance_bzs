@@ -86,7 +86,7 @@ public class CheckInfoController {
     @ApiOperation("通过车辆id或者创建人查询")
     @PostMapping("/checkByCreateByOrCarInfoId")
     public Result checkByCreateByOrCarInfoId(String createBy,String carInfoId) {
-        Map map=checkInfoService.checkByCreateByOrCarInfoId(createBy,carInfoId);
+        Map map=checkInfoService.checkByCreateByOrCarInfoId(createBy,carInfoId,null,null);
         String code=(String)map.get("code");
         String msg=(String)map.get("msg");
         if("200".equals(code)){

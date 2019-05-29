@@ -111,4 +111,21 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     public List getUserList(String roleId, String accountId) {
         return accountInfoMapper.getUserList(roleId,accountId);
     }
+
+
+    @Override
+    public Result getParentOrChildList(String id, Integer deep, String isOwner,String type) {
+        if(StringUtils.isNotBlank(id)){
+            if(StringUtils.isBlank(type)||"1".equals(type)){
+                type="0";//父节点
+            }
+            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,null,type);
+            if(CollectionUtils.isNotEmpty(list)){
+                return ResultGenerator.genSuccessResult(list,"成功");
+            }
+            return ResultGenerator.genFailResult("不存在，获取信息失败");
+        }else{
+            return ResultGenerator.genFailResult("参数错误");
+        }
+    }
 }

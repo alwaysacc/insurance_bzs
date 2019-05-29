@@ -366,10 +366,14 @@ public class HttpClientUtil {
                 message = "请求成功";
                 if (StringUtils.isNotBlank(body)) {
                     String frequent = body.substring(0, 3);
+                    int index=body.indexOf("Wrong frameNo");
                     if ("The".equalsIgnoreCase(frequent)) {//判断是否请求频繁
                         result.setCode(11000);
                         result.setMessage("请求频繁,请稍后重试");
-                    } else {
+                    } else if(index>-1){
+                        result.setCode(20000);
+                        result.setMessage("Wrong frameNo");
+                    }else {
                         //只有返回code=200才是请求成功
                         if (null != clz) {
                             try {
