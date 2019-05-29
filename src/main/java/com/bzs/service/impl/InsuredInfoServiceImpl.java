@@ -6,6 +6,7 @@ import com.bzs.dao.CustomerMapper;
 import com.bzs.dao.InsuredInfoMapper;
 import com.bzs.model.*;
 import com.bzs.model.query.CarInfoAndInsuranceInfo;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.*;
 import com.bzs.utils.*;
 
@@ -43,7 +44,8 @@ import java.util.concurrent.*;
 @Transactional
 public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> implements InsuredInfoService {
     private static final Logger logger = LoggerFactory.getLogger(InsuredInfoServiceImpl.class);
-
+    @Resource
+    private RedisUtil redisUtil;
     @Resource
     private InsuredInfoMapper insuredInfoMapper;
     @Resource
@@ -439,7 +441,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             result.put("data", null);
             return result;
         }
-
+        List<String> portList=new ArrayList<>();
+        String keyRedis="";
         String api = "";
         String port = "";
         String host = "";
@@ -500,9 +503,47 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             return result;
         }
         if (1 == source) {//太保
+            keyRedis="CPIC_PORT"+createdBy;
+            System.out.println(keyRedis);
             // host = ThirdAPI.CPIC_HOST;
             // port = ThirdAPI.CPIC_PORT;
             api = ThirdAPI.CPIC_RENEWAL_NAME;
+            synchronized(this) {
+                if (!redisUtil.hasKey(keyRedis)) {
+                    port = "5000";
+                    portList.add(port);
+                    redisUtil.set(keyRedis, portList, 720000);
+                } else {
+                    portList = (List) redisUtil.get(keyRedis);
+                    System.out.println(portList.toString());
+                    if (!portList.contains("5000")) {
+                        port = "5000";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("5001")) {
+                        port = "5001";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("5002")) {
+                        port = "5002";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("5003")) {
+                        port = "5003";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("5004")) {
+                        port = "5004";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    }else{
+                        result.put("status", "300");
+                        result.put("msg", "网络繁忙，请重试");
+                        result.put("data", null);
+                        return result;
+                    }
+                }
+            }
             logger.info("续保枚举值1：太保");
         } else if (2 == source) {//平安
             //host = ThirdAPI.PAIC_HOST;
@@ -512,7 +553,44 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         } else if (4 == source) {//人保
             // host = ThirdAPI.PICC_HOST;
             // port = ThirdAPI.PICC_PORT;
+            keyRedis="PICC_PORT"+createdBy;
             api = ThirdAPI.PICC_RENEWAL_NAME;
+            synchronized(this) {
+                if (!redisUtil.hasKey(keyRedis)) {
+                    port = "4050";
+                    portList.add(port);
+                    redisUtil.set(keyRedis, portList, 720000);
+                } else {
+                    portList = (List) redisUtil.get(keyRedis);
+                    System.out.println(portList.toString());
+                    if (!portList.contains("4050")) {
+                        port = "4050";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("4051")) {
+                        port = "4051";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("4052")) {
+                        port = "4052";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("4053")) {
+                        port = "4053";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    } else if (!portList.contains("4054")) {
+                        port = "4054";
+                        portList.add(port);
+                        redisUtil.set(keyRedis, portList, 720000);
+                    }else{
+                        result.put("status", "300");
+                        result.put("msg", "网络繁忙，请重试");
+                        result.put("data", null);
+                        return result;
+                    }
+                }
+            }
             logger.info("续保枚举值4：人保");
         } else {
             result.put("status", "400");
@@ -520,9 +598,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             result.put("data", null);
             return result;
         }
-
         String URL = host + ":" + port + "/" + api;
+        System.out.println(URL+",,,,,,1111111111111");
         HttpResult httpResult = HttpClientUtil.doPost(URL, null, "JSON", RenewalBean.class, jsonObject.toJSONString());
+        portList.remove(port);
+        redisUtil.set(keyRedis,portList,720000);
+        System.out.println(portList);
         httpResult.setSource(source);
         String uuid = UUIDS.getDateUUID();
         return getResult(httpResult, uuid, createdBy);
@@ -545,10 +626,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 String name = InsuranceNameEnum.getName(sour);
                 Map map = thirdInsuranceAccountInfoService.findEnbaleAccount(sour, "1", creatBy);
                 String code = (String) map.get("code");
+
                 if ("200".equals(code)) {
                     ThirdInsuranceAccountInfo data = (ThirdInsuranceAccountInfo) map.get("data");
                     String host = data.getIp();
-                    String port = data.getPort();
+                    //String port = data.getPort();
+                    String port="";
                     String accountName = data.getAccountName();
                     String accountPwd = data.getAccountPwd();
                     CompletableFuture<HttpResult> f = CompletableFuture.supplyAsync(() -> {
@@ -559,6 +642,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         String mm = "";
                         if (1L == sour) {
                             api = ThirdAPI.CPIC_RENEWAL_NAME;
+                            List portList= (List) redisUtil.get("CPIC_RENEWAL_NAME");
+                            if (portList.size()==0){
+
+                            }
+
                         } else if (2L == sour) {
                             api = ThirdAPI.PAIC_RENEWAL_NAME;
                             if (StringUtils.isNotBlank(accountName) && StringUtils.isNotBlank(accountPwd)) {
