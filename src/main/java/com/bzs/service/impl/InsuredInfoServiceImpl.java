@@ -948,10 +948,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     //checkInfo.setIsCheckSuccess("1");
                     checkInfoService.save(checkInfo);
                     carInfoService.save(carInfo);
-                    dataBean.getData().setSource(lastYearSource + "");
-                    dataBean.getData().setList(insuranceTypeInfoList);
-                    dataBean.getData().setCarNo(carNo);
+
                     Map maps = JsonToMapUtil.bodyJsonToMap(body);
+                    String newCarNo = carInfo.getCarNumber();
+                    if (StringUtils.isNotBlank(newCarNo)) {
+                        carNo = newCarNo;
+                    }
                     maps.put("carNo", carNo);
                     maps.put("source", lastYearSource + "");
                     maps.put("carInfoId", uuid);
@@ -1161,10 +1163,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         //checkInfo.setIsCheckSuccess("1");
                         checkInfoService.save(checkInfo);
                         carInfoService.save(carInfo);
-                        dataBean.getData().setSource(lastYearSource + "");
-                        dataBean.getData().setList(insuranceTypeInfoList);
-                        dataBean.getData().setCarNo(carNo);
+
                         Map maps = JsonToMapUtil.bodyJsonToMap(body);
+                        String newCarNo = carInfo.getCarNumber();
+                        if (StringUtils.isNotBlank(newCarNo)) {
+                            carNo = newCarNo;
+                        }
                         maps.put("carNo", carNo);
                         maps.put("source", lastYearSource + "");
                         maps.put("carInfoId", uuid);

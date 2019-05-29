@@ -96,8 +96,9 @@ public class InsuredInfoController {
     @PostMapping("/checkByCarNoOrVinNo")
     public Result list(@RequestParam String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, HttpServletRequest request, String createBy) {
         if (StringUtils.isNotBlank(createBy))
-            //return insuredInfoService.checkByCarNoOrVinNo2(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy,null);
-            return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy);
+            //每次都续保，存在则更新续保信息
+            return insuredInfoService.checkByCarNoOrVinNo2(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy,null);
+            //return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy);
         else return ResultGenerator.genFailResult("未获取到账号信息");
     }
 
