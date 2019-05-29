@@ -2,8 +2,10 @@ package com.bzs.service;
 
 import com.bzs.model.InsuranceTypeInfo;
 import com.bzs.utils.Service;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -23,5 +25,7 @@ public interface InsuranceTypeInfoService extends Service<InsuranceTypeInfo> {
      * @return
      */
     Boolean  batchInsertOrUpdateList(List <InsuranceTypeInfo> info);
+
+    int deleteByTypeId(String typeId);
 
 }

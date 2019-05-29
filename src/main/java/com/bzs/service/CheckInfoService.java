@@ -20,9 +20,11 @@ public interface CheckInfoService extends Service<CheckInfo> {
      * 通过创建人、车辆信息id查询
      * @param createBy 创建人
      * @param carInfoId 车辆id
+     * @param carNo 车牌
+     * @param vinNo 车架
      * @return
      */
-    Map checkByCreateByOrCarInfoId(String createBy, String carInfoId);
+    Map checkByCreateByOrCarInfoId(String createBy, String carInfoId,String carNo,String vinNo);
 
     Map checkByDifferConditions(CheckInfo checkInfo);
 

@@ -1,168 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.InsuranceTypeInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.InsuranceTypeInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="insurance_type_id" jdbcType="VARCHAR" property="insuranceTypeId" />
-    <result column="REVISION" jdbcType="INTEGER" property="revision" />
-    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-    <result column="insurance_name" jdbcType="VARCHAR" property="insuranceName" />
-    <result column="insurance_amount" jdbcType="DECIMAL" property="insuranceAmount" />
-    <result column="insurance_premium" jdbcType="DECIMAL" property="insurancePremium" />
-    <result column="info_type" jdbcType="VARCHAR" property="infoType" />
-    <result column="type_id" jdbcType="VARCHAR" property="typeId" />
-    <result column="standard_premium" jdbcType="VARCHAR" property="standardPremium" />
-    <result column="excluding_deductible" jdbcType="DECIMAL" property="excludingEeductible" />
-  </resultMap>
-  <sql id="insertBacthItems">
-    <trim prefix="(" suffixOverrides="," suffix=")">
-      insurance_type_id,insurance_name,insurance_amount,insurance_premium,info_type,type_id,standard_premium,excluding_deductible,CREATED_BY
-    </trim>
-  </sql>
-  <insert id="insertBatch" parameterType="java.util.List">
-    insert into insurance_type_info <include refid="insertBacthItems"/> values
-    <foreach collection="list" item="item" index="index" separator="," >
-      (#{item.insuranceTypeId},#{item.insuranceName},#{item.insuranceAmount},#{item.insurancePremium}, #{item.infoType},
-      #{item.typeId}
-      , #{item.standardPremium}, #{item.excludingEeductible}, #{item.createdBy})
-      </foreach>
-  </insert>
+    <resultMap id="BaseResultMap" type="com.bzs.model.InsuranceTypeInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="insurance_type_id" jdbcType="VARCHAR" property="insuranceTypeId"/>
+        <result column="REVISION" jdbcType="INTEGER" property="revision"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="insurance_name" jdbcType="VARCHAR" property="insuranceName"/>
+        <result column="insurance_amount" jdbcType="DECIMAL" property="insuranceAmount"/>
+        <result column="insurance_premium" jdbcType="DECIMAL" property="insurancePremium"/>
+        <result column="info_type" jdbcType="VARCHAR" property="infoType"/>
+        <result column="type_id" jdbcType="VARCHAR" property="typeId"/>
+        <result column="standard_premium" jdbcType="VARCHAR" property="standardPremium"/>
+        <result column="excluding_deductible" jdbcType="DECIMAL" property="excludingEeductible"/>
+    </resultMap>
+    <sql id="insertBacthItems">
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            insurance_type_id,insurance_name,insurance_amount,insurance_premium,info_type,type_id,standard_premium,excluding_deductible,CREATED_BY
+        </trim>
+    </sql>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into insurance_type_info
+        <include refid="insertBacthItems"/>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.insuranceTypeId},#{item.insuranceName},#{item.insuranceAmount},#{item.insurancePremium},
+            #{item.infoType},
+            #{item.typeId}
+            , #{item.standardPremium}, #{item.excludingEeductible}, #{item.createdBy})
+        </foreach>
+    </insert>
 
-<!-- 批量插入或者更新 开始-->
-  <sql id="batchInsertOrUpdateList_insertItem">
-    <trim suffixOverrides=",">
-      insurance_type_id,
-      <!--  <if test="info.createdBy!=null  and info.createdBy!=''"> CREATED_BY,</if>-->
-      <if test="info.updatedBy!=null  and info.updatedBy!=''">UPDATED_BY,</if>
-      <if test="info.insuranceName!=null  and info.insuranceName!=''">insurance_name,</if>
-      <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''">insurance_amount,</if>
-      <if test="info.insurancePremium!=null  and info.insurancePremium!=''">insurance_premium,</if>
-      <if test="info.infoType!=null  and info.infoType!=''">info_type,</if>
-      <if test="info.excludingEeductible!= null ">excluding_deductible,</if>
-      <if test="info.typeId!=null  and info.typeId!=''">type_id,</if>
-      <if test="info.standardPremium!=null  and info.standardPremium!=''">standard_premium,</if>
-    </trim>
-  </sql>
-  <sql id="batchInsertOrUpdateList_insertItem1">
-    <trim suffixOverrides=",">
-      insurance_type_id,
-      <!--  <if test="info.createdBy!=null  and info.createdBy!=''"> CREATED_BY,</if>-->
-      <if test="updatedBy!=null  and updatedBy!=''">UPDATED_BY,</if>
-      <if test="insuranceName!=null  and insuranceName!=''">insurance_name,</if>
-      <if test="insuranceAmount!=null  and insuranceAmount!=''">insurance_amount,</if>
-      <if test="insurancePremium!=null  and insurancePremium!=''">insurance_premium,</if>
-      <if test="infoType!=null  and infoType!=''">info_type,</if>
-      <if test="excludingEeductible!= null ">excluding_deductible,</if>
-      <if test="typeId!=null  and typeId!=''">type_id,</if>
-      <if test="standardPremium!=null  and standardPremium!=''">standard_premium,</if>
-    </trim>
-  </sql>
-  <sql id="batchInsertOrUpdateList_insertValues">
-    <trim suffixOverrides="," >
-      #{info.insuranceTypeId},
-      <if test="info.createdBy!=null  and info.createdBy!=''"> #{info.createdBy},</if>
-      <if test="info.updatedBy!=null  and info.updatedBy!=''"> #{info.updatedBy},</if>
-      <if test="info.insuranceName!=null  and info.insuranceName!=''"> #{info.insuranceName},</if>
-      <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''">#{info.insuranceAmount},</if>
-      <if test="info.insurancePremium!=null  and info.insurancePremium!=''"> #{info.insurancePremium},</if>
-      <if test="info.infoType!=null  and info.infoType!=''">#{info.infoType},</if>
-      <if test="info.excludingEeductible!= null "> #{info.excludingEeductible},</if>
-      <if test="info.typeId!=null  and info.typeId!=''">#{info.typeId},</if>
-      <if test="info.standardPremium!=null  and info.standardPremium!=''"> #{info.standardPremium},</if>
-    </trim>
-  </sql>
-  <sql id="batchInsertOrUpdateList_updateItem">
-    <trim suffixOverrides=",">
-      insurance_type_id=values(insurance_type_id)
-      <if test="info.createdBy!=null  and info.createdBy!=''"> CREATED_BY=#{info.icreatedBy},</if>
-      <if test="info.updatedBy!=null  and info.updatedBy!=''"> UPDATED_BY=#{info.updatedBy},</if>
-      <if test="info.insuranceName!=null  and info.insuranceName!=''"> insurance_name=#{info.insuranceName},</if>
-      <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''"> insurance_amount=#{info.insuranceAmount},</if>
-      <if test="info.insurancePremium!=null  and info.insurancePremium!=''"> insurance_premium=#{info.insurancePremium},</if>
-      <if test="info.infoType!=null  and info.infoType!=''"> info_type=#{info.infoType},</if>
-      <if test="info.excludingEeductible!= null "> excluding_deductible=#{info.excludingEeductible},</if>
-      <if test="info.typeId!=null  and info.typeId!=''"> type_id=#{info.itypeId},</if>
-      <if test="info.standardPremium!=null  and info.standardPremium!=''"> standard_premium=#{info.standardPremium},</if>
-    </trim>
-  </sql>
-  <sql id="batchInsertOrUpdateList_updateItem1">
-    <trim suffixOverrides=",">
-      insurance_type_id=values(insurance_type_id)
-      <if test="createdBy!=null  and createdBy!=''"> CREATED_BY=#{icreatedBy},</if>
-      <if test="updatedBy!=null  and updatedBy!=''"> UPDATED_BY=#{updatedBy},</if>
-      <if test="insuranceName!=null  and insuranceName!=''"> insurance_name=#{insuranceName},</if>
-      <if test="insuranceAmount!=null  and insuranceAmount!=''"> insurance_amount=#{insuranceAmount},</if>
-      <if test="insurancePremium!=null  and insurancePremium!=''"> insurance_premium=#{insurancePremium},</if>
-      <if test="infoType!=null  and infoType!=''"> info_type=#{iinfoType},</if>
-      <if test="excludingEeductible!= null "> excluding_deductible=#{excludingEeductible},</if>
-      <if test="typeId!=null  and info.typeId!=''"> type_id=#{itypeId},</if>
-      <if test="standardPremium!=null  and standardPremium!=''"> standard_premium=#{standardPremium},</if>
-    </trim>
-  </sql>
-  <insert id="batchInsertOrUpdateList" parameterType="java.util.List">
-    insert into insurance_type_info (
-    <foreach collection="list" item="info" separator=",">
-      <include refid="batchInsertOrUpdateList_insertItem"/>
-    </foreach>
-    )
-    values (
-    <foreach collection="list" item="info" separator=",">
+    <!-- 批量插入或者更新 开始-->
+    <sql id="batchInsertOrUpdateList_insertItem">
+        <trim suffixOverrides=",">
+            insurance_type_id,
+            <if test="info.createdBy!=null  and info.createdBy!=''">CREATED_BY,</if>
+            <if test="info.updatedBy!=null  and info.updatedBy!=''">UPDATED_BY,</if>
+            <if test="info.insuranceName!=null  and info.insuranceName!=''">insurance_name,</if>
+            <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''">insurance_amount,</if>
+            <if test="info.insurancePremium!=null  and info.insurancePremium!=''">insurance_premium,</if>
+            <if test="info.infoType!=null  and info.infoType!=''">info_type,</if>
+            <if test="info.excludingEeductible!= null ">excluding_deductible,</if>
+            <if test="info.typeId!=null  and info.typeId!=''">type_id,</if>
+            <if test="info.standardPremium!=null  and info.standardPremium!=''">standard_premium,</if>
+        </trim>
+    </sql>
 
-      <include refid="batchInsertOrUpdateList_insertValues"/>
+    <sql id="batchInsertOrUpdateList_insertValues">
+        <trim suffixOverrides=",">
+            #{info.insuranceTypeId},
+            <if test="info.createdBy!=null  and info.createdBy!=''">#{info.createdBy},</if>
+            <if test="info.updatedBy!=null  and info.updatedBy!=''">#{info.updatedBy},</if>
+            <if test="info.insuranceName!=null  and info.insuranceName!=''">#{info.insuranceName},</if>
+            <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''">#{info.insuranceAmount},</if>
+            <if test="info.insurancePremium!=null  and info.insurancePremium!=''">#{info.insurancePremium},</if>
+            <if test="info.infoType!=null  and info.infoType!=''">#{info.infoType},</if>
+            <if test="info.excludingEeductible!= null ">#{info.excludingEeductible},</if>
+            <if test="info.typeId!=null  and info.typeId!=''">#{info.typeId},</if>
+            <if test="info.standardPremium!=null  and info.standardPremium!=''">#{info.standardPremium},</if>
+        </trim>
+    </sql>
+    <sql id="batchInsertOrUpdateList_updateItem">
+        <trim suffixOverrides=",">
+            insurance_type_id=values(insurance_type_id),
+            <if test="info.createdBy!=null  and info.createdBy!=''">CREATED_BY=#{info.icreatedBy},</if>
+            <if test="info.updatedBy!=null  and info.updatedBy!=''">UPDATED_BY=#{info.updatedBy},</if>
+            <if test="info.insuranceName!=null  and info.insuranceName!=''">insurance_name=#{info.insuranceName},</if>
+            <if test="info.insuranceAmount!=null  and info.insuranceAmount!=''">
+                insurance_amount=#{info.insuranceAmount},
+            </if>
+            <if test="info.insurancePremium!=null  and info.insurancePremium!=''">
+                insurance_premium=#{info.insurancePremium},
+            </if>
+            <if test="info.infoType!=null  and info.infoType!=''">info_type=#{info.infoType},</if>
+            <if test="info.excludingEeductible!= null ">excluding_deductible=#{info.excludingEeductible},</if>
+            <if test="info.typeId!=null  and info.typeId!=''">type_id=#{info.itypeId},</if>
+            <if test="info.standardPremium!=null  and info.standardPremium!=''">
+                standard_premium=#{info.standardPremium},
+            </if>
+        </trim>
+    </sql>
 
-    </foreach>
-    )
-    ON DUPLICATE KEY UPDATE
-      <foreach collection="list" item="info" separator=",">
+    <insert id="batchInsertOrUpdateList" parameterType="com.bzs.model.InsuranceTypeInfo">
+        <foreach collection="list" item="info">
+            insert into insurance_type_info (
+            <include refid="batchInsertOrUpdateList_insertItem"/>
+            )values (
+            <include refid="batchInsertOrUpdateList_insertValues"/>
+            )
+            ON DUPLICATE KEY UPDATE
+            <include refid="batchInsertOrUpdateList_updateItem"/>
+        </foreach>
 
-      <include refid="batchInsertOrUpdateList_updateItem"/>
-      </foreach>
-  </insert>
-  <insert id="batchInsertOrUpdateList2" parameterType="com.bzs.model.InsuranceTypeInfo">
-    insert into insurance_type_info (
-      <include refid="batchInsertOrUpdateList_insertItem1"/>
-    values (
-    <foreach collection="list" item="info" separator=",">
-      <include refid="batchInsertOrUpdateList_insertValues"/>
-    </foreach>
-    )
-    ON DUPLICATE KEY UPDATE
-    <foreach collection="list" item="info" separator=",">
-      <include refid="batchInsertOrUpdateList_updateItem"/>
-    </foreach>
-  </insert>
-
-  <insert id="batchInsertOrUpdateList3" parameterType="com.bzs.model.InsuranceTypeInfo">
-    <foreach collection="list" item="info" >
-      insert into insurance_type_info (
-      <include refid="batchInsertOrUpdateList_insertItem1"/>
-      values (
-      <foreach collection="list" item="info" separator=",">
-        <include refid="batchInsertOrUpdateList_insertValues"/>
-      </foreach>
-      )
-      ON DUPLICATE KEY UPDATE
-        <include refid="batchInsertOrUpdateList_updateItem"/>
-    </foreach>
-
-  </insert>
+    </insert>
 
 
-  <insert id="batchInsertOrUpdateList1" parameterType="java.util.List">
-    insert into insurance_type_info (insurance_type_id,CREATED_BY,type_id)
-    values
-    <foreach collection ="list" item="info" separator="," >
-      (#{info.insuranceTypeId},#{info.createdBy},#{info.typeId})
-    </foreach>
-    ON DUPLICATE KEY UPDATE
-    insurance_type_id = VALUES(insurance_type_id),CREATED_BY = VALUES(CREATED_BY),type_id = VALUES(type_id)
-  </insert>
+    <insert id="batchInsertOrUpdateList1" parameterType="java.util.List">
+        insert into insurance_type_info (insurance_type_id,CREATED_BY,type_id)
+        values
+        <foreach collection="list" item="info" separator=",">
+            (#{info.insuranceTypeId},#{info.createdBy},#{info.typeId})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        insurance_type_id = VALUES(insurance_type_id),CREATED_BY = VALUES(CREATED_BY),type_id = VALUES(type_id)
+    </insert>
 
-  <!-- 批量插入或者更新 结束-->
+    <!-- 批量插入或者更新 结束-->
+    <delete id="deleteByTypeId">
+        delete from insurance_type_info where  type_id=#{typeId}
+    </delete>
 
 </mapper>

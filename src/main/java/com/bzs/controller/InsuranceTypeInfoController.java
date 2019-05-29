@@ -79,7 +79,8 @@ public class InsuranceTypeInfoController {
     public Result batchInsertOrUpdateList() {
         List<InsuranceTypeInfo> info = new ArrayList<InsuranceTypeInfo>();
         InsuranceTypeInfo insuranceTypeInfo=new InsuranceTypeInfo();
-        insuranceTypeInfo.setInsuranceTypeId(UUIDS.getDateUUID());
+        insuranceTypeInfo.setInsuranceTypeId("20190527141954687721");
+        insuranceTypeInfo.setInsuranceName("ss"+UUIDS.getDateUUID());
         info.add(insuranceTypeInfo);
        /* for(int i=0;i<3;i++){
             insuranceTypeInfo.setInsuranceTypeId(UUIDS.getDateUUID());

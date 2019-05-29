@@ -15,6 +15,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -156,6 +157,20 @@ public class AccountInfoController {
     public Map<String, Object> test1(HttpServletRequest request) {
       // System.out.println(redisUtil.get("accountInfo"));
         AccountInfo a = (AccountInfo) SecurityUtils.getSubject().getPrincipal();
+/*
+        List<Map<String,Object>> queueMap=(List<Map<String,Object>>) redisUtil.get("queue");
+        if(CollectionUtils.isNotEmpty(queueMap)){
+            for (int i=0;i<queueMap.size();i++ ){
+                if(CollectionUtils.isNotEmpty((List)queueMap.get(i))){
+                    Map<String,Object> map=queueMap.get(i);
+                    for (Map.Entry<String,Object> entry : map.entrySet()) {
+                        System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                    }
+                }
+
+            }
+
+        }*/
         Map<String, Object> map = new HashMap<>();
         if (a != null) {
             map.put("status", "400");
@@ -189,5 +204,11 @@ public class AccountInfoController {
         PageHelper.startPage(page, size);
         PageInfo pageInfo = new PageInfo(accountInfoService.getUserList(roleId, accountId));
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @ApiOperation("获取父节点账号")
+    @PostMapping("/getParentList")
+    public Result getParentList(String id,Integer deep,String type){
+      return accountInfoService.getParentOrChildList(id,deep,"",type);
     }
 }

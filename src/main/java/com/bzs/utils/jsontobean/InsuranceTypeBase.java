@@ -145,6 +145,10 @@ public class InsuranceTypeBase {
                                 info.setInsuranceAmount(new BigDecimal("1"));
                             }
                         }else{
+                            int index=account.indexOf("+");
+                            if(index>-1){
+                                account=  account.substring(0,index)+"0000";
+                            }
                             info.setInsuranceAmount(new BigDecimal(account));
                         }
 

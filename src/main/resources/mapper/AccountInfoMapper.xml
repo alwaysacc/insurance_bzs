@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.AccountInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
-    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
-    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-    <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId" />
-    <result column="account_state" jdbcType="VARCHAR" property="accountState" />
-    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
-    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
-    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
-    <result column="wechat" jdbcType="VARCHAR" property="wechat" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="delete_status" jdbcType="TINYINT" property="deleteStatus" />
-    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
-    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="account_id" jdbcType="VARCHAR" property="accountId"/>
+        <result column="role_id" jdbcType="VARCHAR" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId"/>
+        <result column="account_state" jdbcType="VARCHAR" property="accountState"/>
+        <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
+        <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="wechat" jdbcType="VARCHAR" property="wechat"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="delete_status" jdbcType="TINYINT" property="deleteStatus"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="login_time" jdbcType="TIMESTAMP" property="loginTime"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
     <select id="getRoleIdByAccountId" resultType="String">
       select role_id from account_id where account_id=#{account_id}
     </select>
@@ -184,4 +184,26 @@
         login_time=values(login_time)
     </insert>
     <!--根据id 存在则更新不存在则修改 结束-->
+    <!--获取父节点信息-->
+    <select id="getParentList" resultMap="BaseResultMap">
+        select * from account_info where FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep}))
+        <if test="isOwner=='1'">and account_id!=#{id}</if>
+    </select>
+    <!--获取子节点信息-->
+    <select id="getChildList" resultMap="BaseResultMap">
+        select * from account_info where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
+        <if test="isOwner=='1'">and account_id!=#{id}</if>
+    </select>
+    <select id="getParentOrChildList" resultMap="BaseResultMap">
+        select * from account_info
+         <choose>
+            <when test="type=='0'">
+                where FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep}))
+            </when>
+            <otherwise>
+                where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
+            </otherwise>
+        </choose>
+        <if test="isOwner=='1'">and account_id!=#{id}</if>
+    </select>
 </mapper>

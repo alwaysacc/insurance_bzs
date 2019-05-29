@@ -41,7 +41,7 @@ public class CheckInfoServiceImpl extends AbstractService<CheckInfo> implements 
     }
 
     @Override
-    public Map checkByCreateByOrCarInfoId(String createBy, String carInfoId) {
+    public Map checkByCreateByOrCarInfoId(String createBy, String carInfoId,String carNo,String vinNo) {
         Map resultMap=new HashedMap();
         String msg="查询失败";
         String code="400";
@@ -50,6 +50,8 @@ public class CheckInfoServiceImpl extends AbstractService<CheckInfo> implements 
             checkInfo=new CheckInfo();
             checkInfo.setCreateBy(createBy);
             checkInfo.setCarInfoId(carInfoId);
+            checkInfo.setCarNo(carNo);
+            checkInfo.setVinNo(vinNo);
             Map mapData=  this.checkByDifferConditions(checkInfo);
             code=(String)mapData.get("code");
             msg=(String)mapData.get("msg");
