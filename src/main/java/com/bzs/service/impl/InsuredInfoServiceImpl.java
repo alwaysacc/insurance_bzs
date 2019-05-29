@@ -69,8 +69,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     @Resource
     private CustomerService customerService;
 
-    @Autowired
-    private RedisUtil redisUtil;
 
     @Override
     public Result checkByCarNoOrVinNo2(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createdBy, String carInfoId) {
@@ -512,13 +510,14 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         }
         if (1 == source) {//太保
             keyRedis="CPIC_PORT"+createdBy;
+/*
             System.out.println(keyRedis);
             // host = ThirdAPI.CPIC_HOST;
             // port = ThirdAPI.CPIC_PORT;
 
             Integer[] ports ={5000,5001,5002,5003,5004};
             int p=5000;
-        /*    String s = (String) redisUtil.get("CPIC_" + createdBy);
+            String s = (String) redisUtil.get("CPIC_" + createdBy);
             List <Integer> portList=JSONArray.parseArray(s,Integer.class);
             if(CollectionUtils.isNotEmpty(portList)){
                 for(int i=0;i<ports.length;i++){
@@ -528,9 +527,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         }
                     }
                 }
-            }*/
+            }
 
-          /*  if (StringUtils.isNotBlank(s)) {
+            if (StringUtils.isNotBlank(s)) {
                 List<Map<String, Object>> listMap = JsonToMapUtil.toListMap(s);
                 if (CollectionUtils.isNotEmpty(listMap)) {
                     for (Map<String, Object> maps : listMap) {
@@ -542,9 +541,8 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }
             } else {
 
-            }*/
-
-
+            }
+*/
             api = ThirdAPI.CPIC_RENEWAL_NAME;
             synchronized(this) {
                 if (!redisUtil.hasKey(keyRedis)) {

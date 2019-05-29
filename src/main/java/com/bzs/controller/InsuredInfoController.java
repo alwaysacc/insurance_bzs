@@ -99,7 +99,6 @@ public class InsuredInfoController {
             //每次都续保，存在则更新续保信息
             return insuredInfoService.checkByCarNoOrVinNo2(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy,null);
             //return insuredInfoService.checkByCarNoOrVinNo(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy);
-            return insuredInfoService.checkByCarNoOrVinNo2(checkType, carNo, idCard, vinNo, engineNo, lastYearSource, insuredArea, createBy,null);
         else return ResultGenerator.genFailResult("未获取到账号信息");
     }
 
