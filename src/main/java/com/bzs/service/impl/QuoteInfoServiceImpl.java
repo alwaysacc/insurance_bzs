@@ -7,6 +7,7 @@ import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
 import com.bzs.model.*;
 import com.bzs.model.CarInfo;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.*;
 import com.bzs.utils.*;
 import com.bzs.utils.commons.ThirdAPI;
@@ -59,60 +60,61 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Resource
     private OrderInfoMapper orderInfoMapper;
     @Resource
-    private  ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
+    private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
     @Resource
-    private  OrderInfoService orderInfoService;
-
+    private OrderInfoService orderInfoService;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public Map quoteDetails(String carInfoId) {
         //报价信息
-        List<QuoteInfo> quoteInfo=quoteInfoMapper.getQuote(carInfoId);
+        List<QuoteInfo> quoteInfo = quoteInfoMapper.getQuote(carInfoId);
         //车辆信息
-        CarInfo carInfo=carInfoService.findBy("carInfoId",carInfoId);
+        CarInfo carInfo = carInfoService.findBy("carInfoId", carInfoId);
         //客户信息
-        Customer customer=null;
-        if (StringUtils.isNotBlank(carInfo.getCustomerId())){
-            customer=customerService.findBy("customerId",carInfo.getCustomerId());
+        Customer customer = null;
+        if (StringUtils.isNotBlank(carInfo.getCustomerId())) {
+            customer = customerService.findBy("customerId", carInfo.getCustomerId());
         }
         //跟进信息
-        InsuranceFollowInfo insuranceFollowInfo=insuranceFollowInfoService.findBy("carInfoId",carInfoId);
+        InsuranceFollowInfo insuranceFollowInfo = insuranceFollowInfoService.findBy("carInfoId", carInfoId);
         //投保信息
-        InsuredInfo insuredInfo=insuredInfoService.findBy("carInfoId",carInfoId);
-        List insuredList=null;
-        if (insuredInfo!=null){
-            insuredList=quoteInfoMapper.getInsurance(insuredInfo.getInsuredId(),0);
+        InsuredInfo insuredInfo = insuredInfoService.findBy("carInfoId", carInfoId);
+        List insuredList = null;
+        if (insuredInfo != null) {
+            insuredList = quoteInfoMapper.getInsurance(insuredInfo.getInsuredId(), 0);
         }
-        List TquoteList=null;
-        List RquoteList=null;
-        List PquoteList=null;
+        List TquoteList = null;
+        List RquoteList = null;
+        List PquoteList = null;
         System.out.println(quoteInfo.size());
         System.out.println(ResultGenerator.genSuccessResult(quoteInfo));
-        QuoteInfo quote=null;
-        for (int i=0;i<quoteInfo.size();i++){
+        QuoteInfo quote = null;
+        for (int i = 0; i < quoteInfo.size(); i++) {
             System.out.println(quoteInfo.get(i).getQuoteSource());
-            switch (quoteInfo.get(i).getQuoteSource()){
+            switch (quoteInfo.get(i).getQuoteSource()) {
                 case "1":
-                    TquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    TquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
                 case "2":
-                    PquoteList=quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(),1);
+                    PquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
                 case "4":
                     RquoteList = quoteInfoMapper.getInsurance(quoteInfo.get(i).getQuoteId(), 1);
                     break;
             }
         }
-        Map map=new HashMap();
-        map.put("quote",quoteInfo);
-        map.put("customer",customer);
-        map.put("carInfo",carInfo);
-        map.put("insuranceFollowInfo",insuranceFollowInfo);
-        map.put("insuredInfo",insuredInfo);
-        map.put("insuredList",insuredList);
-        map.put("TquoteList",TquoteList);
-        map.put("PquoteList",PquoteList);
-        map.put("RquoteList",RquoteList);
+        Map map = new HashMap();
+        map.put("quote", quoteInfo);
+        map.put("customer", customer);
+        map.put("carInfo", carInfo);
+        map.put("insuranceFollowInfo", insuranceFollowInfo);
+        map.put("insuredInfo", insuredInfo);
+        map.put("insuredList", insuredList);
+        map.put("TquoteList", TquoteList);
+        map.put("PquoteList", PquoteList);
+        map.put("RquoteList", RquoteList);
         return map;
     }
 
@@ -337,18 +339,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         }*/
                         if (200 == resultCode) {
                             return ResultGenerator.gen("报价核保成功", bean, ResultCode.SUCCESS);
-                        }else if (300 == resultCode) {
+                        } else if (300 == resultCode) {
                             return ResultGenerator.gen("报价成功,核保失败", bean, ResultCode.SUBMIT);
-                        }else {
+                        } else {
                             return ResultGenerator.gen(retMsg, bean, ResultCode.FAIL);
                         }
                     } else {
-                        String submitResult="";
-                        if(StringUtils.isNotBlank(retMsg)){
+                        String submitResult = "";
+                        if (StringUtils.isNotBlank(retMsg)) {
                             quoteInfo.setQuoteResult(retMsg);
-                            submitResult=retMsg+",核保失败";
-                        }else{
-                            submitResult="报价失败"+",核保失败";
+                            submitResult = retMsg + ",核保失败";
+                        } else {
+                            submitResult = "报价失败" + ",核保失败";
                             quoteInfo.setQuoteResult("报价失败");
                         }
                         quoteInfo.setSubmitresult(submitResult);
@@ -379,6 +381,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String api = "";
         String host = "";
         String port = "";
+        List<String> portList=new ArrayList<>();
+        String keyRedis="";
         if (null == source) {
             result.put("status", "400");
             result.put("msg", "参数错误");
@@ -406,10 +410,87 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     }
                 } else if (1 == source) {
                     api = ThirdAPI.CPIC_QUOTE_ALL;
+                    keyRedis="CPIC_PORT"+createdBy;
+                    System.out.println(keyRedis);
+                    // host = ThirdAPI.CPIC_HOST;
+                    // port = ThirdAPI.CPIC_PORT;
+                    synchronized(this) {
+                        if (!redisUtil.hasKey(keyRedis)) {
+                            port = "5000";
+                            portList.add(port);
+                            redisUtil.set(keyRedis, portList, 720000);
+                        } else {
+                            portList = (List) redisUtil.get(keyRedis);
+                            System.out.println(portList.toString());
+                            if (!portList.contains("5000")) {
+                                port = "5000";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("5001")) {
+                                port = "5001";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("5002")) {
+                                port = "5002";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("5003")) {
+                                port = "5003";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("5004")) {
+                                port = "5004";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            }else{
+                                result.put("status", "300");
+                                result.put("msg", "网络繁忙，请重试");
+                                result.put("data", null);
+                                return result;
+                            }
+                        }
+                    }
                     aflag = true;
                     params.getData().setSalesPerson(ThirdAPI.salesPerson);
                 } else if (4 == source) {
                     api = ThirdAPI.PICC_QUOTE_ALL;
+                    keyRedis="PICC_PORT"+createdBy;
+                    synchronized(this) {
+                        if (!redisUtil.hasKey(keyRedis)) {
+                            port = "4050";
+                            portList.add(port);
+                            redisUtil.set(keyRedis, portList, 720000);
+                        } else {
+                            portList = (List) redisUtil.get(keyRedis);
+                            System.out.println(portList.toString());
+                            if (!portList.contains("4050")) {
+                                port = "4050";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("4051")) {
+                                port = "4051";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("4052")) {
+                                port = "4052";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("4053")) {
+                                port = "4053";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            } else if (!portList.contains("4054")) {
+                                port = "4054";
+                                portList.add(port);
+                                redisUtil.set(keyRedis, portList, 720000);
+                            }else{
+                                result.put("status", "300");
+                                result.put("msg", "网络繁忙，请重试");
+                                result.put("data", null);
+                                return result;
+                            }
+                        }
+                    }
                     aflag = true;
                 } else {
                     message = name + "报价业务待拓展";
@@ -437,6 +518,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             logger.info("报价请求参数" + jsonStrs);
             String jsonStrs2 = jsonStrs.replace("noType", "NoType");
             HttpResult httpResult = HttpClientUtil.doPost(url, null, "JSON", PCICResponseBean.class, jsonStrs2);
+            portList.remove(port);
+            redisUtil.set(keyRedis,portList,720000);
             int code = httpResult.getCode();
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();
@@ -493,7 +576,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source,String deliveryWay,String deliveryAddress,String contactName,String contactTel) {
+    public Result getPayMentgetPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source, String deliveryWay, String deliveryAddress, String contactName, String contactTel) {
 
         if (StringUtils.isNotBlank(pay) && "1".equals(pay)) {
             pay = "alipay";
@@ -549,7 +632,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if (StringUtils.isNotBlank(payUrl)) {
                     payinfo.setPayMsg("获取成功");
                     OrderInfo orderInfo = new OrderInfo();
-                    orderInfo.setOrderId(UUIDS.getDateUUID());
+                    String oid=UUIDS.getDateUUID();
+                    payinfo.setOrderId(oid);
+                    orderInfo.setOrderId(oid);
                     orderInfo.setPayType("2");//保单订单
                     orderInfo.setPayTypeId(quoteId);
                     orderInfo.setCarInfoId(carInfoId);
@@ -610,7 +695,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             // PayInfo payinfos = payinfo.getPayInfo();
                             quoteInfoMapper.updatePayInfo(payUrl, payTime, proposalNo, payNo, checkNo, paymentNotice, serialNo, payEndDate, retMsg);
                             OrderInfo orderInfo = new OrderInfo();
-                            String oid=UUIDS.getDateUUID();
+                            String oid = UUIDS.getDateUUID();
                             orderInfo.setOrderId(oid);
                             orderInfo.setPayType("2");//保单订单
                             orderInfo.setPayTypeId(quoteId);
@@ -657,7 +742,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orederNo) {
+    public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orderId) {
         if (StringUtils.isBlank(createdBy)) {
             return ResultGenerator.genFailResult("未获取账号信息");
         }
@@ -693,10 +778,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             String retMsg = jsonObjects.getString("retMsg");
                             retMsg = EncodeUtil.unicodeToString(retMsg);
                             if ("1".equals(state)) {
-                                if (StringUtils.isNotBlank(orederNo)) {//修改订单状态值
-                                    int reslut = orderInfoService.updatePayStatusById(orederNo);
+                                if (StringUtils.isNotBlank(orderId)) {//修改订单状态值
+                                    int reslut = orderInfoService.updatePayStatusById(orderId);
                                 }
-                                if(StringUtils.isNotBlank(retMsg)){
+                                if (StringUtils.isNotBlank(retMsg)) {
                                     return ResultGenerator.genSuccessResult(retMsg);
                                 }
                                 return ResultGenerator.genSuccessResult("作废成功");

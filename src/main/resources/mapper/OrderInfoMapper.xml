@@ -52,13 +52,15 @@
       <if test="payStatus!=9">
         and pay_status = #{payStatus}
       </if>
+      ORDER BY  order_info.create_time DESC
     </where>
   </select>
   <select id="searchOrderList" resultType="map">
     SELECT
     order_info.order_id,
     car_info.car_number,car_info.car_model,car_info.salesman,
-    date_format(order_info.create_time,'%Y-%m-%d') as create_time,
+    car_info.license_owner,
+    order_info.create_time,
     date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
     order_info.create_by,
     order_info.pay_status,
@@ -72,8 +74,6 @@
     order_info.contact_tel,
     insured_info.posted_name,
     insured_info.insurance_company,
-    insured_info.posted_name,
-    insured_info.insurance_company
     FROM
     order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)
     LEFT JOIN car_info ON (order_info.car_info_id=car_info.car_info_id)
@@ -96,6 +96,7 @@
       <if test="insuranceCompany!=null">
         and insured_info.insurance_company=#{insuranceCompany}
       </if>
+      ORDER BY  order_info.create_time DESC
     </where>
   </select>
   <update id="updatePayStatus" parameterType="com.bzs.model.OrderInfo" >
