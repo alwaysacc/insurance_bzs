@@ -321,7 +321,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }else{
                     return ResultGenerator.genFailResult(msg);
                 }
-
             }
         }
         return ResultGenerator.genFailResult("获取失败");
