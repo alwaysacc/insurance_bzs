@@ -237,12 +237,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             insuranceTypeInfoService.save(datas);//续保险种
                         }
                     }
-
-
                 } else {
                     //车辆不存在，添加新的车辆信息id
                     insuredInfo.setInsuredId(uuid);
-                    insuredInfo.setCarInfoId(carInfoId);
                     //insuredInfoService.save(insuredInfo);//续保信息
                     for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
                         if (null != datas) {
@@ -252,6 +249,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     }
                 }
                 carInfoService.insertOrUpdate(carInfo);//添加或更新车辆信息
+                insuredInfo.setCarInfoId(carInfoId);
                 insuredInfoService.insertOrUpdate(insuredInfo);//添加或更新续保信息
                 checkInfoGloab.setIsRenewSuccess("1");//是否续保成功
                 checkInfoGloab.setCarInfoId(carInfoId);
@@ -393,6 +391,9 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             carInfo.setEngineNumber(engineNoNew);
                             carInfo.setLicenseOwner(licenseOwner);
                             carInfo.setLicenseOwnerIdCard(idCardNew);
+                            if(StringUtils.isNotBlank(registerDate)){
+                                DateUtil.getStringToString(registerDate,"yyyy-MM-dd");
+                            }
                             carInfo.setRegisterDate(registerDate);
                             carInfo.setMobile(tel);
                             carInfo.setCarNumber(carNo);
@@ -409,6 +410,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                             insuredInfo.setNextBusinesStartDate(bizStartDate);
                             insuredInfo.setNextForceStartDate(forceStartDate);
                             insuredInfo.setBusinesExpireDate(bizEndDate);
+
                             insuredInfo.setForceExpireDate(forceEndDate);
                             insuredInfo.setLastYearSource(source + "");
                             String lastYearInsuranceCompany = InsuranceNameEnum.getName(source);
