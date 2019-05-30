@@ -128,8 +128,10 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         Map checkInfoMap = null;
         if (StringUtils.isNotBlank(carInfoId)) {
             checkInfoMap = checkInfoService.checkByCreateByOrCarInfoId(createdBy, carInfoId, null, null);
+
         } else {
             checkInfoMap = checkInfoService.checkByCreateByOrCarInfoId(createdBy, carInfoId, carNo, vinNo);
+            carInfoId=uuid;//车辆id设置为新的
         }
         String checkInfoCode = (String) checkInfoMap.get("code");
         checkInfoGloab.setCheckType(checkType);
@@ -146,15 +148,17 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             if (StringUtils.isNotBlank(vinNo)) {
                 checkInfoGloab.setVinNo(vinNo);
             }
+            checkInfoGloab.setCarInfoId(carInfoId);
             //返回查询信息
         } else {//未获取查询信息
             checkInfoFlag = false;
-            checkInfoGloab.setCheckInfoId(UUIDS.getDateUUID());
+            checkInfoGloab.setCheckInfoId(uuid);
             checkInfoGloab.setCreateBy(createdBy);
-            checkInfoGloab.setCheckInfoId(UUIDS.getDateUUID());
-            checkInfoGloab.setCarInfoId(carInfoId);
+           // checkInfoGloab.setCheckInfoId(UUIDS.getDateUUID());
+           // checkInfoGloab.setCarInfoId(carInfoId);
             checkInfoGloab.setSendTime(date);
         }
+        checkInfoGloab.setCarInfoId(carInfoId);//r若车辆信息不存在，则此时车辆信息id为新的
         Map<String, Object> renewalInfo = null;
         if (lastYearSource == null) {//续保三家
             renewalInfo = getRenewalInfo(jsonObject, createdBy);
@@ -186,7 +190,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 // List<CarInfoAndInsuranceInfo> list = carInfoMapper.getCarInfoAndInsurance(carInfo);
                 carInfo.setCreatedBy(createdBy);
                 carInfo.setChannelType(checkType + "");
-                carInfo.setCarInfoId(uuid);
+                carInfo.setCarInfoId(carInfoId);//设置车辆id
                 carInfo.setBrandModel(dataBean.getData().getCarName());
                 if (StringUtils.isNotBlank(idCard)) {
                     String cardID = carInfo.getLicenseOwnerIdCard();
@@ -211,31 +215,35 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     }
                 }
                 if (carInfoFlag) {//车辆信息存在，并且续保成功
-                    carInfo.setCarInfoId(carInfoId);
                     carInfo.setUpdatedBy(createdBy);
-                    carInfoService.insertOrUpdate(carInfo);
+                   // carInfoService.insertOrUpdate(carInfo);
                     InsuredInfo ins = carInfoAndInsuranceInfoGloab.getInsuredInfo();
+                    String insId="";//续保id
                     if (null != ins) {//续保信息存在
-                        insuredInfo.setInsuredId(ins.getInsuredId());
-                    } else {//续保信息不存在
-                        insuredInfo.setInsuredId(uuid);
+                        insId=ins.getInsuredId();
                         insuredInfo.setUpdateBy(createdBy);
+                        insuranceTypeInfoService.deleteByTypeId(insId);//删除险种根据续保id
+                    } else {//续保信息不存在
+                        insId=uuid;
+                        insuredInfo.setCreateId(createdBy);
                     }
-                    insuredInfoService.insertOrUpdate(insuredInfo);
+                    insuredInfo.setInsuredId(insId);
+
+                    //险种直接删除后添加
                     List list = carInfoAndInsuranceInfoGloab.getInsuranceTypeInfos();
                     for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
                         if (null != datas) {
-                            datas.setTypeId(uuid);
+                            datas.setTypeId(insId);
                             insuranceTypeInfoService.save(datas);//续保险种
                         }
                     }
-                    insuranceTypeInfoService.deleteByTypeId(carInfoId);//删除险种
+
 
                 } else {
-                    carInfoId = uuid;
-                    carInfoService.save(carInfo);//车辆信息
-                    insuredInfo.setCarInfoId(uuid);
-                    insuredInfoService.save(insuredInfo);//续保信息
+                    //车辆不存在，添加新的车辆信息id
+                    insuredInfo.setInsuredId(uuid);
+                    insuredInfo.setCarInfoId(carInfoId);
+                    //insuredInfoService.save(insuredInfo);//续保信息
                     for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
                         if (null != datas) {
                             datas.setTypeId(uuid);
@@ -243,22 +251,21 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                         }
                     }
                 }
+                carInfoService.insertOrUpdate(carInfo);//添加或更新车辆信息
+                insuredInfoService.insertOrUpdate(insuredInfo);//添加或更新续保信息
                 checkInfoGloab.setIsRenewSuccess("1");//是否续保成功
                 checkInfoGloab.setCarInfoId(carInfoId);
-                /*if(checkInfoFlag){//查询信息存在
-                    checkInfoGloab.setCarInfoId(uuid);
-                }else{
-                    checkInfoGloab.setCarInfoId(carInfoId);
-                }*/
                 checkInfoService.updateOrAdd(checkInfoGloab);//修改//查询信息
+                logger.info("续保成功，排查bodyJsonToMap开始");
                 Map maps = JsonToMapUtil.bodyJsonToMap(body);
+                logger.info("续保成功，排查bodyJsonToMap结束");
                 String newCarNo = carInfo.getCarNumber();
                 if (StringUtils.isNotBlank(newCarNo)) {
                     carNo = newCarNo;
                 }
                 maps.put("carNo", carNo);
                 maps.put("source", lastYearSource + "");
-                maps.put("carInfoId", uuid);
+                maps.put("carInfoId", carInfoId);
                 return ResultGenerator.gen(msg, maps, ResultCode.SUCCESS);
             } else if ("0099".equals(status)) {//续保失败
                 String body = (String) renewalInfo.get("body");
@@ -270,26 +277,50 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 if (StringUtils.isBlank(carNo)) {//车牌号为空则存储车架号
                     carInfo.setCarNumber(vinNo);
                 }
-                if (carInfoFlag) {//车辆信息存在
+               /* if (carInfoFlag) {//车辆信息存在
                     carInfo.setCarInfoId(carInfoId);
                 } else {
                     carInfo.setCarInfoId(uuid);
                     carInfoId = uuid;
-                }
+                }*/
+                carInfo.setCarInfoId(carInfoId);
                 if (checkInfoFlag) {//车辆信息存在
-                    checkInfoGloab.setIsFirstTime("1");
-                } else {
+                    checkInfoGloab.setIsFirstTime("1");//非第一次
+                }/* else {
                     checkInfoGloab.setCarInfoId(carInfoId);
-                }
+                }*/
                 checkInfoService.updateOrAdd(checkInfoGloab);//修改//查询信息
                 carInfoService.insertOrUpdate(carInfo);
                 String bodys = this.getJsonString(carInfoAndInsuranceInfoGloab);
-                Map maps = JsonToMapUtil.bodyJsonToMap(bodys);
-                return ResultGenerator.gen(msg, maps, ResultCode.FAIL);
+                if(StringUtils.isNotBlank(bodys)){
+                    Map maps = JsonToMapUtil.bodyJsonToMap(bodys);
+                    String state=(String)maps.get("state");
+                    if("1".equals(state)){//本地成功
+                        return ResultGenerator.gen("本次续保失败，获取本地信息成功", maps, ResultCode.SUCCESS);
+                    }else{//本地失败
+                        return ResultGenerator.gen(msg, maps, ResultCode.FAIL);
+                    }
+                }else{
+                    Map maps = JsonToMapUtil.bodyJsonToMap(body);
+                    return ResultGenerator.gen(msg, maps, ResultCode.FAIL);
+                }
+
             } else {
                 checkInfoGloab.setIsCheckSuccess("0");
                 checkInfoService.updateOrAdd(checkInfoGloab);//修改//查询信息
-                return ResultGenerator.genFailResult(msg);
+                String bodys = this.getJsonString(carInfoAndInsuranceInfoGloab);
+                if(StringUtils.isNotBlank(bodys)){
+                    Map maps = JsonToMapUtil.bodyJsonToMap(bodys);
+                    String state=(String)maps.get("state");
+                    if("1".equals(state)){//本地成功
+                        return ResultGenerator.gen("本次续保失败，获取本地信息成功", maps, ResultCode.SUCCESS);
+                    }else{//本地失败
+                        return ResultGenerator.gen(msg, maps, ResultCode.FAIL);
+                    }
+                }else{
+                    return ResultGenerator.genFailResult(msg);
+                }
+
             }
         }
         return ResultGenerator.genFailResult("获取失败");
@@ -1311,6 +1342,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
 
     @Override
     public int insertOrUpdate(InsuredInfo insuredInfo) {
-        return insuredInfoService.insertOrUpdate(insuredInfo);
+        return insuredInfoMapper.insertOrUpdate(insuredInfo);
     }
 }
