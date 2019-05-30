@@ -303,7 +303,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }
 
             } else {
-                checkInfoGloab.setIsCheckSuccess("0");
+                if (checkInfoFlag) {//查询信息存在
+                    checkInfoGloab.setIsFirstTime("1");//非第一次
+                }else{
+                    checkInfoGloab.setIsCheckSuccess("0");
+                }
                 checkInfoService.updateOrAdd(checkInfoGloab);//修改//查询信息
                 String bodys = this.getJsonString(carInfoAndInsuranceInfoGloab);
                 if(StringUtils.isNotBlank(bodys)){
