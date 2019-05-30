@@ -13,165 +13,193 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 
 public class DateUtil {
-	public static void main(String[] args) {
-		// 1543075199
-		// System.out.println(stampToDate("1543075199000"));
+    public static void main(String[] args) {
+        // 1543075199
+        // System.out.println(stampToDate("1543075199000"));
 
-		/*
-		 * int status=compareDate("2018-12-12 9:12:12","2018-12-18",null);
-		 * System.out.println(status);
-		 */
+        /*
+         * int status=compareDate("2018-12-12 9:12:12","2018-12-18",null);
+         * System.out.println(status);
+         */
 		/*stringToDate("2018-12-12 9:12:12");
 		getStringDate(null);*/
-	String s=	getDateStringFromString("*温馨提示：请于2019-5-14之前使用微信扫一扫通过微信公众号进行支付！");
-		System.out.println(s);
-	}
-	public static Date getDateToDate(Date date, String style) {
-		DateFormat dFormat3 = new SimpleDateFormat(style);
-		try {
-			date = dFormat3.parse(dFormat3.format(date));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return date;
+        /*String s = getDateStringFromString("*温馨提示：请于2019-5-14之前使用微信扫一扫通过微信公众号进行支付！");
+        */
+      /* Date d= getStringToDate("2015-2-3","yyyy-MM-dd");
+      String s=  getDateToString(d,"yyyy-MM-dd");*/
+        String s=getStringToString("2015-2-3","yyyy-MM-dd");
+        System.out.println(s);
+    }
 
-	}
-	//日期转字符串
-	public static String getDateToString(Date date, String style) {
-		DateFormat dFormat = new SimpleDateFormat(style);
-		return dFormat.format(date);
-	}
+    /**
+     * 将时间字符串转为指定格式
+     * @param date
+     * @param style
+     * @return
+     */
+    public static String getStringToString(String date,String style){
+        Date d= getStringToDate(date,style);
+        String s=  getDateToString(d,style);
+        return s;
+    }
 
-	public static Date getStringToDate(String date, String style) {
-		if (date.indexOf("/") > -1) {
-			date = date.replace("/", "-");
-		}
-		DateFormat dFormat = new SimpleDateFormat(style);
-		Date dat = null;
-		try {
-			dat = dFormat.parse(date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return dat;
-	}
+    public static Date getDateToDate(Date date, String style) {
+        DateFormat dFormat3 = new SimpleDateFormat(style);
+        try {
+            date = dFormat3.parse(dFormat3.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
 
-	public static Object getNowDateStringType(String style, String type) {
-		Date date = new Date();
-		DateFormat dFormat = new SimpleDateFormat(style);
-		if ("string".equals(type)) {
+    }
 
-			return dFormat.format(date);
-		} else {
+    //日期转字符串
+    public static String getDateToString(Date date, String style) {
+        DateFormat dFormat = new SimpleDateFormat(style);
+        return dFormat.format(date);
+    }
 
-			try {
-				return dFormat.parse(dFormat.format(date));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
+    /**
+     * 字符串转换成指定格式日期
+     * @param date
+     * @param style
+     * @return
+     */
+    public static Date getStringToDate(String date, String style) {
 
-	}
+        if(style.indexOf("/") > -1){//需要转换的格式/
+            if (date.indexOf("-") > -1) {
+                date = date.replace("-", "/");
+            }
+        }else{//需要转换的格式-
+            if (date.indexOf("/") > -1) {
+                date = date.replace("/", "-");
+            }
+        }
+        /*if (date.indexOf("/") > -1) {
+            date = date.replace("/", "-");
+        }*/
+        DateFormat dFormat = new SimpleDateFormat(style);
+        Date dat = null;
+        try {
+            dat = dFormat.parse(date);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return dat;
+    }
 
-	/*
-	 * 时间字符串转时间戳 返回值 秒
-	 */
+    public static Object getNowDateStringType(String style, String type) {
+        Date date = new Date();
+        DateFormat dFormat = new SimpleDateFormat(style);
+        if ("string".equals(type)) {
 
-	public static String dateToStamp(String s) {
-		String res;
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date date;
-		try {
-			date = simpleDateFormat.parse(s);
-			long ts = date.getTime() / 1000;
-			res = String.valueOf(ts);
-			return res;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+            return dFormat.format(date);
+        } else {
 
-		return "";
-	}
+            try {
+                return dFormat.parse(dFormat.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
 
-	/*
-	 * 将时间戳转换为时间
-	 */
-	public static String stampToDate(String seconds, String format) {
+    }
 
-		if (seconds == null || seconds.isEmpty() || seconds.equals("null")) {
-			return "";
-		}
-		if (format == null || format.isEmpty()) {
-			format = "yyyy-MM-dd HH:mm:ss";
-		}
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		return sdf.format(new Date(Long.valueOf(seconds + "000")));
-		// SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-		/*
-		 * long lt = new Long(s); Date date = new Date(lt); res =
-		 * simpleDateFormat.format(date);
-		 */
-		// return res;
-	}
+    /*
+     * 时间字符串转时间戳 返回值 秒
+     */
 
-	/**
-	 * 比较日期大小，date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
-	 * 
-	 * @param date1
-	 *            时间字符换1
-	 * @param date2
-	 *            时间字符串2
-	 * @param datePattern
-	 *            日期格式，为空默认为"yyyy-MM-dd"
-	 * @return date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
-	 */
-	public static int compareDate(String date1, String date2, String datePattern) {
-		if (date1 != null && !"".equals(date1) && date2 != null
-				&& !"".equals("date2")) {
-			if (datePattern == null || "".equals(datePattern)) {
-				datePattern = "yyyy-MM-dd";
-			}
-			SimpleDateFormat format = new SimpleDateFormat(datePattern);
-			try {
-				Date date3 = format.parse(date1);
-				Date date4 = format.parse(date2);
-				return compareDateByGetTime(date3, date4);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+    public static String dateToStamp(String s) {
+        String res;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = simpleDateFormat.parse(s);
+            long ts = date.getTime() / 1000;
+            res = String.valueOf(ts);
+            return res;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-		}
-		return -1;
+        return "";
+    }
 
-	}
+    /*
+     * 将时间戳转换为时间
+     */
+    public static String stampToDate(String seconds, String format) {
 
-	/**
-	 * 
-	 * @param date1
-	 *            日期格式
-	 * @param date2
-	 *            日期格式
-	 * @return date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
-	 */
-	public static int compareDateByGetTime(Date date1, Date date2) {
-		if (date1 == null || date2 == null) {
-			return -1;
-		}
-		if (date1.getTime() < date2.getTime()) {
-			System.out.println(date1 + "在" + date2 + "前面");
-			return 0;
-		} else if (date1.getTime() > date2.getTime()) {
-			System.out.println(date1 + "在" + date2 + "后面");
-			return 1;
-		} else {
-			System.out.println("是同一天的同一时间");
-			return 2;
-		}
-	}
+        if (seconds == null || seconds.isEmpty() || seconds.equals("null")) {
+            return "";
+        }
+        if (format == null || format.isEmpty()) {
+            format = "yyyy-MM-dd HH:mm:ss";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(new Date(Long.valueOf(seconds + "000")));
+        // SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        /*
+         * long lt = new Long(s); Date date = new Date(lt); res =
+         * simpleDateFormat.format(date);
+         */
+        // return res;
+    }
 
-	public void testcompareDate() throws ParseException {
+    /**
+     * 比较日期大小，date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
+     *
+     * @param date1       时间字符换1
+     * @param date2       时间字符串2
+     * @param datePattern 日期格式，为空默认为"yyyy-MM-dd"
+     * @return date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
+     */
+    public static int compareDate(String date1, String date2, String datePattern) {
+        if (date1 != null && !"".equals(date1) && date2 != null
+                && !"".equals("date2")) {
+            if (datePattern == null || "".equals(datePattern)) {
+                datePattern = "yyyy-MM-dd";
+            }
+            SimpleDateFormat format = new SimpleDateFormat(datePattern);
+            try {
+                Date date3 = format.parse(date1);
+                Date date4 = format.parse(date2);
+                return compareDateByGetTime(date3, date4);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return -1;
+
+    }
+
+    /**
+     * @param date1 日期格式
+     * @param date2 日期格式
+     * @return date1>date2 返回1，date1<date2返回0，date1=date2返回2，其中一个为空返回 -1
+     */
+    public static int compareDateByGetTime(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            return -1;
+        }
+        if (date1.getTime() < date2.getTime()) {
+            System.out.println(date1 + "在" + date2 + "前面");
+            return 0;
+        } else if (date1.getTime() > date2.getTime()) {
+            System.out.println(date1 + "在" + date2 + "后面");
+            return 1;
+        } else {
+            System.out.println("是同一天的同一时间");
+            return 2;
+        }
+    }
+
+    public void testcompareDate() throws ParseException {
 		/*Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2019-01-09");
 		System.out.println("ssss" + date.getTime());
 		System.out.println(DateUtil.stampToDate("1547046000",
@@ -179,120 +207,120 @@ public class DateUtil {
 		System.out.println(getStringToDate(
 				DateUtil.stampToDate("1547046000", "yyyy-MM-dd HH:mm:ss"),
 				"yyyy-MM-dd HH:mm:ss"));*/
-		int status = compareDate("14:12:12", "13:12:12", "HH:mm:ss");
-		System.out.println(status);
-		Calendar date=Calendar.getInstance();
-		int year=date.get(Calendar.YEAR);
-		int month=date.get(Calendar.MONTH);
-		month++;
-		int day=date.get(Calendar.DAY_OF_MONTH);
-		int hour=date.get(Calendar.HOUR_OF_DAY);
-		int minute=date.get(Calendar.MINUTE);
-		int second=date.get(Calendar.SECOND);
-		String AddDate=year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second;
-		System.out.println(AddDate);
-		getStandardBJDate();
-	}
+        int status = compareDate("14:12:12", "13:12:12", "HH:mm:ss");
+        System.out.println(status);
+        Calendar date = Calendar.getInstance();
+        int year = date.get(Calendar.YEAR);
+        int month = date.get(Calendar.MONTH);
+        month++;
+        int day = date.get(Calendar.DAY_OF_MONTH);
+        int hour = date.get(Calendar.HOUR_OF_DAY);
+        int minute = date.get(Calendar.MINUTE);
+        int second = date.get(Calendar.SECOND);
+        String AddDate = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+        System.out.println(AddDate);
+        getStandardBJDate();
+    }
 
-	/**
-	 * 字符串转换为java.util.Date<br>
-	 * 支持格式为 yyyy.MM.dd G 'at' hh:mm:ss z 如 '2017-12-12 AD at 22:10:59 PSD'<br>
-	 * yy/MM/dd HH:mm:ss 如 '2017/12/12 17:55:00'<br>
-	 * yy/MM/dd HH:mm:ss pm 如 '2017/12/12 17:55:00 pm'<br>
-	 * yy-MM-dd HH:mm:ss 如 '2017-12-12 17:55:00' <br>
-	 * yy-MM-dd HH:mm:ss am 如 '2017-12-12 17:55:00 am' <br>
-	 * 
-	 * @param time
-	 *            String 字符串<br>
-	 * @return Date 日期<br>
-	 */
-	public static Date stringToDate(String time) {
-		SimpleDateFormat formatter;
-		int tempPos = time.indexOf("AD");
-		time = time.trim();
-		formatter = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
-		if (tempPos > -1) {
-			time = time.substring(0, tempPos) + "公元"
-					+ time.substring(tempPos + "AD".length());// china
-			formatter = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
-		}
-		tempPos = time.indexOf("-");
-		if (tempPos > -1 && (time.indexOf(" ") < 0)) {
-			formatter = new SimpleDateFormat("yyyyMMddHHmmssZ");
-		} else if ((time.indexOf("/") > -1) && (time.indexOf(" ") > -1)) {
-			formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		} else if ((time.indexOf("-") > -1) && (time.indexOf(" ") > -1)) {
-			formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		} else if ((time.indexOf("/") > -1) && (time.indexOf("am") > -1)
-				|| (time.indexOf("pm") > -1)) {
-			formatter = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss a");
-		} else if ((time.indexOf("-") > -1) && (time.indexOf("am") > -1)
-				|| (time.indexOf("pm") > -1)) {
-			formatter = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss a");
-		}
-		ParsePosition pos = new ParsePosition(0);
-		Date ctime = formatter.parse(time, pos);
-		return ctime;
-	}
+    /**
+     * 字符串转换为java.util.Date<br>
+     * 支持格式为 yyyy.MM.dd G 'at' hh:mm:ss z 如 '2017-12-12 AD at 22:10:59 PSD'<br>
+     * yy/MM/dd HH:mm:ss 如 '2017/12/12 17:55:00'<br>
+     * yy/MM/dd HH:mm:ss pm 如 '2017/12/12 17:55:00 pm'<br>
+     * yy-MM-dd HH:mm:ss 如 '2017-12-12 17:55:00' <br>
+     * yy-MM-dd HH:mm:ss am 如 '2017-12-12 17:55:00 am' <br>
+     *
+     * @param time String 字符串<br>
+     * @return Date 日期<br>
+     */
+    public static Date stringToDate(String time) {
+        SimpleDateFormat formatter;
+        int tempPos = time.indexOf("AD");
+        time = time.trim();
+        formatter = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
+        if (tempPos > -1) {
+            time = time.substring(0, tempPos) + "公元"
+                    + time.substring(tempPos + "AD".length());// china
+            formatter = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
+        }
+        tempPos = time.indexOf("-");
+        if (tempPos > -1 && (time.indexOf(" ") < 0)) {
+            formatter = new SimpleDateFormat("yyyyMMddHHmmssZ");
+        } else if ((time.indexOf("/") > -1) && (time.indexOf(" ") > -1)) {
+            formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        } else if ((time.indexOf("-") > -1) && (time.indexOf(" ") > -1)) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        } else if ((time.indexOf("/") > -1) && (time.indexOf("am") > -1)
+                || (time.indexOf("pm") > -1)) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss a");
+        } else if ((time.indexOf("-") > -1) && (time.indexOf("am") > -1)
+                || (time.indexOf("pm") > -1)) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss a");
+        }
+        ParsePosition pos = new ParsePosition(0);
+        Date ctime = formatter.parse(time, pos);
+        return ctime;
+    }
 
-	/**
-	 * 将字符串时间格式转为yyyy-MM-dd格式
-	 * 
-	 * @param date
-	 * @return
-	 */
-	public static String getStringDate(String date) {
-		if(StringUtils.isNotBlank(date)){
-			int endIndex = date.indexOf(" ");
-			if ((date.indexOf("/") > -1) && (date.indexOf(" ") > -1)) {
-				date = date.replace("/", "-");
-				date = date.substring(0, endIndex);
-			}
-			if ((date.indexOf("-") > -1) && (date.indexOf(" ") > -1)) {
-				date = date.substring(0, endIndex);
-			}
-			//return date;
-		}else{
-			date="";
-		}
-		System.out.println(date);
-		return date;
+    /**
+     * 将字符串时间格式转为yyyy-MM-dd格式
+     *
+     * @param date
+     * @return
+     */
+    public static String getStringDate(String date) {
+        if (StringUtils.isNotBlank(date)) {
+            int endIndex = date.indexOf(" ");
+            if ((date.indexOf("/") > -1) && (date.indexOf(" ") > -1)) {
+                date = date.replace("/", "-");
+                date = date.substring(0, endIndex);
+            }
+            if ((date.indexOf("-") > -1) && (date.indexOf(" ") > -1)) {
+                date = date.substring(0, endIndex);
+            }
+            //return date;
+        } else {
+            date = "";
+        }
+        System.out.println(date);
+        return date;
 
-	}
+    }
 
-	/**
-	 * 获取标准的北京时间-String
-	 * @return
-	 */
-	public  static String getStandardBJDate(){
-		  Calendar calendar = Calendar.getInstance(Locale.CHINA);
-	        Date date = calendar.getTime();
-	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        String dateString = dateFormat.format(date);
-	        System.out.println(dateString);
-		return null;
-	}
+    /**
+     * 获取标准的北京时间-String
+     *
+     * @return
+     */
+    public static String getStandardBJDate() {
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        Date date = calendar.getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = dateFormat.format(date);
+        System.out.println(dateString);
+        return null;
+    }
 
-	/**
-	 * 从字符串中获取日期 仅能获取形式如"yyyy-MM-dd HH:mm:ss" 的日期。并且仅能获取一个
-	 * @return
-	 */
-	public static String getDateStringFromString(String str){
-		String result=null;
-		if(StringUtils.isNotBlank(str)){
-			String reg = "[1-9]\\d{3}(((0[13578]|1[02])([0-2]\\d|3[01]))|((0[469]|11)([0-2]\\d|30))|(02([01]\\d|2[0-8])))";
-			String reg2="[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}";
-			Pattern pattern = Pattern.compile (reg2);
-			Matcher matcher = pattern.matcher (str);
-			while (matcher.find ())
-			{
-				System.out.println (matcher.group ());
-				result=matcher.group ();
-			}
-			return result;
-		}else{
-			return null;
-		}
-
-	}
+    /**
+     * 从字符串中获取日期 仅能获取形式如"yyyy-MM-dd HH:mm:ss" 的日期。并且仅能获取一个
+     *
+     * @param str
+     * @return
+     */
+    public static String getDateStringFromString(String str) {
+        String result = null;
+        if (StringUtils.isNotBlank(str)) {
+            String reg = "[1-9]\\d{3}(((0[13578]|1[02])([0-2]\\d|3[01]))|((0[469]|11)([0-2]\\d|30))|(02([01]\\d|2[0-8])))";
+            String reg2 = "[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}";
+            Pattern pattern = Pattern.compile(reg2);
+            Matcher matcher = pattern.matcher(str);
+            while (matcher.find()) {
+                System.out.println(matcher.group());
+                result = matcher.group();
+            }
+            return result;
+        } else {
+            return null;
+        }
+    }
 }
