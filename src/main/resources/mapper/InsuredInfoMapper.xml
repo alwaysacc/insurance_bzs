@@ -51,6 +51,7 @@
       <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">next_force_start_date,</if>
       <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">last_year_insurance_company,</if>
       <if test="lastYearSource!=null and ''!=lastYearSource ">last_year_source,</if>
+      <if test="carInfoId!=null and ''!=carInfoId ">car_info_id,</if>
     </trim>
   </sql>
   <sql id="insertValues">
@@ -66,11 +67,12 @@
       <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">#{nextForceStartDate},</if>
       <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">#{lastYearInsuranceCompany},</if>
       <if test="lastYearSource!=null and ''!=lastYearSource ">#{lastYearSource},</if>
+      <if test="carInfoId!=null and ''!=carInfoId ">#{carInfoId},</if>
     </trim>
   </sql>
   <sql id="updateOrAdd_update">
     <trim suffixOverrides=",">
-      insuredId=values(insured_id),
+      insured_id=values(insured_id),
       <if test="createId!=null and ''!=createId ">create_id=#{createId},</if>
       <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
       <if test="insuranceCompany!=null and ''!=insuranceCompany ">insurance_company=#{insuranceCompany},</if>
@@ -81,11 +83,12 @@
       <if test="nextForceStartDate!=null and ''!=nextForceStartDate ">next_force_start_date=#{nextForceStartDate},</if>
       <if test="lastYearInsuranceCompany!=null and ''!=lastYearInsuranceCompany ">last_year_insurance_company=#{lastYearInsuranceCompany},</if>
       <if test="lastYearSource!=null and ''!=lastYearSource ">last_year_source=#{lastYearSource},</if>
+      <if test="carInfoId!=null and ''!=carInfoId ">car_info_id=#{carInfoId},</if>
     </trim>
   </sql>
 
   <insert id="insertOrUpdate" parameterType="com.bzs.model.InsuredInfo">
-    insert into check_info
+    insert into insured_info
     <include refid="insertItems"/>
     values
     <include refid="insertValues"/>

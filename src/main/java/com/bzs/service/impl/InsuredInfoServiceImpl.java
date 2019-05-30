@@ -282,7 +282,7 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     carInfoId = uuid;
                 }*/
                 carInfo.setCarInfoId(carInfoId);
-                if (checkInfoFlag) {//车辆信息存在
+                if (checkInfoFlag) {//查询信息存在
                     checkInfoGloab.setIsFirstTime("1");//非第一次
                 }/* else {
                     checkInfoGloab.setCarInfoId(carInfoId);

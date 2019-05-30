@@ -63,11 +63,11 @@
         c.insurance_premium as c_insurance_premium,
         c.excluding_deductible as c_excluding_deductible,
         /* c.info_type as c_info_type,*/
-        /*c.type_id as c_type_id,*/
+        c.type_id as c_type_id,
         c.standard_premium as standard_premium
         from car_info a
         left join insured_info b on a.car_info_id =b.car_info_id
-        left join insurance_type_info c on a.car_info_id = c.type_id
+        left join insurance_type_info c on b.insured_id = c.type_id
         <trim prefix="where" suffixOverrides="and">
             <if test="carInfoId!=null and carInfoId!=''">
                 a.car_info_id=#{carInfoId} and
