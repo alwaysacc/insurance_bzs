@@ -4,7 +4,6 @@ import com.bzs.model.AccountInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public interface AccountInfoService extends Service<AccountInfo> {
 
     List getUserList(String roleId,String accountId);
 
-
+    Map registerForWX(AccountInfo accountInfo);
 
     /**
      * 获取父节点或者子节点

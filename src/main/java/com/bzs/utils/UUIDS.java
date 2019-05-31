@@ -1,6 +1,7 @@
 package com.bzs.utils;
 
 import java.util.Calendar;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -113,5 +114,12 @@ public class UUIDS {
     public static String getUUID() {//
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         return uuid;
+    }
+    public static int getCode() {//
+        int code=new Random().nextInt(999999);
+        if (code<100000){
+            code+=100000;
+        }
+        return code;
     }
 }

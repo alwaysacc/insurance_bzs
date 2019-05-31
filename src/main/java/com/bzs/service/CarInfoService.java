@@ -2,7 +2,6 @@ package com.bzs.service;
 import com.bzs.model.CarInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;

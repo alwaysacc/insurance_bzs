@@ -64,6 +64,10 @@ public class AccountInfoController {
         return ResultGenerator.genSuccessResult(accountInfo);
     }
 
+    @PostMapping("/registerForWX")
+    public Result registerForWX(AccountInfo accountInfo) {
+        return ResultGenerator.genSuccessResult( accountInfoService.registerForWX(accountInfo));
+    }
     @PostMapping("/delete")
     public Result delete(String id) {
         return ResultGenerator.genSuccessResult(accountInfoService.findByLoginName(id));

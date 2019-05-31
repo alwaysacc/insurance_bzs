@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
-
 @Table(name = "account_info")
 public class AccountInfo implements Serializable {
     public static final String STATUS_VALID = "0";
@@ -37,10 +36,21 @@ public class AccountInfo implements Serializable {
     private String ancestorId;
 
     /**
-     * 账号状态 0启用1禁用
+     * 账号状态 0启用1禁用2待审核
      */
     @Column(name = "account_state")
     private String accountState;
+
+    public String getSuperior() {
+        return superior;
+    }
+
+    public void setSuperior(String superior) {
+        this.superior = superior;
+    }
+
+    @Column(name = "superior")
+    private String superior;
 
     /**
      * 账号登陆名
@@ -122,6 +132,18 @@ public class AccountInfo implements Serializable {
      */
     @Column(name = "UPDATED_TIME")
     private Date updatedTime;
+
+    /**
+     * 邀请码
+     */
+    @Column(name = "inviteCode")
+    private Integer invitecode;
+
+    /**
+     * 上级邀请码
+     */
+    @Column(name = "superiorInviteCode")
+    private Integer superiorinvitecode;
 
     /**
      * 获取id
@@ -206,18 +228,18 @@ public class AccountInfo implements Serializable {
     }
 
     /**
-     * 获取账号状态 0启用1禁用
+     * 获取账号状态 0启用1禁用2待审核
      *
-     * @return account_state - 账号状态 0启用1禁用
+     * @return account_state - 账号状态 0启用1禁用2待审核
      */
     public String getAccountState() {
         return accountState;
     }
 
     /**
-     * 设置账号状态 0启用1禁用
+     * 设置账号状态 0启用1禁用2待审核
      *
-     * @param accountState 账号状态 0启用1禁用
+     * @param accountState 账号状态 0启用1禁用2待审核
      */
     public void setAccountState(String accountState) {
         this.accountState = accountState;
@@ -473,5 +495,41 @@ public class AccountInfo implements Serializable {
      */
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    /**
+     * 获取邀请码
+     *
+     * @return inviteCode - 邀请码
+     */
+    public Integer getInvitecode() {
+        return invitecode;
+    }
+
+    /**
+     * 设置邀请码
+     *
+     * @param invitecode 邀请码
+     */
+    public void setInvitecode(Integer invitecode) {
+        this.invitecode = invitecode;
+    }
+
+    /**
+     * 获取上级邀请码
+     *
+     * @return superiorInviteCode - 上级邀请码
+     */
+    public Integer getSuperiorinvitecode() {
+        return superiorinvitecode;
+    }
+
+    /**
+     * 设置上级邀请码
+     *
+     * @param superiorinvitecode 上级邀请码
+     */
+    public void setSuperiorinvitecode(Integer superiorinvitecode) {
+        this.superiorinvitecode = superiorinvitecode;
     }
 }

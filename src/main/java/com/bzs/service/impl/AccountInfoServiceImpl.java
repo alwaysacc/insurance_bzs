@@ -2,11 +2,9 @@ package com.bzs.service.impl;
 
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.model.AccountInfo;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
-import com.bzs.utils.AbstractService;
-import com.bzs.utils.Result;
-import com.bzs.utils.ResultCode;
-import com.bzs.utils.ResultGenerator;
+import com.bzs.utils.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -34,7 +29,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private AccountInfoMapper accountInfoMapper;
     @Autowired
     private AccountInfoService accountInfoService;
-
+    @Autowired
+    private RedisUtil redisUtil;
+    private  static final String CODE="CODE_LIST";
     @Override
     public String getRoleIdByAccountId(String account_id) {
         return accountInfoMapper.getRoleIdByAccountId(account_id);
@@ -112,7 +109,36 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return accountInfoMapper.getUserList(roleId,accountId);
     }
 
-
+    @Override
+    public Map registerForWX(AccountInfo accountInfo) {
+        AccountInfo accountInfo1=accountInfoService.findBy("invitecode",accountInfo.getSuperiorinvitecode());
+        HashSet codeList=new HashSet<>();
+        int code= UUIDS.getCode();
+        if (redisUtil.hasKey(CODE)){
+            codeList= (HashSet) redisUtil.get(CODE);
+        }else{
+            codeList=accountInfoMapper.getAllCode();
+        }
+        boolean b=false;
+        do{
+            code=UUIDS.getCode();
+            b=codeList.contains(code);
+        }while (b);
+        codeList.add(code);
+        redisUtil.set(CODE,codeList,720000);
+        System.out.println(codeList.toString());
+        accountInfo.setInvitecode(code);
+        accountInfo.setAccountId(UUIDS.getUUID());
+        accountInfo.setRoleId("3");
+        accountInfo.setAccountState("2");
+        accountInfo.setRoleName("业务员");
+        accountInfo.setSuperior(accountInfo1.getUserName());
+        accountInfoService.save(accountInfo);
+        Map map=new HashMap();
+        map.put("superior",accountInfo1);
+        map.put("account",accountInfo);
+        return map;
+    }
     @Override
     public Result getParentOrChildList(String id, Integer deep, String isOwner,String type) {
         if(StringUtils.isNotBlank(id)){
