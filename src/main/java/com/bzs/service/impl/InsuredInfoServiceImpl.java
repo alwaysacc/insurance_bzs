@@ -1434,4 +1434,28 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
     public int insertOrUpdate(InsuredInfo insuredInfo) {
         return insuredInfoMapper.insertOrUpdate(insuredInfo);
     }
+
+    @Override
+    public Map WX_checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea, String createBy) {
+        //Group=1&LicenseNo=%E4%BA%ACFF1235&CityCode=1&Agent=102&CustKey=123456789654
+        //String SecCode = MD5Utils.md5(param + "d7eb7d66997");
+        if (checkType=="1"){
+
+        }
+        String param= ThirdAPI.BEFORE+"LicenseNo="+carNo+ThirdAPI.AFTER;
+        String SecCode = MD5Utils.md5(param + "d7eb7d66997");
+        System.out.println(SecCode);
+        param = param + "&SecCode=" + SecCode;
+        System.out.println(param);
+        String url=ThirdAPI.BIHUXUBAO+param;
+        System.out.println(url);
+        HttpResult httpResult = null;
+        try {
+            httpResult = HttpClientUtil.doGet(url,null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(httpResult);
+        return null;
+    }
 }

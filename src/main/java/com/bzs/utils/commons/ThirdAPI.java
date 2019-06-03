@@ -40,4 +40,14 @@ public interface ThirdAPI {
     public static final String PAIC_ACCOUNT="JSHSBXDL-00002";
     public static final String PAIC_PWD="NJXXKJ147";
     public static final String PAIC_PAY_CANCEL="cpic_zuofei";//平安作废
+
+
+
+
+
+    public static final String BIHUXUBAO="http://iu.91bihu.com/api/CarInsurance/getreinfo?";//平安作废
+    public static final String BEFORE="Group=1&";//平安作废
+    public static final String AFTER="&CityCode=8&Agent=83696&CustKey=bzs20171117";//平安作废
+
+
 }

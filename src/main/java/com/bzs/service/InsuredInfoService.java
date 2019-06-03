@@ -50,4 +50,5 @@ public interface InsuredInfoService extends Service<InsuredInfo> {
      */
     public int insertOrUpdate(InsuredInfo insuredInfo);
 
+    Map WX_checkByCarNoOrVinNo(String checkType, String carNo, String idCard, String vinNo, String engineNo, Long lastYearSource, String insuredArea,String createBy);
 }
