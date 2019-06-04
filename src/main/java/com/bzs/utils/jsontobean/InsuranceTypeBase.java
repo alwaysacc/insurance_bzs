@@ -123,7 +123,7 @@ public class InsuranceTypeBase {
                 InsuranceTypeBase base= (InsuranceTypeBase)list.get(i);
                 if(null!=base){
                     String uuids=UUIDS.getDateUUID();
-                    InsuranceTypeInfo info = new InsuranceTypeInfo(uuids);
+                    InsuranceTypeInfo info = new InsuranceTypeInfo();
                     //险种名称
                    // info.setInsuranceTypeId(uuids);
                     String name=base.getInsuranceName();

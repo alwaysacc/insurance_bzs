@@ -28,10 +28,10 @@
     <result column="holder_id_card" jdbcType="VARCHAR" property="holderIdCard" />
     <result column="holder_id_card_type" jdbcType="VARCHAR" property="holderIdCardType" />
     <result column="insured_name" jdbcType="VARCHAR" property="insuredName" />
-    <result column="insured_id_card" jdbcType="INTEGER" property="insuredIdCard" />
-    <result column="insured_id_card_type" jdbcType="INTEGER" property="insuredIdCardType" />
-    <result column="busines_number" jdbcType="INTEGER" property="businesNumber" />
-    <result column="traffic_number" jdbcType="INTEGER" property="trafficNumber" />
+    <result column="insured_id_card" jdbcType="VARCHAR" property="insuredIdCard" />
+    <result column="insured_id_card_type" jdbcType="VARCHAR" property="insuredIdCardType" />
+    <result column="busines_number" jdbcType="VARCHAR" property="businesNumber" />
+    <result column="traffic_number" jdbcType="VARCHAR" property="trafficNumber" />
     <result column="force_last_year_out_danger_count" jdbcType="VARCHAR" property="forceLastYearOutDangerCount" />
     <result column="biz_last_year_out_danger_count" jdbcType="VARCHAR" property="bizLastYearOutDangerCount" />
     <result column="force_last_year_out_danger" jdbcType="VARCHAR" property="forceLastYearOutDanger" />

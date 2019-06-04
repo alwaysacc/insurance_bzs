@@ -64,7 +64,7 @@ public class InsuranceTypeInfoController {
     public Map<String, Object> insertBatchTest() {
         List<InsuranceTypeInfo> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            InsuranceTypeInfo a = new InsuranceTypeInfo(UUIDS.getDateUUID());
+            InsuranceTypeInfo a = new InsuranceTypeInfo();
             list.add(a);
         }
         int count = insuranceTypeInfoService.insertBatch(list);
@@ -79,7 +79,6 @@ public class InsuranceTypeInfoController {
     public Result batchInsertOrUpdateList() {
         List<InsuranceTypeInfo> info = new ArrayList<InsuranceTypeInfo>();
         InsuranceTypeInfo insuranceTypeInfo=new InsuranceTypeInfo();
-        insuranceTypeInfo.setInsuranceTypeId("20190527141954687721");
         insuranceTypeInfo.setInsuranceName("ss"+UUIDS.getDateUUID());
         info.add(insuranceTypeInfo);
        /* for(int i=0;i<3;i++){

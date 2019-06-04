@@ -307,7 +307,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 } else {
                                     insuredAmount = "1";
                                 }
-                                InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo(UUIDS.getDateUUID());
+                                InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
                                 insuranceTypeInfo.setInfoType("1");//标记属于报价项
                                 if (StringUtils.isNotBlank(insuredPremium)) {
                                     insuredPremium = insuredPremium.replaceAll(",", "");

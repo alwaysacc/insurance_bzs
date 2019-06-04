@@ -45,8 +45,8 @@ public class RenewalData {
     private String biEndDate;//商业险到期日期
     private  String ciEndDate;//交强险到期日期
     private String jiaoqiangxian;//交强险；
-   private String source;//上年续保枚举值
-   private  String carNo;//车牌号
+    private String source;//上年续保枚举值
+    private  String carNo;//车牌号
     private  String carName;
    private List<InsuranceTypeInfo>list=new ArrayList<>();
 

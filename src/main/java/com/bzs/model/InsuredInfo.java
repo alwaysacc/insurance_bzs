@@ -148,25 +148,25 @@ public class InsuredInfo {
      * 被保险人证件号码
      */
     @Column(name = "insured__id_card")
-    private Integer insuredIdCard;
+    private String insuredIdCard;
 
     /**
      * 被保险人证件类型
      */
     @Column(name = "insured_id_card_type")
-    private Integer insuredIdCardType;
+    private String insuredIdCardType;
 
     /**
      * 商业险保单号
      */
     @Column(name = "busines_number")
-    private Integer businesNumber;
+    private String businesNumber;
 
     /**
      * 交强险保单号
      */
     @Column(name = "traffic_number")
-    private Integer trafficNumber;
+    private String trafficNumber;
 
     /**
      * 上一年交强险出险次数
@@ -617,7 +617,7 @@ public class InsuredInfo {
      *
      * @return insured__id_card - 被保险人证件号码
      */
-    public Integer getInsuredIdCard() {
+    public String getInsuredIdCard() {
         return insuredIdCard;
     }
 
@@ -626,7 +626,7 @@ public class InsuredInfo {
      *
      * @param insuredIdCard 被保险人证件号码
      */
-    public void setInsuredIdCard(Integer insuredIdCard) {
+    public void setInsuredIdCard(String insuredIdCard) {
         this.insuredIdCard = insuredIdCard;
     }
 
@@ -635,7 +635,7 @@ public class InsuredInfo {
      *
      * @return insured_id_card_type - 被保险人证件类型
      */
-    public Integer getInsuredIdCardType() {
+    public String getInsuredIdCardType() {
         return insuredIdCardType;
     }
 
@@ -644,7 +644,7 @@ public class InsuredInfo {
      *
      * @param insuredIdCardType 被保险人证件类型
      */
-    public void setInsuredIdCardType(Integer insuredIdCardType) {
+    public void setInsuredIdCardType(String insuredIdCardType) {
         this.insuredIdCardType = insuredIdCardType;
     }
 
@@ -653,7 +653,7 @@ public class InsuredInfo {
      *
      * @return busines_number - 商业险保单号
      */
-    public Integer getBusinesNumber() {
+    public String getBusinesNumber() {
         return businesNumber;
     }
 
@@ -662,7 +662,7 @@ public class InsuredInfo {
      *
      * @param businesNumber 商业险保单号
      */
-    public void setBusinesNumber(Integer businesNumber) {
+    public void setBusinesNumber(String businesNumber) {
         this.businesNumber = businesNumber;
     }
 
@@ -671,7 +671,7 @@ public class InsuredInfo {
      *
      * @return traffic_number - 交强险保单号
      */
-    public Integer getTrafficNumber() {
+    public String getTrafficNumber() {
         return trafficNumber;
     }
 
@@ -680,7 +680,7 @@ public class InsuredInfo {
      *
      * @param trafficNumber 交强险保单号
      */
-    public void setTrafficNumber(Integer trafficNumber) {
+    public void setTrafficNumber(String trafficNumber) {
         this.trafficNumber = trafficNumber;
     }
 
