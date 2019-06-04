@@ -11,7 +11,7 @@ public class InsuranceTypeInfo {
      */
     @Id
     @Column(name = "insurance_type_id")
-    private String insuranceTypeId;
+    private Integer insuranceTypeId;
 
     /**
      * 乐观锁
@@ -87,7 +87,7 @@ public class InsuranceTypeInfo {
      *
      * @return insuiance_type_id - id
      */
-    public String getInsuranceTypeId() {
+    public Integer getInsuranceTypeId() {
         return insuranceTypeId;
     }
 
@@ -96,7 +96,7 @@ public class InsuranceTypeInfo {
      *
      * @param insuranceTypeId id
      */
-    public void setInsuranceTypeId(String insuranceTypeId) {
+    public void setInsuranceTypeId(Integer insuranceTypeId) {
         this.insuranceTypeId = insuranceTypeId;
     }
 
@@ -299,7 +299,7 @@ public class InsuranceTypeInfo {
     public InsuranceTypeInfo() {
     }
 
-    public InsuranceTypeInfo(String insuranceTypeId) {
+    public InsuranceTypeInfo(Integer insuranceTypeId) {
         this.insuranceTypeId = insuranceTypeId;
     }
 
