@@ -1104,6 +1104,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
                     if(boLiBaoE>0){
 
+
                     }
                    /* qpc.setBoLiBaoE(boLiBaoE);
                     qpc.setCheSunBaoE(cheSunBaoE);

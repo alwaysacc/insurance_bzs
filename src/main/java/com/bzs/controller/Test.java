@@ -2,8 +2,9 @@ package com.bzs.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+/*import com.bzs.utils.BiHu.ResultData;
+import com.bzs.utils.BiHu.UserInfo;*/
 import com.bzs.utils.BiHu.ResultData;
-import com.bzs.utils.BiHu.UserInfo;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.utils.commons.ThirdAPI;
