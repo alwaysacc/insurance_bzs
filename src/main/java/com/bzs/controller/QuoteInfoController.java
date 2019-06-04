@@ -277,4 +277,39 @@ public class QuoteInfoController {
             return ResultGenerator.genFailResult(msg);
         }
     }
+
+    /**
+     * 壁虎-报价核保基础接口
+     * @param personName 车主
+     * @param personCardID 车主证件号
+     * @param personCardIDType 车主证件类型
+     * @param carNo 车牌号
+     * @param carFrameNo 车架号
+     * @param carEngineNo 发动机号
+     * @param carFirstRegisterDate 车辆注册日期
+     * @param lists 险种信息
+     * @param ciBeginDate 商业险起保日期
+     * @param biBeginDate 交强险起保日期
+     * @param carTransDate 过户日期
+     * @param carVehicleFgwCode 车辆型号
+     * @param carInfoId 车辆信息id
+     * @param createdBy 操作人
+     * @param quoteGroup  需要报价的 保险资源的枚举值之和
+     * @param submitGroup 需要核保的 保险资源的枚举值之和  这个范围应该是QuoteGroup的子集，必须报价了，才可以核保
+     * @param isSame 投保人与被保人信息是否一致 默认0一致
+     * @param forceTax 0:单商业 ，1：商业+交强车船，2：单交强+车船
+     * @return
+     */
+
+    @ApiOperation("调用第三方壁虎-报价核保基础接口")
+    @PostMapping("/Ws_PostPrecisePrice")
+    public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID,@RequestParam String personCardIDType,
+                                   @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
+                                   @RequestParam String carFirstRegisterDate,String lists,
+                                   String ciBeginDate, String biBeginDate, String carTransDate,
+                                   String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup,Long submitGroup,String isSame,int forceTax){
+        isSame="0";
+        return quoteInfoService.postPrecisePrice(personName,personCardID,personCardIDType,carNo,carFrameNo,carEngineNo,carFirstRegisterDate,lists,ciBeginDate,biBeginDate,carTransDate,carVehicleFgwCode,carInfoId,createdBy,quoteGroup,submitGroup,isSame,forceTax);
+
+    }
 }

@@ -10,10 +10,12 @@ import com.bzs.model.CarInfo;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.*;
 import com.bzs.utils.*;
+import com.bzs.utils.bihujsontobean.JsonRootBean;
 import com.bzs.utils.commons.ThirdAPI;
 import com.bzs.utils.commons.TwoPower;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.encodeUtil.EncodeUtil;
+import com.bzs.utils.enumUtil.CityCodeEnum;
 import com.bzs.utils.enumUtil.InsuranceItems2;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.httpUtil.HttpClientUtil;
@@ -381,8 +383,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String api = "";
         String host = "";
         String port = "";
-        List<String> portList=new ArrayList<>();
-        String keyRedis="";
+        List<String> portList = new ArrayList<>();
+        String keyRedis = "";
         if (null == source) {
             result.put("status", "400");
             result.put("msg", "参数错误");
@@ -410,11 +412,11 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     }
                 } else if (1 == source) {
                     api = ThirdAPI.CPIC_QUOTE_ALL;
-                    keyRedis="CPIC_PORT"+createdBy;
+                    keyRedis = "CPIC_PORT" + createdBy;
                     System.out.println(keyRedis);
                     // host = ThirdAPI.CPIC_HOST;
                     // port = ThirdAPI.CPIC_PORT;
-                    synchronized(this) {
+                    synchronized (this) {
                         if (!redisUtil.hasKey(keyRedis)) {
                             port = "5000";
                             portList.add(port);
@@ -442,7 +444,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 port = "5004";
                                 portList.add(port);
                                 redisUtil.set(keyRedis, portList, 720000);
-                            }else{
+                            } else {
                                 result.put("status", "300");
                                 result.put("msg", "网络繁忙，请重试");
                                 result.put("data", null);
@@ -454,8 +456,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     params.getData().setSalesPerson(ThirdAPI.salesPerson);
                 } else if (4 == source) {
                     api = ThirdAPI.PICC_QUOTE_ALL;
-                    keyRedis="PICC_PORT"+createdBy;
-                    synchronized(this) {
+                    keyRedis = "PICC_PORT" + createdBy;
+                    synchronized (this) {
                         if (!redisUtil.hasKey(keyRedis)) {
                             port = "4050";
                             portList.add(port);
@@ -483,7 +485,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                 port = "4054";
                                 portList.add(port);
                                 redisUtil.set(keyRedis, portList, 720000);
-                            }else{
+                            } else {
                                 result.put("status", "300");
                                 result.put("msg", "网络繁忙，请重试");
                                 result.put("data", null);
@@ -519,7 +521,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String jsonStrs2 = jsonStrs.replace("noType", "NoType");
             HttpResult httpResult = HttpClientUtil.doPost(url, null, "JSON", PCICResponseBean.class, jsonStrs2);
             portList.remove(port);
-            redisUtil.set(keyRedis,portList,720000);
+            redisUtil.set(keyRedis, portList, 720000);
             int code = httpResult.getCode();
             String msg = httpResult.getMessage();
             String body = httpResult.getBody();
@@ -632,7 +634,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if (StringUtils.isNotBlank(payUrl)) {
                     payinfo.setPayMsg("获取成功");
                     OrderInfo orderInfo = new OrderInfo();
-                    String oid=UUIDS.getDateUUID();
+                    String oid = UUIDS.getDateUUID();
                     payinfo.setOrderId(oid);
                     orderInfo.setOrderId(oid);
                     orderInfo.setPayType("2");//保单订单
@@ -831,5 +833,377 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         map.put("code", code);
         map.put("data", list);
         return map;
+    }
+
+    @Override
+    public Result postPrecisePrice(String personName, String personCardID, String personCardIDType,
+                                   String carNo, String carFrameNo, String carEngineNo,
+                                   String carFirstRegisterDate, String lists,
+                                   String ciBeginDate, String biBeginDate, String carTransDate,
+                                   String carVehicleFgwCode, String carInfoId, String createdBy,
+                                   Long quoteGroup, Long submitGroup, String isSame, int forceTax) {
+
+
+        String custKey = ThirdAPI.CUSTKEY;
+        String secretKey = ThirdAPI.SECRETKEY;
+        int agent = ThirdAPI.AGENT;
+        String cityAbbreviation = carNo.substring(0, 2);
+        int cityCode = CityCodeEnum.getByCityName(cityAbbreviation);
+        int ShowTotalRate = 1;// 是否展示折扣系数0：否 1：是
+        int quoteParalelConflict = 0;// 报价并发冲突检查标识：0（默认） 1：检测。
+        int ShowRepeatSubmit = 1;//是否展示重复投保信息0：否 1：是
+        int ShowEndDate = 1;//是否展示报价截止时间：0否（默认）、1是
+        String param = "LicenseNo=" + carNo + "&CarOwnersName="
+                + personName + "&QuoteGroup=" + quoteGroup
+                + "&SubmitGroup=" + submitGroup + "&CityCode=" + cityCode
+                + "&EngineNo=" + carEngineNo + "&CarVin=" + carFrameNo + "&RegisterDate="
+                + carFirstRegisterDate + "&ForceTax=" + forceTax + "&QuoteParalelConflict="
+                + quoteParalelConflict + "&CustKey=" + custKey + "&Agent="
+                + agent + "&ShowRepeatSubmit=" + ShowRepeatSubmit + "&ShowEndDate=" + ShowEndDate + "&ShowTotalRate="
+                + ShowTotalRate;
+
+        if (StringUtils.isNotBlank(personCardID)) {
+            param += "&IdCard=" + personCardID + "&OwnerIdCardType="
+                    + personCardIDType;
+        }
+        // 商业险起保时间（Unix时间戳格式）单位是秒（如果在单商业的情况下
+        // ，此字段必须有值）
+        if (StringUtils.isNotBlank(biBeginDate)) {
+            biBeginDate = DateUtil.dateToStamp(biBeginDate);
+            param += "&BizTimeStamp=" + biBeginDate;
+        }
+
+        // 交强险起保时间（Unix时间戳格式）单位是秒
+        if (StringUtils.isNotBlank(ciBeginDate)) {
+            ciBeginDate = DateUtil.dateToStamp(ciBeginDate);//
+            param += "&ForceTimeStamp=" + ciBeginDate;
+        }
+        double PurchasePrice = 0;
+        double ExhaustScale = 0;
+        String AutoMoldCode = "";
+        int SeatCount = 0;
+        long VehicleSource = 0;
+        if (StringUtils.isNotBlank(carVehicleFgwCode)) {
+            String[] modelArry = carVehicleFgwCode.split("/");
+            if (modelArry.length > 1) {
+                AutoMoldCode = modelArry[0];
+                carVehicleFgwCode = modelArry[1];
+                PurchasePrice = Double.parseDouble(modelArry[3]);
+                ExhaustScale = Double.parseDouble(modelArry[4]);
+                SeatCount = Integer.parseInt(modelArry[5]);
+                if (modelArry[7].equals("人保")) {
+                    VehicleSource = 4;
+                }
+                param += "&AutoMoldCode=" + AutoMoldCode + "&PurchasePrice="
+                        + PurchasePrice + "&ExhaustScale=" + ExhaustScale
+                        + "&SeatCount=" + SeatCount + "&VehicleSource="
+                        + VehicleSource;
+            }
+            param += "&MoldName=" + carVehicleFgwCode;
+        }
+        //if("0".equels(isSame)){
+        param += "&InsuredName=" + personName + "&InsuredIdCard=" + personCardID + "&InsuredIdType=" + personCardIDType +//被保人
+                "&HolderName=" + personName + "&HolderIdCard=" + personCardID + "&HolderIdType=" + personCardIDType;//投保人
+        //}
+        //报价险种信息
+
+        if (StringUtils.isNotBlank(lists)) {
+            param += lists;
+        } else {
+            lists = "&BoLi=0.0&BuJiMianCheSun=1.0&BuJiMianDaoQiang=1.0&BuJiMianSanZhe=1.0&BuJiMianChengKe=0.0&BuJiMianSiJi=0.0&BuJiMianHuaHen=0.0&BuJiMianSheShui=0.0&BuJiMianZiRan=0.0&BuJiMianJingShenSunShi=0.0&SheShui=0.0&HuaHen=0.0&SiJi=0.0&ChengKe=0.0&CheSun=1.0&DaoQiang=1.0&SanZhe=1000000.0&ZiRan=0.0&HcSanFangTeYue=0.0&HcXiuLiChang=0.0";
+            param += lists;
+        }
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        try {
+            String URL = ThirdAPI.BIHUURL + ThirdAPI.PostPrecisePrice;
+            HttpResult result = HttpClientUtil.doGet(URL + param, null);
+            int code = result.getCode();
+            String body = result.getBody();
+            String message = "";
+            if (code == 200) {//请求成功
+
+                JSONObject jsonObject = JSONObject.parseObject(body);
+                int businessStatus = jsonObject.getIntValue("BusinessStatus");// 1请求报价/核保信息成功，<0失败
+                String statusMessage = jsonObject.getString("StatusMessage");// 请求报价核保信息描述
+                if (1 == businessStatus) {
+                    code = 200;
+                } else {
+                    code = businessStatus;
+                }
+                message = statusMessage;
+            } else {
+                message = "报价核保准备失败，错误代码值：" + code;
+            }
+            return ResultGenerator.gen(message, body, code);
+        } catch (Exception e) {
+            logger.error("打印异常", e);
+            return ResultGenerator.gen("调用异常", "", 500);
+        }
+    }
+
+    @Override
+    public Map getPrecisePrice(String licenseNo, Long quoteGroup) {
+        Map resultMap=new HashedMap();
+        if (StringUtils.isBlank(licenseNo)) {
+            resultMap.put("code","18000");
+            resultMap.put("msg","参数异常：车牌号必传");
+            resultMap.put("data","");
+            return resultMap;
+        }
+        if (null == quoteGroup) {
+            resultMap.put("code","18000");
+            resultMap.put("msg","参数异常：意向投保公司值必传");
+            resultMap.put("data","");
+            return resultMap;
+        }
+        int agent = ThirdAPI.AGENT;
+        String custKey = ThirdAPI.CUSTKEY;
+        String secretKey = ThirdAPI.SECRETKEY;
+      /*  int timeFormat = 0;//按照实时起保返回到期日期（商业/交强）0（默认）：否 1：是
+        int showEmail = 0;//是否展示邮箱：1：是 0：否（默认）
+        int showXiuLiChangType = 0;//是否展示修理厂类型0（默认）:否  1：是
+        int showCarInfo = 0;//是否展示其他业务信息 0：否  1：是
+        int showFybc = 0;//是否展示补偿费用0:否 1：是
+        int showSheBei = 0;//是否展示新增设备0:否 1:是
+        int renewalCarType = 0; //大小号牌：0小车，1大车，默认0*/
+        int showVehicleInfo = 1;//是否展示车型信息:0 否   1：是
+        int showTotalRate = 1;//是否展示折扣系数0：否 1：是
+        int showRepeatSubmit = 1; //是否展示重复投保信息0：否 1：是
+        int showEndDate = 1; //是否展示报价截止时间：0否（默认）、1是
+
+        String param = "LicenseNo=" + licenseNo + "&QuoteGroup=" + quoteGroup
+                + "&ShowRepeatSubmit=" + showRepeatSubmit + "&ShowEndDate=" + showEndDate +
+                "&ShowTotalRate=" + showTotalRate + "&Agent=" + agent
+                + "&CustKey=" + custKey + "&ShowVehicleInfo="
+                + showVehicleInfo;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        QuoteInfo qpc=new QuoteInfo(UUIDS.getDateUUID());
+        try {
+            String URL = ThirdAPI.BIHUURL + ThirdAPI.GetSpecialPrecisePrice;
+            HttpResult result = HttpClientUtil.doGet(URL + param, null);
+            String body = result.getBody();
+            int code = result.getCode();
+            String message="";
+            if (200 == code) {
+                if (StringUtils.isNotBlank(body)) {
+                    JsonRootBean javaBean = JSONObject.parseObject(body, JsonRootBean.class);
+                    int status = javaBean.getBusinessStatus();
+                    String msg = javaBean.getStatusMessage();
+                    if(1!=status){//请求失败
+                        resultMap.put("msg", msg);
+                        resultMap.put("data", null);
+                        resultMap.put("resultMap", status+"");// 获取报价信息失败
+                        qpc.setQuoteStatus(0);//报价失败
+                        qpc.setQuoteResult(msg);//报价失败描述
+                        quoteInfoMapper.insert(qpc);
+                        return  resultMap;
+                    }
+                    //请求成功
+                    com.bzs.utils.bihujsontobean.Item item = javaBean.getItem();
+                    com.bzs.utils.bihujsontobean.UserInfo userInfo = javaBean.getUserInfo();
+
+                    int quoteStatus = item.getQuoteStatus();////报价状态，-1=未报价， 0=报价失败，>0报价成功
+                    String quoteResult = item.getQuoteResult();
+                    qpc.setQuoteResult(quoteResult);
+                    qpc.setQuoteStatus(quoteStatus);
+                    // 0：不重复 1：交强重复 2：商业重复 3:双险都重复投保
+                    String RepeatSubmitResult = item.getRepeatSubmitResult();
+                    qpc.setRepeatSubmitResult(RepeatSubmitResult);
+                    String repeatInsurance=null;
+                    if("1".equals(RepeatSubmitResult)){
+                        repeatInsurance="交强重复";
+                    }else if("2".equals(RepeatSubmitResult)){
+                        repeatInsurance="商业重复";
+                    }else if("3".equals(RepeatSubmitResult)){
+                        repeatInsurance="双险都重复投保";
+                    }
+                    //报价失败
+                    if(quoteStatus<=0){
+                        resultMap.put("msg", "报价失败："+quoteResult);
+                        resultMap.put("data", null);
+                        resultMap.put("code", quoteStatus+"");// 请求报价信息失败
+                        qpc.setQuoteStatus(0);//获取报价异常代码
+                        if(repeatInsurance!=null){
+                            qpc.setQuoteResult("报价失败："+repeatInsurance+":"+quoteResult);//信息描述
+                        }else{
+                            qpc.setQuoteResult("报价失败："+quoteResult);//信息描述
+                        }
+                        quoteInfoMapper.insert(qpc);
+                        resultMap.put("quoteId", qpc.getQuoteId());
+                        return resultMap;
+                    }
+                    //报价成功开始执行
+                    logger.info("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
+                    System.out.println("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
+                   String autoMoldCode= userInfo.getAutoMoldCode();//精友码
+                    String  forceStartDate=userInfo.getForceStartDate();//交强险
+                    String  forceExpireDate=userInfo.getForceExpireDate();//
+
+
+                    double bizTotal = item.getBizTotal();
+                    long buid =item.getBuId();// 获取支付接口必备参数
+                    double forceTotal = item.getForceTotal();
+                    double taxTotal = item.getTaxTotal();
+                    double total = bizTotal + forceTotal + taxTotal;
+                    long source = item.getSource();
+                    double cheSunBaoE = item.getCheSun().getBaoE();
+                    double cheSunBaoFei = item.getCheSun().getBaoFei();
+                    double sanZheBaoE = item.getSanZhe().getBaoE();
+                    double sanZheBaoFei =  item.getSanZhe().getBaoFei();
+                    double daoQiangBaoE =  item.getDaoQiang().getBaoE();
+                    double daoQiangBaoFei = item.getDaoQiang().getBaoFei();
+                    double siJiBaoE = item.getSiJi().getBaoE();
+                    double siJiBaoFei = item.getSiJi().getBaoFei();
+                    double chengKeBaoE =item.getChengKe().getBaoE();
+                    double chengKeBaoFei = item.getChengKe().getBaoFei();
+                    double boLiBaoE = item.getBoLi().getBaoE();
+                    double boLiBaoFei =item.getBoLi().getBaoFei();
+                    double huaHenBaoE = item.getHuaHen().getBaoE();
+                    double huaHenBaoFei =  item.getHuaHen().getBaoFei();
+                    double sheShuiBaoE = item.getSheShui().getBaoE();
+                    double sheShuiBaoFei =  item.getSheShui().getBaoFei();
+                    double ziRanBaoE =item.getZiRan().getBaoE();
+                    double ziRanBaoFei = item.getZiRan().getBaoFei();
+                    double buJiMianSanZheBaoE = item.getBuJiMianSanZhe().getBaoE();
+                    double buJiMianSanZheBaoFei =  item.getBuJiMianSanZhe().getBaoFei();
+                    double buJiMianCheSunBaoE =  item.getBuJiMianCheSun().getBaoE();
+                    double buJiMianCheSunBaoFei =  item.getBuJiMianCheSun().getBaoFei();
+                    double buJiMianDaoQiangBaoE =  item.getBuJiMianDaoQiang().getBaoE();
+                    double buJiMianDaoQiangBaoFei =  item.getBuJiMianDaoQiang().getBaoFei();
+                    double buJiMianChengKeBaoE = item.getBuJiMianChengKe().getBaoE();
+                    double buJiMianChengKeBaoFei =  item.getBuJiMianChengKe().getBaoFei();
+                    double buJiMianSiJiBaoE =  item.getBuJiMianSiJi().getBaoE();
+                    double buJiMianSiJiBaoFei =  item.getBuJiMianSiJi().getBaoFei();
+                    double buJiMianHuaHenBaoE =  item.getBuJiMianHuaHen().getBaoE();
+                    double buJiMianHuaHenBaoFei =  item.getBuJiMianHuaHen().getBaoFei();
+                    double buJiMianSheShuiBaoE =  item.getBuJiMianSheShui().getBaoE();
+                    double buJiMianSheShuiBaoFei = item.getBuJiMianSheShui().getBaoFei();
+                    double buJiMianZiRanBaoE =  item.getBuJiMianZiRan().getBaoE();
+                    double buJiMianZiRanBaoFei =  item.getBuJiMianZiRan().getBaoFei();
+                    double BuJiMianJingShenSunShiBaoE =  item.getBuJiMianJingShenSunShi().getBaoE();
+                    double BuJiMianJingShenSunShiBaoFei = item.getBuJiMianJingShenSunShi().getBaoFei();
+                    double hcJingShenSunShiBaoE = item.getHcJingShenSunShi().getBaoE();
+                    double hcJingShenSunShiBaoFei = item.getHcJingShenSunShi().getBaoFei();
+                    double hcSanFangTeYueBaoE =  item.getHcSanFangTeYue().getBaoE();
+                    double hcSanFangTeYueBaoFei =   item.getHcSanFangTeYue().getBaoFei();
+                    double hcXiuLiChangBaoE = item.getHcXiuLiChang().getBaoE();
+                    double hcXiuLiChangBaoFei =  item.getHcXiuLiChang().getBaoFei();
+                    // hcXiuLiChangTypes=quoteInfos.getString("HcXiuLiChangType");
+                    double rateFactor1 = item.getRateFactor1();//费率系数1（无赔款优惠系数）
+                    double rateFactor2 =  item.getRateFactor2();//费率系数2（自主渠道系数）
+                    double rateFactor3 =  item.getRateFactor3();//费率系数3（自主核保系数）
+                    double rateFactor4 =  item.getRateFactor4();//费率系数4（交通违法浮动系数）
+                    String totalRate =item.getTotalRate();
+                    qpc.setBizTotal(BigDecimal.valueOf(bizTotal));
+                    qpc.setForceTotal(BigDecimal.valueOf(forceTotal) );
+                    qpc.setTaxTotal( BigDecimal.valueOf(taxTotal));
+
+                    if(boLiBaoE>0){
+
+                    }
+                   /* qpc.setBoLiBaoE(boLiBaoE);
+                    qpc.setCheSunBaoE(cheSunBaoE);
+                    qpc.setCheSunBaoFei(cheSunBaoFei);
+                    qpc.setChengKeBaoE(chengKeBaoE);
+                    qpc.setChengKeBaoFei(chengKeBaoFei);
+                    qpc.setSanZheBaoE(sanZheBaoE);
+                    qpc.setSanZheBaoFei(sanZheBaoFei);
+                    qpc.setDaoQiangBaoE(daoQiangBaoE);
+                    qpc.setDaoQiangBaoFei(daoQiangBaoFei);
+                    qpc.setSiJiBaoE(siJiBaoE);
+                    qpc.setSiJiBaoFei(siJiBaoFei);
+                    qpc.setChengKeBaoE(chengKeBaoE);
+                    qpc.setChengKeBaoFei(chengKeBaoFei);
+                    qpc.setBoLiBaoE(boLiBaoE);
+                    qpc.setBoLiBaoFei(boLiBaoFei);
+                    qpc.setSheShuiBaoE(sheShuiBaoE);
+                    qpc.setSheShuiBaoFei(sheShuiBaoFei);
+                    qpc.setHuaHenBaoE(huaHenBaoE);
+                    qpc.setHuaHenBaoFei(huaHenBaoFei);
+                    qpc.setZiRanBaoE(ziRanBaoE);
+                    qpc.setZiRanBaoFei(ziRanBaoFei);
+                    qpc.setBuJiMianCheSunBaoE(buJiMianCheSunBaoE);
+                    qpc.setBuJiMianCheSunBaoFei(buJiMianCheSunBaoFei);
+                    qpc.setBuJiMianSanZhenBaoE(buJiMianSanZheBaoE);
+                    qpc.setBuJiMianSanZheBaoFei(buJiMianSanZheBaoFei);
+                    qpc.setBuJiMianDaoQiangBaoE(buJiMianDaoQiangBaoE);
+                    qpc.setBuJiMianDaoQiangBaoFei(buJiMianDaoQiangBaoFei);
+                    qpc.setBuJiMianSiJiBaoE(buJiMianSiJiBaoE);
+                    qpc.setBuJiMianSiJiBaoFei(buJiMianSiJiBaoFei);
+                    qpc.setBuJiMianChengKeBaoE(buJiMianChengKeBaoE);
+                    qpc.setBuJiMianChengKeBaoFei(buJiMianChengKeBaoFei);
+                    qpc.setBuJiMianHuaHenBaoE(buJiMianHuaHenBaoE);
+                    qpc.setBuJiMianHuaHenBaoFei(buJiMianHuaHenBaoFei);
+                    qpc.setBuJiMianSheShuiBaoE(buJiMianSheShuiBaoE);
+                    qpc.setBuJiMianSheShuiBaoFei(buJiMianSheShuiBaoFei);
+                    qpc.setBuJiMianZiRanBaoE(buJiMianZiRanBaoE);
+                    qpc.setBuJiMianZiRanBaoFei(buJiMianZiRanBaoFei);
+                    qpc.setHcSanFangTeYueBaoE(hcSanFangTeYueBaoE);
+                    qpc.setHcSanFangTeYueBaoFei(hcSanFangTeYueBaoFei);
+                    qpc.setHcXiuLiChangBaoE(hcXiuLiChangBaoE);
+                    qpc.setHcXiuLiChangBaoFei(hcXiuLiChangBaoFei);*/
+                    qpc.setNoReparationSaleRate(rateFactor1+"");
+                    qpc.setIndependentChannelDate(rateFactor2+"");
+                    qpc.setIndependentSubmitRate(rateFactor3+"");
+                    qpc.setTrafficIllegalRate(rateFactor4+"");
+                    qpc.setTotalRate(totalRate);
+                    qpc.setQuoteSource(source+"");
+
+                    // qpc.setHcXiuLiChangType(hcXiuLiChangTypes);
+                    qpc.setTotal(BigDecimal.valueOf(total));
+                    qpc.setBuid(buid+"");
+                    double buJiMianTotal = buJiMianSanZheBaoE
+                            + buJiMianSanZheBaoFei + buJiMianCheSunBaoE
+                            + buJiMianCheSunBaoFei + buJiMianDaoQiangBaoE
+                            + buJiMianDaoQiangBaoFei + buJiMianChengKeBaoE
+                            + buJiMianChengKeBaoFei + buJiMianSiJiBaoE
+                            + buJiMianSiJiBaoFei + buJiMianHuaHenBaoE
+                            + buJiMianHuaHenBaoFei + buJiMianSheShuiBaoE
+                            + buJiMianSheShuiBaoFei + buJiMianZiRanBaoE
+                            + buJiMianZiRanBaoFei;
+                    qpc.setExcludingDeductibleTotal(BigDecimal.valueOf(buJiMianTotal));
+                    // 0：不重复 1：交强重复 2：商业重复 3:双险都重复投保
+                    resultMap.put("code", "1");// 报价成功
+                    resultMap.put("data", javaBean);
+                    resultMap.put("msg","报价状态：报价成功;报价内容："+quoteResult);
+                    qpc.setQuoteStatus(1);//报价状态
+                    qpc.setQuoteResult(quoteResult);//报价信息
+                    quoteInfoMapper.insert(qpc);
+                    resultMap.put("quoteId", qpc.getQuoteId());
+                    return resultMap;
+                } else {
+                    resultMap.put("code", "400");// 报价成功
+                    resultMap.put("data", "");
+                    resultMap.put("msg","报价状态失败,获取报价内容为空");
+                    return resultMap;
+
+                }
+
+            } else {
+                if(StringUtils.isNotBlank(body)){
+                    message=body;
+                }else{
+                    message="返回内容为空";
+                }
+                resultMap.put("code","400");
+                resultMap.put("msg",message);
+                resultMap.put("data","");
+                return  resultMap;
+            }
+
+
+        } catch (Exception e) {
+            logger.error("打印异常", e);
+            resultMap.put("code","500");
+            resultMap.put("msg","调用异常");
+            resultMap.put("data","");
+            return resultMap;
+        }
+
+
     }
 }

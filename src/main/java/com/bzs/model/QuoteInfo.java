@@ -143,7 +143,9 @@ public class QuoteInfo {
     /**
      * 保费总额
      */
+    @Column(name = "total")
     private BigDecimal total;
+
 
     /**
      * 报价保司名称
@@ -278,6 +280,22 @@ public class QuoteInfo {
      */
     @Column(name = "pay_msg")
     private String payMsg;
+
+    /**
+     * 不计免总额
+     */
+    @Column(name = "excluding_deductible_total")
+    private BigDecimal excludingDeductibleTotal;
+    /**
+     * 报价专用
+     */
+    @Column(name = "buid")
+    private String buid;
+    /**
+     * 新增totalRate
+     */
+    @Column(name = "total_rate")
+    private String totalRate;
 
 
     /**
@@ -960,5 +978,29 @@ public class QuoteInfo {
 
     public QuoteInfo(String quoteId) {
         this.quoteId = quoteId;
+    }
+
+    public BigDecimal getExcludingDeductibleTotal() {
+        return excludingDeductibleTotal;
+    }
+
+    public void setExcludingDeductibleTotal(BigDecimal excludingDeductibleTotal) {
+        this.excludingDeductibleTotal = excludingDeductibleTotal;
+    }
+
+    public String getBuid() {
+        return buid;
+    }
+
+    public void setBuid(String buid) {
+        this.buid = buid;
+    }
+
+    public String getTotalRate() {
+        return totalRate;
+    }
+
+    public void setTotalRate(String totalRate) {
+        this.totalRate = totalRate;
     }
 }

@@ -48,6 +48,12 @@ public interface ThirdAPI {
     public static final String BIHUXUBAO="http://iu.91bihu.com/api/CarInsurance/getreinfo?";//平安作废
     public static final String BEFORE="Group=1&";//平安作废
     public static final String AFTER="&CityCode=8&Agent=83696&CustKey=bzs20171117";//平安作废
+    public static  final String BIHUURL="http://iu.91bihu.com";//壁虎URL
+    public static  final String PostPrecisePrice="/api/CarInsurance/PostPrecisePrice?";//报价核保的基础接口
+    public static  final String GetSpecialPrecisePrice="/api/CarInsurance/GetSpecialPrecisePrice?";//获取车辆的报价信息,只能单个获取
+    public static final int AGENT=83696;//在壁虎的唯一标识
+    public static final String CUSTKEY="bzs20171117";//Custkey是用来区分每一家合作商户的不同个体的请求的
+    public static final String SECRETKEY="d7eb7d66997";//密匙
 
 
 }
