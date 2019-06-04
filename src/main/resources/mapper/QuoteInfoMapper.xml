@@ -53,6 +53,9 @@
     <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
     <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
     <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate" />
+    <result column="buid" jdbcType="VARCHAR" property="buid" />
+    <result column="total_rate" jdbcType="VARCHAR" property="totalRate" />
+    <result column="excluding_deductible_total" jdbcType="DECIMAL" property="excludingDeductibleTotal" />
   </resultMap>
   <update id="updatePayInfo">
     update  quote_info set pay_url=#{payUrl},pay_time=#{payTime},check_no=#{checkNo},pay_no=#{payNo},payment_notice=#{paymentNotice},serial_no=#{serialNo},pay_end_date=#{payEndDate},pay_msg=#{payMsg} where proposal_no=#{proposalNo}

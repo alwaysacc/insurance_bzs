@@ -459,8 +459,8 @@ public class HttpClientUtil {
             throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         // 声明URIBuilder
+        logger.info("请求URL>>>"+url);
         URIBuilder uriBuilder = new URIBuilder(url);
-
         // 判断参数map是否为非空
         if (map != null) {
             // 遍历参数
@@ -482,18 +482,19 @@ public class HttpClientUtil {
         // response.getStatusLine().getStatusCode();
         // 响应体，字符串，如果response.getEntity()为空，下面这个代码会报错,所以解析之前要做非空的判断
         // EntityUtils.toString(response.getEntity(), "UTF-8");
-        HttpResult httpResult = null;
+
         // 解析数据封装HttpResult
-        if (response.getEntity() != null) {
-            httpResult = new HttpResult(response.getStatusLine()
-                    .getStatusCode(), EntityUtils.toString(
-                    response.getEntity(), "UTF-8"));
-        } else {
-            httpResult = new HttpResult(response.getStatusLine()
-                    .getStatusCode(), "");
+        int code=response.getStatusLine().getStatusCode();
+        HttpEntity httpEntity=response.getEntity();
+        String body="";
+        if (null!=httpEntity) {
+            body=EntityUtils.toString(response.getEntity(), "UTF-8");
         }
+        logger.info("请求返回值code值>>>"+code);
+        logger.info("请求返回内容body>>>"+body);
+       return new HttpResult(code, body);
         // 返回
-        return httpResult;
+        //return httpResult;
     }
 
     //  CloseableHttpClient httpclient = HttpClients.createDefault();
