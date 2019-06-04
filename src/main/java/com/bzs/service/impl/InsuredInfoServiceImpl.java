@@ -1450,7 +1450,6 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
             param = ThirdAPI.BEFORE + "CarVin=" + vinNo + "&SixDigitsAfterIdCard=" + idCard + ThirdAPI.AFTER;
         }
         String SecCode = MD5Utils.md5(param + "d7eb7d66997");
-        System.out.println(SecCode);
         param = param + "&SecCode=" + SecCode;
         String url = ThirdAPI.BIHUXUBAO + param;
         HttpResult httpResult = null;
@@ -1461,13 +1460,12 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
         }
         ResultData resultData = JSONObject.parseObject(httpResult.getBody(), ResultData.class);
         if (httpResult.getCode() == 200) {
+            System.out.println(resultData);
             if (resultData.getBusinessStatus() == 1) {
                 UserInfo userInfo = resultData.getUserInfo();
                 JSONObject object = JSONObject.parseObject(httpResult.getBody());
-                System.out.println(ResultGenerator.genSuccessResult(object));
                 //险种
                 JSONObject quote = JSONObject.parseObject(object.getString("SaveQuote"));
-                System.out.println(quote.getString("CheSun"));
                 CarInfo carInfo = new CarInfo();
                 String carInfoId = UUIDS.getUUID();
                 carInfo.setCarNumber(userInfo.getLicenseNo());
