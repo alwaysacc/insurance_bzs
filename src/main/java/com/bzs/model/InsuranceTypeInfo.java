@@ -317,9 +317,9 @@ public class InsuranceTypeInfo {
         this.typeId = typeId;
     }
 
-    public InsuranceTypeInfo(Date createdTime, String updatedBy, String infoType, String typeId) {
+    public InsuranceTypeInfo(Date createdTime, String createdBy, String infoType, String typeId) {
         this.createdTime = createdTime;
-        this.updatedBy = updatedBy;
+        this.createdBy = createdBy;
         this.infoType = infoType;
         this.typeId = typeId;
     }

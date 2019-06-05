@@ -48,10 +48,11 @@ public class Item {
     private  String  ForceNo;
     private  String ChannelId;
 
-    private int RateFactor1;
+
+    private double RateFactor1;
     private double RateFactor2;
     private double RateFactor3;
-    private int RateFactor4;
+    private double RateFactor4;
     private InsuranceType Fybc;
     private InsuranceType FybcDays;
     private InsuranceType SheBeiSunShi;
@@ -65,6 +66,10 @@ public class Item {
     private double ForceTotal;
     private double TaxTotal;
     private  String  TotalRate;
+
+    private int JiaoQiang;
+
+    private int SeatCount;
 
     public Item() {
     }
@@ -365,11 +370,11 @@ public class Item {
         ChannelId = channelId;
     }
 
-    public int getRateFactor1() {
+    public double getRateFactor1() {
         return RateFactor1;
     }
 
-    public void setRateFactor1(int rateFactor1) {
+    public void setRateFactor1(double rateFactor1) {
         RateFactor1 = rateFactor1;
     }
 
@@ -389,11 +394,11 @@ public class Item {
         RateFactor3 = rateFactor3;
     }
 
-    public int getRateFactor4() {
+    public double getRateFactor4() {
         return RateFactor4;
     }
 
-    public void setRateFactor4(int rateFactor4) {
+    public void setRateFactor4(double rateFactor4) {
         RateFactor4 = rateFactor4;
     }
 
@@ -484,4 +489,5 @@ public class Item {
     public void setTotalRate(String totalRate) {
         TotalRate = totalRate;
     }
+
 }

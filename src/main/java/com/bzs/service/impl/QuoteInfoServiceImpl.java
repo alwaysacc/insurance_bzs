@@ -1007,7 +1007,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     int status = javaBean.getBusinessStatus();
                     String msg = javaBean.getStatusMessage();
                     if (1 != status) {//请求失败
-
                         qpc.setQuoteStatus(0);//报价失败
                         qpc.setSubmitStatus(-1);//未核保
                         qpc.setSubmitresult("报价失败无法核保");//未核保
@@ -1018,7 +1017,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         bean.setSendTime(sendTime);
                         resultMap.put("code", "400");
                         resultMap.put("msg", msg);
-                        resultMap.put("data", bean);
+                        resultMap.put("data", qpc);
                         resultMap.put("quoteId", uuid);
                         quoteInfoMapper.insert(qpc);
                         return resultMap;
@@ -1064,7 +1063,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         bean.setRetMsg("报价失败：" + quoteResult);
                         resultMap.put("code", "400");
                         resultMap.put("msg", "报价失败");
-                        resultMap.put("data", bean);
+                        resultMap.put("data", qpc);
                         resultMap.put("quoteId", uuid);
                         return resultMap;
                     }
@@ -1145,11 +1144,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     double rateFactor2 = item.getRateFactor2();//费率系数2（自主渠道系数）
                     double rateFactor3 = item.getRateFactor3();//费率系数3（自主核保系数）
                     double rateFactor4 = item.getRateFactor4();//费率系数4（交通违法浮动系数）
-                    String totalRate = item.getTotalRate();
+                    String totalRate = item.getTotalRate();//折扣系数
                     qpc.setBizTotal(BigDecimal.valueOf(bizTotal));
                     qpc.setBizPremiumByDis(bizTotal + "");
                     data.setBiPremiumByDis(bizTotal + "");
                     qpc.setForceTotal(BigDecimal.valueOf(forceTotal));
+                    qpc.setNoReparationSaleRate(rateFactor1 + "");//无赔款优惠系数
+                    qpc.setIndependentChannelDate(rateFactor2 + "");//自主渠道系数
+                    qpc.setIndependentSubmitRate(rateFactor3 + "");//自主核保系数
+                    qpc.setTrafficIllegalRate(rateFactor4 + "");//交通违法浮动系数
+                    qpc.setTotalRate(totalRate);//折扣系数
+                    qpc.setQuoteSource(source + "");
+
                     data.setNonClaimDiscountRate(rateFactor1+"");
                     data.setTrafficTransgressRate(rateFactor4+"");
                     data.setUnderwritingRate(rateFactor3+"");
@@ -1360,12 +1366,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         arrayList.add(insuranceTypeInfo);
                     }
                     data.setInsurancesLists(arrayList);//添加险种
-                    qpc.setNoReparationSaleRate(rateFactor1 + "");
-                    qpc.setIndependentChannelDate(rateFactor2 + "");
-                    qpc.setIndependentSubmitRate(rateFactor3 + "");
-                    qpc.setTrafficIllegalRate(rateFactor4 + "");
-                    qpc.setTotalRate(totalRate);
-                    qpc.setQuoteSource(source + "");
+
 
                     // qpc.setHcXiuLiChangType(hcXiuLiChangTypes);
                     qpc.setTotal(BigDecimal.valueOf(total));
@@ -1391,7 +1392,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     bean.setData(data);
                     resultMap.put("code", "200");
                     resultMap.put("msg", "报价状态：报价成功;报价内容：" + quoteResult);
-                    resultMap.put("data", bean);
+                    resultMap.put("data", qpc);
+                    resultMap.put("dataList", arrayList);
                     resultMap.put("quoteId", uuid);
                     qpc.setQuoteStatus(1);//报价状态
                     qpc.setQuoteResult(quoteResult);//报价信息

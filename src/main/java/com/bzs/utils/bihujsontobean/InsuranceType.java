@@ -7,26 +7,26 @@ package com.bzs.utils.bihujsontobean;
  * @create: 2019-06-04 14:08
  */
 public class InsuranceType {
-    private int BaoE;
-    private int BaoFei;
+    private double BaoE;
+    private double BaoFei;
 
     public InsuranceType() {
         super();
     }
 
-    public void setBaoE(int BaoE) {
+    public void setBaoE(double BaoE) {
         this.BaoE = BaoE;
     }
 
-    public int getBaoE() {
+    public double getBaoE() {
         return BaoE;
     }
 
-    public void setBaoFei(int BaoFei) {
+    public void setBaoFei(double BaoFei) {
         this.BaoFei = BaoFei;
     }
 
-    public int getBaoFei() {
+    public double getBaoFei() {
         return BaoFei;
     }
 }
