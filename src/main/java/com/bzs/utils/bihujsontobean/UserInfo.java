@@ -14,6 +14,8 @@ public class UserInfo {
     private String BusinessExpireDate;
     private String BusinessStartDate;
     private String ForceStartDate;
+    private String BusinessEndDate;
+    private String ForceEndDate;
     private String InsuredName;
     private String InsuredIdCard;
     private int InsuredIdType;
@@ -135,5 +137,21 @@ public class UserInfo {
     }
     public String getVehicleInfo() {
         return VehicleInfo;
+    }
+
+    public String getBusinessEndDate() {
+        return BusinessEndDate;
+    }
+
+    public void setBusinessEndDate(String businessEndDate) {
+        BusinessEndDate = businessEndDate;
+    }
+
+    public String getForceEndDate() {
+        return ForceEndDate;
+    }
+
+    public void setForceEndDate(String forceEndDate) {
+        ForceEndDate = forceEndDate;
     }
 }

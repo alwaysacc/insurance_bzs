@@ -34,8 +34,6 @@ public enum InsuranceItems {
     InsuranceItems(String code) {
         this.code = code;
     }
-
-
     public String  code() {
         return code;
     }

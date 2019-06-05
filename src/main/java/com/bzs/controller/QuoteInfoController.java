@@ -302,7 +302,7 @@ public class QuoteInfoController {
      */
 
     @ApiOperation("调用第三方壁虎-报价核保基础接口")
-    @PostMapping("/Ws_PostPrecisePrice")
+    @PostMapping("/Ws_GetPostPrecisePrice")
     public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID,@RequestParam String personCardIDType,
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
                                    @RequestParam String carFirstRegisterDate,String lists,
@@ -310,6 +310,11 @@ public class QuoteInfoController {
                                    String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup,Long submitGroup,String isSame,int forceTax){
         isSame="0";
         return quoteInfoService.postPrecisePrice(personName,personCardID,personCardIDType,carNo,carFrameNo,carEngineNo,carFirstRegisterDate,lists,ciBeginDate,biBeginDate,carTransDate,carVehicleFgwCode,carInfoId,createdBy,quoteGroup,submitGroup,isSame,forceTax);
+    }
 
+    @ApiOperation("调用第三方壁虎-获取报价信息接口")
+    @PostMapping("/Ws_GetPrecisePrice")
+    Map getPrecisePrice(String licenseNo, Long quoteGroup,String createBy,String carInfoId){
+        return quoteInfoService.getPrecisePrice(licenseNo,quoteGroup,createBy,carInfoId);
     }
 }

@@ -110,8 +110,9 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * 获取报价信息，在postPrecisePrice基础上
      * @param licenseNo
      * @param quoteGroup
+     * @param quoteGroup
      * @return
      */
-    Map getPrecisePrice(String licenseNo, Long quoteGroup);
+    Map getPrecisePrice(String licenseNo, Long quoteGroup,String createBy,String carInfoId);
 
 }

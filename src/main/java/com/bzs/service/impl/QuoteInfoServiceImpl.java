@@ -16,6 +16,7 @@ import com.bzs.utils.commons.TwoPower;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.encodeUtil.EncodeUtil;
 import com.bzs.utils.enumUtil.CityCodeEnum;
+import com.bzs.utils.enumUtil.InsuranceItems;
 import com.bzs.utils.enumUtil.InsuranceItems2;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.httpUtil.HttpClientUtil;
@@ -944,18 +945,18 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map getPrecisePrice(String licenseNo, Long quoteGroup) {
-        Map resultMap=new HashedMap();
+    public Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy,String carInfoId) {
+        Map resultMap = new HashedMap();
         if (StringUtils.isBlank(licenseNo)) {
-            resultMap.put("code","18000");
-            resultMap.put("msg","参数异常：车牌号必传");
-            resultMap.put("data","");
+            resultMap.put("code", "18000");
+            resultMap.put("msg", "参数异常：车牌号必传");
+            resultMap.put("data", "");
             return resultMap;
         }
         if (null == quoteGroup) {
-            resultMap.put("code","18000");
-            resultMap.put("msg","参数异常：意向投保公司值必传");
-            resultMap.put("data","");
+            resultMap.put("code", "18000");
+            resultMap.put("msg", "参数异常：意向投保公司值必传");
+            resultMap.put("data", "");
             return resultMap;
         }
         int agent = ThirdAPI.AGENT;
@@ -963,44 +964,64 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String secretKey = ThirdAPI.SECRETKEY;
       /*  int timeFormat = 0;//按照实时起保返回到期日期（商业/交强）0（默认）：否 1：是
         int showEmail = 0;//是否展示邮箱：1：是 0：否（默认）
-        int showXiuLiChangType = 0;//是否展示修理厂类型0（默认）:否  1：是
         int showCarInfo = 0;//是否展示其他业务信息 0：否  1：是
-        int showFybc = 0;//是否展示补偿费用0:否 1：是
-        int showSheBei = 0;//是否展示新增设备0:否 1:是
         int renewalCarType = 0; //大小号牌：0小车，1大车，默认0*/
         int showVehicleInfo = 1;//是否展示车型信息:0 否   1：是
         int showTotalRate = 1;//是否展示折扣系数0：否 1：是
         int showRepeatSubmit = 1; //是否展示重复投保信息0：否 1：是
         int showEndDate = 1; //是否展示报价截止时间：0否（默认）、1是
+        int showXiuLiChangType = 1;//是否展示修理厂类型0（默认）:否  1：是
+        int showFybc = 1;//是否展示补偿费用0:否 1：是
+        int showSheBei = 1;//是否展示新增设备0:否 1:是
 
         String param = "LicenseNo=" + licenseNo + "&QuoteGroup=" + quoteGroup
-                + "&ShowRepeatSubmit=" + showRepeatSubmit + "&ShowEndDate=" + showEndDate +
-                "&ShowTotalRate=" + showTotalRate + "&Agent=" + agent
-                + "&CustKey=" + custKey + "&ShowVehicleInfo="
-                + showVehicleInfo;
+                + "&ShowRepeatSubmit=" + showRepeatSubmit + "&ShowEndDate=" + showEndDate
+                + "&ShowTotalRate=" + showTotalRate + "&Agent=" + agent
+                + "&CustKey=" + custKey + "&ShowVehicleInfo="+showVehicleInfo
+                + "&ShowXiuLiChangType="+showXiuLiChangType
+                + "&ShowSheBei="+showSheBei+"&ShowFybc="+showFybc;
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
-        QuoteInfo qpc=new QuoteInfo(UUIDS.getDateUUID());
+        String uuid = UUIDS.getDateUUID();
+        QuoteInfo qpc = new QuoteInfo(uuid);//报价对象
+        qpc.setCarInfoId(carInfoId);
+        qpc.setCreatedBy(createBy);
+        Date nowDate=new Date();
+        String sendTime=DateUtil.getDateToString(nowDate,"yyyy-MM-dd HH:mm:ss");
+        nowDate= DateUtil.getDateToDate(nowDate,"yyyy-MM-dd HH:mm:ss");
+        qpc.setCreatedTime(nowDate);
+        String insuranceName= InsuranceNameEnum.getName(quoteGroup);
+        qpc.setQuoteInsuranceName(insuranceName);
+        PCICResponseBean bean=new PCICResponseBean();
+        bean.setSendTime(sendTime);
         try {
             String URL = ThirdAPI.BIHUURL + ThirdAPI.GetSpecialPrecisePrice;
             HttpResult result = HttpClientUtil.doGet(URL + param, null);
             String body = result.getBody();
             int code = result.getCode();
-            String message="";
+            String message = "";
             if (200 == code) {
                 if (StringUtils.isNotBlank(body)) {
                     JsonRootBean javaBean = JSONObject.parseObject(body, JsonRootBean.class);
                     int status = javaBean.getBusinessStatus();
                     String msg = javaBean.getStatusMessage();
-                    if(1!=status){//请求失败
-                        resultMap.put("msg", msg);
-                        resultMap.put("data", null);
-                        resultMap.put("resultMap", status+"");// 获取报价信息失败
+                    if (1 != status) {//请求失败
+
                         qpc.setQuoteStatus(0);//报价失败
+                        qpc.setSubmitStatus(-1);//未核保
+                        qpc.setSubmitresult("报价失败无法核保");//未核保
                         qpc.setQuoteResult(msg);//报价失败描述
+                        bean.setRetMsg("报价失败,错误代码"+status);
+                        bean.setRetCode("0099");
+                        bean.setState("0");
+                        bean.setSendTime(sendTime);
+                        resultMap.put("code", "400");
+                        resultMap.put("msg", msg);
+                        resultMap.put("data", bean);
+                        resultMap.put("quoteId", uuid);
                         quoteInfoMapper.insert(qpc);
-                        return  resultMap;
+                        return resultMap;
                     }
                     //请求成功
                     com.bzs.utils.bihujsontobean.Item item = javaBean.getItem();
@@ -1011,41 +1032,59 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setQuoteResult(quoteResult);
                     qpc.setQuoteStatus(quoteStatus);
                     // 0：不重复 1：交强重复 2：商业重复 3:双险都重复投保
-                    String RepeatSubmitResult = item.getRepeatSubmitResult();
-                    qpc.setRepeatSubmitResult(RepeatSubmitResult);
-                    String repeatInsurance=null;
-                    if("1".equals(RepeatSubmitResult)){
-                        repeatInsurance="交强重复";
-                    }else if("2".equals(RepeatSubmitResult)){
-                        repeatInsurance="商业重复";
-                    }else if("3".equals(RepeatSubmitResult)){
-                        repeatInsurance="双险都重复投保";
+                    String repeatSubmitResult = item.getRepeatSubmitResult();
+                    qpc.setRepeatSubmitResult(repeatSubmitResult);
+                    String repeatInsurance = null;
+                    if ("1".equals(repeatSubmitResult)) {
+                        repeatInsurance = "交强重复";
+                    } else if ("2".equals(repeatSubmitResult)) {
+                        repeatInsurance = "商业重复";
+                    } else if ("3".equals(repeatSubmitResult)) {
+                        repeatInsurance = "双险都重复投保";
+                    }else if ("0".equals(repeatSubmitResult)) {
+                        repeatInsurance = "不重复";
                     }
+                    qpc.setSubmitresult(repeatSubmitResult);//添加是否重复
                     //报价失败
-                    if(quoteStatus<=0){
-                        resultMap.put("msg", "报价失败："+quoteResult);
-                        resultMap.put("data", null);
-                        resultMap.put("code", quoteStatus+"");// 请求报价信息失败
-                        qpc.setQuoteStatus(0);//获取报价异常代码
-                        if(repeatInsurance!=null){
-                            qpc.setQuoteResult("报价失败："+repeatInsurance+":"+quoteResult);//信息描述
-                        }else{
-                            qpc.setQuoteResult("报价失败："+quoteResult);//信息描述
+                    if (quoteStatus <= 0) {
+                        logger.info("报价失败>>>"+quoteResult);
+
+                        qpc.setQuoteStatus(0);//报价失败
+                        qpc.setSubmitStatus(-1);//未核保
+                        qpc.setSubmitresult("报价失败无法核保");//未核保
+                        qpc.setQuoteResult("报价失败：" + quoteResult);//报价失败描述
+                        if (repeatInsurance != null) {
+                            qpc.setQuoteResult("报价失败：" + repeatInsurance + ":" + quoteResult);//信息描述
+                        } else {
+                            qpc.setQuoteResult("报价失败：" + quoteResult);//信息描述
                         }
                         quoteInfoMapper.insert(qpc);
-                        resultMap.put("quoteId", qpc.getQuoteId());
+                        bean.setRetCode("0099");
+                        bean.setState("0");
+                        bean.setRetMsg("报价失败：" + quoteResult);
+                        resultMap.put("code", "400");
+                        resultMap.put("msg", "报价失败");
+                        resultMap.put("data", bean);
+                        resultMap.put("quoteId", uuid);
                         return resultMap;
                     }
+                    ResponseData data=new ResponseData();
+
                     //报价成功开始执行
                     logger.info("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
                     System.out.println("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
-                   String autoMoldCode= userInfo.getAutoMoldCode();//精友码
-                    String  forceStartDate=userInfo.getForceStartDate();//交强险
-                    String  forceExpireDate=userInfo.getForceExpireDate();//
-
-
+                    String autoMoldCode = userInfo.getAutoMoldCode();//精友码
+                    String forceStartDate = userInfo.getForceStartDate();//(这次报价)交强险起保日期（报价成功即可返回）
+                    String forceExpireDate = userInfo.getForceExpireDate();//(去年)交强险到期时间（报价成功即可返回）
+                    String businessStartDate = userInfo.getBusinessStartDate();//((这次报价)商业险起保日期（报价成功即可返回）
+                    String businessExpireDate = userInfo.getBusinessExpireDate();//（去年）商业险到期时间(准确率有问题，只有平安成功时才会返回内容)
+                    String ForceEndDate = userInfo.getForceEndDate();//(这次报价)商业险截止日期（报价成功即可返回，需要请求参数ShowEndDate=1拉取）
+                    String BusinessEndDate = userInfo.getBusinessEndDate();//(这次报价)交强险截止日期（报价成功即可返回，需要请求参数ShowEndDate=1拉取）
+                    String vehicleInfo =userInfo.getVehicleInfo();
+                    data.setCarModel(vehicleInfo);
+                    qpc.setCarModel(vehicleInfo);//车型信息
                     double bizTotal = item.getBizTotal();
-                    long buid =item.getBuId();// 获取支付接口必备参数
+                    long buid = item.getBuId();// 获取支付接口必备参数
                     double forceTotal = item.getForceTotal();
                     double taxTotal = item.getTaxTotal();
                     double total = bizTotal + forceTotal + taxTotal;
@@ -1053,110 +1092,284 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     double cheSunBaoE = item.getCheSun().getBaoE();
                     double cheSunBaoFei = item.getCheSun().getBaoFei();
                     double sanZheBaoE = item.getSanZhe().getBaoE();
-                    double sanZheBaoFei =  item.getSanZhe().getBaoFei();
-                    double daoQiangBaoE =  item.getDaoQiang().getBaoE();
+                    double sanZheBaoFei = item.getSanZhe().getBaoFei();
+                    double daoQiangBaoE = item.getDaoQiang().getBaoE();
                     double daoQiangBaoFei = item.getDaoQiang().getBaoFei();
                     double siJiBaoE = item.getSiJi().getBaoE();
                     double siJiBaoFei = item.getSiJi().getBaoFei();
-                    double chengKeBaoE =item.getChengKe().getBaoE();
+                    double chengKeBaoE = item.getChengKe().getBaoE();
                     double chengKeBaoFei = item.getChengKe().getBaoFei();
                     double boLiBaoE = item.getBoLi().getBaoE();
-                    double boLiBaoFei =item.getBoLi().getBaoFei();
+                    double boLiBaoFei = item.getBoLi().getBaoFei();
                     double huaHenBaoE = item.getHuaHen().getBaoE();
-                    double huaHenBaoFei =  item.getHuaHen().getBaoFei();
+                    double huaHenBaoFei = item.getHuaHen().getBaoFei();
                     double sheShuiBaoE = item.getSheShui().getBaoE();
-                    double sheShuiBaoFei =  item.getSheShui().getBaoFei();
-                    double ziRanBaoE =item.getZiRan().getBaoE();
+                    double sheShuiBaoFei = item.getSheShui().getBaoFei();
+                    double ziRanBaoE = item.getZiRan().getBaoE();
                     double ziRanBaoFei = item.getZiRan().getBaoFei();
+
                     double buJiMianSanZheBaoE = item.getBuJiMianSanZhe().getBaoE();
-                    double buJiMianSanZheBaoFei =  item.getBuJiMianSanZhe().getBaoFei();
-                    double buJiMianCheSunBaoE =  item.getBuJiMianCheSun().getBaoE();
-                    double buJiMianCheSunBaoFei =  item.getBuJiMianCheSun().getBaoFei();
-                    double buJiMianDaoQiangBaoE =  item.getBuJiMianDaoQiang().getBaoE();
-                    double buJiMianDaoQiangBaoFei =  item.getBuJiMianDaoQiang().getBaoFei();
+                    double buJiMianSanZheBaoFei = item.getBuJiMianSanZhe().getBaoFei();
+                    double buJiMianCheSunBaoE = item.getBuJiMianCheSun().getBaoE();
+                    double buJiMianCheSunBaoFei = item.getBuJiMianCheSun().getBaoFei();
+                    double buJiMianDaoQiangBaoE = item.getBuJiMianDaoQiang().getBaoE();
+                    double buJiMianDaoQiangBaoFei = item.getBuJiMianDaoQiang().getBaoFei();
                     double buJiMianChengKeBaoE = item.getBuJiMianChengKe().getBaoE();
-                    double buJiMianChengKeBaoFei =  item.getBuJiMianChengKe().getBaoFei();
-                    double buJiMianSiJiBaoE =  item.getBuJiMianSiJi().getBaoE();
-                    double buJiMianSiJiBaoFei =  item.getBuJiMianSiJi().getBaoFei();
-                    double buJiMianHuaHenBaoE =  item.getBuJiMianHuaHen().getBaoE();
-                    double buJiMianHuaHenBaoFei =  item.getBuJiMianHuaHen().getBaoFei();
-                    double buJiMianSheShuiBaoE =  item.getBuJiMianSheShui().getBaoE();
+                    double buJiMianChengKeBaoFei = item.getBuJiMianChengKe().getBaoFei();
+                    double buJiMianSiJiBaoE = item.getBuJiMianSiJi().getBaoE();
+                    double buJiMianSiJiBaoFei = item.getBuJiMianSiJi().getBaoFei();
+                    double buJiMianHuaHenBaoE = item.getBuJiMianHuaHen().getBaoE();
+                    double buJiMianHuaHenBaoFei = item.getBuJiMianHuaHen().getBaoFei();
+                    double buJiMianSheShuiBaoE = item.getBuJiMianSheShui().getBaoE();
                     double buJiMianSheShuiBaoFei = item.getBuJiMianSheShui().getBaoFei();
-                    double buJiMianZiRanBaoE =  item.getBuJiMianZiRan().getBaoE();
-                    double buJiMianZiRanBaoFei =  item.getBuJiMianZiRan().getBaoFei();
-                    double BuJiMianJingShenSunShiBaoE =  item.getBuJiMianJingShenSunShi().getBaoE();
+                    double buJiMianZiRanBaoE = item.getBuJiMianZiRan().getBaoE();
+                    double buJiMianZiRanBaoFei = item.getBuJiMianZiRan().getBaoFei();
+                    double BuJiMianJingShenSunShiBaoE = item.getBuJiMianJingShenSunShi().getBaoE();
                     double BuJiMianJingShenSunShiBaoFei = item.getBuJiMianJingShenSunShi().getBaoFei();
                     double hcJingShenSunShiBaoE = item.getHcJingShenSunShi().getBaoE();
                     double hcJingShenSunShiBaoFei = item.getHcJingShenSunShi().getBaoFei();
-                    double hcSanFangTeYueBaoE =  item.getHcSanFangTeYue().getBaoE();
-                    double hcSanFangTeYueBaoFei =   item.getHcSanFangTeYue().getBaoFei();
+                    double hcSanFangTeYueBaoE = item.getHcSanFangTeYue().getBaoE();
+                    double hcSanFangTeYueBaoFei = item.getHcSanFangTeYue().getBaoFei();
                     double hcXiuLiChangBaoE = item.getHcXiuLiChang().getBaoE();
-                    double hcXiuLiChangBaoFei =  item.getHcXiuLiChang().getBaoFei();
+
+                    double hcXiuLiChangBaoFei = item.getHcXiuLiChang().getBaoFei();
+                    String hcXiuLiChangType =item.getHcXiuLiChangType();
+
+                    double fybcBaoE = item.getFybc().getBaoE();
+                    double fybcBaoFei = item.getFybc().getBaoFei();
+
+                    double  fybcDaysBaoE = item.getFybcDays().getBaoE();
+                    double  fybcDaysBaoFei = item.getFybcDays().getBaoFei();
                     // hcXiuLiChangTypes=quoteInfos.getString("HcXiuLiChangType");
                     double rateFactor1 = item.getRateFactor1();//费率系数1（无赔款优惠系数）
-                    double rateFactor2 =  item.getRateFactor2();//费率系数2（自主渠道系数）
-                    double rateFactor3 =  item.getRateFactor3();//费率系数3（自主核保系数）
-                    double rateFactor4 =  item.getRateFactor4();//费率系数4（交通违法浮动系数）
-                    String totalRate =item.getTotalRate();
+                    double rateFactor2 = item.getRateFactor2();//费率系数2（自主渠道系数）
+                    double rateFactor3 = item.getRateFactor3();//费率系数3（自主核保系数）
+                    double rateFactor4 = item.getRateFactor4();//费率系数4（交通违法浮动系数）
+                    String totalRate = item.getTotalRate();
                     qpc.setBizTotal(BigDecimal.valueOf(bizTotal));
-                    qpc.setForceTotal(BigDecimal.valueOf(forceTotal) );
-                    qpc.setTaxTotal( BigDecimal.valueOf(taxTotal));
+                    qpc.setBizPremiumByDis(bizTotal + "");
+                    data.setBiPremiumByDis(bizTotal + "");
+                    qpc.setForceTotal(BigDecimal.valueOf(forceTotal));
+                    data.setNonClaimDiscountRate(rateFactor1+"");
+                    data.setTrafficTransgressRate(rateFactor4+"");
+                    data.setUnderwritingRate(rateFactor3+"");
+                    data.setChannelRate(rateFactor2+"");
+                    qpc.setTaxTotal(BigDecimal.valueOf(taxTotal));
+                    data.setCiPremium(forceTotal+"");
+                    data.setCiBeginDate(forceStartDate);
+                    data.setCarshipTax(taxTotal+"");
+                    data.setBiBeginDate(businessStartDate);
+                    qpc.setBizStartTime(businessStartDate);
+                    qpc.setForceStartTime(forceStartDate);
+                    int forceTax = 1;
+                    if (bizTotal > 0 && forceTotal > 0) {//1：商业+交强车船
+                        forceTax = 1;
+                    } else if (bizTotal > 0) {//0:单商业
+                        forceTax = 0;
+                    } else if (forceTotal > 0) {//2：单交强+车船
+                        forceTax = 2;
+                    }
+                    ArrayList<InsuranceTypeInfo> arrayList = new ArrayList<>();
+                    InsuranceTypeInfo insuranceTypeInfo=null;
+                    if (forceTax >= 1) {
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName("交强险");
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    if (cheSunBaoE > 0) {//车损险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
 
-                    if(boLiBaoE>0){
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("A"));
+                        BigDecimal bigDecimal = new BigDecimal(cheSunBaoE);
+                        insuranceTypeInfo.setInsuranceAmount(bigDecimal);
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(cheSunBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianCheSunBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MA"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianCheSunBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianCheSunBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (sanZheBaoE > 0) {//三者
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("B"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(sanZheBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(sanZheBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianSanZheBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MB"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianSanZheBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianSanZheBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (daoQiangBaoE > 0) {//盗抢险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("G1"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(daoQiangBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(daoQiangBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianDaoQiangBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
 
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MG1"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianDaoQiangBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianDaoQiangBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (siJiBaoE > 0) {//司机险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D3"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(siJiBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(siJiBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianSiJiBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD3"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianSiJiBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianSiJiBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (chengKeBaoE > 0) {//乘客险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D4"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(chengKeBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(chengKeBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianChengKeBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD4"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianChengKeBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianChengKeBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (boLiBaoE > 0) {//玻璃
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("F"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(boLiBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(boLiBaoFei));
+                        arrayList.add(insuranceTypeInfo);
 
                     }
-                   /* qpc.setBoLiBaoE(boLiBaoE);
-                    qpc.setCheSunBaoE(cheSunBaoE);
-                    qpc.setCheSunBaoFei(cheSunBaoFei);
-                    qpc.setChengKeBaoE(chengKeBaoE);
-                    qpc.setChengKeBaoFei(chengKeBaoFei);
-                    qpc.setSanZheBaoE(sanZheBaoE);
-                    qpc.setSanZheBaoFei(sanZheBaoFei);
-                    qpc.setDaoQiangBaoE(daoQiangBaoE);
-                    qpc.setDaoQiangBaoFei(daoQiangBaoFei);
-                    qpc.setSiJiBaoE(siJiBaoE);
-                    qpc.setSiJiBaoFei(siJiBaoFei);
-                    qpc.setChengKeBaoE(chengKeBaoE);
-                    qpc.setChengKeBaoFei(chengKeBaoFei);
-                    qpc.setBoLiBaoE(boLiBaoE);
-                    qpc.setBoLiBaoFei(boLiBaoFei);
-                    qpc.setSheShuiBaoE(sheShuiBaoE);
-                    qpc.setSheShuiBaoFei(sheShuiBaoFei);
-                    qpc.setHuaHenBaoE(huaHenBaoE);
-                    qpc.setHuaHenBaoFei(huaHenBaoFei);
-                    qpc.setZiRanBaoE(ziRanBaoE);
-                    qpc.setZiRanBaoFei(ziRanBaoFei);
-                    qpc.setBuJiMianCheSunBaoE(buJiMianCheSunBaoE);
-                    qpc.setBuJiMianCheSunBaoFei(buJiMianCheSunBaoFei);
-                    qpc.setBuJiMianSanZhenBaoE(buJiMianSanZheBaoE);
-                    qpc.setBuJiMianSanZheBaoFei(buJiMianSanZheBaoFei);
-                    qpc.setBuJiMianDaoQiangBaoE(buJiMianDaoQiangBaoE);
-                    qpc.setBuJiMianDaoQiangBaoFei(buJiMianDaoQiangBaoFei);
-                    qpc.setBuJiMianSiJiBaoE(buJiMianSiJiBaoE);
-                    qpc.setBuJiMianSiJiBaoFei(buJiMianSiJiBaoFei);
-                    qpc.setBuJiMianChengKeBaoE(buJiMianChengKeBaoE);
-                    qpc.setBuJiMianChengKeBaoFei(buJiMianChengKeBaoFei);
-                    qpc.setBuJiMianHuaHenBaoE(buJiMianHuaHenBaoE);
-                    qpc.setBuJiMianHuaHenBaoFei(buJiMianHuaHenBaoFei);
-                    qpc.setBuJiMianSheShuiBaoE(buJiMianSheShuiBaoE);
-                    qpc.setBuJiMianSheShuiBaoFei(buJiMianSheShuiBaoFei);
-                    qpc.setBuJiMianZiRanBaoE(buJiMianZiRanBaoE);
-                    qpc.setBuJiMianZiRanBaoFei(buJiMianZiRanBaoFei);
-                    qpc.setHcSanFangTeYueBaoE(hcSanFangTeYueBaoE);
-                    qpc.setHcSanFangTeYueBaoFei(hcSanFangTeYueBaoFei);
-                    qpc.setHcXiuLiChangBaoE(hcXiuLiChangBaoE);
-                    qpc.setHcXiuLiChangBaoFei(hcXiuLiChangBaoFei);*/
-                    qpc.setNoReparationSaleRate(rateFactor1+"");
-                    qpc.setIndependentChannelDate(rateFactor2+"");
-                    qpc.setIndependentSubmitRate(rateFactor3+"");
-                    qpc.setTrafficIllegalRate(rateFactor4+"");
+                    if (huaHenBaoE > 0) {//划痕险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("L"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(huaHenBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(huaHenBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianHuaHenBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("ML"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianHuaHenBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianHuaHenBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (sheShuiBaoE > 0) {//涉水险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("X1"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(sheShuiBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(sheShuiBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianSheShuiBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MX1"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianSheShuiBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianSheShuiBaoE));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (ziRanBaoE > 0) {//自燃险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(ziRanBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(ziRanBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(buJiMianZiRanBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MZ"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(buJiMianZiRanBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(buJiMianZiRanBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+//
+                    if (hcJingShenSunShiBaoE > 0) {//精神损失险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("R"));
+                        insuranceTypeInfo.setInsuranceAmount(new BigDecimal(hcJingShenSunShiBaoE));
+                        insuranceTypeInfo.setInsurancePremium(new BigDecimal(hcJingShenSunShiBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                        if(BuJiMianJingShenSunShiBaoE>0){//不计免
+                            insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MR"));
+                            insuranceTypeInfo.setInsuranceAmount(new BigDecimal(BuJiMianJingShenSunShiBaoE));
+                            insuranceTypeInfo.setInsurancePremium(new BigDecimal(BuJiMianJingShenSunShiBaoFei));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                    }
+                    if (hcSanFangTeYueBaoE > 0) {//三方特约险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z3"));
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(hcSanFangTeYueBaoE));
+                        insuranceTypeInfo.setInsurancePremium(BigDecimal.valueOf(hcSanFangTeYueBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    //hcXiuLiChangBaoE
+                    if (hcXiuLiChangBaoE > 0) {//修理厂险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Q3"));
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(hcXiuLiChangBaoE));
+                        insuranceTypeInfo.setInsurancePremium(BigDecimal.valueOf(hcXiuLiChangBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    //指定专修厂类型
+                    if("0".equals(hcXiuLiChangType)||"1".equals(hcXiuLiChangType)){
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z4"));
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(hcXiuLiChangType.indexOf(hcXiuLiChangType)));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    if (fybcBaoE > 0) {//修理期间费用补偿险
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z2"));
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(fybcBaoE));
+                        insuranceTypeInfo.setInsurancePremium(BigDecimal.valueOf(fybcBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    if (fybcDaysBaoE > 0) {//修理期间天数
+                        insuranceTypeInfo = new InsuranceTypeInfo(nowDate,createBy,"1",uuid);
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z5"));
+                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(fybcDaysBaoE));
+                        insuranceTypeInfo.setInsurancePremium(BigDecimal.valueOf(fybcDaysBaoFei));
+                        arrayList.add(insuranceTypeInfo);
+                    }
+                    data.setInsurancesLists(arrayList);//添加险种
+                    qpc.setNoReparationSaleRate(rateFactor1 + "");
+                    qpc.setIndependentChannelDate(rateFactor2 + "");
+                    qpc.setIndependentSubmitRate(rateFactor3 + "");
+                    qpc.setTrafficIllegalRate(rateFactor4 + "");
                     qpc.setTotalRate(totalRate);
-                    qpc.setQuoteSource(source+"");
+                    qpc.setQuoteSource(source + "");
 
                     // qpc.setHcXiuLiChangType(hcXiuLiChangTypes);
                     qpc.setTotal(BigDecimal.valueOf(total));
-                    qpc.setBuid(buid+"");
+                    qpc.setBuid(buid + "");
                     double buJiMianTotal = buJiMianSanZheBaoE
                             + buJiMianSanZheBaoFei + buJiMianCheSunBaoE
                             + buJiMianCheSunBaoFei + buJiMianDaoQiangBaoE
@@ -1166,42 +1379,52 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                             + buJiMianHuaHenBaoFei + buJiMianSheShuiBaoE
                             + buJiMianSheShuiBaoFei + buJiMianZiRanBaoE
                             + buJiMianZiRanBaoFei;
-                    qpc.setExcludingDeductibleTotal(BigDecimal.valueOf(buJiMianTotal));
+                    BigDecimal  b=new BigDecimal(buJiMianTotal);
+                    qpc.setExcludingDeductibleTotal(b);
                     // 0：不重复 1：交强重复 2：商业重复 3:双险都重复投保
-                    resultMap.put("code", "1");// 报价成功
-                    resultMap.put("data", javaBean);
-                    resultMap.put("msg","报价状态：报价成功;报价内容："+quoteResult);
+                   /* resultMap.put("code", "1");// 报价成功
+                    resultMap.put("data", qpc);*/
+                    insuranceTypeInfoMapper.insertBatch(arrayList);
+                    bean.setRetCode("0000");
+                    bean.setState("1");
+                    bean.setRetMsg("报价失败：" + quoteResult);
+                    bean.setData(data);
+                    resultMap.put("code", "200");
+                    resultMap.put("msg", "报价状态：报价成功;报价内容：" + quoteResult);
+                    resultMap.put("data", bean);
+                    resultMap.put("quoteId", uuid);
                     qpc.setQuoteStatus(1);//报价状态
                     qpc.setQuoteResult(quoteResult);//报价信息
+                    qpc.setSubmitStatus(-1);//报价状态
+                    qpc.setSubmitresult("未核保");//报价信息
                     quoteInfoMapper.insert(qpc);
-                    resultMap.put("quoteId", qpc.getQuoteId());
                     return resultMap;
                 } else {
                     resultMap.put("code", "400");// 报价成功
-                    resultMap.put("data", "");
-                    resultMap.put("msg","报价状态失败,获取报价内容为空");
+                    resultMap.put("data", qpc);
+                    resultMap.put("msg", "报价状态失败,获取报价内容为空");
                     return resultMap;
 
                 }
 
             } else {
-                if(StringUtils.isNotBlank(body)){
-                    message=body;
-                }else{
-                    message="返回内容为空";
+                if (StringUtils.isNotBlank(body)) {
+                    message = body;
+                } else {
+                    message = "返回内容为空";
                 }
-                resultMap.put("code","400");
-                resultMap.put("msg",message);
-                resultMap.put("data","");
-                return  resultMap;
+                resultMap.put("code", "400");
+                resultMap.put("msg", message);
+                resultMap.put("data", qpc);
+                return resultMap;
             }
 
 
         } catch (Exception e) {
             logger.error("打印异常", e);
-            resultMap.put("code","500");
-            resultMap.put("msg","调用异常");
-            resultMap.put("data","");
+            resultMap.put("code", "500");
+            resultMap.put("msg", "调用异常");
+            resultMap.put("data", qpc);
             return resultMap;
         }
 

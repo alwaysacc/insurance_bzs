@@ -29,10 +29,11 @@
         <include refid="insertBacthItems"/>
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.insuranceTypeId},#{item.insuranceName},#{item.insuranceAmount},#{item.insurancePremium},
+            (#{item.insuranceTypeId},#{item.insuranceName},#{item.insuranceAmount},
+            #{item.insurancePremium},
             #{item.infoType},
-            #{item.typeId}
-            , #{item.standardPremium}, #{item.excludingEeductible}, #{item.createdBy})
+            #{item.typeId}, #{item.standardPremium}, #{item.excludingEeductible},
+            #{item.createdBy})
         </foreach>
     </insert>
 

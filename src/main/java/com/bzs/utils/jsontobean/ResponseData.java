@@ -1,5 +1,7 @@
 package com.bzs.utils.jsontobean;
 
+import com.bzs.model.InsuranceTypeInfo;
+
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ public class ResponseData {
     private PayInfo payInfo;
     private String channelRate;
     private List<InsurancesList> insurancesList;
+    private List<InsuranceTypeInfo> insurancesLists;
     private List<String> carList;
     private String trafficTransgressRate;
     private String refId;
@@ -30,6 +33,7 @@ public class ResponseData {
     private String advDiscountRate;
     private String realDiscountRate;
     private String biEcompensationRate;
+    private String carModel;
     public ResponseData() {
     }
 
@@ -191,5 +195,21 @@ public class ResponseData {
 
     public void setTrafficTransgressRate(String trafficTransgressRate) {
         this.trafficTransgressRate = trafficTransgressRate;
+    }
+
+    public String getCarModel() {
+        return carModel;
+    }
+
+    public void setCarModel(String carModel) {
+        this.carModel = carModel;
+    }
+
+    public List<InsuranceTypeInfo> getInsurancesLists() {
+        return insurancesLists;
+    }
+
+    public void setInsurancesLists(List<InsuranceTypeInfo> insurancesLists) {
+        this.insurancesLists = insurancesLists;
     }
 }
