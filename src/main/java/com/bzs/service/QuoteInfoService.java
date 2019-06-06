@@ -148,8 +148,41 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      */
     public Map<String, Object> getPayAddress(String carVin, String licenseNo,int payMent, Long source,String bizNo,
                                              String forceNo, String buid,String channelId,String quoteId,String createBy,int isGetPayWay,String carInfoId);
+
     /**
-     * 添加或更新
+     * 查看支付结果
+     * @param carVin
+     * @param licenseNo
+     * @param source
+     * @param buid
+     * @param bizNo
+     * @param forceNo
+     * @param channelId
+     * @param transactionNum
+     * @param orderId
+     * @return
+     */
+    Map<String, Object> getPayInfo(String carVin,String licenseNo, Long source,String buid, String bizNo, String forceNo, String channelId, String transactionNum, String orderId) ;
+
+    /**
+     * 作废原支付方式
+     * @param carVin
+     * @param licenseNo
+     * @param source
+     * @param buid
+     * @param orderId
+     * @param bizNo
+     * @param transactionNum
+     * @param forceNo
+     * @param channelId
+     * @param payWay 原支付方式 太保必须 6=刷卡、 2=划卡、 1=支票、 chinapay=银联电子支付、 weixin=微信支付、5=网银转账、3A=集中支付
+     * @return
+     */
+
+     Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String  orderId, String bizNo,String transactionNum,String forceNo, String channelId,String payWay);
+
+     /**
+     * &#x6dfb;&#x52a0;&#x6216;&#x66f4;&#x65b0;
      * @param quoteInfo
      * @return
      */

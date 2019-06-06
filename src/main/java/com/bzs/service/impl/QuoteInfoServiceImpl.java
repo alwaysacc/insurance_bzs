@@ -1665,6 +1665,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         qpc.setSerialNo(serialrNo);
                         String failureTimeStamp=data.getString("FailureTimeStamp");//支付链接的截止日期
                         Double money=data.getDouble("Money");
+                        //0=保司收款平台  1=pos
+                        //2=微信  3=微信公众号 4=H5
+                        String payWay=data.getString ("PayWay");
                         if(StringUtils.isNotBlank(failureTimeStamp)){
                             failureTimeStamp= DateUtil.stampToDate(failureTimeStamp,"yyyy-MM-dd HH:mm:ss");
                         }
@@ -1682,13 +1685,13 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         orderInfo.setPayTypeId(quoteId);
                         orderInfo.setCarInfoId(carInfoId);
                         orderInfo.setPayStatus(0);
-                        orderInfo.setPayment("2");//微信支付
+                        orderInfo.setPayment(payWay);
                         orderInfo.setCreateBy(createBy);
                         orderInfo.setPayMoney(new BigDecimal(money));
                         orderInfoService.save(orderInfo);
                         map.put("code", "200");
                         map.put("msg", "查询成功");
-                        map.put("data", qpc);
+                        map.put("data", orderInfo);
                         return map;
                     }else{
                         map.put("code", "400");
@@ -1716,6 +1719,180 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             map.put("msg", "请求异常");
             map.put("data", "");
             return map;
+        }
+    }
+
+    @Override
+    public Map<String, Object> getPayInfo(String carVin, String licenseNo,  Long source, String buid, String bizNo, String forceNo, String channelId, String transactionNum,String orderId) {
+        Map<String, Object> map=new HashMap<>();
+
+        String factCode = "400";
+        String message = "";
+        if (StringUtils.isBlank(carVin) || StringUtils.isBlank(licenseNo) || StringUtils.isBlank(buid) || StringUtils.isBlank(channelId) || StringUtils.isBlank(orderId) || null == source) {
+            factCode = "18000";
+            message = "获取支付信息失败:参数异常";
+            map.put("code", "400");
+            map.put("msg", message);
+            map.put("data", "");
+            return map;
+        }
+        if (StringUtils.isBlank(bizNo) && StringUtils.isBlank(forceNo)) {
+            factCode = "18000";
+            message = "获取支付信息失败：交强险投保单号和商业投保单号不能同时为空";
+            map.put("code", "400");
+            map.put("msg", message);
+            map.put("data", "");
+            return map;
+        }
+        int agent = ThirdAPI.AGENT;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String param = "Agent=" + agent + "&BiztNo=" + bizNo + "&ForcetNo="
+                + forceNo + "&CarVin=" + carVin + "&LicenseNo=" + licenseNo
+                + "&Source=" + source + "&ChannelId="
+                + channelId + "&BuId=" + buid ;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        try{
+            String URL=ThirdAPI.PayResult;
+            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
+            int code=httpResult.getCode();
+            String body=httpResult.getBody();
+            message=httpResult.getMessage();
+            if(200==code){
+              JSONObject jsonObject=  JSONObject.parseObject(body);
+                int BusinessStatus=jsonObject.getIntValue("BusinessStatus");
+                message= jsonObject.getString("StatusMessage");
+                if(BusinessStatus==1){
+                    int findPayResult = jsonObject.getJSONObject("Data").getIntValue("FindPayResult");
+                    String money = jsonObject.getJSONObject("Data").getString("Money");
+                    String bizpNo = jsonObject.getJSONObject("Data").getString("BizpNo");
+                    String forcepNo = jsonObject.getJSONObject("Data").getString("ForcepNo");
+                    map.put("code", "200");
+
+                    //支付状态0待支付,1完成2取消3过期4作废5已重新获取
+                    Integer status=0;
+                    if(findPayResult==1){
+                        map.put("msg", "支付成功");
+                        status=1;
+                    }else if(findPayResult==11){
+                        map.put("msg", "作废");
+                        status=4;
+                    }else  if(findPayResult==0){
+                        map.put("msg", "待交费");
+                    }
+                   /* if(status!=0){
+
+                    }*/
+                    OrderInfo orderInfo=new OrderInfo(orderId,status);
+                    orderInfoService.updatePayStatus(orderInfo);
+                    map.put("data", body);
+                    return map;
+                }else{
+                    if(BusinessStatus==-1001){
+                        map.put("status", "200");
+                        map.put("msg","获取结果成功:"+ message);
+                        map.put("data", "");
+                        return map;
+                    }else{
+                        map.put("status", "400");
+                        map.put("msg","获取结果成功"+ message);
+                        map.put("data", "");
+                        return map;
+                    }
+
+                }
+
+            }else{
+                if(StringUtils.isNotBlank(body)){
+                    message=body;
+                }else{
+                    message="请求出错";
+                }
+                map.put("status", "400");
+                map.put("msg", message);
+                map.put("data", "");
+                return map;
+            }
+        }catch (Exception e){
+            map.put("status", "400");
+            map.put("msg", "请求出错");
+            map.put("data", "");
+            return map;
+
+        }
+    }
+
+    @Override
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay) {
+        String factCode = "400";
+        String message = "";
+        Map<String, Object> map=new HashMap();
+        if (StringUtils.isBlank(carVin) || StringUtils.isBlank(licenseNo) || StringUtils.isBlank(buid) || StringUtils.isBlank(channelId) || StringUtils.isBlank(transactionNum)|| StringUtils.isBlank(orderId) || null == source) {
+            factCode = "18000";
+            message = "获取支付信息失败:参数异常";
+            map.put("code", "400");
+            map.put("msg", message);
+            map.put("data", "");
+            return map;
+        }
+        if (StringUtils.isBlank(bizNo) && StringUtils.isBlank(forceNo)) {
+            factCode = "18000";
+            message = "获取支付信息失败：交强险投保单号和商业投保单号不能同时为空";
+            map.put("code", "400");
+            map.put("msg", message);
+            map.put("data", "");
+            return map;
+        }
+
+
+        int agent = ThirdAPI.AGENT;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String param = "Agent=" + agent + "&BiztNo=" + bizNo + "&ForcetNo="
+                + forceNo + "&CarVin=" + carVin + "&LicenseNo=" + licenseNo
+                + "&Source=" + source + "&ChannelId="
+                + channelId + "&BuId=" + buid +"&TransactionNum="+transactionNum;
+        if(1==source){//太保
+            if(StringUtils.isBlank(payWay)){//太保必须 6=刷卡、 2=划卡、  1=支票、
+                //chinapay=银联电子支付、 weixin=微信支付、5=网银转账、3A=集中支付
+                payWay="weixin";
+                param+="&PayWay="+payWay;
+            }
+        }
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        try{
+            String URL=ThirdAPI.VoidPay;
+            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
+            int code=httpResult.getCode();
+            String body=httpResult.getBody();
+            message=httpResult.getMessage();
+            if(200==code){
+                int BusinessStatus=JSONObject.parseObject(body).getIntValue("BusinessStatus");
+                String StatusMessage=JSONObject.parseObject(body).getString("StatusMessage");
+                if(BusinessStatus==1){
+                    map.put("code", "200");
+                }else{
+                    map.put("code", "400");
+                }
+                map.put("msg", StatusMessage);
+
+            }else{
+                map.put("code", "400");
+                if(StringUtils.isNotBlank(body)){
+                    map.put("msg", body);
+                }else{
+                    map.put("msg", "请求异常，错误代码"+code);
+                }
+            }
+            map.put("data", "");
+            return map;
+        }catch (Exception e){
+            map.put("code", "500");
+            map.put("msg", "请求出错，错误代码：500");
+            map.put("data", "");
+            return null;
         }
     }
 

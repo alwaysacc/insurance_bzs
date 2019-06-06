@@ -315,7 +315,7 @@ public class QuoteInfoController {
      */
 
     @ApiOperation("调用第三方壁虎-报价核保基础接口")
-    @PostMapping("/Ws_GetPostPrecisePrice")
+    @PostMapping("/WX_GetPostPrecisePrice")
     public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID, @RequestParam String personCardIDType,
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
                                    @RequestParam String carFirstRegisterDate, String lists,
@@ -326,19 +326,29 @@ public class QuoteInfoController {
     }
 
     @ApiOperation("调用第三方壁虎-获取报价信息接口")
-    @PostMapping("/Ws_GetPrecisePrice")
+    @PostMapping("/WX_GetPrecisePrice")
     Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
         return quoteInfoService.getPrecisePrice(licenseNo, quoteGroup, createBy, carInfoId);
     }
 
     @ApiOperation("调用第三方壁虎-获取核保信息接口")
-    @PostMapping("/Ws_GetSubmitInfo")
+    @PostMapping("/WX_GetSubmitInfo")
     Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
         return quoteInfoService.getSubmitInfo(licenseNo, submitGroup, createBy, carInfoId, quoteId);
     }
     @ApiOperation("调用第三方壁虎-获取支付信息接口")
-    @PostMapping("/Ws_GetPayAddress")
+    @PostMapping("/WX_GetPayAddress")
     Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
         return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId);
     }
-}
+    @ApiOperation("调用第三方壁虎-获取支付结果接口")
+    @PostMapping("/WX_GetPayResult")
+    public Map<String, Object> getPayResult(String carVin, String licenseNo,  Long source, String buid, String bizNo, String forceNo, String channelId,String orderId) {
+        return quoteInfoService.getPayInfo(carVin,licenseNo,source,buid,bizNo,forceNo,channelId,null,orderId);
+    }
+    @ApiOperation("调用第三方壁虎-作废原支付接口")
+    @PostMapping("/WX_DoVoidPay")
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay) {
+        return quoteInfoService.doVoidPay(carVin,licenseNo,source,buid,orderId,bizNo,transactionNum,forceNo,channelId,payWay);
+    }
+    }
