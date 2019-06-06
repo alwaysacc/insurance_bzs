@@ -1608,6 +1608,27 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 return maps;
             }
         }*/
+        String nowdate=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        List<QuoteInfo> list = quoteInfoMapper.findListByDifferCondition(new QuoteInfo(quoteId));
+        if(CollectionUtils.isNotEmpty(list)){
+            QuoteInfo qpc=list.get(0);
+            if(null!=qpc){
+                String payUrl=qpc.getPayUrl();
+                String payEndDate=qpc.getPayEndDate();
+                if(StringUtils.isNotBlank(payUrl)&&StringUtils.isNotBlank(payEndDate)){
+                  int res=  DateUtil.compareDate(payEndDate,nowdate,"yyyy-MM-dd HH:mm:ss");
+                    if(res>=1){//1大于 0小于2等于-1有空值
+                        map.put("code", "200");
+                        map.put("msg", "查询成功");
+                        map.put("data", qpc);
+                        return map;
+                    }
+                }
+            }
+        }
+       // Map quoteList=this.findListByDifferCondition(quoteId,null,null,null);
+
+
         int agent = ThirdAPI.AGENT;
         String custKey = ThirdAPI.CUSTKEY;
         String secretKey = ThirdAPI.SECRETKEY;
@@ -1631,27 +1652,28 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 if (BusinessStatus == 1) {
                     JSONObject data=json.getJSONObject("Data");
                     if(data!=null){
+                        QuoteInfo qpc=new QuoteInfo(quoteId);
                         String payUrl=data.getString("PayUrl");//人保支付地址
                         String name=data.getString("Name");//车主
-                        String payNum=null;
-                        if(null!=data.get("PayNum")){
-                            payNum=data.getString("PayNum");//流水号
+                        if(null!=data.get("PayNum")){//流水号
+                            String  payNum=data.getString("PayNum");//太平洋等于校验码
+                            qpc.setCheckNo(payNum);//人保  payNum=serialrNo
                         }
-                        String transactionNum=data.getString("TransactionNum");//交易单号
+                        String transactionNum=data.getString("TransactionNum");//交易通知单号
+                        //JFCD-JS201906061213556412082
+                        String serialrNo=data.getString("SerialrNo");//交易通知单号
+                        qpc.setSerialNo(serialrNo);
                         String failureTimeStamp=data.getString("FailureTimeStamp");//支付链接的截止日期
                         Double money=data.getDouble("Money");
                         if(StringUtils.isNotBlank(failureTimeStamp)){
                             failureTimeStamp= DateUtil.stampToDate(failureTimeStamp,"yyyy-MM-dd HH:mm:ss");
                         }
-                        String nowdate=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
-                        QuoteInfo qpc=new QuoteInfo(quoteId);
                         qpc.setPayUrl(payUrl);
                         qpc.setPayTime(nowdate);
                         qpc.setPayMsg(payAddessStatusMessage);
                         qpc.setPayEndDate(failureTimeStamp);
-                        qpc.setCheckNo(payNum);
                         qpc.setPaymentNotice(transactionNum);
-                        quoteInfoMapper.insertOrUpdate(qpc);
+                        this.insertOrUpdate(qpc);
                        // (payUrl, nowdate, null, null, null, transactionNum, payNum, failureTimeStamp, payAddessStatusMessage);
                         OrderInfo orderInfo = new OrderInfo();
                         String oid = UUIDS.getDateUUID();
@@ -1666,7 +1688,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         orderInfoService.save(orderInfo);
                         map.put("code", "200");
                         map.put("msg", "查询成功");
-                        map.put("data", orderInfo);
+                        map.put("data", qpc);
                         return map;
                     }else{
                         map.put("code", "400");
