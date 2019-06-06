@@ -1,18 +1,20 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.CarInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.model.CarInfo;
 import com.bzs.model.query.CarInfoAndInsuranceInfo;
 import com.bzs.service.CarInfoService;
-import com.bzs.utils.AbstractService;
-import com.bzs.utils.Result;
-import com.bzs.utils.ResultCode;
-import com.bzs.utils.ResultGenerator;
+import com.bzs.utils.*;
+import com.bzs.utils.commons.ThirdAPI;
+import com.bzs.utils.httpUtil.HttpClientUtil;
+import com.bzs.utils.httpUtil.HttpResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.record.formula.functions.If;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
@@ -160,5 +162,43 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
         resultMap.put("msg",msg);
         resultMap.put("data",result);
         return resultMap;
+    }
+
+    @Override
+    public Result WX_GetNewVehicleInfo(String LicenseNo, String EngineNo, String CarVin, int IsNeedCarVin, String MoldName) {
+
+        String param = "";
+        if (IsNeedCarVin==0){
+            param = ThirdAPI.BEFORE + "LicenseNo=" + LicenseNo +
+                    "&IsNeedCarVin=" + IsNeedCarVin+"&MoldName=" + MoldName+ ThirdAPI.AFTER;
+        }else{
+            if (StringUtils.isNotBlank(CarVin))
+                CarVin="0";
+            if (StringUtils.isNotBlank(EngineNo))
+                EngineNo="0";
+            param = ThirdAPI.BEFORE + "LicenseNo=" + LicenseNo + "&EngineNo=" + EngineNo+"&CarVin=" + CarVin
+                    +"&IsNeedCarVin=" + IsNeedCarVin+"&MoldName=" + MoldName+ ThirdAPI.AFTER;
+        }
+        String SecCode = MD5Utils.md5(param + "d7eb7d66997");
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        String url = ThirdAPI.GetNewVehicleInfo + param;
+        HttpResult httpResult = null;
+        try {
+            httpResult = HttpClientUtil.doGet(url, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(httpResult);
+        JSONObject object = JSONObject.parseObject(httpResult.getBody());
+        if (httpResult.getCode()==200){
+           if (object.getIntValue("BusinessStatus")==1){
+               return ResultGenerator.genSuccessResult(object);
+           }else{
+               return ResultGenerator.genFailResult(object.getString("StatusMessage"));
+           }
+        }else{
+            return ResultGenerator.genFailResult(object.getString("StatusMessage"));
+        }
     }
 }
