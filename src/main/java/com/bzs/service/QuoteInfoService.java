@@ -115,4 +115,49 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      */
     Map getPrecisePrice(String licenseNo, Long quoteGroup,String createBy,String carInfoId);
 
+    /**
+     *获取车辆核保信息
+     * @param licenseNo 车牌号
+     * @param submitGroup 核保公司枚举值
+     * @return
+     */
+    Map<String, Object> getSubmitInfo(String licenseNo,Long submitGroup, String createBy,String carInfoId,String quoteId);
+
+
+    /**
+     * 	1、获取支付链接前需要校验一下保单的起保时间是否在当前时间之后，如果    已过起保时间无法获取支付链接；
+     * 	2、支付链接的有效期为2小时且当天前，超过两小时或者超过当天时需重新获取；
+     * 	3、太平洋 微信和poss支付都是返回 支付号、校验码及金额 三个参数，不返回支付链接地址；微信支付部分地区返回二维码：【北京、杭州、合肥、广州、天津、石家庄、太原、西安、济南、烟台、聊城、苏州、重庆、成都、贵阳、新乡、郑州、武汉、东莞、厦门、海口、沈阳、长春、昆明、保定】）
+     * 	4、人保和平安的订单有效期最长是30天且在起保日期前，太保的有效期为当天且在起保日期前；
+     * 	5、太保微信支付时不需要合作银行；
+     */
+    /**
+     * 获取支付信息
+     * @param carVin 车架
+     * @param licenseNo 车牌
+     * @param payMent 支付方式 1、微信  2、pos
+     * @param source 获取保司枚举值
+     * @param bizNo 商业险单号
+     * @param forceNo 交强险当好
+     * @param buid 报价接口返回
+     * @param channelId  核保后返回的渠道Id
+     * @param quoteId 报价id
+     * @param createBy 创建人
+     * @param isGetPayWay  是否获取链接的支付类型 0=否（默认）   1=是
+     * @return
+     */
+    public Map<String, Object> getPayAddress(String carVin, String licenseNo,int payMent, Long source,String bizNo,
+                                             String forceNo, String buid,String channelId,String quoteId,String createBy,int isGetPayWay,String carInfoId);
+    /**
+     * 添加或更新
+     * @param quoteInfo
+     * @return
+     */
+    int insertOrUpdate(QuoteInfo quoteInfo);
+    /**
+     * 更新
+     * @param quoteInfo
+     * @return
+     */
+    int updateByQuoteId(QuoteInfo quoteInfo);
 }

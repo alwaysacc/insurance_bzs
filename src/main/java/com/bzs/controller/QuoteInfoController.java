@@ -118,13 +118,13 @@ public class QuoteInfoController {
     @PostMapping("/getQuoteInfoAllParams")
     public Result getQuoteInfo(@RequestParam String personName, @RequestParam String personMobile, @RequestParam String personCardID,
                                @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
-                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate,String lists,
+                               @RequestParam String salesPerson, @RequestParam String carFirstRegisterDate, String lists,
                                String ciBeginDate, String biBeginDate, String carTransDate, String carIsTrans, String carEnergyType,
                                String carVehicleFgwCode, String carUse, String carVehicleType, String carUseProperty,
                                String carColor, String carNoType, String carInfoId, String createdBy, Long source, String account, String accountPwd) {
-        List  list=null;
-        if(StringUtils.isNotBlank(lists)){
-           list= (List)JSON.parseArray(lists);
+        List list = null;
+        if (StringUtils.isNotBlank(lists)) {
+            list = (List) JSON.parseArray(lists);
         }
         if (null == ciBeginDate) {
             ciBeginDate = "";
@@ -184,8 +184,8 @@ public class QuoteInfoController {
         if (StringUtils.isBlank(refId)) {
             refId = UUIDS.getDateUUID();
         }
-        if(StringUtils.isBlank(personMobile)){
-            personMobile="15051820077";
+        if (StringUtils.isBlank(personMobile)) {
+            personMobile = "15051820077";
         }
         params.setRefId(refId);
         String sendTime = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -217,7 +217,7 @@ public class QuoteInfoController {
         personInfo.setAddress(personAddress);
         personInfo.setAge(personAge);
         personInfo.setCardID(personCardID);
-        personMobile="15518727891";
+        personMobile = "15518727891";
         personInfo.setMobile(personMobile);
         personInfo.setName(personName);
         personInfo.setSex(personSex);
@@ -245,13 +245,14 @@ public class QuoteInfoController {
      * @return
      */
     @PostMapping("/pay")
-    public Result getPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source,String deliveryWay,String deliveryAddress,String contactName,String contactTel) {
+    public Result getPayMent(String proposalNo, String pay, String money, String createdBy, String carInfoId, String quoteId, Long source, String deliveryWay, String deliveryAddress, String contactName, String contactTel) {
         return quoteInfoService.getPayMentgetPayMent(proposalNo, pay, money, createdBy, carInfoId, quoteId, source, deliveryWay, deliveryAddress, contactName, contactTel);
     }
+
     @ApiOperation("作废支付")
     @PostMapping("/payCancel")
-    public Result payCancel(String proposalNo,String createdBy,String quoteId,Long source,String orderId){
-        return quoteInfoService.payCancel(proposalNo,createdBy,quoteId,source,orderId);
+    public Result payCancel(String proposalNo, String createdBy, String quoteId, Long source, String orderId) {
+        return quoteInfoService.payCancel(proposalNo, createdBy, quoteId, source, orderId);
     }
 
     @PostMapping("/updatePayInfo")
@@ -260,61 +261,84 @@ public class QuoteInfoController {
         String status = (String) result.get("status");
         return ResultGenerator.genSuccessResult(status);
     }
+
     @ApiOperation("根据不同条件获取")
     @PostMapping("/findListByDifferCondition")
-    public Result findListByDifferCondition(String quoteId,String createBy,String carInfoId,String proposalNo){
-        Map map=quoteInfoService.findListByDifferCondition(quoteId,createBy,carInfoId,proposalNo);
-        String code=(String)map.get("code");
-        String msg=(String)map.get("msg");
+    public Result findListByDifferCondition(String quoteId, String createBy, String carInfoId, String proposalNo) {
+        Map map = quoteInfoService.findListByDifferCondition(quoteId, createBy, carInfoId, proposalNo);
+        String code = (String) map.get("code");
+        String msg = (String) map.get("msg");
 
-        Condition c=new Condition(QuoteInfo.class);
-        c.createCriteria().andCondition("quoteId",quoteId).andCondition("createBy",createBy);
-       List lists= quoteInfoService.findByCondition(c);
-        if("200".equals(code)){
-            List  list=(List)map.get("data");
-            return ResultGenerator.genSuccessResult(list,msg);
-        }else{
+        Condition c = new Condition(QuoteInfo.class);
+        c.createCriteria().andCondition("quoteId", quoteId).andCondition("createBy", createBy);
+        List lists = quoteInfoService.findByCondition(c);
+        if ("200".equals(code)) {
+            List list = (List) map.get("data");
+            return ResultGenerator.genSuccessResult(list, msg);
+        } else {
             return ResultGenerator.genFailResult(msg);
         }
     }
 
+    @ApiOperation("添加或更新")
+    @PostMapping("/addOrUpdate")
+    public Result addOrUpdate(QuoteInfo qpc) {
+        int result = quoteInfoService.insertOrUpdate(qpc);
+        if (result > 0)
+            return ResultGenerator.gen("成功", "", 200);
+        else return ResultGenerator.gen("失败", "", 400);
+    }
+
+
     /**
      * 壁虎-报价核保基础接口
-     * @param personName 车主
-     * @param personCardID 车主证件号
-     * @param personCardIDType 车主证件类型
-     * @param carNo 车牌号
-     * @param carFrameNo 车架号
-     * @param carEngineNo 发动机号
+     *
+     * @param personName           车主
+     * @param personCardID         车主证件号
+     * @param personCardIDType     车主证件类型
+     * @param carNo                车牌号
+     * @param carFrameNo           车架号
+     * @param carEngineNo          发动机号
      * @param carFirstRegisterDate 车辆注册日期
-     * @param lists 险种信息
-     * @param ciBeginDate 商业险起保日期
-     * @param biBeginDate 交强险起保日期
-     * @param carTransDate 过户日期
-     * @param carVehicleFgwCode 车辆型号
-     * @param carInfoId 车辆信息id
-     * @param createdBy 操作人
-     * @param quoteGroup  需要报价的 保险资源的枚举值之和
-     * @param submitGroup 需要核保的 保险资源的枚举值之和  这个范围应该是QuoteGroup的子集，必须报价了，才可以核保
-     * @param isSame 投保人与被保人信息是否一致 默认0一致
-     * @param forceTax 0:单商业 ，1：商业+交强车船，2：单交强+车船
+     * @param lists                险种信息
+     * @param ciBeginDate          商业险起保日期
+     * @param biBeginDate          交强险起保日期
+     * @param carTransDate         过户日期
+     * @param carVehicleFgwCode    车辆型号
+     * @param carInfoId            车辆信息id
+     * @param createdBy            操作人
+     * @param quoteGroup           需要报价的 保险资源的枚举值之和
+     * @param submitGroup          需要核保的 保险资源的枚举值之和  这个范围应该是QuoteGroup的子集，必须报价了，才可以核保
+     * @param isSame               投保人与被保人信息是否一致 默认0一致
+     * @param forceTax             0:单商业 ，1：商业+交强车船，2：单交强+车船
      * @return
      */
 
     @ApiOperation("调用第三方壁虎-报价核保基础接口")
     @PostMapping("/Ws_GetPostPrecisePrice")
-    public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID,@RequestParam String personCardIDType,
+    public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID, @RequestParam String personCardIDType,
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
-                                   @RequestParam String carFirstRegisterDate,String lists,
+                                   @RequestParam String carFirstRegisterDate, String lists,
                                    String ciBeginDate, String biBeginDate, String carTransDate,
-                                   String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup,Long submitGroup,String isSame,int forceTax){
-        isSame="0";
-        return quoteInfoService.postPrecisePrice(personName,personCardID,personCardIDType,carNo,carFrameNo,carEngineNo,carFirstRegisterDate,lists,ciBeginDate,biBeginDate,carTransDate,carVehicleFgwCode,carInfoId,createdBy,quoteGroup,submitGroup,isSame,forceTax);
+                                   String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup, Long submitGroup, String isSame, int forceTax) {
+        isSame = "0";
+        return quoteInfoService.postPrecisePrice(personName, personCardID, personCardIDType, carNo, carFrameNo, carEngineNo, carFirstRegisterDate, lists, ciBeginDate, biBeginDate, carTransDate, carVehicleFgwCode, carInfoId, createdBy, quoteGroup, submitGroup, isSame, forceTax);
     }
 
     @ApiOperation("调用第三方壁虎-获取报价信息接口")
     @PostMapping("/Ws_GetPrecisePrice")
-    Map getPrecisePrice(String licenseNo, Long quoteGroup,String createBy,String carInfoId){
-        return quoteInfoService.getPrecisePrice(licenseNo,quoteGroup,createBy,carInfoId);
+    Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
+        return quoteInfoService.getPrecisePrice(licenseNo, quoteGroup, createBy, carInfoId);
+    }
+
+    @ApiOperation("调用第三方壁虎-获取核保信息接口")
+    @PostMapping("/Ws_GetSubmitInfo")
+    Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
+        return quoteInfoService.getSubmitInfo(licenseNo, submitGroup, createBy, carInfoId, quoteId);
+    }
+    @ApiOperation("调用第三方壁虎-获取支付信息接口")
+    @PostMapping("/Ws_GetPayAddress")
+    Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
+        return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId);
     }
 }
