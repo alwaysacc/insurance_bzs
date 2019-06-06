@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.CarInfoMapper;
@@ -16,6 +17,7 @@ import com.bzs.utils.BiHu.UserInfo;
 import com.bzs.utils.commons.ThirdAPI;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.encodeUtil.EncodeUtil;
+import com.bzs.utils.enumUtil.InsuranceItems2;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.httpUtil.HttpClientUtil;
 import com.bzs.utils.httpUtil.HttpResult;
@@ -1490,182 +1492,193 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 carInfo.setRegisterDate(userInfo.getRegisterDate());
                 carInfo.setIsRenewSuccess("1");
                 carInfo.setCarInfoId(carInfoId);
-                carInfoService.save(carInfo);
-                InsuredInfo insuredInfo = new InsuredInfo();
-                String insuredId = UUIDS.getUUID();
-                insuredInfo.setCarInfoId(carInfoId);
-                insuredInfo.setInsuredId(insuredId);
-                insuredInfo.setCreateId(createBy);
-                insuredInfo.setLastYearSource(String.valueOf(quote.getString("Source")));
-                switch (String.valueOf(quote.getString("Source"))) {
-                    case "1":
-                        insuredInfo.setLastYearInsuranceCompany("太平洋保险");
-                        break;
-                    case "2":
-                        insuredInfo.setLastYearInsuranceCompany("平安保险");
-                        break;
-                    case "4":
-                        insuredInfo.setLastYearInsuranceCompany("人民保险");
-                        break;
-                }
-                insuredInfo.setBusinesExpireDate(userInfo.getBusinessExpireDate());
-                insuredInfo.setForceExpireDate(userInfo.getForceExpireDate());
-                insuredInfo.setNextBusinesStartDate(userInfo.getNextBusinessStartDate());
-                insuredInfo.setNextForceStartDate(userInfo.getNextForceStartDate());
-                insuredInfo.setLicenseOwner(userInfo.getLicenseOwner());
-                insuredInfo.setLicenseOwnerIdCard(userInfo.getCredentislasNum());
-                insuredInfo.setLicenseOwnerIdCardType(String.valueOf(userInfo.getIdType()));
-                insuredInfo.setInsuredName(userInfo.getInsuredName());
-                insuredInfo.setInsuredIdCard(userInfo.getInsuredIdCard());
-                insuredInfo.setInsuredIdCardType(String.valueOf(userInfo.getInsuredIdType()));
-                insuredInfo.setPostedName(userInfo.getPostedName());
-                insuredInfo.setHolderIdCard(userInfo.getHolderIdCard());
-                insuredInfo.setHolderIdCardType(String.valueOf(userInfo.getHolderIdType()));
-                insuredInfoService.save(insuredInfo);
-                //保存险种
-                if (quote != null && !quote.equals("")) {
-                    ArrayList<InsuranceTypeInfo> arrayList = new ArrayList<>();
-                    if (StringUtils.isNotBlank(userInfo.getForceExpireDate())) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("交强险");
-                        BigDecimal bigDecimal=new BigDecimal(1);
-                        insuranceTypeInfo.setInsuranceAmount(bigDecimal);
-                        arrayList.add(insuranceTypeInfo);
+                CarInfo c=carInfoService.findBy("carNumber", carInfo.getCarNumber());
+                ArrayList<InsuranceTypeInfo> arrayList = new ArrayList<>();
+                if (c!=null){
+                    carInfo.setCarInfoId(c.getCarInfoId());
+                    carInfoService.update(carInfo);
+                }else {
+                    carInfoService.save(carInfo);
+                    InsuredInfo insuredInfo = new InsuredInfo();
+                    String insuredId = UUIDS.getUUID();
+                    insuredInfo.setCarInfoId(carInfoId);
+                    insuredInfo.setInsuredId(insuredId);
+                    insuredInfo.setCreateId(createBy);
+                    insuredInfo.setLastYearSource(String.valueOf(quote.getString("Source")));
+                    switch (String.valueOf(quote.getString("Source"))) {
+                        case "1":
+                            insuredInfo.setLastYearInsuranceCompany("太平洋保险");
+                            break;
+                        case "2":
+                            insuredInfo.setLastYearInsuranceCompany("平安保险");
+                            break;
+                        case "4":
+                            insuredInfo.setLastYearInsuranceCompany("人民保险");
+                            break;
                     }
-                    if (quote.getDouble("CheSun") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("机动车损失险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("CheSun")));
-                        if (Integer.valueOf(quote.getString("BuJiMianCheSun")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianCheSun")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("SanZhe") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("第三者责任险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SanZhe")));
-                        if (Integer.valueOf(quote.getString("BuJiMianCheSun")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianSanZhe")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("DaoQiang") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("全车盗抢险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("DaoQiang")));
-                        if (Integer.valueOf(quote.getString("BuJiMianDaoQiang")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianDaoQiang")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("ChengKe") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("车上人员责任险(乘客)");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("ChengKe")));
-                        if (Integer.valueOf(quote.getString("BuJiMianChengKe")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianChengKe")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("SiJi") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("车上人员责任险(司机)");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SiJi")));
-                        if (Integer.valueOf(quote.getString("BuJiMianSiJi")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianSiJi")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("HuaHen") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("车身划痕损失险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HuaHen")));
-                        if (Integer.valueOf(quote.getString("BuJiMianHuaHen")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianHuaHen")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("SheShui") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("发动机涉水损失险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SheShui")));
-                        if (Integer.valueOf(quote.getString("BuJiMianSheShui")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianSheShui")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("ZiRan") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("自燃损失险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("ZiRan")));
-                        if (Integer.valueOf(quote.getString("BuJiMianZiRan")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianZiRan")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("HcJingShenSunShi") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("精神损害抚慰金责任险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HcJingShenSunShi")));
-                        if (Integer.valueOf(quote.getString("BuJiMianJingShenSunShi")) != 0)
-                            insuranceTypeInfo.setExcludingEeductible(BigDecimal.valueOf(quote.getDouble("BuJiMianJingShenSunShi")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (quote.getDouble("HcSanFangTeYue") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("车损无法找到第三方责任险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HcSanFangTeYue")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    if (StringUtils.isNotBlank(quote.getString("HcXiuLiChang"))) {
-                        if (!Integer.valueOf(quote.getString("HcXiuLiChang")).equals("-1")) {
-                            InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
+                    insuredInfo.setBusinesExpireDate(userInfo.getBusinessExpireDate());
+                    insuredInfo.setForceExpireDate(userInfo.getForceExpireDate());
+                    insuredInfo.setNextBusinesStartDate(userInfo.getNextBusinessStartDate());
+                    insuredInfo.setNextForceStartDate(userInfo.getNextForceStartDate());
+                    insuredInfo.setLicenseOwner(userInfo.getLicenseOwner());
+                    insuredInfo.setLicenseOwnerIdCard(userInfo.getCredentislasNum());
+                    insuredInfo.setLicenseOwnerIdCardType(String.valueOf(userInfo.getIdType()));
+                    insuredInfo.setInsuredName(userInfo.getInsuredName());
+                    insuredInfo.setInsuredIdCard(userInfo.getInsuredIdCard());
+                    insuredInfo.setInsuredIdCardType(String.valueOf(userInfo.getInsuredIdType()));
+                    insuredInfo.setPostedName(userInfo.getPostedName());
+                    insuredInfo.setHolderIdCard(userInfo.getHolderIdCard());
+                    insuredInfo.setHolderIdCardType(String.valueOf(userInfo.getHolderIdType()));
+                    insuredInfoService.save(insuredInfo);
+                    //保存险种
+                    InsuranceTypeInfo insuranceTypeInfo=null;
+                    if (quote != null && !quote.equals("")) {
+                        if (StringUtils.isNotBlank(userInfo.getForceExpireDate())) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
                             insuranceTypeInfo.setInfoType("0");
                             insuranceTypeInfo.setCreatedBy(createBy);
                             insuranceTypeInfo.setTypeId(insuredId);
-                            insuranceTypeInfo.setInsuranceName("指定修理厂险");
-                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(Double.valueOf(quote.getString("HcXiuLiChang"))));
+                            insuranceTypeInfo.setInsuranceName("交强险");
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
                             arrayList.add(insuranceTypeInfo);
                         }
+                        if (quote.getDouble("CheSun") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("A"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("CheSun")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianCheSun")) != 0) {
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MA"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("SanZhe") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("B"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SanZhe")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianCheSun")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MB"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("DaoQiang") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("G1"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("DaoQiang")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianDaoQiang")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MG1"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("ChengKe") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D3"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("ChengKe")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianChengKe")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD3"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("SiJi") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D4"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SiJi")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianSiJi")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD4"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("HuaHen") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("L"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HuaHen")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianHuaHen")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("ML"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("SheShui") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("X1"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SheShui")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianSheShui")) != 0) {
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MX1"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("ZiRan") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("ZiRan")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianZiRan")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MZ"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("HcJingShenSunShi") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("R"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HcJingShenSunShi")));
+                            arrayList.add(insuranceTypeInfo);
+                            if (Integer.valueOf(quote.getString("BuJiMianJingShenSunShi")) != 0){
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MR"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("HcSanFangTeYue") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Z3"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("HcSanFangTeYue")));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                        if (StringUtils.isNotBlank(quote.getString("HcXiuLiChang"))) {
+                            if (!Integer.valueOf(quote.getString("HcXiuLiChang")).equals("-1")) {
+                                insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                                insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("Q3"));
+                                insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(Double.valueOf(quote.getString("HcXiuLiChang"))));
+                                arrayList.add(insuranceTypeInfo);
+                            }
+                        }
+                        if (quote.getDouble("BoLi") != 0) {
+                            insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("F"));
+                            insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("BoLi")));
+                            arrayList.add(insuranceTypeInfo);
+                        }
+                        insuranceTypeInfoService.save(arrayList);
                     }
-                    if (quote.getDouble("BoLi") != 0) {
-                        InsuranceTypeInfo insuranceTypeInfo = new InsuranceTypeInfo();
-                        insuranceTypeInfo.setInfoType("0");
-                        insuranceTypeInfo.setCreatedBy(createBy);
-                        insuranceTypeInfo.setTypeId(insuredId);
-                        insuranceTypeInfo.setInsuranceName("玻璃单独破碎险");
-                        insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("BoLi")));
-                        arrayList.add(insuranceTypeInfo);
-                    }
-                    insuranceTypeInfoService.save(arrayList);
                 }
-                return ResultGenerator.genSuccessResult(httpResult.getBody());
+
+                JSONObject jsonObject= JSON.parseObject(httpResult.getBody());
+                jsonObject.put("createTime",new Date());
+                jsonObject.put("insurance",arrayList);
+                jsonObject.put("carInfoId",carInfoId);
+                return ResultGenerator.genSuccessResult(jsonObject);
             } else {
                 return ResultGenerator.genFailResult(resultData.getStatusMessage());
             }

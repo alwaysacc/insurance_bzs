@@ -45,9 +45,11 @@ public interface ThirdAPI {
 
 
 
-    public static final String BIHUXUBAO="http://iu.91bihu.com/api/CarInsurance/getreinfo?";//平安作废
-    public static final String BEFORE="Group=1&";//平安作废
-    public static final String AFTER="&CityCode=8&Agent=83696&CustKey=bzs20171117";//平安作废
+    public static final String BIHUXUBAO="http://iu.91bihu.com/api/CarInsurance/getreinfo?";//续保
+    public static final String GetNewVehicleInfo="http://iu.91bihu.com/api/CarInsurance/GetNewVehicleInfo?";//续保
+    public static final String GetVehicleInfo="http://bao.91bihu.com/DoQuote/GetVehicleInfo?";//续保
+    public static final String BEFORE="Group=1&";//
+    public static final String AFTER="&CityCode=8&Agent=83696&CustKey=bzs20171117";//
     public static  final String BIHUURL="http://iu.91bihu.com";//壁虎URL
     public static  final String PostPrecisePrice="/api/CarInsurance/PostPrecisePrice?";//报价核保的基础接口
     public static  final String GetSpecialPrecisePrice="/api/CarInsurance/GetSpecialPrecisePrice?";//获取车辆的报价信息,只能单个获取

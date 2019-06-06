@@ -64,4 +64,7 @@ public interface CarInfoService extends Service<CarInfo> {
      * @return
      */
     Map updateBatchIsEnable(List ids,String isEnable);
+
+    Result WX_GetNewVehicleInfo(String LicenseNo,String EngineNo,String CarVin,int IsNeedCarVin,
+                                String MoldName);
 }

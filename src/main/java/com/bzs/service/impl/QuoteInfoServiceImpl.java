@@ -993,6 +993,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         qpc.setCreatedTime(nowDate);
         String insuranceName= InsuranceNameEnum.getName(quoteGroup);
         qpc.setQuoteInsuranceName(insuranceName);
+        qpc.setQuoteSource(quoteGroup+"");
         PCICResponseBean bean=new PCICResponseBean();
         bean.setSendTime(sendTime);
         try {
@@ -1068,7 +1069,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         return resultMap;
                     }
                     ResponseData data=new ResponseData();
-
                     //报价成功开始执行
                     logger.info("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
                     System.out.println("报价状态：" + quoteStatus + "，报价信息：" + quoteResult);
@@ -1154,7 +1154,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setIndependentSubmitRate(rateFactor3 + "");//自主核保系数
                     qpc.setTrafficIllegalRate(rateFactor4 + "");//交通违法浮动系数
                     qpc.setTotalRate(totalRate);//折扣系数
-                    qpc.setQuoteSource(source + "");
 
                     data.setNonClaimDiscountRate(rateFactor1+"");
                     data.setTrafficTransgressRate(rateFactor4+"");
@@ -1406,9 +1405,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     resultMap.put("data", qpc);
                     resultMap.put("msg", "报价状态失败,获取报价内容为空");
                     return resultMap;
-
                 }
-
             } else {
                 if (StringUtils.isNotBlank(body)) {
                     message = body;
@@ -1420,8 +1417,6 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 resultMap.put("data", qpc);
                 return resultMap;
             }
-
-
         } catch (Exception e) {
             logger.error("打印异常", e);
             resultMap.put("code", "500");

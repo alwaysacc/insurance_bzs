@@ -144,6 +144,10 @@ public class CarInfoController {
         Map<String,Object> result=carInfoService.updateBatchIsEnable(list,isEnable);
         return ResultGenerator.genSuccessResult(result,"成功");
     }
-
+    @PostMapping("/WX_GetNewVehicleInfo")
+    public Result WX_GetNewVehicleInfo(@RequestParam String LicenseNo, String EngineNo, String CarVin, int IsNeedCarVin,
+                                       @RequestParam String MoldName){
+        return carInfoService.WX_GetNewVehicleInfo(LicenseNo,EngineNo,CarVin,IsNeedCarVin,MoldName);
+    }
 
 }
