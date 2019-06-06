@@ -27,4 +27,18 @@ public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
      * @return
      */
     List findListByDifferCondition(QuoteInfo quoteInfo);
+
+    /**
+     * 添加或更新，，不具体可根据情况拓展
+     * @param quoteInfo
+     * @return
+     */
+    int insertOrUpdate(QuoteInfo quoteInfo);
+
+    /**
+     * 更新
+     * @param quoteInfo
+     * @return
+     */
+    int updateByQuoteId(QuoteInfo quoteInfo);
 }

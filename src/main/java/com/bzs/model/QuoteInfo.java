@@ -73,6 +73,11 @@ public class QuoteInfo {
      */
     @Column(name = "force_rate")
     private String forceRate;
+    /**
+     * 商业险费率 （核保通过之后才会有值）
+     */
+    @Column(name = "biz_rate")
+    private String bizRate;
 
     /**
      * 无赔偿优惠系数 无赔偿优惠系数
@@ -296,6 +301,13 @@ public class QuoteInfo {
      */
     @Column(name = "total_rate")
     private String totalRate;
+
+    /**
+     * 核保渠道Id(在线支付业务用到)
+     */
+    @Column(name = "channel_id")
+    private String channelId;
+
 
 
     /**
@@ -1002,5 +1014,21 @@ public class QuoteInfo {
 
     public void setTotalRate(String totalRate) {
         this.totalRate = totalRate;
+    }
+
+    public String getBizRate() {
+        return bizRate;
+    }
+
+    public void setBizRate(String bizRate) {
+        this.bizRate = bizRate;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
     }
 }

@@ -490,4 +490,19 @@ public class Item {
         TotalRate = totalRate;
     }
 
+    public int getJiaoQiang() {
+        return JiaoQiang;
+    }
+
+    public void setJiaoQiang(int jiaoQiang) {
+        JiaoQiang = jiaoQiang;
+    }
+
+    public int getSeatCount() {
+        return SeatCount;
+    }
+
+    public void setSeatCount(int seatCount) {
+        SeatCount = seatCount;
+    }
 }

@@ -5,17 +5,18 @@
     <!--
       WARNING - @mbg.generated
     -->
+    <id column="quote_id" jdbcType="VARCHAR" property="quoteId" />
     <result column="REVISION" jdbcType="INTEGER" property="revision" />
     <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
     <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
     <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-    <result column="quote_id" jdbcType="VARCHAR" property="quoteId" />
     <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
     <result column="quote_status" jdbcType="INTEGER" property="quoteStatus" />
     <result column="repeat_submit_result" jdbcType="VARCHAR" property="repeatSubmitResult" />
     <result column="submit_status" jdbcType="INTEGER" property="submitStatus" />
     <result column="force_rate" jdbcType="VARCHAR" property="forceRate" />
+    <result column="biz_rate" jdbcType="VARCHAR" property="bizRate" />
     <result column="no_reparation_sale_rate" jdbcType="VARCHAR" property="noReparationSaleRate" />
     <result column="independent_channel_date" jdbcType="VARCHAR" property="independentChannelDate" />
     <result column="independent_submit_rate" jdbcType="VARCHAR" property="independentSubmitRate" />
@@ -55,6 +56,7 @@
     <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate" />
     <result column="buid" jdbcType="VARCHAR" property="buid" />
     <result column="total_rate" jdbcType="VARCHAR" property="totalRate" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
     <result column="excluding_deductible_total" jdbcType="DECIMAL" property="excludingDeductibleTotal" />
   </resultMap>
   <update id="updatePayInfo">
@@ -98,9 +100,88 @@
       <if test="quoteId!=null and quoteId!=''"> quote_id=#{quoteId} and </if>
       <if test="carInfoId!=null and carInfoId!=''"> car_info_id=#{carInfoId} and </if>
       <if test="proposalNo!=null and proposalNo!=''"> proposal_no=#{proposalNo} and </if>
+
     </trim>
   </sql>
   <select id="findListByDifferCondition" parameterType="com.bzs.model.CarInfo" resultMap="BaseResultMap">
         select * from  quote_info <include refid="differCondition"/>
-    </select>
+  </select>
+
+
+  <!-- 插入或更新 开始-->
+  <sql id="insertItems">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      quote_id,
+      <if test="carInfoId!=null and ''!=carInfoId">car_info_id,</if>
+      <if test="updatedBy!=null and ''!=updatedBy">UPDATED_BY,</if>
+      <if test="bizNo!=null and ''!=bizNo">biz_no,</if>
+      <if test="forceNo!=null and ''!=forceNo">force_no,</if>
+      <if test="submitStatus!=null">submit_status,</if>
+      <if test="submitresult!=null and ''!=submitresult">SubmitResult,</if>
+      <if test="forceRate!=null and ''!=forceRate">force_rate,</if>
+      <if test="bizRate!=null and ''!=bizRate">biz_rate,</if>
+      <if test="channelId!=null and ''!=channelId">channel_id,</if>
+    </trim>
+  </sql>
+  <sql id="insertValues">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      #{quoteId},
+      <if test="carInfoId!=null and ''!=carInfoId ">#{carInfoId},</if>
+      <if test="updatedBy!=null and ''!=updatedBy ">#{updatedBy},</if>
+      <if test="bizNo!=null and ''!=bizNo ">#{bizNo},</if>
+      <if test="forceNo!=null and ''!=forceNo ">#{forceNo},</if>
+      <if test="submitStatus!=null  ">#{submitStatus},</if>
+      <if test="submitresult!=null and ''!=submitresult">#{submitresult},</if>
+      <if test="forceRate!=null and ''!=forceRate">#{forceRate},</if>
+      <if test="bizRate!=null and ''!=bizRate">#{bizRate},</if>
+      <if test="channelId!=null and ''!=channelId">#{channelId},</if>
+    </trim>
+  </sql>
+  <sql id="updateOrAdd_update">
+    <trim suffixOverrides=",">
+      quote_id=values(quote_id),
+      <if test="carInfoId!=null and ''!=carInfoId ">car_info_id=#{carInfoId},</if>
+      <if test="updatedBy!=null and ''!=updatedBy">UPDATED_BY=#{updatedBy},</if>
+      <if test="bizNo!=null and ''!=bizNo ">biz_no=#{bizNo},</if>
+      <if test="forceNo!=null and ''!=forceNo ">force_no=#{forceNo},</if>
+      <if test="submitStatus!=null  ">submit_status=#{submitStatus},</if>
+      <if test="submitresult!=null and ''!=submitresult">SubmitResult=#{submitresult},</if>
+      <if test="forceRate!=null and ''!=forceRate">force_rate=#{forceRate},</if>
+      <if test="bizRate!=null and ''!=bizRate">biz_rate=#{bizRate},</if>
+      <if test="channelId!=null and ''!=channelId">channel_id=#{channelId},</if>
+    </trim>
+  </sql>
+  <insert id="insertOrUpdate" parameterType="com.bzs.model.QuoteInfo">
+    insert into quote_info
+    <include refid="insertItems"/>
+    values
+    <include refid="insertValues"/>
+    ON DUPLICATE KEY UPDATE
+    <include refid="updateOrAdd_update"/>
+  </insert>
+  <!-- 插入或更新 开始-->
+  <sql id="updateByQuoteIdValue">
+    <trim   suffixOverrides=",">
+      <if test="updatedBy!=null and ''!=updatedBy">UPDATED_BY=#{updatedBy},</if>
+      <if test="bizNo!=null and ''!=bizNo ">biz_no=#{bizNo},</if>
+      <if test="forceNo!=null and ''!=forceNo ">force_no=#{forceNo},</if>
+      <if test="submitStatus!=null  ">submit_status=#{submitStatus},</if>
+      <if test="submitresult!=null and ''!=submitresult">SubmitResult=#{submitresult},</if>
+      <if test="forceRate!=null and ''!=forceRate">force_rate=#{forceRate},</if>
+      <if test="bizRate!=null and ''!=bizRate">biz_rate=#{bizRate},</if>
+      <if test="channelId!=null and ''!=channelId">channel_id=#{channelId},</if>
+      <if test="payUrl!=null and ''!=payUrl">pay_url=#{payUrl},</if>
+      <if test="payTime!=null and ''!=payTime">pay_time=#{payTime},</if>
+      <if test="checkNo!=null and ''!=checkNo">check_no=#{checkNo},</if>
+      <if test="payNo!=null and ''!=payNo">pay_no=#{payNo},</if>
+      <if test="paymentNotice!=null and ''!=paymentNotice">payment_notice=#{paymentNotice},</if>
+      <if test="serialNo!=null and ''!=serialNo">serial_no=#{serialNo},</if>
+      <if test="payMsg!=null and ''!=payMsg">pay_msg=#{payMsg},</if>
+      <if test="payEndDate!=null and ''!=payEndDate">pay_end_date=#{payEndDate},</if>
+
+    </trim>
+  </sql>
+  <update id="updateByQuoteId" parameterType="com.bzs.model.QuoteInfo">
+    update quote_info set <include refid="updateByQuoteIdValue"/> where quote_id=#{quoteId}
+  </update>
 </mapper>

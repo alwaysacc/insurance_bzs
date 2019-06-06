@@ -53,9 +53,18 @@ public interface ThirdAPI {
     public static  final String BIHUURL="http://iu.91bihu.com";//壁虎URL
     public static  final String PostPrecisePrice="/api/CarInsurance/PostPrecisePrice?";//报价核保的基础接口
     public static  final String GetSpecialPrecisePrice="/api/CarInsurance/GetSpecialPrecisePrice?";//获取车辆的报价信息,只能单个获取
+
+    public static  final String GetSubmitInfo="/api/CarInsurance/GetSubmitInfo?";//获取车辆的核保信息,只能单个获取
+
     public static final int AGENT=83696;//在壁虎的唯一标识
     public static final String CUSTKEY="bzs20171117";//Custkey是用来区分每一家合作商户的不同个体的请求的
     public static final String SECRETKEY="d7eb7d66997";//密匙
+
+
+    public static final String PayURL="http://buc.91bihu.com";//密匙
+    public static final String PayAddressURL=PayURL+"/api/PayOut/PayAddress?";//获取支付信息（支付地址）
+    public static final String PayResult=PayURL+"/api/PayOut/PayInfo?";//4、	获取支付结果(到账查询)信息
+    public static final String VoidPay=PayURL+"/api/PayOut/VoidPay?";//7、作废原支付方式
 
 
 }
