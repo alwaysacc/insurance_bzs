@@ -327,18 +327,18 @@ public class QuoteInfoController {
 
     @ApiOperation("调用第三方壁虎-获取报价信息接口")
     @PostMapping("/Ws_GetPrecisePrice")
-    Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
+    public Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
         return quoteInfoService.getPrecisePrice(licenseNo, quoteGroup, createBy, carInfoId);
     }
 
     @ApiOperation("调用第三方壁虎-获取核保信息接口")
     @PostMapping("/Ws_GetSubmitInfo")
-    Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
+    public Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
         return quoteInfoService.getSubmitInfo(licenseNo, submitGroup, createBy, carInfoId, quoteId);
     }
     @ApiOperation("调用第三方壁虎-获取支付信息接口")
     @PostMapping("/Ws_GetPayAddress")
-    Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
+    public Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
         return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId);
     }
 }

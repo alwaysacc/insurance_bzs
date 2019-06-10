@@ -1673,7 +1673,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         qpc.setPayMsg(payAddessStatusMessage);
                         qpc.setPayEndDate(failureTimeStamp);
                         qpc.setPaymentNotice(transactionNum);
-                        this.insertOrUpdate(qpc);
+                        this.updateByQuoteId(qpc);
                        // (payUrl, nowdate, null, null, null, transactionNum, payNum, failureTimeStamp, payAddessStatusMessage);
                         OrderInfo orderInfo = new OrderInfo();
                         String oid = UUIDS.getDateUUID();
@@ -1688,7 +1688,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         orderInfoService.save(orderInfo);
                         map.put("code", "200");
                         map.put("msg", "查询成功");
-                        map.put("data", qpc);
+                        map.put("data", orderInfo);
                         return map;
                     }else{
                         map.put("code", "400");
