@@ -315,7 +315,7 @@ public class QuoteInfoController {
      */
 
     @ApiOperation("调用第三方壁虎-报价核保基础接口")
-    @PostMapping("/WX_GetPostPrecisePrice")
+    @PostMapping("/Ws_GetPostPrecisePrice")
     public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID, @RequestParam String personCardIDType,
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
                                    @RequestParam String carFirstRegisterDate, String lists,

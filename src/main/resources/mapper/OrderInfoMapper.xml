@@ -23,7 +23,7 @@
   <select id="getOrderList" resultType="map">
     SELECT
     order_info.order_id,
-    car_info.car_number,car_info.car_model,car_info.salesman,
+    car_info.car_number,car_info.brand_model,car_info.salesman,
     car_info.license_owner,
     order_info.create_time,
     date_format(order_info.finish_time,'%Y-%m-%d') as finish_time,
@@ -40,7 +40,9 @@
     order_info.contact_tel,
     insured_info.posted_name,
     insured_info.insurance_company,
-    quote_info.quote_insurance_name
+    quote_info.quote_insurance_name,
+    quote_info.quote_source,
+    quote_info.pay_end_date
     FROM
     order_info LEFT JOIN insured_info ON( order_info.car_info_id=insured_info.car_info_id)
     LEFT JOIN car_info ON (order_info.car_info_id=car_info.car_info_id)
@@ -105,5 +107,11 @@
   <update id="updatePayStatusById" >
     update order_info set pay_status='2' where  order_id=#{orderId}
   </update>
-
+  <select id="getOrderIdByQuoteId" resultType="String">
+    select order_id from order_info
+    <where>
+    <if test="quoteId!=null">pay_type_id=#{quoteId} and</if>
+          pay_status='0' or  pay_status='1'
+    </where>
+  </select>
 </mapper>

@@ -1685,7 +1685,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         qpc.setPayMsg(payAddessStatusMessage);
                         qpc.setPayEndDate(failureTimeStamp);
                         qpc.setPaymentNotice(transactionNum);
-                        this.insertOrUpdate(qpc);
+                        this.updateByQuoteId(qpc);
                        // (payUrl, nowdate, null, null, null, transactionNum, payNum, failureTimeStamp, payAddessStatusMessage);
                         OrderInfo orderInfo = new OrderInfo();
                         String oid = UUIDS.getDateUUID();

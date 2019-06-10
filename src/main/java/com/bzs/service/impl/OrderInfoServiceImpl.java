@@ -12,6 +12,7 @@ import com.bzs.service.InsuredInfoService;
 import com.bzs.service.OrderInfoService;
 import com.bzs.service.QuoteInfoService;
 import com.bzs.utils.AbstractService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,8 +57,11 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     }
 
     @Override
-    public Map orderDetails(String orderId) {
+    public Map orderDetails(String orderId,String quoteId) {
         Map map=new HashMap();
+        if (StringUtils.isNotBlank(orderId)){
+            orderId=orderInfoMapper.getOrderIdByQuoteId(quoteId);
+        }
         OrderInfo orderInfo=orderInfoServices.findBy("orderId",orderId);
         //车辆信息
         CarInfo carInfo=carInfoService.findBy("carInfoId",orderInfo.getCarInfoId());

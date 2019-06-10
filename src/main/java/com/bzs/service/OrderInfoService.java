@@ -17,7 +17,7 @@ public interface OrderInfoService extends Service<OrderInfo> {
                          @Param("carInfoId") String carInfoId, @Param("postedName") String postedName,
                          @Param("deliveryWay") int deliveryWay, @Param("insuranceCompany") String insuranceCompany
     );
-    Map orderDetails(String orderId);
+    Map orderDetails(String orderId,String quoteId);
     int updatePayStatus(OrderInfo orederNo);
     int updatePayStatusById(String orederNo);
 }

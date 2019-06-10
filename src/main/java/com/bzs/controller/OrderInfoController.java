@@ -59,8 +59,8 @@ public class OrderInfoController {
     }
     @ApiOperation("获取订单详情")
     @PostMapping("/getOrderDetail")
-    public Result getOrderDetail(String orderId) {
-        return ResultGenerator.genSuccessResult(orderInfoService.orderDetails(orderId));
+    public Result getOrderDetail(String orderId,String quoteId) {
+        return ResultGenerator.genSuccessResult(orderInfoService.orderDetails(orderId,quoteId));
     }
     @PostMapping("/add")
     public Result add(OrderInfo orderInfo) {
