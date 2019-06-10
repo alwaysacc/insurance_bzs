@@ -848,7 +848,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                    String carFirstRegisterDate, String lists,
                                    String ciBeginDate, String biBeginDate, String carTransDate,
                                    String carVehicleFgwCode, String carInfoId, String createdBy,
-                                   Long quoteGroup, Long submitGroup, String isSame, int forceTax) {
+                                   Long quoteGroup, Long submitGroup, String isSame, int forceTax,Double purchasePrice) {
 
 
         String custKey = ThirdAPI.CUSTKEY;
@@ -873,6 +873,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             param += "&IdCard=" + personCardID + "&OwnerIdCardType="
                     + personCardIDType;
         }
+        if (null!=purchasePrice) {//新车购置价
+            param += "&PurchasePrice=" + purchasePrice;
+        }
+
         // 商业险起保时间（Unix时间戳格式）单位是秒（如果在单商业的情况下
         // ，此字段必须有值）
         if (StringUtils.isNotBlank(biBeginDate)) {
@@ -1042,13 +1046,13 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setRepeatSubmitResult(repeatSubmitResult);
                     String repeatInsurance = null;
                     if ("1".equals(repeatSubmitResult)) {
-                        repeatInsurance = "交强重复";
+                        repeatInsurance = "交强险重复";
                     } else if ("2".equals(repeatSubmitResult)) {
-                        repeatInsurance = "商业重复";
+                        repeatInsurance = "商业险重复";
                     } else if ("3".equals(repeatSubmitResult)) {
                         repeatInsurance = "双险都重复投保";
                     } else if ("0".equals(repeatSubmitResult)) {
-                        repeatInsurance = "不重复";
+                        //repeatInsurance = "不重复";
                     }
                     qpc.setSubmitresult(repeatSubmitResult);//添加是否重复
                     //报价失败
@@ -1887,6 +1891,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setPayEndDate(null);
                     qpc.setPaymentNotice(null);
                     this.insertOrUpdate(qpc);
+                   // this.insertOrUpdate(qpc);
                     //此处修改订单信息为作废状态
                     orderInfoService.updatePayStatus(new OrderInfo(orderId,4));
                 }else{
@@ -2447,21 +2452,36 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             String res3 = res2.replaceAll("strBase", "StrBase");
             jsonObject.put("ListBaseContect", res3);
             String params2 = "{\"ListBaseContect\":" + res3 + ",\"BuId\":" + buid + ",\"Agent\":" + agent + ",\"SecCode\":\"" + SecCode + "\"}";
-            String body = "";
+
             try {
-                body = HttpClientUtil.doPost(URL, params2);
-                JSONObject object = JSONObject.parseObject(body);
-                if (object.containsKey("resultcode")) {
-                    int businessStatus = object.getIntValue("resultcode");// 请求状态值1成功，<0失败
-                    map.put("status", businessStatus);
-                    map.put("msg", object.getString("message"));
-                    map.put("data", null);
-                } else if (object.containsKey("BusinessStatus")) {
-                    int businessStatus = object.getIntValue("BusinessStatus");// 请求状态值1成功，<0失败
-                    map.put("status", businessStatus);
-                    map.put("msg", object.getString("StatusMessage"));
-                    map.put("data", null);
-                }
+               HttpResult httpResult = HttpClientUtil.doPost(URL, params2);
+               int code=httpResult.getCode();
+                String body=httpResult.getBody();
+               if(200==code){
+                   JSONObject object = JSONObject.parseObject(body);
+                   if (object.containsKey("resultcode")) {
+                       int businessStatus = object.getIntValue("resultcode");// 请求状态值1成功，<0失败
+                       map.put("code", "200");
+                       if(1!=businessStatus){
+                           map.put("code", "400");
+                       }
+                       map.put("msg", object.getString("message"));
+                       map.put("data", body);
+                   } else if (object.containsKey("BusinessStatus")) {
+                       int businessStatus = object.getIntValue("BusinessStatus");// 请求状态值1成功，<0失败
+                       map.put("code", "200");
+                       if(1!=businessStatus){
+                           map.put("code", "400");
+                       }
+                       map.put("msg", object.getString("StatusMessage"));
+                       map.put("data", body);
+                   }
+               }else{
+                   map.put("code", "400");
+                   map.put("msg", "请求出现错误");
+                   map.put("data", body);
+
+               }
                 return map;
             } catch (Exception e) {
                 map.put("code", "400");

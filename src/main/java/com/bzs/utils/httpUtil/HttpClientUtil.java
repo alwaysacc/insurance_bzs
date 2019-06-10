@@ -452,53 +452,72 @@ public class HttpClientUtil {
      * @return
      * @throws Exception
      */
-    public static HttpResult doGet(String url, Map<String, Object> map)
-            throws Exception {
+    public static HttpResult doGet(String url, Map<String, Object> map){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         // 声明URIBuilder
         logger.info("请求URL>>>"+url);
-        URIBuilder uriBuilder = new URIBuilder(url);
-        // 判断参数map是否为非空
-        if (map != null) {
-            // 遍历参数
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                // 设置参数
-                uriBuilder.setParameter(entry.getKey(), entry.getValue()
-                        .toString());
+        CloseableHttpResponse response=null;
+        try {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            // 判断参数map是否为非空
+            if (map != null) {
+                // 遍历参数
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    // 设置参数
+                    uriBuilder.setParameter(entry.getKey(), entry.getValue()
+                            .toString());
+                }
+            }
+
+            // 2 创建httpGet对象，相当于设置url请求地址
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+
+            // 3 使用HttpClient执行httpGet，相当于按回车，发起请求
+          response = httpClient.execute(httpGet);
+
+            // 4 解析结果，封装返回对象httpResult，相当于显示相应的结果
+            // 状态码
+            // response.getStatusLine().getStatusCode();
+            // 响应体，字符串，如果response.getEntity()为空，下面这个代码会报错,所以解析之前要做非空的判断
+            // EntityUtils.toString(response.getEntity(), "UTF-8");
+
+            // 解析数据封装HttpResult
+            int code = response.getStatusLine().getStatusCode();
+            HttpEntity httpEntity = response.getEntity();
+            String body = "";
+            if (null != httpEntity) {
+                body = EntityUtils.toString(response.getEntity(), "UTF-8");
+            }
+            String message = "";
+            if (200 == code) {
+                message = "请求成功";
+            } else {
+                message = "请求失败";
+                if (StringUtils.isBlank(body)) {
+                    body = message;
+                }
+            }
+            logger.info("请求返回值code值>>>" + code);
+            logger.info("请求返回内容body>>>" + body);
+            return new HttpResult(code, body, message);
+        }catch(Exception e){
+            logger.error("请求出错",e);
+            return new HttpResult(500, "请求出现异常", "请求出现异常");
+        } finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
-        // 2 创建httpGet对象，相当于设置url请求地址
-        HttpGet httpGet = new HttpGet(uriBuilder.build());
-
-        // 3 使用HttpClient执行httpGet，相当于按回车，发起请求
-        CloseableHttpResponse response = httpClient.execute(httpGet);
-
-        // 4 解析结果，封装返回对象httpResult，相当于显示相应的结果
-        // 状态码
-        // response.getStatusLine().getStatusCode();
-        // 响应体，字符串，如果response.getEntity()为空，下面这个代码会报错,所以解析之前要做非空的判断
-        // EntityUtils.toString(response.getEntity(), "UTF-8");
-
-        // 解析数据封装HttpResult
-        int code=response.getStatusLine().getStatusCode();
-        HttpEntity httpEntity=response.getEntity();
-        String body="";
-        if (null!=httpEntity) {
-            body=EntityUtils.toString(response.getEntity(), "UTF-8");
-        }
-        String message="";
-        if(200==code){
-            message="请求成功";
-        }else{
-            message="请求失败";
-            if(StringUtils.isBlank(body)){
-                body=message;
-            }
-        }
-        logger.info("请求返回值code值>>>"+code);
-        logger.info("请求返回内容body>>>"+body);
-       return new HttpResult(code, body,message);
         // 返回
         //return httpResult;
     }
@@ -510,8 +529,7 @@ public class HttpClientUtil {
      * @param params
      * @return
      */
-    public static String doPost(String url, String params) throws Exception {
-
+    public static HttpResult doPost(String url, String params) throws Exception {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);// 创建httpPost
         httpPost.setHeader("Accept", "application/json");
@@ -520,19 +538,26 @@ public class HttpClientUtil {
         StringEntity entity = new StringEntity(params, charSet);
         httpPost.setEntity(entity);
         CloseableHttpResponse response = null;
-
+        logger.info("请求URL>>>"+url+params);
         try {
 
             response = httpclient.execute(httpPost);
             StatusLine status = response.getStatusLine();
             int state = status.getStatusCode();
-            if (state == HttpStatus.SC_OK) {
-                HttpEntity responseEntity = response.getEntity();
-                String jsonString = EntityUtils.toString(responseEntity);
-                return jsonString;
-            } else {
-                // logger.error("请求返回:"+state+"("+url+")");
+            HttpResult httpResult=new HttpResult();
+            HttpEntity responseEntity = response.getEntity();
+            String body="";
+            String message="";
+            if(null!=responseEntity){
+                body= EntityUtils.toString(responseEntity);
+                logger.info("返回请求结果>>>"+body);
             }
+            if (state == HttpStatus.SC_OK) {//200
+                message="请求成功";
+            } else {
+                message="请求失败";
+            }
+            return  new HttpResult(state,body,message);
         } finally {
             if (response != null) {
                 try {
@@ -547,7 +572,6 @@ public class HttpClientUtil {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
 
