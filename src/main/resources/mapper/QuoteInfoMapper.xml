@@ -164,14 +164,21 @@
       <if test="forceRate!=null and ''!=forceRate">force_rate=#{forceRate},</if>
       <if test="bizRate!=null and ''!=bizRate">biz_rate=#{bizRate},</if>
       <if test="channelId!=null and ''!=channelId">channel_id=#{channelId},</if>
-      <if test="payUrl!=null and ''!=payUrl">pay_url=#{payUrl},</if>
+      pay_url=values(pay_url),
+      pay_time=values(pay_time),
+      check_no=values(check_no),
+      pay_no=values(pay_no),
+      payment_notice=values(payment_notice),
+      pay_msg=values(pay_msg),
+      pay_end_date=values(pay_end_date),
+      <!--<if test="payUrl!=null and ''!=payUrl">pay_url=#{payUrl},</if>
       <if test="payTime!=null and ''!=payTime">pay_time=#{payTime},</if>
       <if test="checkNo!=null and ''!=checkNo">check_no=#{checkNo},</if>
       <if test="payNo!=null and ''!=payNo">pay_no=#{payNo},</if>
       <if test="paymentNotice!=null and ''!=paymentNotice">payment_notice=#{paymentNotice},</if>
       <if test="serialNo!=null and ''!=serialNo">serial_no=#{serialNo},</if>
       <if test="payMsg!=null and ''!=payMsg">pay_msg=#{payMsg},</if>
-      <if test="payEndDate!=null and ''!=payEndDate">pay_end_date=#{payEndDate},</if>
+      <if test="payEndDate!=null and ''!=payEndDate">pay_end_date=#{payEndDate},</if>-->
     </trim>
   </sql>
   <insert id="insertOrUpdate" parameterType="com.bzs.model.QuoteInfo">

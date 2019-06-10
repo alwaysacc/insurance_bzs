@@ -68,6 +68,11 @@ public class HttpResult<T> {
         this.message = message;
         this.t = t;
     }
+    public HttpResult(int code, String body, String message) {
+        this.code = code;
+        this.body = body;
+        this.message = message;
+    }
 
     @Override
     public String toString() {

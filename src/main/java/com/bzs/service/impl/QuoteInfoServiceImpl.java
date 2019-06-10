@@ -1,6 +1,7 @@
 package com.bzs.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.InsuranceTypeInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
@@ -10,7 +11,10 @@ import com.bzs.model.CarInfo;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.*;
 import com.bzs.utils.*;
+import com.bzs.utils.base64Util.Base64Util;
+import com.bzs.utils.bihujsontobean.*;
 import com.bzs.utils.bihujsontobean.JsonRootBean;
+import com.bzs.utils.commons.BaseContect;
 import com.bzs.utils.commons.ThirdAPI;
 import com.bzs.utils.commons.TwoPower;
 import com.bzs.utils.dateUtil.DateUtil;
@@ -35,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -1824,7 +1829,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay) {
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId) {
         String factCode = "400";
         String message = "";
         Map<String, Object> map=new HashMap();
@@ -1873,6 +1878,17 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 String StatusMessage=JSONObject.parseObject(body).getString("StatusMessage");
                 if(BusinessStatus==1){
                     map.put("code", "200");
+                    QuoteInfo qpc=new QuoteInfo(quoteId);
+                    qpc.setCheckNo(null);//人保  payNum=serialrNo
+                    qpc.setSerialNo(null);
+                    qpc.setPayUrl(null);
+                    qpc.setPayTime(null);
+                    qpc.setPayMsg(null);
+                    qpc.setPayEndDate(null);
+                    qpc.setPaymentNotice(null);
+                    this.insertOrUpdate(qpc);
+                    //此处修改订单信息为作废状态
+                    orderInfoService.updatePayStatus(new OrderInfo(orderId,4));
                 }else{
                     map.put("code", "400");
                 }
@@ -1905,4 +1921,554 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     public int updateByQuoteId(QuoteInfo quoteInfo) {
         return quoteInfoMapper.updateByQuoteId(quoteInfo);
     }
+
+    @Override
+    public Map<String, Object> getContinuedPeriods() {
+        int agent = ThirdAPI.AGENT;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String URL = ThirdAPI.GetContinuedPeriods;
+        String param = "Agent=" + agent;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        Map<String, Object> map=new HashMap();
+        try {
+            HttpResult httpResult  = HttpClientUtil.doGet(URL + param, null);
+            int code=httpResult.getCode();
+            String body=httpResult.getBody();
+            String message=httpResult.getMessage();
+            if(200==code){
+                CityChannelJsonBean cityChannelBean=  JSONObject.parseObject(body,CityChannelJsonBean.class);
+                int businessStatus=cityChannelBean.getBusinessStatus();
+                String StatusMessage=cityChannelBean.getStatusMessage();
+                List<CityChannelItem>  items=null;
+                if(1==businessStatus){
+                    map.put("code","200");
+                    map.put("message",StatusMessage);
+                    items= cityChannelBean.getItems();
+                  /*  if(CollectionUtils.isNotEmpty(items)){
+                        for (CityChannelItem item:items){
+                            System.out.println("sss"+item.getCityCode());
+                        }
+                    }*/
+                }else{
+                    map.put("code","400");
+                    map.put("message",StatusMessage);
+                }
+                map.put("data",items);
+            }else{
+                map.put("code","400");
+                map.put("message",message);
+                map.put("data",null);
+            }
+        } catch (Exception e) {
+            map.put("code","400");
+            map.put("message","请求异常，错误代码:500");
+            map.put("data",null);
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getFirstVehicleInfo(String carVin, String engineNo, String moldName, int cityCode) {
+        Map<String, Object> map=new HashMap<>();
+        String factCode="";
+        if (StringUtils.isBlank(carVin) || StringUtils.isBlank(engineNo) || StringUtils.isBlank(moldName)) {
+            factCode = "18000";
+            map.put("code", "400");
+            map.put("msg", "获取支付信息失败:参数异常");
+            map.put("data", "");
+            return map;
+        }
+        int agent = ThirdAPI.AGENT;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String custKey=ThirdAPI.CUSTKEY;
+        String param = "EngineNo=" + engineNo + "&CarVin=" + carVin
+                + "&MoldName="+moldName + "&CityCode="+ cityCode+ "&Agent="+agent
+                + "&CustKey="+custKey ;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        param = param.replaceAll(" ", "%20");
+        try{
+            String URL=ThirdAPI.GetFirstVehicleInfo;
+            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
+            int code= httpResult.getCode();
+            String body= httpResult.getBody();
+            String message=httpResult.getMessage();
+            List<NewCarVehicleInfoItem>items=null;
+            NewCarVehicleInfoJsonBean javaBean=JSONObject.parseObject(body,NewCarVehicleInfoJsonBean.class);
+
+            if(200==code){
+                int businessStatus=javaBean.getBusinessStatus();
+                message=javaBean.getStatusMessage();
+                if(1==businessStatus){
+                    items=javaBean.getItems();
+                    if(CollectionUtils.isNotEmpty(items)){
+                        map.put("code", "200");
+                    }else{
+                        message="请求成功,但未获取相关信息";
+                        map.put("code", "400");
+                    }
+                }else{
+                    map.put("code", "400");
+                }
+            }else if(202==code){
+                map.put("code", "400");
+                message=javaBean.getStatusMessage();
+            }else{
+                map.put("code", "400");
+            }
+            map.put("msg", message);
+            map.put("data", items);
+            return map;
+        }catch(Exception e){
+            map.put("code", "400");
+            map.put("msg", "请求异常,错误代码：500");
+            map.put("data", null);
+            return map;
+        }
+    }
+
+    @Override
+    public Map<String, Object> getModelNameForImportCar(Integer cityCode, String carVin) {
+        Map<String, Object> map=new HashMap<>();
+        if(StringUtils.isBlank(carVin)){
+            map.put("code", "400");
+            map.put("msg", "参数异常，不能为空");
+            map.put("data", "");
+            return map;
+        }
+        int agent=ThirdAPI.AGENT;
+        String custKey=ThirdAPI.CUSTKEY;
+        String secretKey=ThirdAPI.SECRETKEY;
+        String param = "CarVin=" + carVin
+                +  "&CityCode="+ cityCode+ "&Agent="+agent
+                + "&CustKey="+custKey ;
+        String str = param + secretKey;
+        String SecCode = MD5Utils.md5(str);
+        param = param + "&SecCode=" + SecCode;
+        System.out.println(param);
+        param = param.replaceAll(" ", "%20");
+        try{
+            String URL=ThirdAPI.GetModelName;
+            HttpResult httpResult= HttpClientUtil.doGet(URL+param,null);
+            int code=httpResult.getCode();
+            String body =httpResult.getBody();
+            String msg=httpResult.getMessage();
+            String MoldName=null;
+            if(200==code){
+                int BusinessStatus=JSONObject.parseObject(body).getIntValue("BusinessStatus");
+                String StatusMessage=JSONObject.parseObject(body).getString("StatusMessage");
+                MoldName=JSONObject.parseObject(body).getString("MoldName");
+                if(1==BusinessStatus){
+                    map.put("code","200");
+                }else{
+                    map.put("code","400");
+                }
+                msg=StatusMessage;
+            }else if(202==code){
+                msg=JSONObject.parseObject(body).getString("StatusMessage");
+                map.put("code","400");
+            }else{
+                map.put("code","400");
+                msg=body;
+            }
+            map.put("msg",msg);
+            map.put("data",MoldName);
+
+        }catch (Exception e){
+            map.put("code","400");
+            map.put("msg","请求异常，错误代买：500");
+            map.put("data",null);
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getCreditDetailInfo(String licenseNo, Integer renewalCarType) {
+        Map<String, Object> map=new HashMap<>();
+        if(StringUtils.isBlank(licenseNo)){
+            map.put("code", "400");
+            map.put("msg", "参数异常，车牌不能为空");
+            map.put("data", "");
+            return map;
+        }
+
+        String URL = ThirdAPI.GetCreditDetailInfo;
+        String CustKey = ThirdAPI.CUSTKEY;
+        int Agent = ThirdAPI.AGENT;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String param = "LicenseNo=" + licenseNo + "&RenewalCarType=" + renewalCarType+ "&Agent=" + Agent
+                + "&CustKey=" + CustKey ;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        param = param + "&SecCode=" + SecCode;
+        // param = param.replaceAll(" ", "%20");
+        try{
+            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
+            int code=httpResult.getCode();
+            String body=httpResult.getBody();
+            String msg=httpResult.getMessage();
+            if(200==code){
+                CreditDetailInfoJsonBean javaBean=  JSONObject.parseObject(body,CreditDetailInfoJsonBean.class);
+                int businessStatus=javaBean.getBusinessStatus();
+                msg=javaBean.getStatusMessage();
+                List<CreditDetailInfoItems>lists=null;
+                if(1==businessStatus){
+                    lists=javaBean.getList();
+                    if(CollectionUtils.isNotEmpty(lists)){
+                        map.put("code", "200");
+                    }else{
+                        msg="请求成功，但是未查询到信息";
+                        map.put("code", "400");
+                    }
+                }else{
+                    map.put("code", "400");
+                }
+                map.put("msg", msg);
+                map.put("data", lists);
+            }else {
+                map.put("code", "400");
+                map.put("msg", "参数异常，车牌不能为空");
+                map.put("data", "");
+            }
+        }catch(Exception e){
+            map.put("code", "400");
+            map.put("msg", "参数异常，车牌不能为空");
+            map.put("data", "");
+
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> uploadImgForPingAn(String info, String buid, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (StringUtils.isBlank(info) || StringUtils.isBlank(buid)) {
+            map.put("code", "400");
+            map.put("msg", "参数异常，不能为空");
+            map.put("data", "");
+            return map;
+        }
+        int agent = ThirdAPI.AGENT;
+        String URL = ThirdAPI.UploadMultipleImg;
+        String secretKey = ThirdAPI.SECRETKEY;
+        String param = "Agent=" + agent + "&BuId=" + buid;
+        String SecCode = MD5Utils.md5(param + secretKey);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Agent", agent);
+        jsonObject.put("BuId", buid);
+        jsonObject.put("SecCode", SecCode);
+
+        List<BaseContect> list = new ArrayList<BaseContect>();
+       /* String returnUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        String rUrl = request.getServletContext().getRealPath("/images");*/
+        String base64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n" +
+                "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n" +
+                "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCACCANIDASIA\n" +
+                "AhEBAxEB/8QAHgABAAICAwEBAQAAAAAAAAAAAAgJBwoBAgYFAwT/xABSEAAABgIBAgMEBAkEDA8B\n" +
+                "AAABAgMEBQYABxEIEgkTIRQVMVEWQWGBFxkiIyUycZHRQqGxwRgkJiczRVJXcpKW8DU2N1ViZIOE\n" +
+                "hZS10tPU4fH/xAAdAQEAAQQDAQAAAAAAAAAAAAAABwIFBggBAwQJ/8QANBEAAgIBAwQBAwMEAQIH\n" +
+                "AAAAAQIDBAUABhEHEhMhMQgiQRQVIzJRYXEWwfAXGCQzQrHh/9oADAMBAAIRAxEAPwDf4xjGNNMY\n" +
+                "xjTTGMY00xjGNNMYxjTTGMY00xjGNNMYxjTTGMY00xjGNNMYxjTTGMY00xjGNNMYxjTTGMY00xjG\n" +
+                "NNMYxjTTGMY00xjGNNMYxjTTGMY00xjGNNMYxjTTGMY00xjGNNMYxjn/AL/7/wBjTTGMY00xjGNN\n" +
+                "dePQP5Ihzx9fH8ecpZ6zvE/uXTTvKc1RXtbxVjZwsfEOlZR9IP0VlV5SObyHYCLQOwiSRHRCFExv\n" +
+                "MOYhx7QIBTGuoyrbxH7FDaWqURuBLQVE2s5cTbSDs0nYolJd5Fxy7Zz7C6XdooGcnbA6SQYJCsYy\n" +
+                "SSrtJMO0D8li7q9LnquzreQwG4jtmbHSpbuZEUWyBFJAwlTwKrNxyyuWCntCkngc6l3ohHtu1v7H\n" +
+                "43cu0v8AmlbLQy4+jhf3RcR35KZ4mrS/rHkiQEKksaxs6h2lXjkgA14fju9pB6fgar/y/wCE5n0z\n" +
+                "ofxwdmJj2qafrSQ/I8tMFH9xh5/myQHQbu3pr6sbBPUa1dPutahco1iMxGosYRguwlIwjhJsuCSj\n" +
+                "tt53tzVVwgZRABHuQP5pAACqASCfi868peut1U+KpFaiaywcVMHKzWHZIMkVFhfugA502yaZDG7S\n" +
+                "lKAmATAAB68Zp7uPdXVrE9PT1ExHVmvnsULUVXxwY2OvMHklWJg6yxcoyN77WHJHHH4Ot6dnbM6G\n" +
+                "5/qwnSXcHQm/tXPNTmumS1n57cAhjgWxGUNez2yrKvCq6MwBDc+wRrNpPG+2ccvJNOV05fmSVlxD\n" +
+                "4/UJeQ+71+vO347zaP8Amar4/wDicz/Vkq/DI0lpa2dI1etl6oVRmX5ZG5KvZeaiI5dbyGFlmEyC\n" +
+                "s6dIHMBEWyQF5OftIkQPgUoZBzZPXHqJrtuboOpek3VNqjkbIFUrTmQjG5H1hlRdpxiJm4M0Qbey\n" +
+                "v5M4psDAYPNQOiqIlE+XKXPdU8Ztra24s71jr40bsgrS46iMN+qslp1icR9sMTE9ncqswAHLKOdW\n" +
+                "iLbfRjMbw3ttLa3093822xrVuvlsl/yc0accdWV4hMZLNlFQyeJ3SPvL9qMf93b9C/VRJ9WWp3t+\n" +
+                "ma03q8hG2KRgHTNo4VctTqMkmiwLIqLiZYAEjspTkV4MVQhvyQDjnDXU94o2m+mzYznWD2Asd1sk\n" +
+                "WikpOp14rIqMKu5SSctGDtR+6a97xw0XRdlI3BQpG6pBVOU5yFPO3UFVh6tQIBrFVCFo6j6LZSMp\n" +
+                "X4Jm3ZsGUq8ZorPkSkbETBUyK5jo+abvUMVIoCcQAuUtdQPQjV7l1lSu5bbu7WEdWn9xqFlnKDYH\n" +
+                "6DacVi4JlApP4ZVFV2RIQl0YsxU1VBTKVJ5wKag8HHYLfGR6l4DYO2Y9u5Gle3HZsUoMpmr0cFeG\n" +
+                "OvIheW2YLDRoOOF7owrP293Cd3xq308x/R/cXUndk+8MdlMVs6rSyV3B7cxc1u1ZmuRTRR1sb+sq\n" +
+                "JLIQymQpMXSMv2hnKk69Z+PE1H/mi2L94wXH/qY/0ZEvqd8YPZ14Crl6bXVr1GDAZE1lVloGkTpp\n" +
+                "oFvZPd5EiTMZYytis/Ledx2/sxlTLFBTzQIUCdrB1S9I8LulfW6HSxRpCvNrgyrg2VORYiVdgs6b\n" +
+                "M3EsRUqnu8CkMqq5IBnIJggQoqGBTuIFsjbTfh5Lt266kLpZI6yCaopnna8ByGUIU4lEDSADyHPB\n" +
+                "vkIfXkK1Mr1S6hU8viMd1k23AaNiOvemp1pMXbhlVgQK9rwwycExkFoXPK+iSD72Fu4bop0qv7ez\n" +
+                "uc+n3e9hMnVkvY2tlMjWzmPtQPEik2qJvWYSyLOrrHYjBVyHUd6crWP04+MtYqbTXcZ1DR1w2lbj\n" +
+                "Szlw0sMVE1CESTijotQQYHZxLWvM+9Bcro4LC0OscqpQOsfgpSyF/Hiaj9f70Oxv9aC9f2/pP+OS\n" +
+                "VuOtPD2rFYnbChV9Oy6sPGu5AsYynK6Lp4LZE6hW6Ae8eAVVMUE0xNwXvMACIAPOVhaM6gukreuw\n" +
+                "k9YzfTdRdes7DHSaKNsXfs0iRTwEi+ynUO8URb/yxKYElTn84CAmApic4VXc91T2T+y7et9X9sWb\n" +
+                "t2PwY7z1HvWLTqyKgsXGhkCu7FVEk8gB9EngE6ox+3OiPUQbj3bjegm+6eMxjrbzApZSLF06MTr3\n" +
+                "yfo8al6AmOKNHcw1ISAPtVSxANvPSJ4g2puriUm63W2EzVrZDNiP/o9Plbe1v4sTkRVk2KrJd02U\n" +
+                "bNl1UkHBVFSLJKqk4SMkYhzf29SXiD6M6Yriyol5cTLmxOo/3oqziol67KzZqHAjZRdciXk8uhBb\n" +
+                "yypHUEoIH83yx7QNCLw8eh6N0LvOY2GhvDX+wxLU5Kvs4Oou0nL8iEnJxDxWQfEByoKCaRYxBHsI\n" +
+                "VQoqrHMZQQEhCy/6tOiDp53JKSO5NpJyDOQga+ok+kW825jWqkfHJqOECui+cRuXyRBUpFCikY3n\n" +
+                "GA5jD2CWXsPnur2Q6WvkmGDr7xq3JxNYtPG1B8dXPc1g/pnaJHZP/jyAFB5APGoNzOA6DY7rJ+2R\n" +
+                "ybqudOLePrNWgoRWFy8eXtJGi00F2OOxJCkhb7uGZpGChig4FZfV54v8vPQdZjOlafmKdLi/WeWO\n" +
+                "wvq5Cu1CsUUlEUIpBjaomWZn9rVWTdqukGoLIlaAkC5SqnKfxnSJ4sF/gZuySHVPtSdukMeOQbV6\n" +
+                "CY0iqs/JfmcgqtJHd1SrxLoRI2TO1Bu5dnbiC4q+QZQpTkqICsNNhbXPVtZRb/3dZravHVKMUKs5\n" +
+                "fJRzyQOSNK5DzFVjnRZmSVeHMcxk+1Y4n7Sel+21vCv0ZrHpun7o6POO71WKIg+dvSSzsGTqdasE\n" +
+                "RduiMhUFIiS7kFTlR/UImbgpC8doaobX3n1731ntw70xGdiNLaiSG5UNqxBgJv08Lhlipq3jncpG\n" +
+                "0nsfPDH2RreDfHT36W+mW29pdPc9tmx+6b7lgXH5NadSzuyp+rtVirWckyGetGstiOv/ABt2hA6K\n" +
+                "Dw2s8/jl+l8A4BC2/wCz7/j6uf5HPz+v5evp68h4y/TB6fmbcPz/ALn3/r+z83/H6vt515ejXVFY\n" +
+                "3X1Naw1bcSuj1q0S060kyNHCjVyZNhVLDLoARdMwKJiLuMbd4kNz2AYogICPOxSXwd+lcSgIp2f1\n" +
+                "AB/4wvQ454/6X+/9Mn9Ouo/1D9TMTazGAbaiVKl6THy/q4WifzxRxyEKAW5QrKvB54J/txqHurPS\n" +
+                "b6VOjuepbd3ON+y3r2Lr5iI0J0ni/TWJZYUDOewiTvgkJX8Ar7Osq6H8S/QXUDsqB1ZUDWFCy2MJ\n" +
+                "D3WWRhH7do4PGRruXdomdGSFFFQGDB0smCxiAr5RiEMJ+AHG/iHeITL9JUrVaRR60wnbdYY4846c\n" +
+                "TXtYRkdDHcP49uZErRdBVzILP2C/CJ1CIpIJiop3GOmQ+U9F+G30+6D2RCbSpzWcVs9dI/LEqSE2\n" +
+                "+ctWp5GOdRTpf2QVARWVMwfOkCGXKoCZFjCmBTD3jT941wh/ZF65A3Hb+DyPA3dx29oWqz888/Vx\n" +
+                "8efTgPXn6s+3/unqvtHo9lcruG9jKO6jlqlavcxCBoYKNmWtH3fyAjyhjNyfgIV/Oos6YbO6K786\n" +
+                "/bdwG1cdm8nsV8Let3KGfkaO1ZydOpdnZO6FgxrcLX7R3clw4PI9a/Jv40XUZHrtXMlR6g4Zicpj\n" +
+                "t12cuzI5JwUTETcFfckESjyU5QOAAICJDh6Gu4pnXbomS1drrYV5t0Tr93sKDUmGFdnn7Ykqmm2d\n" +
+                "uY52cyCSypjNQfsnSCDsOUFfLECnEwHKFJ3iU2LT0xoHp0a66maBIzrNFALA3qb6vOpFucK3FpiD\n" +
+                "xOIOo4ST80vYILFITu8spg7gAA+HPae6XLD09dL9939um4awmpHW7+uw8ZXqy/sSMjEQtxs0ijJK\n" +
+                "Jx0BMuGpjnn1CeasdNs4TFLyCioCgmivbHUrqZtnPbrxMm6MbvFMdgMZlILWZs16GPhnuvjy6NbM\n" +
+                "iIhRLTp2NMO91HAB9amDePSro9vHauwNx1dk5vp4+a3fncBeo7bpXcvlp6uLhywjkjxy15pJPPNj\n" +
+                "4ZfKlVvHFIwJK+9Z36ofGHtCOwVqn01tY6QrEWok1Na3zFV0vZJI5hBROIYOCgKcakYyTdJZZsR2\n" +
+                "6dgt5ZBQ8hRTGMD4uvU5rW/M4zdVKSXiU1Gp5uvO4Q1enk41cwHM8jO/2QDOTIAY7T2rvZOR4KJy\n" +
+                "FEVCec0PF+FzpzYcLsKY3tethuq+uR5Ews9ra4oxCMkicirORXRY0tss7cMlEyqN0lljNO4eVkFh\n" +
+                "7BJnLq42z4ZHVi9hpyX2xaKbbYdD2Itkr+uLwDt/GFETJR0g3dVBduu3bKHUVbmKmmskoc3Chicp\n" +
+                "Db5NxdScjWyG6ZusW2cbn1vxT4/atfP444x6alS8Tv52hHIK9gct3qGLkMw5vUW2OkGKv4fZdf6e\n" +
+                "98Zvaj4mWvl9+XNpZxNwJkpAvjsRQmiltgCJGkaJE8bPGK8fjRu22SgdenS7sJOsoQu04AkpaBbI\n" +
+                "R8S9VVj3/trgvJWa7d8RBVut3lOQSuCJ+oBzx3AAzHIcpygYo8gYpTAPzAwcgP3hmqxobQvQBPbf\n" +
+                "1/D0zqi2NN2h1ZI0IOGfa+moprJyKThNZqxPISNNasWguFkykKdwumURHtIYFBKIbUiBQIgiQo9w\n" +
+                "ESTKA/MCkAAH7wDnNq+ju9NzbzxV61uRNvmWnNDXhnwGSgyMExMQaVpngmnWKTnhgncOQ3x+daYd\n" +
+                "dNh7N2FnMbS2hNu1oL1axbsV93YW3hbdZfMFrrXS3TpSTxFfIpkEbAFOC5JIH64xjJk1BuuB5+r9\n" +
+                "3w5+/wCrjMZ7g1tXdva4tmvbSyQfw9liHce5buC9xQMdMRQVDj1BRu5Kk4TEBAQUSIP1DmSFBOVF\n" +
+                "QwfrgmcS/wCkBREvw+3jNXbf/XD181nd+2q1WVrRH1evbFukFWUG2uzLoHrsTZZRhCOUnisM4M9T\n" +
+                "dRjdssm9Kqok6Kcq6Q9qgCMXdU994PZGET9+xORy1LMtLj5K2Oqi0SssREnlRmUdhQkc++TwONS5\n" +
+                "0d6bbk6j7kavtfM4jB5PBpBmIbuXvtj40kr2YvE1eZI5GM6S9rqABxxzz/eGUVSt6dG3U20k2NSu\n" +
+                "RXevro9TbyDSuyqzGz1grtwxUXanQROzWazUIv3JD5yhGblZI6gee14yTHi32lveNi6htzVq7Zt7\n" +
+                "FrCKl0mcggo2ftCyKijsrZ42WKRVu6RBUE3CZyFMRUpymDkOM8K465ev54oVR4FgdKl/VUcaparH\n" +
+                "LyPPb3q1wwgHIAPHPBR9eOeciL1B7g3VuGxRcxutWSPNx8d7FGlkYEtfMVgKx1eE2hWbIpyCoY35\n" +
+                "YI8fyQHgoAHzc3JuHb2I2NurbOA/5T+3ZzL08jUp5bFLVq45opxIyLYFmTuLoyoP417u1SeD619a\n" +
+                "tnbT3jnup+xN67qXYqZTbGAyOIyN/b+fkv3sylmvHHEz03x9cII5VaUE2H8QldV5BJNotU3JbNYe\n" +
+                "FlW69Roqef2nZlot9RbuoOOeP1ImNc2mdczLpYrVFUxQcRLd4xRHgDkWdJqlDgomJ4rwqOkewXnd\n" +
+                "aW1NhVGZi6nrz9JRQT8K5j2c3ZFiLIsvZCv0EFVRhTKDIAs3IKSbpJsUqgnSUIWJ+mOqTq11vr+O\n" +
+                "purxmF6QxdyDhgkhREbC0I5ePXDp6ZJ6tDvgE4u1lxOAK9xDCZMeAKBS5ibdeHiDsyFTaOLO2SL8\n" +
+                "Em+r0ECBzyI8ESrpCByPI8gH1gPxzK8Hu/aV3IdPs9uOtu/IQbPw+Oq1cNXwqSY9rNRI+ZlsGz/K\n" +
+                "jT/ykmH7gqoftGsG3HsDqHjcV1U2xtKz0/xVjqFuPL37+47m5poswtG/MVSs1NcdxBJHV4g4Wywj\n" +
+                "Z5JV5djzt4lKUCeWTjtKQCF4EB/J44/mD9+UG9Wvhcbl3dvzYe2K9f4BjBWx5HPmUe7JI+1sEmMD\n" +
+                "FxaiCnlgdI4mWj1F0xSOBAKqQol7imHMq+GB1HdT+67fsiN3qpMuoeHhYd1COJWonr5Un675dByi\n" +
+                "m8BgyRdmO3KUwt+DKoATzRMJFSgW5tVRAAMmqqmXuKJRAyhSjwYOB9BMA/Xm8E2P2l122Rj7eRp5\n" +
+                "WljGsSTVa88r422k1fyQDyLG/PZ7bhSxBBB49a+dMGT319NfUPK0cTkcHazcFKGpbtV4Yczjpa9t\n" +
+                "a9ziE2IgO8EICwUMpBHPvWhJP6umILbrvU7p+0UmmlsQqykiAqey+2LvkWQOO4Q83sIqsUxuQ7gA\n" +
+                "B9OMtWZ+DVv580bvENlVgU3KCKxR/SgiAKJlN2jwQfUO4AH9mZL8QTw17w92FbN86VkWsuxm1gnp\n" +
+                "6q+3Mo2TgnzZuIun8G4Os1K7auBRQcAyE/vBF0LtVFZZJRu1b4A6fPFo3zps6VT2szR2RAxvcxUG\n" +
+                "QSLE2uOBoTyEWibxoVJm4BDsAhxfMFHJu31cmN6hozitmbD6dbwzuC6tUM3Sx1u677cy9G1YFN6a\n" +
+                "SPwZHrOXlZkMY7h3up5DKpJI+kea6j9Turewdr7m6C5bbeUyuMxsUe8du5GlSOUhyMsdfhYEuIIq\n" +
+                "4R0sEIzxxyoVkjdlAB+pdfCJ3nSapP2mV2NWVGUHGO5FdEvvIqiybRIyx0iioUpPyiFH9fkPT0+Q\n" +
+                "1zdPmkrFvzakPrGsSbWJmJUrk6L9yC3kJEagQVRHyOVORKf0+r5jkzd7eIl1LdWckbWlQKWo1ezL\n" +
+                "Kw5KrWEvNkJpo9MRJMkzMvfOXRKQphMspHjFIdgn89QyYF4sv8Njw7rJoq1m3Vt6Uj29qUh1YyBq\n" +
+                "DNyzeJxKT5dNV1ISb5BVdFaQVRbtEmqLRUE2QGeFXVdHXSFv3Vtg7L6mdQsHS6a47NSbVxtlBuPL\n" +
+                "37kwjaLvVz+mkmkMsRaNSqe1dyeezga8tvql1F6NdK9yZPrHmttwb7zdR22ZtzF0KhspKsKxg24a\n" +
+                "6eGwizyI0zAPDCgAaUl1GvSdBHh1bW6YN0Otl3G8Q0xEL1CVrxYmPLIA5WdSEjCPUXahlykQKi1S\n" +
+                "jFk+0wHUMdwUUxIBTBkk/E8b7OkOlW2w+sYaUnnsu8i2FgYQ7JeRklK0oqqaRM3ZNUl3bn86mzIs\n" +
+                "m3SOczdRbuKKXmANhqaiSnokomcC/wCQcpuPlz2iPGVG9cHiSvOlzaLPWMZrpOzHNBozL+QevDpI\n" +
+                "GB6ocjRBqiiQ5hEhUVvPMsHaYTpAl+qoObq7gwex+mnS7LYI5K9hsBfSem15XnyFuKfIR+JmQ/fI\n" +
+                "3wTx6XgEeudfPXbG4uo3V/rHg9zRYnG7k3XjZaeTXGlKmJoT18NKkyrKCY4l+5l+/hnLMDwQvrXR\n" +
+                "1bXupDT91h9g0nV+xGVmgTrKRb5xrOyPwaKuETt1VCIPINVDzBQVVS5MQe0DnAAAREclJsHrD8QW\n" +
+                "0Uuw167Mb2nVJSOWaTRnuqXcY2KxOXtV818NcQK1J2CblQVSFKX4j8Mld+OklP8AMdB/+bX/APr5\n" +
+                "jvbPi0SOzdc22hqaeh4otliHEZ7wSdLGO19oKBfN7TN/yu0OQ7e4vIiUeeOedIYa2w9u4PK09udY\n" +
+                "9zV4p4bMrY2DF3a9e7O8Sr45wpCkTACN2b12n36BGvorPc6p7u3Pgsnu76dtlXLNW1j665q3nsXc\n" +
+                "u42pFZjk8tcyRF+avc08UcZB8g+37jzqrLTF12Lr7Z9WuGp0n6uwoZ2+XrqcbEKTr87h1EyLF8VC\n" +
+                "KTbOjOx91u34qJ+zqgml5iwgBUxMFi39nH4mPpxH7H+z+849+H+zOQG6dNxKaI3VSNtkhUbAeoPp\n" +
+                "N4EQscU03vvCBloUSCoBFO3ySyguCj2D+UiQOQ/WC3T8dHKccfgOg/T/AK2v9X/d8xjpPk8XTwd5\n" +
+                "L3VPcWzZGykzLjsTVuTV508cH/q3aBgolc8oVPsrGpJ4I1mvXTD5+/unHTYzobs7qLAuFqRvmM9f\n" +
+                "x1a3WlE85OORLUTyGvCGWVGDdndNJwOQSZReG/1JdX+29l2qv75ibGNYa1wr9g9naG7qYNZMj9si\n" +
+                "VFF6eNjm7sXKCyphQMVRVMG4qAbsEwFhD42Sfm9RGvUuePM1yxT5+XfabQXn7ucmz0geKE939vWo\n" +
+                "6idarj64lb/fCacuyenE7RaJgJefAyqCqBAXSVRiVW4AQwKpqKkU4MmVUxIT+Nir2dRGu1eP8Hrh\n" +
+                "ipx8+y02g/H7R44/bmw+/wDKYzJfTld/R7pyO7oKu4KNezmMnDNDaY/rK0rxFZfvZY4pAFbkjg8D\n" +
+                "861L6YYjNYf6uMIuQ2RiNgW7m28jbqbew1ivaoxocXcgSdXr8RBppoHLIUUgjlgeeTE/qn6KpXpk\n" +
+                "11qrYjy+IWlPYIIrNo4sau2CP5i2UmAgdZVUq6YC58kQMkkJiFKIkHkShOff9v1JYekLpP21u/WM\n" +
+                "laJWVjp6vJr0t8aux0YnEuVWiaThqicqJUH4NSuEESlIQjlNUTL8ggkrC7q5612fU1rHUuvGVLeQ\n" +
+                "C2uEkUzvVXwOwf8AZEMY382kRBISdyjYygfEew6f185ZJdNOWG+eEXQ2LGuSDi21qMTtMbFmj3Yy\n" +
+                "/sSNtfyDzyI8EyvBUeQZzqolBLvORRI3aJR9Yy2tTw9vIdT62wIRcwq7EoXoY7daW3BNlKTY6WeP\n" +
+                "suoxdzILSIvxwSUBUAiXt6ZDcmPxHQ671YnOO3M3VPL4y7PRu18dar4LKR5itTcTYqVEiiWH9vml\n" +
+                "KMGPYBIe8sNRNmKD0UtemyE6iIfV98lmD60OajNQydsED1+ValIqYHi/tHaZJwksidr5X50wrJAs\n" +
+                "mj3HAkielbpK6Jep7VU7sxjWrdVC1h+/j5uLkrOsc6BmbNu+K8TUbqqkFo5buieUJxIqB0liKEIJ\n" +
+                "Mi50x0K7bB6O+rPS8nTLS3dwDGF2lT2y8DLtXUxOskHInjotJw0RO4fK/RxkkDRuCizkHYJeWcDG\n" +
+                "LnwOku57M1Vofq2pa1RvTR1bKQyQqgFrM6mqznVmthjnqyJDMSnFUEjRomKBfyDocm9Q7DerCWsT\n" +
+                "BldrX81szEy4LMbRvTWYjhIV8OexsdhX5aOIOpmmrJwhPHE4AULxrx7jpbgs4PfWJ271E3BHurbX\n" +
+                "UPF1qVhNzWJBY2pnJsfLCfHPYMLrTq3pQ0oBfupMSzMT3Zr6J1eku8dU9NhNf6bvTOZgZRxPwszJ\n" +
+                "Wk7lswPCmIq1k5Jmg78pwkkoKankiK6ZV/IEUlDE709oAhQApAAOO0oAAfIOADjNbHwZdI2RttfY\n" +
+                "mzrVWpqDLX6/HwcO8nYl/GFerzz16tKJMDv27YHJ2pYdgZ35JT+T7QgU5iGNwOyjz8A+fwzar6Z6\n" +
+                "1wbClyV2hVxz5TLXZ4a1WlFRC1kKQw98Uapy38bcMw5K8e9aa/Vzax3/AIpLh8blLuXiwWBxlKxc\n" +
+                "u5OxlHa7LGbVhUnnlm7VXzIexH4DFvWmMYzYvWreuB9QH05+z558NxWoF0qddxERyyyggJ1FWTZQ\n" +
+                "5h+HJjnTExh+0R5z7uM6pYIJwBPDHMAeQJEVwD/cBgQDrtinngJaGaWEkcExOyEjnnglSOR6HrXn\n" +
+                "folWv+Y4r6v8XtPq/wCy+P2/UPrmuX4uuh9oW3c1OkNa6hvduiC1MUXLui0OfsDFu594O+W7txX4\n" +
+                "l4gi5EnaoCS5iqimYh+O0xRzZWD7Q4+zPzOikp/hEkz/AOmQpvh+0ByOupHTLDdRdsz7btN+3QzT\n" +
+                "15zZqQxCZTA4YAFl9A8cH18f51KHSnq1uDpPvCrvDFpHlLdStarLVyM1h6rJaj8TswSRSWVRyvv5\n" +
+                "96rT8MTVcxU+lKnxmxKK/rdh9621daKtleXiJ1BFxaJVZqd7HSzNtINgWbCmqgDhEoKIqJqpcpnA\n" +
+                "xrDvonW/X9BxQB6cfo9p/wDF/wD3nPQFKUgdpClKUPqKAFD9wcBnbL/tjaGK2zgMTgIYYrUWJpQU\n" +
+                "47E8ERllWBFUO/2/1MV7vXr/AK4xu3eeX3dubObntyvVs5zJWclNXqzzrXhktStK0cQZyQik8LyS\n" +
+                "ePn/AD81lERsb3e72LRn3/r+zt0Ue7j4d3lELzwPr68/Z6emUgddGm+vy5b0fTWj5awI68NBRiEW\n" +
+                "jEWCMYIIOklHhn5FWayjdbzjHMioRZQXBjpm7QOmQhSmvQ+Aeo/fxnHaQfXtKP3B/DPHvXY9PeeF\n" +
+                "XCyZDJYWBLEdhZsLYFKblOfsLKjDsPJ5Xj54P+7l0+6hZDp9uE7jr4vD5+ya0lU19w1DkKvbIY+Z\n" +
+                "OxpFPlQIArFjwpK8e+daocv0U+JlfnCTWfeWp2UyYpcyN7aMWHlEBTtK5IhJFRUARVMJRFBZXu4E\n" +
+                "pTnIQAltobwVWSZkJ/f15eyT04oOxrFaBNm2TX4EV2srLuCPXUiQ5hDk8f7tEA5L5igiBi7A3aQB\n" +
+                "/VKAj9gfwztkV4n6Zen1S8MhmnzG6p0/9oZ6+1qGM+vYiVYwx9fDll+PR96mjOfV91WyGLfEYEYD\n" +
+                "ZFSUATttTFihZl/x53lmMY/AMSI49nvPPrXC3Z4L1vrzh1YenW/OJAyH51hW7KokykyqmOYwg3sr\n" +
+                "JNm3ImQDdhCrsDK/yjuDeoZguJ6SPFCqhFI6Jk7k1QIIJ+WS6R7tEATE4l8g7iRXKRLk49hUhKXs\n" +
+                "4KAAUpADaw+Aeo/fxnAkKI89pft/JD1+/Oq/9MWw5Lz3sHczu12mPM0GEyDV67knkkRsshXn44DB\n" +
+                "QAAF4513Yv6wuqMGMhxe4qm196x1lVILO58Oty6iqFHa00csKyf093c8ZcsSS59cVD+HRrDrQoVt\n" +
+                "vTjqMlJlzWHsXFJxDeYmY6UOeUScOxWVbJNhWWbJEamTIoPnppqHP+WgJilUGx6/6J1LtB80kr7R\n" +
+                "YCzP2KaiLR5JsEHDhBJYUxUSKqcveJDmSIIFERAohyXjuNzlrtKHPAAHPx49P6M5+v4fH4jz8vhk\n" +
+                "t7b2Ni8BtuDbNiWxuClC7yGTOsl6WRnk8g7zIpU9rf0+uR+DqDt19Q8zufdlreFeGptjJWY4o/Ht\n" +
+                "lZcVBCscKwnw+GXyKXVfvIf7vg+tRoDo76auP+SGnc/bFN//AG/0DmIt79E2m5nUV9i9f6oqTa3v\n" +
+                "a8/SgFEWCCCgSIImM3AiwF5Ic6hQKUwD6GEMnrz8A+fwzj4fH6/gHH7/ANvP25Vf6f7Qv0bdJtvY\n" +
+                "iJbVaauZIcdUSVFljMZaNxFyrgHlW98H3x6HFGN6l77xmRo5GLde4JpKFyvcSKxmcjJBK9aZJljm\n" +
+                "jNniSJygV0PplJH51qpdFfh67va9R1Am9t6odNdbxDiZf2ZOxtyptF269emWEe1BFTvK5cklXse4\n" +
+                "Ml+V5ZEDqj3ATNhQvR101gHrqKniPp6jFNxD4evp25JgCEL6lKUo/YUA/oDOfUQ+Q/vzEdgdEtlb\n" +
+                "CxVjF16EOXFi7JdazlqtWzOrSJGvjRzCOI17B2qOAOWPyeNZz1N+oXqJ1NzlXN3srZwUlXHQY5Km\n" +
+                "Av5CjUdIHlkE8kS2eHncykPIfZUIp9AawnTOnPSmvZ1vZKbrqtQE61TVTbyjCNbou0CLkOksVFYC\n" +
+                "d6QKJqHTU7DF7yHEoiJeQyk3xbenTdO2N46/n9ea2tl0hUqQ1i3L2uwz2VSbPkLHPOlWjs7RE5Wp\n" +
+                "ztXrZRIy5yJimcwnOkBQE+w8A8hznUyZDjydMhuB9BMUpvqD19Q+77svO9emO3t47Wm2mYUxGOnt\n" +
+                "1rcgxsENfmSvKkoJRY+wl/GFcleSvrkcax3YPVvdOwt6099RWJM5maNS3SifNWbdz+K3XkrkeVpv\n" +
+                "NxGszPGFftD/AD+dQW1Z0IdNMTWaZLS2lqqjbWcHCKyCi7RVU6MslHtRdCqksqZI6hHXmd4Kpm7j\n" +
+                "cmMAmEw5Fzru1111S+yK+n0wyL+M1c1pjFk4i4l1WmzYthTlJoX5lmMmgKxklYpSETREonaj5RyF\n" +
+                "TTUIcVbjvT4fLAgA/EAH9oc5Rlel23ru2325jfJtuOUV1mv7fWHG35hXCgCSeGIFw/b96sD3cn2C\n" +
+                "dc4bq5unH7sr7sy7xbwnqvbevjd2yWs1jITc57vFXszkRmPkePsK9vautYdDS/i0te/2SVm2nmhw\n" +
+                "r7KrRW3m8cjwr5LRMDhyI8AfkA5HgPUefxDR3iwF7+17IlBUOFAKTX4eZx6fnCgx/K+seTc+vr8R\n" +
+                "HNn0SF+ohR+zgP4Y7Cf5Jf8AVD+GRl/5aMOVVTvffJEfd2D949L3cFuB4fQb2W4+T8/nmYh9W24F\n" +
+                "Z3HTfpgHk7fIw24eX7AAnJ/U8nsAPbyfX44/GuFq/UniqxN6qa0tLzTavJTscpMJpu6SyZmj03KR\n" +
+                "nguU2rMBWKLYFCdvkqnOYSFDs9FU9jpv3ggiCn+E8pPv/wBLtDu/nzt2kDke0ofbwH7P/wAzuP2B\n" +
+                "z9mSr0/6e1tgVLlSrms3mI7ciPzmbhttB2KR2wHtTxq3PLAA8nj+2oZ6mdTrnU29j793bu2tvy0I\n" +
+                "ZYe3bmO/b0teUxsXtDySGV08fEZJ+0Fvnu9MYxkh6jHTGMY01izZW69V6hGuo7FvEHWJO4SaMLTK\n" +
+                "86ci5tV0l3EnDwxIym1KPI8s1tfpSVghG7prXYmTWZBJtF3hEG6oLBX/ABHiu6cYTdtruz6pYadJ\n" +
+                "1DdF91nPnq6x9gMKNT6ZaK/SGW29uOE4uuudcVmzXGwIV2PZCxsLkkiDdNJ099s4Q46p+rHXN3oe\n" +
+                "0VdBVrXO/rNoijXG+y+1JqIi7jp/ULhGlSS6SMdaAaSbG1bFtse5Vr0TV6Y5XbNkXE0e+zUHGxbm\n" +
+                "Jl4B+H9sKwalnumaM1Y21Ken9WFvnq9tITa5rzC1p2HWtIaXqYk0rFQ+ofZJmL9VC1qwkVSrJXNb\n" +
+                "Q9RST98ROmat9KJNaX7gg49jn7eT/jkqPjkc+z7+OBzySeOMEyu4LceXrUqk8SV2P8sghMvHfLHA\n" +
+                "g4LoX5mbtLIe1ATzyfQ2QIuTjpqNj5eIkGcrFSzJtJRcpHuEXsfJR71Ajpk/YvGqijZ2zdtlUnDZ\n" +
+                "y3VOg4QUIqkoYhymH6ABx6BnACAFAfgHAfz5yAcegZ06zpeSqknkkD3xwCeP7e+P9aYxjGuddTHK\n" +
+                "QpjGHgCgJjfMAAOR9MwpT+oXVd+rF2tlTlp+YjtdS0tAXKNRol7Rt8NOQjZu7kYY9Cc1xG8O5Ujd\n" +
+                "02Vax7GvOnciVwkEak7E4AOLbmz6lltm7esFUK3j6fXdZVFDU8S7lGDlhfr42mpqy2pKUbKqB9G2\n" +
+                "j9gyhKIrJO23tTVnKupyJemWQFBngfYniD9O1C1XeNhVGdqkRsqLm4de66euMcpUdqTM+1UrsDO1\n" +
+                "2RqShmdhPa28G3aQDS1FY2OsRxIlo4UfyFWiFXCGHZDc8dLyzWZo8XXrJbZzegk7rK1+5fJV4kQu\n" +
+                "EZO8p2MZI3Qxt75OVY7bVjINBXp15MrauSY+KFcdYRkrSXDCUiuEwyJGZhN4VYyxiCaORZhypUTu\n" +
+                "1XtvXu66i1vGs7E3stbdOHbH2xFs+YOWkhHrC3fRkrFSbZlLQ0ozVACuouWYspBsBiGWbEIoQx8k\n" +
+                "5iPSslTrLQ46+U2kPaA22GopcJmDmacejWj6RSZEUZV1bYRZo0cnsYqNUmz6UWF8SUSaNnbCUlIp\n" +
+                "Rg+Xy5mR42aWxRqzzSwzPNDHJ5oFZIpQ6hg6I7MyBgQwUsxHPBJ451YL8UcF21DFFPAkU8kaw2XW\n" +
+                "SeLsYqY5ZESNHkQgqzLGgJHIVeeNMZ8C1fSj6L2L6FDBfTL3FL/RMbR7f9GvpL7A49xfSH3V+lPc\n" +
+                "fvT2X3t7t/t/2D2j2P8Atny88lqD8MA66r/4eR1yG2P0t9KfwTBZfwf8e+5L3H7gC4f3Rc/Rz3R7\n" +
+                "194/4795ex/2j7Lnv49c8j/X514PJ/KIux/aFu/j7BwQOCf7nn1rJZjdv9QYDnj1Hgfn6fP93wx6\n" +
+                "CP2h/XnnLfcalr+uyNvvVnr1NqsOVueWstqmo6vQEYV27bx7QZCYlnLOOZg6fu2rJuLlymCzxy3b\n" +
+                "Jd6yyZDcarZgoLMQFA5JPoAD8nUed6dWurtORWz46NmIW/bZ1lrS5bPk9Qwc0orYmkJTa7H2V0rc\n" +
+                "V4eLsZ9dRsgwl4U8dMWuOZt5EJZkMQlKKrERPh/R3iR6H3NbqPr0yknVbXeK/DqxEw68l/qqd2Kr\n" +
+                "XaxP23UdH2WIRzW3XWimtkQwmGowcMLhd2xRape8JBvHDXb4h3UDUdq6zrN0o2tKgz0ttza9A1bY\n" +
+                "953bXkOW7bZhIklgsQrUNna5bXb9jr2oqxriLLdbXf8AXb9eUl5YKTKVmLjnt2dy58PHYV2Z3rYf\n" +
+                "TOq11ejqnTmttV3Sgmo9LaVV+i03THObyyi13Fc23t6nzjGHaunKStmj7fbpS5PnP0qlbvZZCRfS\n" +
+                "j7t7VC8/Pof5+4++PR5A4BIb2D6/zzgy565Y3AtGKdEp8xoGEHeJJJO6VV5LoyhokbiT2p4HCkc8\n" +
+                "2x4xjOrWdaYxnU5uwhjfHtKY37gEf6s4JABJ+ACT/oe9B79D5Osc7F2zQdVt64tfLG0rgXC0xFHr\n" +
+                "J3ibg5ZS2WAy6cNDpC3RWBJZ8dut2LOBRaJAmIruEi8CMfNT9VtbkSNoTblnq1ZuFm3juDU1EYIM\n" +
+                "5GJaTpqHepmArbA7mQfyrUtlnYBpEP00FJFmWakpMrKDj/PMmyCpPqa6jk94dVetqnZW259asarb\n" +
+                "IyO1fHVq9V/WV8QGyECJn7TbqmSFt+zIuxXZOYgK/QddWCEoL49JkpG1WOfgYKyzv0X9d0OvrLVe\n" +
+                "urYlKucHa1LavIXdeUc3VV3ebrX4W9M4DY7D3k41cuh0+atgrI8jyysy5jzysjN2l3X6zHsY1v2u\n" +
+                "wgSXqrLc3fWxeNjX9Ec7+weaWGwqrN40lladSEBeTxTLV4PY0f8AMWIBi1PsfSH9Hs+3mcrIwuLt\n" +
+                "Y7qjrw2KTNNW/VLViWpIjykQ1jZrtk/InlSXmqIoyUsHYID4B68/bnOfgg4QcEFRuqmskVRVIVEj\n" +
+                "lUICiCh0V0+4giAKIrEUSVJ+smomdM4FOUQD98ntSGAIIPIBBHwf8j/GoC4I9EEEfIPyP96YxjOd\n" +
+                "NMYxjTWL90awj9zak2VqiRfqRDTY1Hs9MWl27f2lxEjYod5FJSyLX2hqV2rGquSPk2ijhFJ0duDd\n" +
+                "ZQqSh8r3p/hzTmoto9MEnrbaruxag0XsDaN5dVPZiZFLfFO9o1R5ETjSiy9QioWls6l74bxMtH0F\n" +
+                "Oi1tOLl5W7WE1vlDTLCvxlrGMqDsBx+P/wBB/wCmrZbxFC7Kk88PM0Zj7ZFJVh45lmUevkeRQT+D\n" +
+                "8/50xjGU6uY9etMYxjTTP5jM2h+QM1bmAfiAop+v7fyfX78/pxlDxRyf1xo/z/Uob545+Qfngc6q\n" +
+                "DMv9LMv+iR/9a6lKUhQKQpSFD4FKAFKH7ADgAztjGVABQAAAAOAB6AA/A1TpjGM500wIAIcD6gOM\n" +
+                "Y01Ejq66QaP1h1Cn0a9T9grcLWLkra1nNXRgjzD9JWnWyrGjGi1kip+GjTC4sbWW96KQMk/aGiSp\n" +
+                "RQxr5ylLMfC9NvStsTSW/wDd2zLZsSP2PXthUfT1PrEu9SmEdhKI6siZatIuthqvl5OPsFmfQgwj\n" +
+                "ufukZJRqVssys7Kp0uns1GcWWeOcB8uPQPh68/78ZV3Egg8Hnj3+fXx7/Prke/76tj4ig9xL/gC2\n" +
+                "o5FkEikjuZI2jXuUHhgquwHI9fjXOMYynVz0xjGNNQz2J0d1m/b6iN2knwrCf0WdVu8wddrkKwnN\n" +
+                "iJlloCRhyTl9KgayM4qOTgUWTmOiDsn8m0K0YnnG0Og9ipT+JXpYQ0u+jbl0pw1Tqk41ixhLnR59\n" +
+                "zLNK9t2L84izJ9a7i2aWOystgV9wpIPYrYr6KuUpJJS07EWaOlwlWEvXZs8/EPl8c4+PAgHPx9fl\n" +
+                "92Yu+ztvmWzajoRQXLVj9UbsY4sw2CEBkgkbkxE9v3IvCOWbvRu5uckG7twmvWpS5KeehVrrUWhK\n" +
+                "wNOWspJWKxAvas5TniOWTumiCxeKVDFH2R/6X69sSs6Qp0dthoSN2Q7PYLDc2Cbpo/SZWK12WYtE\n" +
+                "q0QdsnT5o4QbvJdZFFRu8cpikmXtWPx3ZIHGMvtGotCnVprJLMtaGOBZZm75XEaBQ0jcDl245Y8D\n" +
+                "kn498ast+21+7bvPFFC9uzNZaGuhSCJppGkMcKEsUiQsVReWKoAOTxzpjGM9evLpjGMaaYxjGmmM\n" +
+                "YxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxj\n" +
+                "GmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaa//Z";
+        String strBase = "data:image/png;base64," + base64;
+            if (info.indexOf("投保人") > -1) {
+                if (info.indexOf("港澳身份证") > -1) {
+                    list.add(new BaseContect(strBase, "T4", 0));
+                } else if (info.indexOf("身份证") > -1) {
+                    list.add(new BaseContect(strBase, "T1", 0));
+                    //list.add(new BaseContect(strBase,"T1",0));
+                } else if (info.indexOf("组织机构") > -1) {
+                    list.add(new BaseContect(strBase, "T2", 0));
+                } else if (info.indexOf("营业执照") > -1) {
+                    list.add(new BaseContect(strBase, "T3", 0));
+                } else if (info.indexOf("通行证") > -1) {
+                    list.add(new BaseContect(strBase, "T5", 0));
+                }
+            }
+            if (info.indexOf("被保人") > -1) {
+                if (info.indexOf("港澳身份证") > -1) {
+                    list.add(new BaseContect(strBase, "B4", 0));
+                } else if (info.indexOf("身份证") > -1) {
+                    list.add(new BaseContect(strBase, "B1", 0));
+                    //list.add(new BaseContect(strBase,"T1",0));
+                } else if (info.indexOf("组织机构") > -1) {
+                    list.add(new BaseContect(strBase, "B2", 0));
+                } else if (info.indexOf("营业执照") > -1) {
+                    list.add(new BaseContect(strBase, "B3", 0));
+                } else if (info.indexOf("通行证") > -1) {
+                    list.add(new BaseContect(strBase, "B5", 0));
+                }
+            }
+            if (info.indexOf("车主") > -1) {
+                if (info.indexOf("港澳身份证") > -1) {
+                    list.add(new BaseContect(strBase, "C4", 0));
+                } else if (info.indexOf("身份证") > -1) {
+                    list.add(new BaseContect(strBase, "C1", 0));
+                    //list.add(new BaseContect(strBase,"T1",0));
+                } else if (info.indexOf("组织机构") > -1) {
+                    list.add(new BaseContect(strBase, "C2", 0));
+                } else if (info.indexOf("营业执照") > -1) {
+                    list.add(new BaseContect(strBase, "C3", 0));
+                } else if (info.indexOf("通行证") > -1) {
+                    list.add(new BaseContect(strBase, "C5", 0));
+                }
+            } else if (info.indexOf("行驶本") > -1 || info.indexOf("行驶证") > -1) {
+                list.add(new BaseContect(strBase, "C6", 0));
+            } else if (info.indexOf("居住证") > -1) {
+                list.add(new BaseContect(strBase, "C7", 0));
+            }
+            if (info.indexOf("完税") > -1) {
+                list.add(new BaseContect(strBase, "I3", 0));
+            }
+            if (info.indexOf("在京") > -1) {
+                list.add(new BaseContect(strBase, "I4", 0));
+            }
+            if (info.indexOf("验车") > -1) {
+                list.add(new BaseContect(strBase, "I2", 0));
+            }
+            //其他未添加
+            List<BaseContect> reslutList = BaseContect.getList(list);
+            JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(reslutList));
+            String res = jsonArray.toString();
+            String res1 = res.replaceAll("imgType", "ImgType");
+            String res2 = res1.replaceAll("isUpload", "IsUpload");
+            String res3 = res2.replaceAll("strBase", "StrBase");
+            jsonObject.put("ListBaseContect", res3);
+            String params2 = "{\"ListBaseContect\":" + res3 + ",\"BuId\":" + buid + ",\"Agent\":" + agent + ",\"SecCode\":\"" + SecCode + "\"}";
+            String body = "";
+            try {
+                body = HttpClientUtil.doPost(URL, params2);
+                JSONObject object = JSONObject.parseObject(body);
+                if (object.containsKey("resultcode")) {
+                    int businessStatus = object.getIntValue("resultcode");// 请求状态值1成功，<0失败
+                    map.put("status", businessStatus);
+                    map.put("msg", object.getString("message"));
+                    map.put("data", null);
+                } else if (object.containsKey("BusinessStatus")) {
+                    int businessStatus = object.getIntValue("BusinessStatus");// 请求状态值1成功，<0失败
+                    map.put("status", businessStatus);
+                    map.put("msg", object.getString("StatusMessage"));
+                    map.put("data", null);
+                }
+                return map;
+            } catch (Exception e) {
+                map.put("code", "400");
+                map.put("msg", "请求异常");
+                map.put("data", null);
+                return map;
+            }
+        }
+
 }

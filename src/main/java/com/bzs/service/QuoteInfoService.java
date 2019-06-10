@@ -8,6 +8,7 @@ import com.bzs.utils.jsontobean.QuoteParmasBean;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -179,7 +180,7 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @return
      */
 
-     Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String  orderId, String bizNo,String transactionNum,String forceNo, String channelId,String payWay);
+     Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String  orderId, String bizNo,String transactionNum,String forceNo, String channelId,String payWay,String quoteId);
 
      /**
      * &#x6dfb;&#x52a0;&#x6216;&#x66f4;&#x65b0;
@@ -193,4 +194,48 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @return
      */
     int updateByQuoteId(QuoteInfo quoteInfo);
+
+    /**
+     * 壁虎接口 -获取城市渠道续保期
+     * @return
+     */
+    Map<String,Object> getContinuedPeriods();
+
+    /**
+     * 获取新车车型信息接口 接口8
+     * @param carVin
+     * @param engineNo
+     * @param moldName
+     * @param cityCode
+     * @return
+     */
+
+    Map<String,Object> getFirstVehicleInfo(String carVin, String engineNo, String moldName, int cityCode);
+
+    /**
+     * 进口车根据车架号获取品牌名称（新车报价用）
+     * @param cityCode
+     * @param carVin  进口车，车架号不是以字母L开头
+     * @return
+     */
+    Map<String,Object> getModelNameForImportCar(Integer cityCode, String carVin);
+
+    /**
+     *获取车辆出险信息
+     * @param licenseNo
+     * @param renewalCarType 大小号牌：0小车，1大车，默认0
+     * @return
+     */
+
+    Map<String,Object> getCreditDetailInfo(String licenseNo, Integer renewalCarType);
+
+    /**
+     *
+     * @param info 返回的信息
+     * @param buid
+     * @param request
+     * @return
+     */
+
+    Map<String,Object> uploadImgForPingAn(String info, String buid, HttpServletRequest request);
 }

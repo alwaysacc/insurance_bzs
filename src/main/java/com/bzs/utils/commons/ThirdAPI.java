@@ -66,5 +66,9 @@ public interface ThirdAPI {
     public static final String PayResult=PayURL+"/api/PayOut/PayInfo?";//4、	获取支付结果(到账查询)信息
     public static final String VoidPay=PayURL+"/api/PayOut/VoidPay?";//7、作废原支付方式
 
-
+    public static final String GetContinuedPeriods=BIHUURL+"/api/City/GetContinuedPeriods?";//获取城市渠道续保期
+    public static final String GetFirstVehicleInfo=BIHUURL+"/api/CarInsurance/GetFirstVehicleInfo?";//获取新车车型信息接口
+    public static final String GetModelName=BIHUURL+"/api/CarInsurance/getmoldname?";//获取新车车型信息接口
+    public static  final String GetCreditDetailInfo=BIHUURL+"/api/claim/GetCreditDetailInfo?";//获取车辆出险信息
+    public static final String UploadMultipleImg=BIHUURL+"/api/UploadImg/UploadMultipleImg?";//核保上传图片
 }

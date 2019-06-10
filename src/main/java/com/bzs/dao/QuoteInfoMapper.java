@@ -29,7 +29,7 @@ public interface QuoteInfoMapper extends Mapper<QuoteInfo> {
     List findListByDifferCondition(QuoteInfo quoteInfo);
 
     /**
-     * 添加或更新，，不具体可根据情况拓展
+     * 添加或更新，可根据情况拓展
      * @param quoteInfo
      * @return
      */
