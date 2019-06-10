@@ -326,19 +326,76 @@ public class QuoteInfoController {
     }
 
     @ApiOperation("调用第三方壁虎-获取报价信息接口")
-    @PostMapping("/Ws_GetPrecisePrice")
-    public Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
+    @PostMapping("/WX_GetPrecisePrice")
+    Map getPrecisePrice(String licenseNo, Long quoteGroup, String createBy, String carInfoId) {
         return quoteInfoService.getPrecisePrice(licenseNo, quoteGroup, createBy, carInfoId);
     }
 
     @ApiOperation("调用第三方壁虎-获取核保信息接口")
-    @PostMapping("/Ws_GetSubmitInfo")
-    public Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
+    @PostMapping("/WX_GetSubmitInfo")
+    Map getSubmitInfo(String licenseNo, Long submitGroup, String createBy, String carInfoId, String quoteId) {
         return quoteInfoService.getSubmitInfo(licenseNo, submitGroup, createBy, carInfoId, quoteId);
     }
+
     @ApiOperation("调用第三方壁虎-获取支付信息接口")
-    @PostMapping("/Ws_GetPayAddress")
-    public Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
+    @PostMapping("/WX_GetPayAddress")
+    Map getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
         return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId);
+    }
+
+    @ApiOperation("调用第三方壁虎-获取支付结果接口")
+    @PostMapping("/WX_GetPayResult")
+    public Map<String, Object> getPayResult(String carVin, String licenseNo, Long source, String buid, String bizNo, String forceNo, String channelId, String orderId) {
+        return quoteInfoService.getPayInfo(carVin, licenseNo, source, buid, bizNo, forceNo, channelId, null, orderId);
+    }
+
+    @ApiOperation("调用第三方壁虎-作废原支付接口")
+    @PostMapping("/WX_DoVoidPay")
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId) {
+        return quoteInfoService.doVoidPay(carVin, licenseNo, source, buid, orderId, bizNo, transactionNum, forceNo, channelId, payWay,quoteId);
+    }
+    @ApiOperation("调用第三方壁虎-获取城市渠道续保期接口")
+    @PostMapping("/WX_GetContinuedPeriods")
+    public Map<String, Object>GetContinuedPeriods(){
+        return quoteInfoService.getContinuedPeriods();
+    }
+
+    @ApiOperation("调用第三方壁虎-获取新车车型信息接口")
+    @PostMapping("/WX_GetFirstVehicleInfo")
+    public Map<String, Object>getFirstVehicleInfo(String carVin, String engineNo,String moldName,Integer cityCode){
+        cityCode=8;
+        return quoteInfoService.getFirstVehicleInfo(carVin,engineNo,moldName,cityCode);
+    }
+    /**
+     * 进口车根据车架号获取品牌名称（新车报价用）
+     * @param cityCode
+     * @param carVin  进口车，车架号不是以字母L开头
+     * @return
+     */
+    @ApiOperation("调用第三方壁虎-进口车根据车架号获取品牌名称（新车报价用）")
+    @PostMapping("/WX_GetModelName")
+    Map<String, Object> getModelNameForImportCar(Integer cityCode,String carVin){
+        cityCode=8;
+        return quoteInfoService.getModelNameForImportCar(cityCode,carVin);
+
+    }
+
+    /**
+     *只有报价成功后调用这个接口才会有返回值
+     * @param licenseNo
+     * @param renewalCarType 大小号牌：0小车，1大车，默认0
+     * @return
+     */
+    @ApiOperation("调用第三方壁虎-获取车辆出险信息")
+    @PostMapping("/WX_GetCreditDetailInfo")
+    Map<String, Object>getCreditDetailInfo(String licenseNo,Integer renewalCarType){
+        renewalCarType=0;
+        return quoteInfoService.getCreditDetailInfo(licenseNo,renewalCarType);
+    }
+
+    @ApiOperation("调用第三方壁虎-平安上传图片")
+    @PostMapping("WX_PINGAN_UploadImg")
+    Map<String,Object>UploadImgForPingAn(String info,String buid,HttpServletRequest request){
+        return quoteInfoService.uploadImgForPingAn(info,buid,request);
     }
 }

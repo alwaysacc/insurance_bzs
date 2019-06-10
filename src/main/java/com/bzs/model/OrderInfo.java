@@ -305,4 +305,16 @@ public class OrderInfo {
     public void setPayTypeId(String payTypeId) {
         this.payTypeId = payTypeId;
     }
+
+    public OrderInfo() {
+    }
+
+    public OrderInfo(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public OrderInfo(String orderId, Integer payStatus) {
+        this.orderId = orderId;
+        this.payStatus = payStatus;
+    }
 }
