@@ -87,8 +87,8 @@
             #{item}
         </foreach>
     </update>
-
     <!--一对一查询 结束-->
+
     <select id="getUserList" resultType="map">
         SELECT distinct
         car_info.car_info_id,
@@ -193,7 +193,10 @@
         quote_info.quote_status,
         quote_info.submit_status,
         insured_info.busines_expire_date,
-        insured_info.force_expire_date
+        insured_info.force_expire_date,
+        insured_info.next_force_start_date,
+        insured_info.next_busines_start_date,
+        insured_info.last_year_insurance_company
         FROM
         car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
         left join insured_info on (car_info.car_info_id = insured_info.car_info_id)

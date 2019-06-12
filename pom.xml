@@ -86,6 +86,12 @@
             <artifactId>mapper</artifactId>
             <version>3.4.2</version>
         </dependency>
+        <!-- sql 打印 -->
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <version>3.8.1</version>
+        </dependency>
         <!--常用库依赖-->
         <dependency>
             <groupId>org.apache.commons</groupId>

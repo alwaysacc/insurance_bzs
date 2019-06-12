@@ -61,7 +61,7 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     @Override
     public Map orderDetails(String orderId,String quoteId) {
         Map map=new HashMap();
-        if (StringUtils.isNotBlank(orderId)){
+        if (!StringUtils.isNotBlank(orderId)){
             orderId=orderInfoMapper.getOrderIdByQuoteId(quoteId);
         }
         OrderInfo orderInfo=orderInfoServices.findBy("orderId",orderId);

@@ -180,7 +180,7 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @return
      */
 
-     Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String  orderId, String bizNo,String transactionNum,String forceNo, String channelId,String payWay,String quoteId);
+     Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String  orderId, String bizNo,String transactionNum,String forceNo, String channelId,String payWay,String quoteId,String cancelMsg);
 
      /**
      * &#x6dfb;&#x52a0;&#x6216;&#x66f4;&#x65b0;

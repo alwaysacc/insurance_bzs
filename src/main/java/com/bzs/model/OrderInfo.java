@@ -77,6 +77,37 @@ public class OrderInfo {
     private Integer contactTel;
     @Column(name = "create_by")
     private String createBy;
+    @Column(name = "cancel_msg")
+    private String cancelMsg;
+    @Column(name = "update_by")
+    private String updateBy;
+    @Column(name = "update_time")
+    private Date updateTime;
+
+    public String getCancelMsg() {
+        return cancelMsg;
+    }
+
+    public void setCancelMsg(String cancelMsg) {
+        this.cancelMsg = cancelMsg;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
     /**
      * 获取创建人
      *
@@ -316,5 +347,11 @@ public class OrderInfo {
     public OrderInfo(String orderId, Integer payStatus) {
         this.orderId = orderId;
         this.payStatus = payStatus;
+    }
+
+    public OrderInfo(String orderId, Integer payStatus, String cancelMsg) {
+        this.orderId = orderId;
+        this.payStatus = payStatus;
+        this.cancelMsg = cancelMsg;
     }
 }
