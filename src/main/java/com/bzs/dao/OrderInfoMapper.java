@@ -1,6 +1,7 @@
 package com.bzs.dao;
 
 import com.bzs.model.OrderInfo;
+import com.bzs.model.query.OrderAndAccount;
 import com.bzs.utils.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,4 +28,6 @@ public interface OrderInfoMapper extends Mapper<OrderInfo> {
     int  updatePayStatusById(@Param("orderId") String  orderId);
 
     String getOrderIdByQuoteId(@Param("quoteId") String quoteId);
+
+    List<OrderAndAccount> getNextLevelOrder(@Param("createBy")String createBy, @Param("status")String status, @Param("payStatus")String payStatus);
 }

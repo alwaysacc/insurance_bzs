@@ -20,4 +20,11 @@ public interface OrderInfoService extends Service<OrderInfo> {
     Map orderDetails(String orderId,String quoteId);
     int updatePayStatus(OrderInfo orederNo);
     int updatePayStatusById(String orederNo);
+
+    /**
+     * 获取下两级的支付完成的订单
+     * @param createBy
+     * @return
+     */
+    Map<String,Object> getNextLevelOrder(String createBy);
 }

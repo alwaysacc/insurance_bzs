@@ -212,7 +212,15 @@ public class AccountInfoController {
 
     @ApiOperation("获取父节点账号")
     @PostMapping("/getParentList")
-    public Result getParentList(String id,Integer deep,String type){
-      return accountInfoService.getParentOrChildList(id,deep,"",type);
+    /**
+     * 获取父节点或者子节点
+     * @param id
+     * @param deep 深度 默认1 ，1的时候加上本身会查询两级
+     * @param isOwner 默认0包括自己在内1不包括
+     * @param type 默认0子节点1父节点
+     * @return
+     */
+    public Result getParentList(String id,Integer deep,String type,String isOwner){
+      return accountInfoService.getParentOrChildList(id,deep,isOwner,type);
     }
 }

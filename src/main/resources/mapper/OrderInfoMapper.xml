@@ -20,6 +20,21 @@
     <result column="contact_tel" jdbcType="INTEGER" property="contactTel" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
   </resultMap>
+
+  <!--查询订单信息-->
+  <resultMap id="orderAndAccountResultMap" type="com.bzs.model.query.OrderAndAccount" extends="BaseResultMap">
+    <result column="level" jdbcType="INTEGER" property="level"/>
+    <result column="p_level" jdbcType="INTEGER" property="pLevel"/>
+    <result column="accountId" jdbcType="VARCHAR" property="accountId"/>
+    <result column="userName" jdbcType="VARCHAR" property="userName"/>
+    <result column="car_number" jdbcType="VARCHAR" property="carNo"/>
+    <result column="frame_number" jdbcType="VARCHAR" property="vinNo"/>
+    <result column="invite_code_level" jdbcType="VARCHAR" property="inviteCodeLevel"/>
+    <result column="biz_total" jdbcType="DECIMAL" property="bizTotal" />
+  </resultMap>
+
+
+
   <select id="getOrderList" resultType="map">
     SELECT
     order_info.order_id,
@@ -113,5 +128,26 @@
     <if test="quoteId!=null">pay_type_id=#{quoteId} and</if>
           pay_status='0' or  pay_status='1'
     </where>
+  </select>
+  <select id="getNextLevelOrder" resultMap="orderAndAccountResultMap" >
+    select
+      t1.account_id as accountId,
+      (t1.invite_code_level-level)+1 as level,
+      t1.invite_code_level,
+      t1.level as p_level,
+      q.biz_total,
+      c.car_number,
+      c.frame_number,
+      o.*
+from
+	(select account_id, invite_code_level, (select invite_code_level from  account_info where account_id=#{createBy} ) as level
+		from account_info
+		where FIND_IN_SET(account_id,getAccountInfoChildList(#{createBy},2)))
+t1
+INNER JOIN order_info o ON o.create_by = t1.account_id
+INNER JOIN quote_info q on  q.quote_id =o.pay_type_id
+INNER JOIN car_info c on q.car_info_id= c.car_info_id
+;
+
   </select>
 </mapper>

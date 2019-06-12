@@ -28,6 +28,8 @@
     <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
     <result column="inviteCode" jdbcType="INTEGER" property="invitecode" />
     <result column="superiorInviteCode" jdbcType="INTEGER" property="superiorinvitecode" />
+    <result column="invite_code_level" jdbcType="INTEGER" property="inviteCodeLevel" />
+    <result column="association_level" jdbcType="VARCHAR" property="associationLevel" />
   </resultMap>
     <select id="getRoleIdByAccountId" resultType="String">
       select role_id from account_id where account_id=#{account_id}
@@ -202,15 +204,20 @@
     </select>
     <select id="getParentOrChildList" resultMap="BaseResultMap">
         select * from account_info
+        <!--<where>
+            <if test="type=='0'">FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep})) </if>
+            <if test="type=='1'">FIND_IN_SET(account_id,etAccountInfoChildList(#{id},#{deep})) </if>
+            <if test="isOwner=='1'">and account_id!=#{id}</if>
+        </where>-->
          <choose>
-            <when test="type=='0'">
-                where FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep}))
+            <when test='type=="0"'>
+                where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
             </when>
             <otherwise>
-                where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
+                where FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep}))
             </otherwise>
         </choose>
-        <if test="isOwner=='1'">and account_id!=#{id}</if>
+        <if test='isOwner=="1"'>and account_id!=#{id}</if>
     </select>
     <select id="getAllCode" resultType="int">
         select inviteCode from account_info

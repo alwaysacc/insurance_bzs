@@ -1061,7 +1061,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
                         qpc.setQuoteStatus(0);//报价失败
                         qpc.setSubmitStatus(-1);//未核保
-                        qpc.setSubmitresult("报价失败无法核保");//未核保
+                       // qpc.setSubmitresult("报价失败");//未核保
                         qpc.setQuoteResult("报价失败：" + quoteResult);//报价失败描述
                         if (repeatInsurance != null) {
                             qpc.setQuoteResult("报价失败：" + repeatInsurance + ":" + quoteResult);//信息描述
@@ -1417,7 +1417,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setQuoteStatus(1);//报价状态
                     qpc.setQuoteResult(quoteResult);//报价信息
                     qpc.setSubmitStatus(-1);//报价状态
-                    qpc.setSubmitresult("未核保");//报价信息
+                    //qpc.setSubmitresult("未核保");//报价信息
                     quoteInfoMapper.insert(qpc);
                     return resultMap;
                 } else {
@@ -1427,7 +1427,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setQuoteResult("报价失败,获取报价内容为空");//报价失败描述
                     qpc.setQuoteStatus(0);//报价失败
                     qpc.setSubmitStatus(-1);//未核保
-                    qpc.setSubmitresult("未核保");//未核保
+                    //qpc.setSubmitresult("未核保");//未核保
                     quoteInfoMapper.insert(qpc);
                     return resultMap;
 
@@ -1445,7 +1445,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 qpc.setQuoteResult("报价失败:" + message);//报价失败描述
                 qpc.setQuoteStatus(0);//报价失败
                 qpc.setSubmitStatus(-1);//未核保
-                qpc.setSubmitresult("未核保");//未核保
+                //qpc.setSubmitresult("未核保");//未核保
                 quoteInfoMapper.insert(qpc);
                 return resultMap;
             }
@@ -2455,6 +2455,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
             try {
                HttpResult httpResult = HttpClientUtil.doPost(URL, params2);
+               // HttpResult httpResult=   HttpClientUtil.doPost(URL,null,"JSON",null,jsonObject.toJSONString());
                int code=httpResult.getCode();
                 String body=httpResult.getBody();
                if(200==code){

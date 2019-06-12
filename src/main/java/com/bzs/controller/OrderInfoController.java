@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by alwaysacc on 2019/04/12.
@@ -92,4 +93,16 @@ public class OrderInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
+    /**
+     *
+     * @param createBy
+     * @return
+     */
+    @PostMapping("/getNextLevelOrder")
+    @ApiOperation("获取下两级订单")
+    public Map<String,Object> getNextLevelOrder(String createBy,String orderStatus){
+        return orderInfoService.getNextLevelOrder(createBy);
+    }
+
 }

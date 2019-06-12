@@ -7,11 +7,13 @@ import com.bzs.model.CarInfo;
 import com.bzs.model.InsuredInfo;
 import com.bzs.model.OrderInfo;
 import com.bzs.model.QuoteInfo;
+import com.bzs.model.query.OrderAndAccount;
 import com.bzs.service.CarInfoService;
 import com.bzs.service.InsuredInfoService;
 import com.bzs.service.OrderInfoService;
 import com.bzs.service.QuoteInfoService;
 import com.bzs.utils.AbstractService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,5 +86,28 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     @Override
     public int updatePayStatusById(String orderId) {
         return orderInfoMapper.updatePayStatusById(orderId);
+    }
+
+    @Override
+    public Map<String, Object> getNextLevelOrder(String createBy) {
+        Map<String, Object> map=new HashMap<>();
+        if(StringUtils.isBlank(createBy)){
+            map.put("code","400");
+            map.put("msg","参数异常");
+            map.put("data","");
+            return map;
+        }
+        List <OrderAndAccount>list=orderInfoMapper.getNextLevelOrder(createBy,null,null);
+        if(CollectionUtils.isNotEmpty(list)){
+            map.put("code","200");
+            map.put("msg","查询成");
+            map.put("data",list);
+            return map;
+        }else{
+            map.put("code","400");
+            map.put("msg","未查询到相关信息");
+            map.put("data","");
+            return map;
+        }
     }
 }

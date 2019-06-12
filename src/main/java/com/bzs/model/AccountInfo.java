@@ -144,6 +144,14 @@ public class AccountInfo implements Serializable {
      */
     @Column(name = "superiorInviteCode")
     private Integer superiorinvitecode;
+    /**
+     * 关联的验证码
+     */
+
+    @Column(name = "association_level")
+    private String associationLevel;
+    @Column(name = "invite_code_level")
+    private Integer inviteCodeLevel;
 
     /**
      * 获取id
@@ -531,5 +539,21 @@ public class AccountInfo implements Serializable {
      */
     public void setSuperiorinvitecode(Integer superiorinvitecode) {
         this.superiorinvitecode = superiorinvitecode;
+    }
+
+    public String getAssociationLevel() {
+        return associationLevel;
+    }
+
+    public void setAssociationLevel(String associationLevel) {
+        this.associationLevel = associationLevel;
+    }
+
+    public Integer getInviteCodeLevel() {
+        return inviteCodeLevel;
+    }
+
+    public void setInviteCodeLevel(Integer inviteCodeLevel) {
+        this.inviteCodeLevel = inviteCodeLevel;
     }
 }

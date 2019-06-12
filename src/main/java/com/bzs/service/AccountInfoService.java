@@ -43,8 +43,8 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * 获取父节点或者子节点
      * @param id
      * @param deep 深度
-     * @param isOwner 是否包括自己在内
-     * @param type 默认0父节点1子节点
+     * @param isOwner 默认0包括自己在内1不包括
+     * @param type 默认0子节点1父节点
      * @return
      */
     Result getParentOrChildList(String id, Integer deep,String isOwner,String type);

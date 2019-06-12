@@ -265,6 +265,7 @@ public class EncodeUtil {
         boolean result = i == j ? true : false;
         return result;
     }
+    
 
     public static void main(String[] args) {
         String unicode = "\\u673a\\u52a8\\u8f66\\u635f\\u5931\\u4fdd\\u9669\\u5b98\\u65b9\\u56de\\u590d\\u56de\\u590d \\uff1b\\u2018\\uff1b\\u2018\\u2019\\u20194545枚举";

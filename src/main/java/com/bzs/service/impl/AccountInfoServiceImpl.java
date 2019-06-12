@@ -5,6 +5,7 @@ import com.bzs.model.AccountInfo;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.*;
+import com.bzs.utils.stringUtil.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -127,11 +128,22 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         codeList.add(code);
         redisUtil.set(CODE,codeList,720000);
         System.out.println(codeList.toString());
+        Integer pInvitecode= accountInfo1.getInvitecode();
+        String pAssociation=accountInfo1.getAssociationLevel();
+        if(StringUtils.isNotBlank(pAssociation)){
+            accountInfo.setAssociationLevel(pAssociation+"-"+code);
+            int count=StringUtil.getCharacterCount(pAssociation,"-")+2;
+            accountInfo.setInviteCodeLevel(count);
+        }else{
+            accountInfo.setAssociationLevel(pInvitecode+"-"+code);
+            accountInfo.setInviteCodeLevel(2);
+        }
         accountInfo.setInvitecode(code);
         accountInfo.setAccountId(UUIDS.getUUID());
         accountInfo.setRoleId("3");
         accountInfo.setAccountState("2");
         accountInfo.setRoleName("业务员");
+        accountInfo.setParentId(accountInfo1.getAccountId());
         accountInfo.setSuperior(accountInfo1.getUserName());
         accountInfoService.save(accountInfo);
         Map map=new HashMap();
@@ -141,9 +153,15 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     }
     @Override
     public Result getParentOrChildList(String id, Integer deep, String isOwner,String type) {
+        if(null==deep||deep<1){
+            deep=1;
+        }
         if(StringUtils.isNotBlank(id)){
             if(StringUtils.isBlank(type)||!"1".equals(type)){
-                type="0";//父节点
+                type="0";//0子节点1父节点
+            }
+            if(StringUtils.isBlank(isOwner)||!"1".equals(isOwner)){
+                isOwner="0";//0包括 1排除
             }
             List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,isOwner,type);
             if(CollectionUtils.isNotEmpty(list)){
