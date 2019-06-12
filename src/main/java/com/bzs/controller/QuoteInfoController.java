@@ -315,7 +315,7 @@ public class QuoteInfoController {
      */
 
     @ApiOperation("调用第三方壁虎-报价核保基础接口")
-    @PostMapping("/Ws_GetPostPrecisePrice")
+    @PostMapping("/WX_GetPostPrecisePrice")
     public Result postPrecisePrice(@RequestParam String personName, @RequestParam String personCardID, @RequestParam String personCardIDType,
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
                                    @RequestParam String carFirstRegisterDate, String lists,
@@ -351,8 +351,8 @@ public class QuoteInfoController {
 
     @ApiOperation("调用第三方壁虎-作废原支付接口")
     @PostMapping("/WX_DoVoidPay")
-    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId) {
-        return quoteInfoService.doVoidPay(carVin, licenseNo, source, buid, orderId, bizNo, transactionNum, forceNo, channelId, payWay,quoteId);
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId,String cancelMsg) {
+        return quoteInfoService.doVoidPay(carVin, licenseNo, source, buid, orderId, bizNo, transactionNum, forceNo, channelId, payWay,quoteId,cancelMsg);
     }
     @ApiOperation("调用第三方壁虎-获取城市渠道续保期接口")
     @PostMapping("/WX_GetContinuedPeriods")

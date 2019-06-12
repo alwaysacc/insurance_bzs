@@ -1829,7 +1829,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId) {
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId,String cancelMsg) {
         String factCode = "400";
         String message = "";
         Map<String, Object> map=new HashMap();
@@ -1888,7 +1888,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setPaymentNotice(null);
                     this.insertOrUpdate(qpc);
                     //此处修改订单信息为作废状态
-                    orderInfoService.updatePayStatus(new OrderInfo(orderId,4));
+                    System.out.println(cancelMsg);
+                    orderInfoService.updatePayStatus(new OrderInfo(orderId,2,cancelMsg));
                 }else{
                     map.put("code", "400");
                 }
