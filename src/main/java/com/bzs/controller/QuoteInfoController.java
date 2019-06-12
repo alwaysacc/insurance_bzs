@@ -320,9 +320,9 @@ public class QuoteInfoController {
                                    @RequestParam String carNo, @RequestParam String carFrameNo, @RequestParam String carEngineNo,
                                    @RequestParam String carFirstRegisterDate, String lists,
                                    String ciBeginDate, String biBeginDate, String carTransDate,
-                                   String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup, Long submitGroup, String isSame, int forceTax) {
+                                   String carVehicleFgwCode, String carInfoId, String createdBy, Long quoteGroup, Long submitGroup, String isSame, int forceTax,Double purchasePrice) {
         isSame = "0";
-        return quoteInfoService.postPrecisePrice(personName, personCardID, personCardIDType, carNo, carFrameNo, carEngineNo, carFirstRegisterDate, lists, ciBeginDate, biBeginDate, carTransDate, carVehicleFgwCode, carInfoId, createdBy, quoteGroup, submitGroup, isSame, forceTax);
+        return quoteInfoService.postPrecisePrice(personName, personCardID, personCardIDType, carNo, carFrameNo, carEngineNo, carFirstRegisterDate, lists, ciBeginDate, biBeginDate, carTransDate, carVehicleFgwCode, carInfoId, createdBy, quoteGroup, submitGroup, isSame, forceTax,purchasePrice);
     }
 
     @ApiOperation("调用第三方壁虎-获取报价信息接口")

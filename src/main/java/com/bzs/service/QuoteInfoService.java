@@ -105,7 +105,7 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
                             String carNo, String carFrameNo, String carEngineNo,String carFirstRegisterDate,
                             String lists,String ciBeginDate, String biBeginDate, String carTransDate,
                             String carVehicleFgwCode, String carInfoId, String createdBy, Long QuoteGroup,
-                            Long SubmitGroup, String isSame, int forceTax);
+                            Long SubmitGroup, String isSame, int forceTax,Double purchasePrice);
 
     /**
      * 获取报价信息，在postPrecisePrice基础上
