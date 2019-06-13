@@ -104,7 +104,4 @@ public class OrderInfoController {
     public Map<String,Object> getNextLevelOrder(String createBy,String orderStatus){
         return orderInfoService.getNextLevelOrder(createBy);
     }
- 
-
-
 }

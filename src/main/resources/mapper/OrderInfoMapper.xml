@@ -34,6 +34,11 @@
     <result column="frame_number" jdbcType="VARCHAR" property="vinNo"/>
     <result column="invite_code_level" jdbcType="VARCHAR" property="inviteCodeLevel"/>
     <result column="biz_total" jdbcType="DECIMAL" property="bizTotal" />
+    <result column="cash_status" jdbcType="VARCHAR" property="cashStatus" />
+    <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage" />
+    <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage" />
+    <result column="level_one" jdbcType="VARCHAR" property="levelOne" />
+    <result column="level_two" jdbcType="VARCHAR" property="levelTwo" />
   </resultMap>
 
 
@@ -143,7 +148,12 @@
       q.biz_total,
       c.car_number,
       c.frame_number,
-      o.*
+      o.*,
+      d.status as cash_status,
+      per.biz_percentage,
+      per.force_percentage,
+      per.level_one,
+      per.level_two
 from
 	(select account_id, invite_code_level, (select invite_code_level from  account_info where account_id=#{createBy} ) as level
 		from account_info
@@ -152,6 +162,8 @@ t1
 INNER JOIN order_info o ON o.create_by = t1.account_id
 INNER JOIN quote_info q on  q.quote_id =o.pay_type_id
 INNER JOIN car_info c on q.car_info_id= c.car_info_id
+LEFT JOIN draw_cash d ON d.order_id=o.order_id
+INNER JOIN commission_percentage per ON per.id=d.commission_percentage_id
 ;
 
   </select>
