@@ -104,9 +104,9 @@ public class OrderInfoController {
      */
     @PostMapping("/getNextLevelOrder")
     @ApiOperation("获取下两级订单，包括自己的订单，一共三级订单")
-    public Map<String,Object> getNextLevelOrder(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String createBy,String orderStatus){
-        Map map=orderInfoService.getNextLevelOrder(createBy);
-        PageHelper.startPage(page, size);
+    public Map<String,Object> getNextLevelOrder(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String createBy,String type,String orderStatus,String verificationStatus){
+        Map map=orderInfoService.getNextLevelOrder(createBy,type,orderStatus,verificationStatus);
+        PageHelper.startPage(page, size);;
         PageInfo pageInfo=null;
         if ( ((String)map.get("code")).equals("200")){
             pageInfo = new PageInfo((List) map.get("data"));
