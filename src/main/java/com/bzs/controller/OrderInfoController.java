@@ -104,16 +104,7 @@ public class OrderInfoController {
     public Map<String,Object> getNextLevelOrder(String createBy,String orderStatus){
         return orderInfoService.getNextLevelOrder(createBy);
     }
-    /**
-     *
-     * @param createBy
-     * @return
-     */
-    @PostMapping("/doDrawCash")
-    @ApiOperation("发起提现操作")
-    public Map<String,Object> doDrawCash(String orderIdLists,String createBy,String orderStatus){
-        return orderInfoService.getNextLevelOrder(createBy);
-    }
+ 
 
 
 }
