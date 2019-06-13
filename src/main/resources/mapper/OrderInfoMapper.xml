@@ -163,8 +163,8 @@ INNER JOIN order_info o ON o.create_by = t1.account_id
 INNER JOIN quote_info q on  q.quote_id =o.pay_type_id
 INNER JOIN car_info c on q.car_info_id= c.car_info_id
 LEFT JOIN draw_cash d ON d.order_id=o.order_id
-INNER JOIN commission_percentage per ON per.id=d.commission_percentage_id
+LEFT JOIN commission_percentage per ON per.id=d.commission_percentage_id
 ;
-
   </select>
+
 </mapper>
