@@ -15,6 +15,11 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="biz_cash" jdbcType="VARCHAR" property="bizCash" />
+    <result column="income_person" jdbcType="VARCHAR" property="incomePerson" />
+    <result column="force_cash" jdbcType="VARCHAR" property="forceCash" />
+    <result column="cash" jdbcType="VARCHAR" property="cash" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
   </resultMap>
   <sql id="insertBacthItems">
     <trim prefix="(" suffixOverrides="," suffix=")">
@@ -37,6 +42,5 @@
       )
     </foreach>
   </insert>
-
 
 </mapper>

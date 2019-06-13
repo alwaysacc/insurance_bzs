@@ -60,6 +60,56 @@ public class DrawCash {
      */
     @Column(name = "update_by")
     private String updateBy;
+    private String type;
+    private String cash;
+    @Column(name = "force_cash")
+    private String forceCash;
+    @Column(name = "income_person")
+    private String incomePerson;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCash() {
+        return cash;
+    }
+
+    public void setCash(String cash) {
+        this.cash = cash;
+    }
+
+    public String getForceCash() {
+        return forceCash;
+    }
+
+    public void setForceCash(String forceCash) {
+        this.forceCash = forceCash;
+    }
+
+    public String getIncomePerson() {
+        return incomePerson;
+    }
+
+    public void setIncomePerson(String incomePerson) {
+        this.incomePerson = incomePerson;
+    }
+
+    public String getBizCash() {
+        return bizCash;
+    }
+
+    public void setBizCash(String bizCash) {
+        this.bizCash = bizCash;
+    }
+
+    @Column(name = "biz_cash")
+    private String bizCash;
+
 
     /**
      * @return id
