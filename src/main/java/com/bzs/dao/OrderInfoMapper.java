@@ -32,10 +32,10 @@ public interface OrderInfoMapper extends Mapper<OrderInfo> {
     /**
      * 获取下两级订单包括自己的一共三级
      * @param createBy
-     * @param status
+     * @param type
      * @param payStatus
      * @return
      */
 
-    List<OrderAndAccount> getNextLevelOrder(@Param("createBy")String createBy, @Param("status")String status, @Param("payStatus")String payStatus);
+    List<OrderAndAccount> getNextLevelOrder(@Param("createBy")String createBy, @Param("type")String type, @Param("payStatus")String payStatus);
 }

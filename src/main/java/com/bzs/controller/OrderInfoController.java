@@ -96,12 +96,15 @@ public class OrderInfoController {
 
     /**
      *
-     * @param createBy
+     * @param createBy 账号
+     * @param type 类型0佣金1提成2佣金和提成默认2
+     * @param orderStatus 订单状态
+     * @param verificationStatus 审核状态
      * @return
      */
     @PostMapping("/getNextLevelOrder")
     @ApiOperation("获取下两级订单，包括自己的订单，一共三级订单")
-    public Map<String,Object> getNextLevelOrder(String createBy,String orderStatus){
-        return orderInfoService.getNextLevelOrder(createBy);
+    public Map<String,Object> getNextLevelOrder(String createBy,String type,String orderStatus,String verificationStatus){
+        return orderInfoService.getNextLevelOrder(createBy,type,orderStatus,verificationStatus);
     }
 }

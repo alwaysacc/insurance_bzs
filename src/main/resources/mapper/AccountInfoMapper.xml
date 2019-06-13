@@ -223,4 +223,16 @@
     <select id="getAllCode" resultType="int">
         select inviteCode from account_info
     </select>
+    <!--获取2层父级-->
+    <select id="getParentLevel">
+        select a.user_name,
+                a.account_id ,
+                b.user_name as bname ,
+                a.parent_id as b_account_id,
+                c.user_name as cname ,
+                c.account_id as c_account_id
+        from account_info a
+        left join account_info b on b.account_id =a.parent_id
+        left join account_info c on c.account_id =b.parent_id WHERE a.account_id=#{create_by}
+    </select>
 </mapper>

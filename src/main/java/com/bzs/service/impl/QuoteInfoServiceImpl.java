@@ -1784,6 +1784,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     if(findPayResult==1){
                         map.put("msg", "支付成功");
                         status=1;
+
+
                     }else if(findPayResult==11){
                         map.put("msg", "作废");
                         status=4;

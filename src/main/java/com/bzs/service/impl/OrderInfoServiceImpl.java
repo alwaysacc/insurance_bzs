@@ -89,15 +89,18 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     }
 
     @Override
-    public Map<String, Object> getNextLevelOrder(String createBy) {
+    public Map<String, Object> getNextLevelOrder(String createBy,String type,String orderStatus,String verificationStatus) {
         Map<String, Object> map=new HashMap<>();
+            if(!"0".equals(type)&&!"1".equals(type)){
+                type="2";
+            }
         if(StringUtils.isBlank(createBy)){
             map.put("code","400");
             map.put("msg","参数异常");
             map.put("data","");
             return map;
         }
-        List <OrderAndAccount>list=orderInfoMapper.getNextLevelOrder(createBy,null,null);
+        List <OrderAndAccount>list=orderInfoMapper.getNextLevelOrder(createBy,type,null);
         if(CollectionUtils.isNotEmpty(list)){
             map.put("code","200");
             map.put("msg","查询成");

@@ -24,7 +24,10 @@ public interface OrderInfoService extends Service<OrderInfo> {
     /**
      * 获取下两级的支付完成的订单，包括自己的一共三级
      * @param createBy
+     * @param type 默认0佣金(自己出单) 1提成(下级出单) 2佣金和提成
+     * @param orderStatus 订单状态
+     * @param verificationStatus 审核状态
      * @return
      */
-    Map<String,Object> getNextLevelOrder(String createBy);
+    Map<String,Object> getNextLevelOrder(String createBy,String type,String orderStatus,String verificationStatus);
 }
