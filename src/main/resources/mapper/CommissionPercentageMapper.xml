@@ -1,17 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.CommissionPercentageMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.CommissionPercentage">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
-    <result column="percentage" jdbcType="VARCHAR" property="percentage" />
-    <result column="level" jdbcType="INTEGER" property="level" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.bzs.model.CommissionPercentage">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage"/>
+        <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage"/>
+        <result column="level_one" jdbcType="VARCHAR" property="levelOne"/>
+        <result column="level_two" jdbcType="VARCHAR" property="levelTwo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+    </resultMap>
+    <sql id="insertItems">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id!=null ">id,</if>
+            <if test="bizPercentage!=null and ''!=bizPercentage ">biz_percentage,</if>
+            <if test="forcePercentage!=null and ''!=forcePercentage ">force_percentage,</if>
+            <if test="levelOne!=null and ''!=levelOne ">level_one,</if>
+            <if test="levelTwo!=null and ''!=levelTwo ">level_two,</if>
+            <if test="createBy!=null and ''!=createBy ">create_by,</if>
+        </trim>
+    </sql>
+    <sql id="insertValues">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id!=null ">#{id},</if>
+            <if test="bizPercentage!=null and ''!=bizPercentage ">#{bizPercentage},</if>
+            <if test="forcePercentage!=null and ''!=forcePercentage ">#{forcePercentage},</if>
+            <if test="levelOne!=null and ''!=levelOne ">#{levelOne},</if>
+            <if test="levelTwo!=null and ''!=levelTwo ">#{levelTwo},</if>
+            <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
+        </trim>
+    </sql>
+    <sql id="updateOrAdd_update" >
+        <trim suffixOverrides=",">
+            id=values(id),
+            <if test="bizPercentage!=null and ''!=bizPercentage ">biz_percentage=#{bizPercentage},</if>
+            <if test="forcePercentage!=null and ''!=forcePercentage ">force_percentage=#{forcePercentage},</if>
+            <if test="levelOne!=null and ''!=levelOne ">level_one=#{levelOne},</if>
+            <if test="levelTwo!=null and ''!=levelTwo ">level_two=#{levelTwo},</if>
+            <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
+        </trim>
+    </sql>
+    <insert id="addOrUpdate" parameterType="com.bzs.model.CommissionPercentage">
+        INSERT INTO commission_percentage
+        <include refid="insertItems"/>
+        values
+        <include refid="insertValues"/>
+        ON DUPLICATE KEY UPDATE
+        <include refid="updateOrAdd_update"/>
+    </insert>
+
+    <select id="getLastUpdateData" resultMap="BaseResultMap">
+        select * from commission_percentage ORDER BY create_time desc limit 1
+    </select>
 </mapper>

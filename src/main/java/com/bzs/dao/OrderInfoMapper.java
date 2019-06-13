@@ -29,5 +29,13 @@ public interface OrderInfoMapper extends Mapper<OrderInfo> {
 
     String getOrderIdByQuoteId(@Param("quoteId") String quoteId);
 
+    /**
+     * 获取下两级订单包括自己的一共三级
+     * @param createBy
+     * @param status
+     * @param payStatus
+     * @return
+     */
+
     List<OrderAndAccount> getNextLevelOrder(@Param("createBy")String createBy, @Param("status")String status, @Param("payStatus")String payStatus);
 }

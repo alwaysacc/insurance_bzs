@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.DrawCashMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.DrawCash">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="commission_percentage_id" jdbcType="INTEGER" property="commissionPercentageId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="descriton" jdbcType="VARCHAR" property="descriton" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="insertBacthItems">
+    <trim prefix="(" suffixOverrides="," suffix=")">
+      order_id,
+      commission_percentage_id,
+      serial_no,
+      create_by
+    </trim>
+  </sql>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into draw_cash
+    <include refid="insertBacthItems"/>
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.orderId},
+      #{item.commissionPercentageId},
+      #{item.serialNo},
+      #{item.createBy}
+      )
+    </foreach>
+  </insert>
+
+
+</mapper>

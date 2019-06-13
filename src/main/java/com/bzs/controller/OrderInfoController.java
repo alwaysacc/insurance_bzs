@@ -100,9 +100,20 @@ public class OrderInfoController {
      * @return
      */
     @PostMapping("/getNextLevelOrder")
-    @ApiOperation("获取下两级订单")
+    @ApiOperation("获取下两级订单，包括自己的订单，一共三级订单")
     public Map<String,Object> getNextLevelOrder(String createBy,String orderStatus){
         return orderInfoService.getNextLevelOrder(createBy);
     }
+    /**
+     *
+     * @param createBy
+     * @return
+     */
+    @PostMapping("/doDrawCash")
+    @ApiOperation("发起提现操作")
+    public Map<String,Object> doDrawCash(String orderIdLists,String createBy,String orderStatus){
+        return orderInfoService.getNextLevelOrder(createBy);
+    }
+
 
 }

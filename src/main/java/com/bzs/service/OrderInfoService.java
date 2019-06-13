@@ -22,7 +22,7 @@ public interface OrderInfoService extends Service<OrderInfo> {
     int updatePayStatusById(String orederNo);
 
     /**
-     * 获取下两级的支付完成的订单
+     * 获取下两级的支付完成的订单，包括自己的一共三级
      * @param createBy
      * @return
      */

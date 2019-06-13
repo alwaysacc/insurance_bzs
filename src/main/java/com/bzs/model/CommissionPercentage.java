@@ -10,20 +10,28 @@ public class CommissionPercentage {
     private Long id;
 
     /**
-     * 账号
+     * 商业险佣金百分点
      */
-    @Column(name = "account_id")
-    private String accountId;
+    @Column(name = "biz_percentage")
+    private String bizPercentage;
 
     /**
-     * 佣金分成比例,百分点
+     * 交强险佣金百分点
      */
-    private String percentage;
+    @Column(name = "force_percentage")
+    private String forcePercentage;
 
     /**
-     * 等级1,2,3
+     * 一级提成百分点
      */
-    private Integer level;
+    @Column(name = "level_one")
+    private String levelOne;
+
+    /**
+     * 二级提成百分点
+     */
+    @Column(name = "level_two")
+    private String levelTwo;
 
     /**
      * 创建时间
@@ -64,57 +72,75 @@ public class CommissionPercentage {
     }
 
     /**
-     * 获取账号
+     * 获取商业险佣金百分点
      *
-     * @return account_id - 账号
+     * @return biz_percentage - 商业险佣金百分点
      */
-    public String getAccountId() {
-        return accountId;
+    public String getBizPercentage() {
+        return bizPercentage;
     }
 
     /**
-     * 设置账号
+     * 设置商业险佣金百分点
      *
-     * @param accountId 账号
+     * @param bizPercentage 商业险佣金百分点
      */
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setBizPercentage(String bizPercentage) {
+        this.bizPercentage = bizPercentage;
     }
 
     /**
-     * 获取佣金分成比例,百分点
+     * 获取交强险佣金百分点
      *
-     * @return percentage - 佣金分成比例,百分点
+     * @return force_percentage - 交强险佣金百分点
      */
-    public String getPercentage() {
-        return percentage;
+    public String getForcePercentage() {
+        return forcePercentage;
     }
 
     /**
-     * 设置佣金分成比例,百分点
+     * 设置交强险佣金百分点
      *
-     * @param percentage 佣金分成比例,百分点
+     * @param forcePercentage 交强险佣金百分点
      */
-    public void setPercentage(String percentage) {
-        this.percentage = percentage;
+    public void setForcePercentage(String forcePercentage) {
+        this.forcePercentage = forcePercentage;
     }
 
     /**
-     * 获取等级1,2,3
+     * 获取一级提成百分点
      *
-     * @return level - 等级1,2,3
+     * @return level_one - 一级提成百分点
      */
-    public Integer getLevel() {
-        return level;
+    public String getLevelOne() {
+        return levelOne;
     }
 
     /**
-     * 设置等级1,2,3
+     * 设置一级提成百分点
      *
-     * @param level 等级1,2,3
+     * @param levelOne 一级提成百分点
      */
-    public void setLevel(Integer level) {
-        this.level = level;
+    public void setLevelOne(String levelOne) {
+        this.levelOne = levelOne;
+    }
+
+    /**
+     * 获取二级提成百分点
+     *
+     * @return level_two - 二级提成百分点
+     */
+    public String getLevelTwo() {
+        return levelTwo;
+    }
+
+    /**
+     * 设置二级提成百分点
+     *
+     * @param levelTwo 二级提成百分点
+     */
+    public void setLevelTwo(String levelTwo) {
+        this.levelTwo = levelTwo;
     }
 
     /**
@@ -187,15 +213,5 @@ public class CommissionPercentage {
      */
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
-    }
-
-    public CommissionPercentage() {
-    }
-
-    public CommissionPercentage(String accountId, String percentage, Integer level, String createBy) {
-        this.accountId = accountId;
-        this.percentage = percentage;
-        this.level = level;
-        this.createBy = createBy;
     }
 }

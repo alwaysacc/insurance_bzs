@@ -1,7 +1,9 @@
 package com.bzs.utils.stringUtil;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @program: insurance_bzs
@@ -65,13 +67,14 @@ public class StringUtil {
 
 
     public static void main(String[] args) {
-        getCharacterCount("hjhj-676878-等k", "-+");
+
+       /* getCharacterCount("hjhj-676878-等k", "-+");
         Map<Character, Integer> map = getEnlishCharacter("hjhj-676878-等k");
         for (Character key : map.keySet()) {
             System.out.println(key + "====" + map.get(key));
-            /*if(key.toString().equals("等1")){
+            *//*if(key.toString().equals("等1")){
                 System.out.println("输出次数"+map.get(key));
-            }*/
-        }
+            }*//*
+        }*/
     }
 }

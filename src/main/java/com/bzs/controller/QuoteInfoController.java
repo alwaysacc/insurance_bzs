@@ -377,7 +377,6 @@ public class QuoteInfoController {
     Map<String, Object> getModelNameForImportCar(Integer cityCode,String carVin){
         cityCode=8;
         return quoteInfoService.getModelNameForImportCar(cityCode,carVin);
-
     }
 
     /**

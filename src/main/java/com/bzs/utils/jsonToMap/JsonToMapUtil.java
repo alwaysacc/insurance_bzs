@@ -1,6 +1,7 @@
 package com.bzs.utils.jsonToMap;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.bzs.utils.jsontobean.InsuranceTypeBase;
@@ -174,8 +175,13 @@ public class JsonToMapUtil {
     }
 
     public static void main(String[] args) {
-      Map map=  bodyJsonToMap("{\"state\": \"1\", \"data\": {\"A\": {\"insuranceName\": \"\\u673a\\u52a8\\u8f66\\u635f\\u5931\\u4fdd\\u9669\", \"amount\": \"170800.00\", \"bujimianpei\": \"1\"}, \"frameNo\": \"LWVEA3047HB040060\", \"D\": {\"insuranceName\": \"\\u7b2c\\u4e09\\u8005\\u8d23\\u4efb\\u4fdd\\u9669\", \"amount\": \"1000000.00\", \"bujimianpei\": \"1\"}, \"G\": {}, \"vehicleFgwCode\": \"\\u5409\\u666eGFA7140EKCA\\u8f7f\\u8f66\", \"ciBeginDate\": \"2019-07-01\", \"H\": {}, \"ciEndDate\": \"2020-06-30\", \"jiaoqiangxian\": \"1\", \"firstRegisterDate\": \"2017-7-4\", \"engineNo\": \"0256458\", \"cardID\": \"320102198701204639\", \"carNo\": \"\", \"biEndDate\": \"2020-06-30\", \"biBeginDate\": \"2019-07-01\", \"name\": \"\\u9648\\u4eae\"}, \"sendTime\": \"2019-05-30 10:38:55\", \"retMsg\": \"\\u6210\\u529f\", \"retCode\": \"\"}\n");
-
+     // Map map=  bodyJsonToMap("{\"state\": \"1\", \"data\": {\"A\": {\"insuranceName\": \"\\u673a\\u52a8\\u8f66\\u635f\\u5931\\u4fdd\\u9669\", \"amount\": \"170800.00\", \"bujimianpei\": \"1\"}, \"frameNo\": \"LWVEA3047HB040060\", \"D\": {\"insuranceName\": \"\\u7b2c\\u4e09\\u8005\\u8d23\\u4efb\\u4fdd\\u9669\", \"amount\": \"1000000.00\", \"bujimianpei\": \"1\"}, \"G\": {}, \"vehicleFgwCode\": \"\\u5409\\u666eGFA7140EKCA\\u8f7f\\u8f66\", \"ciBeginDate\": \"2019-07-01\", \"H\": {}, \"ciEndDate\": \"2020-06-30\", \"jiaoqiangxian\": \"1\", \"firstRegisterDate\": \"2017-7-4\", \"engineNo\": \"0256458\", \"cardID\": \"320102198701204639\", \"carNo\": \"\", \"biEndDate\": \"2020-06-30\", \"biBeginDate\": \"2019-07-01\", \"name\": \"\\u9648\\u4eae\"}, \"sendTime\": \"2019-05-30 10:38:55\", \"retMsg\": \"\\u6210\\u529f\", \"retCode\": \"\"}\n");
+       String list="[1,2,3,4]";
+        List<Integer>  idLists= JSONArray.parseArray(list,Integer.class);
+        List<Integer>    lists = (List) JSON.parseArray(list);
+       // idLists.forEach((player) -> System.out.print(player + "; "));
+        // 在 Java 8 中使用双冒号操作符(double colon operator)
+       // idLists.forEach(System.out::println);
     }
 
     /**

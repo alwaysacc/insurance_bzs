@@ -2,14 +2,19 @@ package com.bzs.service.impl;
 
 import com.bzs.dao.CommissionPercentageMapper;
 import com.bzs.model.CommissionPercentage;
+import com.bzs.model.TMenu;
 import com.bzs.service.CommissionPercentageService;
 import com.bzs.utils.AbstractService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,43 +26,76 @@ import java.util.Map;
 @Service
 @Transactional
 public class CommissionPercentageServiceImpl extends AbstractService<CommissionPercentage> implements CommissionPercentageService {
+    private  static Logger logger=LoggerFactory.getLogger(CommissionPercentageServiceImpl.class);
     @Resource
     private CommissionPercentageMapper commissionPercentageMapper;
 
     @Override
-    public Map<String, Object> add(String createBy, String accountId, String percent1, String percent2, String percent3) {
-        Map<String, Object>map=new HashMap<>();
-        if(StringUtils.isBlank(createBy)||StringUtils.isBlank(accountId)){
-           map.put("code","400");
-           map.put("msg","参数为空,添加失败");
-           map.put("data",null);
-           return  map ;
-       }
-        if(StringUtils.isBlank(percent1)||StringUtils.isBlank(percent2)||StringUtils.isBlank(percent3)){
+    public Map addOrUpdate(CommissionPercentage domain) {
+        Map<String,Object>map=new HashMap<String, Object>();
+        try {
+            int result = commissionPercentageMapper.addOrUpdate(domain);
+            map.put("data",domain);
+            if(result>1){//2更新
+                map.put("code","200");
+                map.put("msg","更新成功");
+            }else if(result>0){//添加
+                map.put("code","200");
+                map.put("msg","添加成功");
+            }else{
+                map.put("code","400");
+                map.put("msg","添加或更新失败");
+            }
+        }catch (Exception e){
+            logger.error("添加或更新异常",e);
             map.put("code","400");
-            map.put("msg","三级拥挤比例必须同时设置");
-            map.put("data",null);
-            return  map ;
+            map.put("msg","添加或更新异常");
+            map.put("data","");
         }
 
-        List<CommissionPercentage>list=new ArrayList<>();
-        list.add(new CommissionPercentage(accountId,percent1,1,createBy));
-        list.add(new CommissionPercentage(accountId,percent2,2,createBy));
-        list.add(new CommissionPercentage(accountId,percent3,3,createBy));
+        return map;
+    }
+    @Override
+    public CommissionPercentage get(CommissionPercentage domain) {
+        Condition example=new Condition(CommissionPercentage.class);
+        Example.Criteria  criteria= example.createCriteria();
+       /* if (StringUtils.isNotBlank(menu.getMenuName()))
+            criteria.andCondition("menu_name=", menu.getMenuName());
+       */
 
-        try{
-            int result=commissionPercentageMapper.insertList(list);
-            if(result>0){
-                map.put("code","200");  map.put("msg","添加成功");
-            }else{
-                map.put("code","400");  map.put("msg","添加失败");
-            }
-            map.put("data",list);
-        }catch (Exception e){
+        example.setOrderByClause("create_time");
+        List<CommissionPercentage> menus = mapper.selectByCondition(example);
+        if(CollectionUtils.isNotEmpty(menus)){
+            return menus.get(0);
+        }else{
+            return null;
+        }
+
+    }
+
+    @Override
+    public Map<String, Object> get() {
+        //CommissionPercentage data=  this.get(null);
+        CommissionPercentage data=commissionPercentageMapper.getLastUpdateData();
+        Map<String, Object> map=new HashMap<>();
+        if(null!=data){
+            map.put("code","200");
+            map.put("msg","成功");
+            map.put("data",data);
+        }else{
             map.put("code","400");
-            map.put("msg","添加失败，出险异常");
-            map.put("data",null);
+            map.put("msg","失败");
+            map.put("data","");
         }
         return map;
+    }
+
+    @Override
+    public Long getId() {
+        CommissionPercentage data=commissionPercentageMapper.getLastUpdateData();
+        if(null!=data){
+            return data.getId();
+        }
+        return null;
     }
 }

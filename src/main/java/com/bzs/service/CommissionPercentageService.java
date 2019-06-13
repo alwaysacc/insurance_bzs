@@ -10,13 +10,22 @@ import java.util.Map;
  */
 public interface CommissionPercentageService extends Service<CommissionPercentage> {
     /**
-     * 给账号添加佣金比例
-     * @param createBy
-     * @param accountId
-     * @param percent1
-     * @param percent2
-     * @param percent3
+     *
+     * @param domain
      * @return
      */
-    Map<String,Object> add(String createBy, String accountId, String percent1, String percent2, String percent3 );
+    Map addOrUpdate(CommissionPercentage domain);
+    CommissionPercentage get(CommissionPercentage domain);
+
+    /**
+     * 获取最新的数据对象
+     * @return
+     */
+    Map<String,Object>get();
+
+    /**
+     * 获取最新的数据对象id
+     * @return
+     */
+    Long getId();
 }
