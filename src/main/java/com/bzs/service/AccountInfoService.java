@@ -47,5 +47,5 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @param type 默认0子节点1父节点
      * @return
      */
-    Result getParentOrChildList(String id, Integer deep,String isOwner,String type);
+    Result getParentOrChildList(String id, Integer deep,String isOwner,String type,int accountState);
 }

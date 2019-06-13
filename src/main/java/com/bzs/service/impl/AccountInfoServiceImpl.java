@@ -152,7 +152,7 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return map;
     }
     @Override
-    public Result getParentOrChildList(String id, Integer deep, String isOwner,String type) {
+    public Result getParentOrChildList(String id, Integer deep, String isOwner,String type,int accountState) {
         if(null==deep||deep<1){
             deep=1;
         }
@@ -163,7 +163,7 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             if(StringUtils.isBlank(isOwner)||!"1".equals(isOwner)){
                 isOwner="0";//0包括 1排除
             }
-            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,isOwner,type);
+            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,isOwner,type,accountState);
             if(CollectionUtils.isNotEmpty(list)){
                 return ResultGenerator.genSuccessResult(list,"成功");
             }

@@ -220,7 +220,9 @@ public class AccountInfoController {
      * @param type 默认0子节点1父节点
      * @return
      */
-    public Result getParentList(String id,Integer deep,String type,String isOwner){
-      return accountInfoService.getParentOrChildList(id,deep,isOwner,type);
+    public Result getParentList(String id,Integer deep,String type,String isOwner,int accountState){
+        deep=2;
+        isOwner="1";
+      return accountInfoService.getParentOrChildList(id,deep,isOwner,type,accountState);
     }
 }

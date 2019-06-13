@@ -49,7 +49,9 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
      */
     List<AccountInfo> getChildList(@Param("id") String id, @Param("deep") Integer deep, @Param("isOwner") String isOwner);
 
-    List<AccountInfo> getParentOrChildList(@Param("id") String id, @Param("deep") Integer deep, @Param("isOwner") String isOwner, @Param("type") String type);
+    List<AccountInfo> getParentOrChildList(@Param("id") String id, @Param("deep") Integer deep, @Param("isOwner") String isOwner, @Param("type") String type,
+                                           @Param("accountState")int accountState
+                                           );
 
     HashSet getAllCode();
 
