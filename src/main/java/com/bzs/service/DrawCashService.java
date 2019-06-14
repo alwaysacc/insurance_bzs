@@ -17,4 +17,6 @@ public interface DrawCashService extends Service<DrawCash> {
      * @return
      */
     Map insertBatch(String list,String createBy);
+
+    List getDrawCashList(String incomePerson,int type);
 }

@@ -60,18 +60,18 @@ public class DrawCash {
      */
     @Column(name = "update_by")
     private String updateBy;
-    private String type;
+    private Integer type;
     private String cash;
     @Column(name = "force_cash")
     private String forceCash;
     @Column(name = "income_person")
     private String incomePerson;
 
-    public String getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

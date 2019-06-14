@@ -59,4 +59,9 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
         }
         return map;
     }
+
+    @Override
+    public List getDrawCashList(String incomePerson,int type) {
+        return drawCashMapper.getDrawCashList(incomePerson,type);
+    }
 }

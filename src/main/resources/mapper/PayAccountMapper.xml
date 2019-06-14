@@ -12,4 +12,10 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
+  <select id="getListById" resultMap="BaseResultMap">
+    select id,account_id,type,amount,name,create_time
+    from pay_account <where>
+      account_id=#{accountId}
+  </where>
+  </select>
 </mapper>
