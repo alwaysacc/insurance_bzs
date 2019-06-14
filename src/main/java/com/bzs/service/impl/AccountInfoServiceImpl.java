@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -200,6 +201,6 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
 
     @Override
     public AccountInfo getWithdraw(String accountId) {
-        return accountInfoService.findBy("accountId",accountId);
+      return   accountInfoMapper.getWithdraw(accountId);
     }
 }
