@@ -230,5 +230,9 @@ public class AccountInfoController {
     public Result getParentLevel(String createBy){
        return accountInfoService.getParentLevel(createBy);
     }
-
+    @ApiOperation("获取收益信息")
+    @PostMapping("/getWithdraw")
+    public Result getWithdraw(String accountId){
+        return ResultGenerator.genSuccessResult(accountInfoService.getWithdraw(accountId));
+    }
 }

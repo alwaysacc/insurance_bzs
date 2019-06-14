@@ -185,4 +185,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
        }
         return ResultGenerator.genFailResult("获取失败");
     }
+
+    @Override
+    public AccountInfo getWithdraw(String accountId) {
+        return accountInfoService.findBy("accountId",accountId);
+    }
 }

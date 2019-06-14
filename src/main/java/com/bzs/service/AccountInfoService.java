@@ -55,4 +55,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     Result getParentLevel(String createBy);
+
+    AccountInfo getWithdraw(String accountId);
 }
