@@ -78,7 +78,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     private AccountInfoMapper accountInfoMapper;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
     private CommissionPercentageService commissionPercentageService;
+    @Resource
+    private DrawCashService drawCashService;
 
     @Override
     public Map quoteDetails(String carInfoId) {
@@ -1793,53 +1796,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         map.put("msg", "支付成功");
                         status = 1;
                         orderInfo.setFinishTime(nowDate);
-                        QuoteInfo quoteInfo = quoteInfoService.findBy("quoteId", quoteId);
-                        BigDecimal biz= quoteInfo.getBizTotal();//商业险
-                        BigDecimal force=  quoteInfo.getForceTotal();//交强险
-                        SeveralAccount data = accountInfoMapper.getParentLevel(createBy);//获取父级两层id
-                        CommissionPercentage percentage = commissionPercentageService.getLastUpdateData();
-                        BigDecimal bp=new BigDecimal(15);
-                        BigDecimal fp =  new BigDecimal(4);
-                        BigDecimal po =new  BigDecimal(1);
-                        BigDecimal pw =new  BigDecimal(0.5);
-                        BigDecimal rate=new BigDecimal(1.06);
-                        if(null==percentage){
-                            bp = new BigDecimal(percentage.getBizPercentage());//商业险百分比
-                            fp =  new BigDecimal(percentage.getForcePercentage());//交强险百分比
-                            po =  new BigDecimal(percentage.getLevelOne());//父一级提成
-                            pw =  new BigDecimal(percentage.getLevelTwo());//父二级提成
-                        }
-
-                        int level=data.getLevel();
-                        int level1=data.getLevel1();
-                        int level2=data.getLevel2();
-                        if(level==1){//本人做单，只有佣金
-                            BigDecimal balance=  data.getBalanceTotal();//剩余余额
-                            BigDecimal commission=   data.getCommissionTotal();//已有佣金
-                            BigDecimal bizCommission=biz.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(bp).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
-                            BigDecimal forceCommission=force.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(fp).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
-                            balance= balance.add(bizCommission).add(forceCommission);
-                            commission=commission.add(bizCommission).add(forceCommission);
-                            DrawCash drawCash=new DrawCash();
-
-                        }
-                        if(level1==1){//本人做单，父一级只拿提成
-                            String parentLevelOne = data.getbAccountId();
-                            BigDecimal balance=    data.getbBalanceTotal();//剩余余额
-                            BigDecimal drawPer=  data.getbDrawPercentageTotal();//已有提成
-                        }
-                        if(level2==2){//本人做单，父二级只拿提成
-                            String parentLevelTwo = data.getcAccountId();
-                            BigDecimal balance=   data.getcBalanceTotal();//剩余余额
-                            BigDecimal drawPer=   data.getcDrawPercentageTotal();//已有提成
-                        }
-
-
-
-
-
-
-
+                        drawCashService.addDrawCash(orderId,quoteId,createBy);//支付成功后添加佣金分成修改总金额等
                     } else if (findPayResult == 11) {
                         map.put("msg", "作废");
                         status = 4;

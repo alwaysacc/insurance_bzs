@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,4 +232,9 @@ public class AccountInfoController {
        return accountInfoService.getParentLevel(createBy);
     }
 
+    @ApiOperation("更新余额和佣金和提成")
+    @PostMapping("/updateMoney")
+    public Result updateMoney(BigDecimal balanceTotal,BigDecimal commissionTotal,BigDecimal drawPercentageTotal,String accountId){
+        return accountInfoService.updateMoney(balanceTotal,commissionTotal,drawPercentageTotal,accountId);
+    }
 }

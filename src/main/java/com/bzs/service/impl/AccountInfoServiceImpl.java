@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -184,5 +185,17 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
            return ResultGenerator.genSuccessResult(data,"成功");
        }
         return ResultGenerator.genFailResult("获取失败");
+    }
+
+    @Override
+    public Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId) {
+        try {
+            accountInfoMapper.updateMoney(balanceTotal, commissionTotal, drawPercentageTotal, accountId);
+            return ResultGenerator.genSuccessResult("修改成功");
+        }catch (Exception e){
+            return ResultGenerator.genFailResult("修改异常");
+        }
+
+
     }
 }

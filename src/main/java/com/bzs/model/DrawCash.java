@@ -352,4 +352,19 @@ public class DrawCash {
         this.serialNo = serialNo;
         this.createBy = createBy;
     }
+
+    public DrawCash(String orderId, Integer commissionPercentageId, String serialNo, String createBy, Integer type, String cash, String forceCash, String incomePerson, String bizPercentage, String forcePercentage, String drawPercentage, String bizCash) {
+        this.orderId = orderId;
+        this.commissionPercentageId = commissionPercentageId;
+        this.serialNo = serialNo;
+        this.createBy = createBy;
+        this.type = type;
+        this.cash = cash;
+        this.forceCash = forceCash;
+        this.incomePerson = incomePerson;
+        this.bizPercentage = bizPercentage;
+        this.forcePercentage = forcePercentage;
+        this.drawPercentage = drawPercentage;
+        this.bizCash = bizCash;
+    }
 }

@@ -12,4 +12,11 @@ public interface DrawCashMapper extends Mapper<DrawCash> {
      * @return
      */
     int insertBatch(List<DrawCash> list);
+
+    /**
+     * 新的批量插入
+     * @param list
+     * @return
+     */
+    int insertBatch2(List<DrawCash> list);
 }

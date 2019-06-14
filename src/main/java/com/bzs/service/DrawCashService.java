@@ -1,5 +1,6 @@
 package com.bzs.service;
 import com.bzs.model.DrawCash;
+import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 
 import java.util.List;
@@ -17,4 +18,13 @@ public interface DrawCashService extends Service<DrawCash> {
      * @return
      */
     Map insertBatch(String list,String createBy);
+
+    /**
+     * 添加并修改总额
+     * @param orderId
+     * @param quoteId
+     * @param createBy
+     * @return
+     */
+    Result addDrawCash(String orderId, String quoteId, String createBy);
 }
