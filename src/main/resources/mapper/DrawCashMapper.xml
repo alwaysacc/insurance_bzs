@@ -19,7 +19,7 @@
     <result column="income_person" jdbcType="VARCHAR" property="incomePerson" />
     <result column="force_cash" jdbcType="VARCHAR" property="forceCash" />
     <result column="cash" jdbcType="VARCHAR" property="cash" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage" />
     <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage" />
     <result column="draw_percentage" jdbcType="VARCHAR" property="drawPercentage" />
@@ -32,27 +32,67 @@
       create_by
     </trim>
   </sql>
-  <sql id="batchInsertItems">
-    <trim suffixOverrides=",">
-      <if test="item.orderId!=null and item.orderId!=''">#{item.orderId},</if>
-      <if test="item.commissionPercentageId!=null">#{item.commissionPercentageId},</if>
-      <if test="item.serialNo!=null and item.serialNo!=''">#{item.commissionPercentageId},</if>
-      <if test="item.createBy!=null and item.createBy!=''">#{item.createBy},</if>
-    </trim>
-  </sql>
+
   <insert id="insertBatch" parameterType="java.util.List">
     insert into draw_cash
     <include refid="insertBacthItems"/>
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
-      <include refid="batchInsertItems"/>
---       #{item.orderId},
-      --       #{item.commissionPercentageId},
-      --       #{item.serialNo},
-      --       #{item.createBy}
+            #{item.orderId},
+            #{item.commissionPercentageId},
+            #{item.serialNo},
+            #{item.createBy}
       )
     </foreach>
+  </insert>
+  <sql id="insertBatch2Test">
+    <foreach collection="list" item="item" index="index">
+      <if test="index==0">
+        <trim suffixOverrides=",">
+          <if test="item.orderId!=null and item.orderId!=''">order_id,</if>
+          <if test="item.commissionPercentageId!=null">commission_percentage_id,</if>
+          <if test="item.serialNo!=null and item.serialNo!=''">serial_no,</if>
+          <if test="item.createBy!=null and item.createBy!=''">create_by,</if>
+          <if test="item.bizCash!=null and item.bizCash!=''">biz_cash,</if>
+          <if test="item.forceCash!=null and item.forceCash!=''">force_cash,</if>
+          <if test="item.cash!=null and item.cash!=''">cash,</if>
+          <if test="item.incomePerson!=null and item.incomePerson!=''">income_person,</if>
+          <if test="item.type!=null">type,</if>
+          <if test="item.bizPercentage!=null and item.bizPercentage!=''">biz_percentage,</if>
+          <if test="item.forcePercentage!=null and item.forcePercentage!=''">force_percentage,</if>
+          <if test="item.drawPercentage!=null and item.drawPercentage!=''">draw_percentage,</if>
+        </trim>
+      </if>
+    </foreach>
+  </sql>
+
+  <sql id="batchInsertItems2">
+
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      <trim suffixOverrides=",">
+        <if test="item.orderId!=null and item.orderId!=''">#{item.orderId},</if>
+        <if test="item.commissionPercentageId!=null">#{item.commissionPercentageId},</if>
+        <if test="item.serialNo!=null and item.serialNo!=''">#{item.serialNo},</if>
+        <if test="item.createBy!=null and item.createBy!=''">#{item.createBy},</if>
+        <if test="item.bizCash!=null and item.bizCash!=''">#{item.bizCash},</if>
+        <if test="item.forceCash!=null and item.forceCash!=''">#{item.forceCash},</if>
+        <if test="item.cash!=null and item.cash!=''">#{item.cach},</if>
+        <if test="item.incomePerson!=null and item.incomePerson!=''">#{item.incomePerson},</if>
+        <if test="item.type!=null">#{item.type}</if>
+        <if test="item.bizPercentage!=null and item.bizPercentage!=''">#{item.bizPercentage},</if>
+        <if test="item.forcePercentage!=null and item.forcePercentage!=''">#{item.forcePercentage},</if>
+        <if test="item.drawPercentage!=null and item.drawPercentage!=''">#{item.drawPercentage},</if>
+      </trim>
+      )
+    </foreach>
+
+  </sql>
+
+  <insert id="insertBatch2" parameterType="java.util.List">
+    insert into draw_cash( <include refid="insertBatch2Test"/> )
+    values <include refid="batchInsertItems2"/>
   </insert>
 
 </mapper>

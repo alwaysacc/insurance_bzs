@@ -5,6 +5,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 import io.swagger.annotations.ApiOperation;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,17 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     Result getParentLevel(String createBy);
+
+    /**
+     * 修改余额和佣金和提成
+     * @param balanceTotal
+     * @param commissionTotal
+     * @param drawPercentageTotal
+     * @param accountId
+     * @return
+     */
+
+    Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId);
 
     AccountInfo getWithdraw(String accountId);
 }

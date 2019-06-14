@@ -230,6 +230,12 @@ public class AccountInfoController {
     public Result getParentLevel(String createBy){
        return accountInfoService.getParentLevel(createBy);
     }
+
+    @ApiOperation("更新余额和佣金和提成")
+    @PostMapping("/updateMoney")
+    public Result updateMoney(BigDecimal balanceTotal,BigDecimal commissionTotal,BigDecimal drawPercentageTotal,String accountId){
+        return accountInfoService.updateMoney(balanceTotal,commissionTotal,drawPercentageTotal,accountId);
+    }
     @ApiOperation("获取收益信息")
     @PostMapping("/getWithdraw")
     public Result getWithdraw(String accountId){

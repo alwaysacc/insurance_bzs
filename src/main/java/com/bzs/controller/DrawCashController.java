@@ -61,6 +61,12 @@ public class DrawCashController {
         return drawCashService.insertBatch(list,createBy);
     }
 
+    @PostMapping("/addDrawCash")
+    @ApiOperation("添加并修改总余额")
+    public Result addDrawCash(String orderId,String quoteId,String createBy){
+       return drawCashService.addDrawCash(orderId,quoteId,createBy);
+    }
+
     /**
      *
      * @param incomePerson 收益人

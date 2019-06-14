@@ -7,6 +7,7 @@ import com.bzs.utils.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authc.Account;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 
@@ -63,4 +64,13 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
      */
     SeveralAccount getParentLevel(@Param("createBy") String createBy);
 
-}
+    /**
+     * 修改余额和佣金或者提成
+     * @param balanceTotal
+     * @param commissionTotal
+     * @param drawPercentageTotal
+     * @param accountId
+     * @return
+     */
+    int updateMoney(@Param("balanceTotal") BigDecimal balanceTotal,@Param("commissionTotal") BigDecimal commissionTotal,@Param("drawPercentageTotal") BigDecimal drawPercentageTotal,@Param("accountId") String accountId);
+    }

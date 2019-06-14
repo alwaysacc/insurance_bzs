@@ -15,4 +15,11 @@ public interface DrawCashMapper extends Mapper<DrawCash> {
     int insertBatch(List<DrawCash> list);
 
     List getDrawCashList(@Param("incomePerson") String incomePerson,@Param("type") int type);
+
+    /**
+     * 新的批量插入
+     * @param list
+     * @return
+     */
+    int insertBatch2(List<DrawCash> list);
 }

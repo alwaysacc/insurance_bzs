@@ -187,6 +187,18 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     }
 
     @Override
+    public Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId) {
+        try {
+            accountInfoMapper.updateMoney(balanceTotal, commissionTotal, drawPercentageTotal, accountId);
+            return ResultGenerator.genSuccessResult("修改成功");
+        }catch (Exception e){
+            return ResultGenerator.genFailResult("修改异常");
+        }
+
+
+    }
+
+    @Override
     public AccountInfo getWithdraw(String accountId) {
         return accountInfoService.findBy("accountId",accountId);
     }

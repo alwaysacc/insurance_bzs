@@ -208,11 +208,6 @@
     </select>
     <select id="getParentOrChildList" resultMap="BaseResultMap">
         select * from account_info
-        <!--<where>
-            <if test="type=='0'">FIND_IN_SET(account_id,getAccountInfoParentList(#{id},#{deep})) </if>
-            <if test="type=='1'">FIND_IN_SET(account_id,etAccountInfoChildList(#{id},#{deep})) </if>
-            <if test="isOwner=='1'">and account_id!=#{id}</if>
-        </where>-->
          <choose>
             <when test='type=="0"'>
                 where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
@@ -267,4 +262,14 @@
         left join account_info b on b.account_id =a.parent_id
         left join account_info c on c.account_id =b.parent_id WHERE a.account_id=#{createBy}
     </select>
+    <sql id="updateMoneyItems">
+        <trim suffixOverrides="," prefix="set">
+            <if test="balanceTotal!=null">balance_total=#{balanceTotal}, </if>
+            <if test="commissionTotal!=null">commission_total=#{commissionTotal}, </if>
+            <if test="drawPercentageTotal!=null">draw_percentage_total=#{drawPercentageTotal}, </if>
+        </trim>
+    </sql>
+    <update id="updateMoney">
+        update  account_info <include refid="updateMoneyItems"/> where account_id=#{accountId}
+    </update>
 </mapper>
