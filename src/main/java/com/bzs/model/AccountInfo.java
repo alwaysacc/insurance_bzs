@@ -1,6 +1,7 @@
 package com.bzs.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -152,6 +153,21 @@ public class AccountInfo implements Serializable {
     private String associationLevel;
     @Column(name = "invite_code_level")
     private Integer inviteCodeLevel;
+    /**
+     * 余额
+     */
+    @Column(name = "balance_total")
+    private BigDecimal balanceTotal;
+    /**
+     * 佣金总额
+     */
+    @Column(name = "commission_total")
+    private BigDecimal commissionTotal;
+    /**
+     * 提成总额
+     */
+    @Column(name = "draw_percentage_total")
+    private BigDecimal drawPercentageTotal;
 
     /**
      * 获取id

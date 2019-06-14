@@ -127,7 +127,7 @@
     </where>
   </select>
   <update id="updatePayStatus" parameterType="com.bzs.model.OrderInfo" >
-    update order_info set pay_status=#{payStatus},cancel_msg=#{cancelMsg} where  order_id=#{orderId}
+    update order_info set pay_status=#{payStatus},cancel_msg=#{cancelMsg},finish_time=#{finishTime} where  order_id=#{orderId}
   </update>
   <update id="updatePayStatusById" >
     update order_info set pay_status='2' where  order_id=#{orderId}
@@ -145,6 +145,7 @@
       (t1.invite_code_level-level)+1 as level,
       t1.invite_code_level,
       t1.level as p_level,
+      t1.user_name ,
       q.biz_total,
       c.car_number,
       c.frame_number,
@@ -156,16 +157,30 @@
       per.level_two
 from draw_cash d INNER join order_info o ON o.order_id = d.order_id
 INNER JOIN (select account_id,
-   invite_code_level,
-   user_name,
-   (select invite_code_level from  account_info where account_id=#{createBy} ) as level
-      from account_info
-      where FIND_IN_SET(account_id,getAccountInfoChildList(#{createBy},2)))
+	invite_code_level,
+	user_name,
+	(select invite_code_level from  account_info where account_id=#{createBy} ) as level
+		from account_info
+		where FIND_IN_SET(account_id,getAccountInfoChildList(#{createBy},2)))
 t1 on t1.account_id=o.create_by
 LEFT JOIN quote_info q on  q.quote_id =o.pay_type_id
 LEFT JOIN car_info c on q.car_info_id= c.car_info_id
 LEFT JOIN commission_percentage per ON per.id=d.commission_percentage_id
 ;
-
   </select>
+  <!--
+
+/*	(select account_id,
+	invite_code_level,
+	user_name,
+	(select invite_code_level from  account_info where account_id=#{createBy} ) as level
+		from account_info
+		where FIND_IN_SET(account_id,getAccountInfoChildList(#{createBy},2)))
+t1
+INNER JOIN order_info o ON o.create_by = t1.account_id
+INNER JOIN quote_info q on  q.quote_id =o.pay_type_id
+INNER JOIN car_info c on q.car_info_id= c.car_info_id
+LEFT JOIN draw_cash d ON d.order_id=o.order_id
+LEFT JOIN commission_percentage per ON per.id=d.commission_percentage_id*/-->
+
 </mapper>

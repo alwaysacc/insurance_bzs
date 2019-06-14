@@ -74,20 +74,9 @@ public class CommissionPercentageServiceImpl extends AbstractService<CommissionP
     }
 
     @Override
-    public Map<String, Object> get() {
-        //CommissionPercentage data=  this.get(null);
+    public CommissionPercentage getLastUpdateData() {
         CommissionPercentage data=commissionPercentageMapper.getLastUpdateData();
-        Map<String, Object> map=new HashMap<>();
-        if(null!=data){
-            map.put("code","200");
-            map.put("msg","成功");
-            map.put("data",data);
-        }else{
-            map.put("code","400");
-            map.put("msg","失败");
-            map.put("data","");
-        }
-        return map;
+        return data;
     }
 
     @Override

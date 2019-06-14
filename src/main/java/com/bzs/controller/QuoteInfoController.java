@@ -345,8 +345,8 @@ public class QuoteInfoController {
 
     @ApiOperation("调用第三方壁虎-获取支付结果接口")
     @PostMapping("/WX_GetPayResult")
-    public Map<String, Object> getPayResult(String carVin, String licenseNo, Long source, String buid, String bizNo, String forceNo, String channelId, String orderId) {
-        return quoteInfoService.getPayInfo(carVin, licenseNo, source, buid, bizNo, forceNo, channelId, null, orderId);
+    public Map<String, Object> getPayResult(String carVin, String licenseNo, Long source, String buid, String bizNo, String forceNo, String channelId, String orderId,String createBy,String quoteId) {
+        return quoteInfoService.getPayInfo(carVin, licenseNo, source, buid, bizNo, forceNo, channelId, null, orderId,createBy,quoteId);
     }
 
     @ApiOperation("调用第三方壁虎-作废原支付接口")

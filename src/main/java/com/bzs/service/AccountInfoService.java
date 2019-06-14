@@ -48,4 +48,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     Result getParentOrChildList(String id, Integer deep,String isOwner,String type,int accountState);
+
+    /**
+     * 获取最多三级账号信息（父级）
+     * @param createBy
+     * @return
+     */
+    Result getParentLevel(String createBy);
 }

@@ -2,6 +2,7 @@ package com.bzs.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.model.AccountInfo;
+import com.bzs.model.query.SeveralAccount;
 import com.bzs.utils.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authc.Account;
@@ -54,5 +55,12 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
                                            );
 
     HashSet getAllCode();
+
+    /**
+     * 获取父级信息  2级
+     * @param createBy
+     * @return
+     */
+    SeveralAccount getParentLevel(@Param("createBy") String createBy);
 
 }
