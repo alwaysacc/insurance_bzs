@@ -4,6 +4,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 public class Verification {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
