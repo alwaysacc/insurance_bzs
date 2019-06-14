@@ -66,4 +66,20 @@ public class DrawCashController {
     public Result addDrawCash(String orderId,String quoteId,String createBy){
        return drawCashService.addDrawCash(orderId,quoteId,createBy);
     }
+
+    /**
+     *
+     * @param incomePerson 收益人
+     * @param page
+     * @param size
+     * @return
+     */
+    @PostMapping("/getDrawCashList")
+    @ApiOperation("获取佣金列表")
+    public Result getDrawCashList(String incomePerson,@RequestParam(defaultValue = "0")Integer type,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size){
+        PageHelper.startPage(page, size);
+        List<DrawCash> list = drawCashService.getDrawCashList(incomePerson,type);
+        PageInfo pageInfo = new PageInfo(list);
+        return ResultGenerator.genSuccessResult(pageInfo);
+    }
 }

@@ -73,6 +73,11 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
     }
 
     @Override
+    public List getDrawCashList(String incomePerson,int type) {
+        return drawCashMapper.getDrawCashList(incomePerson,type);
+    }
+
+    @Override
     public Result addDrawCash(String orderId, String quoteId, String createBy) {
         QuoteInfo quoteInfo = quoteInfoService.findBy("quoteId", quoteId);
         BigDecimal biz= quoteInfo.getBizTotal();//商业险

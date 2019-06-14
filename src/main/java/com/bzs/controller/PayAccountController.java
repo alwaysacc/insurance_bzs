@@ -53,4 +53,8 @@ public class PayAccountController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+    @PostMapping("/getListById")
+    public Result getListById(@RequestParam String  accountId) {
+        return ResultGenerator.genSuccessResult(payAccountService.getListById(accountId));
+    }
 }
