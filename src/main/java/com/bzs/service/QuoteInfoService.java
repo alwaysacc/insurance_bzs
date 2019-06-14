@@ -163,7 +163,7 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @param orderId
      * @return
      */
-    Map<String, Object> getPayInfo(String carVin,String licenseNo, Long source,String buid, String bizNo, String forceNo, String channelId, String transactionNum, String orderId) ;
+    Map<String, Object> getPayInfo(String carVin,String licenseNo, Long source,String buid, String bizNo, String forceNo, String channelId, String transactionNum, String orderId,String createBy,String quoteId) ;
 
     /**
      * 作废原支付方式

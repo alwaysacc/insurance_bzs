@@ -127,7 +127,7 @@
     </where>
   </select>
   <update id="updatePayStatus" parameterType="com.bzs.model.OrderInfo" >
-    update order_info set pay_status=#{payStatus},cancel_msg=#{cancelMsg} where  order_id=#{orderId}
+    update order_info set pay_status=#{payStatus},cancel_msg=#{cancelMsg},finish_time=#{finishTime} where  order_id=#{orderId}
   </update>
   <update id="updatePayStatusById" >
     update order_info set pay_status='2' where  order_id=#{orderId}

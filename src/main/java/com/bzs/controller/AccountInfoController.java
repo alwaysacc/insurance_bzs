@@ -225,4 +225,10 @@ public class AccountInfoController {
         isOwner="1";
       return accountInfoService.getParentOrChildList(id,deep,isOwner,type,accountState);
     }
+    @ApiOperation("获取父节点账号2级")
+    @PostMapping("/getParentLevel")
+    public Result getParentLevel(String createBy){
+       return accountInfoService.getParentLevel(createBy);
+    }
+
 }

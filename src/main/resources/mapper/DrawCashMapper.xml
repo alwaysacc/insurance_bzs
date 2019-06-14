@@ -20,6 +20,9 @@
     <result column="force_cash" jdbcType="VARCHAR" property="forceCash" />
     <result column="cash" jdbcType="VARCHAR" property="cash" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage" />
+    <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage" />
+    <result column="draw_percentage" jdbcType="VARCHAR" property="drawPercentage" />
   </resultMap>
   <sql id="insertBacthItems">
     <trim prefix="(" suffixOverrides="," suffix=")">
@@ -29,16 +32,25 @@
       create_by
     </trim>
   </sql>
+  <sql id="batchInsertItems">
+    <trim suffixOverrides=",">
+      <if test="item.orderId!=null and item.orderId!=''">#{item.orderId},</if>
+      <if test="item.commissionPercentageId!=null">#{item.commissionPercentageId},</if>
+      <if test="item.serialNo!=null and item.serialNo!=''">#{item.commissionPercentageId},</if>
+      <if test="item.createBy!=null and item.createBy!=''">#{item.createBy},</if>
+    </trim>
+  </sql>
   <insert id="insertBatch" parameterType="java.util.List">
     insert into draw_cash
     <include refid="insertBacthItems"/>
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
-      #{item.orderId},
-      #{item.commissionPercentageId},
-      #{item.serialNo},
-      #{item.createBy}
+      <include refid="batchInsertItems"/>
+--       #{item.orderId},
+      --       #{item.commissionPercentageId},
+      --       #{item.serialNo},
+      --       #{item.createBy}
       )
     </foreach>
   </insert>

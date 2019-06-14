@@ -2,6 +2,7 @@ package com.bzs.service.impl;
 
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.model.AccountInfo;
+import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.*;
@@ -171,5 +172,17 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }else{
             return ResultGenerator.genFailResult("参数错误");
         }
+    }
+
+    @Override
+    public Result getParentLevel(String createBy) {
+        if(StringUtils.isBlank(createBy)){
+            return ResultGenerator.genFailResult("参数错误");
+        }
+       SeveralAccount data= accountInfoMapper.getParentLevel(createBy);
+       if(null!=data){
+           return ResultGenerator.genSuccessResult(data,"成功");
+       }
+        return ResultGenerator.genFailResult("获取失败");
     }
 }

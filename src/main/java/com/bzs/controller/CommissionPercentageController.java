@@ -62,8 +62,8 @@ public class CommissionPercentageController {
     }
     @PostMapping("/getLastUpdateData")
     @ApiOperation("获取最新的一条数据")
-    public Map  getLastUpdateData(){
-        return commissionPercentageService.get();
+    public CommissionPercentage  getLastUpdateData(){
+        return commissionPercentageService.getLastUpdateData();
     }
 
 

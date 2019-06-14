@@ -41,6 +41,7 @@ public class DrawCash {
     /**
      * 描述信息
      */
+    @Column(name = "descriton")
     private String descriton;
 
     /**
@@ -60,18 +61,47 @@ public class DrawCash {
      */
     @Column(name = "update_by")
     private String updateBy;
-    private String type;
+    /**
+     * 类型0提成1佣金
+     */
+    @Column(name = "type")
+    private Integer  type;
+    /**
+     * 提成
+     */
+    @Column(name = "cash")
     private String cash;
+    /**
+     * 交强险佣金
+     */
     @Column(name = "force_cash")
     private String forceCash;
+    /**
+     * 受益人 指得到佣金或者提成的人
+     */
     @Column(name = "income_person")
     private String incomePerson;
+    /**
+     * 商业险百分比
+     */
+    @Column(name = "biz_percentage")
+    private String bizPercentage;
+    /**
+     * 交强险百分比
+     */
+    @Column(name = "force_percentage")
+    private String forcePercentage;
+    /**
+     * 提成百分比
+     */
+    @Column(name = "draw_percentage")
+    private String drawPercentage;
 
-    public String getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
@@ -106,7 +136,9 @@ public class DrawCash {
     public void setBizCash(String bizCash) {
         this.bizCash = bizCash;
     }
-
+    /**
+     * 商业险佣金
+     */
     @Column(name = "biz_cash")
     private String bizCash;
 
@@ -285,6 +317,30 @@ public class DrawCash {
      */
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getBizPercentage() {
+        return bizPercentage;
+    }
+
+    public void setBizPercentage(String bizPercentage) {
+        this.bizPercentage = bizPercentage;
+    }
+
+    public String getForcePercentage() {
+        return forcePercentage;
+    }
+
+    public void setForcePercentage(String forcePercentage) {
+        this.forcePercentage = forcePercentage;
+    }
+
+    public String getDrawPercentage() {
+        return drawPercentage;
+    }
+
+    public void setDrawPercentage(String drawPercentage) {
+        this.drawPercentage = drawPercentage;
     }
 
     public DrawCash() {

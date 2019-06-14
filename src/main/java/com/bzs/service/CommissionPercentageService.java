@@ -21,7 +21,7 @@ public interface CommissionPercentageService extends Service<CommissionPercentag
      * 获取最新的数据对象
      * @return
      */
-    Map<String,Object>get();
+    CommissionPercentage getLastUpdateData();
 
     /**
      * 获取最新的数据对象id

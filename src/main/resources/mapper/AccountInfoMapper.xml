@@ -30,6 +30,10 @@
     <result column="superiorInviteCode" jdbcType="INTEGER" property="superiorinvitecode" />
     <result column="invite_code_level" jdbcType="INTEGER" property="inviteCodeLevel" />
     <result column="association_level" jdbcType="VARCHAR" property="associationLevel" />
+    <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal" />
+    <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal" />
+    <result column="draw_percentage_total" jdbcType="DECIMAL" property="drawPercentageTotal" />
+
   </resultMap>
     <select id="getRoleIdByAccountId" resultType="String">
       select role_id from account_id where account_id=#{account_id}
@@ -224,15 +228,43 @@
         select inviteCode from account_info
     </select>
     <!--获取2层父级-->
-    <select id="getParentLevel">
+    <resultMap id="SeveralAccount" type="com.bzs.model.query.SeveralAccount">
+        <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="bName" jdbcType="VARCHAR" property="bUserName" />
+        <result column="bAccountId" jdbcType="VARCHAR" property="bAccountId" />
+        <result column="cName" jdbcType="VARCHAR" property="cUserName" />
+        <result column="cAccountId" jdbcType="VARCHAR" property="cAccountId" />
+        <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal" />
+        <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal" />
+        <result column="bBalanceTotal" jdbcType="DECIMAL" property="bBalanceTotal" />
+        <result column="bDrawPercentageTotal" jdbcType="DECIMAL" property="bDrawPercentageTotal" />
+        <result column="cBalanceTotal" jdbcType="DECIMAL" property="cBalanceTotal" />
+        <result column="cDrawPercentageTotal" jdbcType="DECIMAL" property="cDrawPercentageTotal" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="level1" jdbcType="INTEGER" property="level1" />
+        <result column="level2" jdbcType="INTEGER" property="level2" />
+
+
+    </resultMap>
+    <select id="getParentLevel" resultMap="SeveralAccount" >
         select a.user_name,
                 a.account_id ,
-                b.user_name as bname ,
-                a.parent_id as b_account_id,
-                c.user_name as cname ,
-                c.account_id as c_account_id
+                a.balance_total,
+                a.commission_total,
+                b.user_name as bName ,
+                case  when a.account_id is null or a.account_id='' then 0 else 1 end level,
+                case  when b.account_id is null or b.account_id='' then 0 else 1 end level1,
+                case  when c.account_id is null or c.account_id='' then 0 else 1 end level2,
+                b.balance_total as bBalanceTotal,
+                b.draw_percentage_total as bDrawPercentageTotal,
+                a.parent_id as bAccountId,
+                c.user_name as cName ,
+                c.account_id as cAccountId,
+                c.balance_total as cBalanceTotal,
+                c.draw_percentage_total as cDrawPercentageTotal
         from account_info a
         left join account_info b on b.account_id =a.parent_id
-        left join account_info c on c.account_id =b.parent_id WHERE a.account_id=#{create_by}
+        left join account_info c on c.account_id =b.parent_id WHERE a.account_id=#{createBy}
     </select>
 </mapper>

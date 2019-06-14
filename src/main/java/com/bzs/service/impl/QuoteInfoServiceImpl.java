@@ -3,11 +3,13 @@ package com.bzs.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.InsuranceTypeInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
 import com.bzs.model.*;
 import com.bzs.model.CarInfo;
+import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.*;
 import com.bzs.utils.*;
@@ -73,7 +75,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     @Resource
     private OrderInfoService orderInfoService;
     @Resource
+    private AccountInfoMapper accountInfoMapper;
+    @Resource
     private RedisUtil redisUtil;
+    private CommissionPercentageService commissionPercentageService;
 
     @Override
     public Map quoteDetails(String carInfoId) {
@@ -848,7 +853,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                                    String carFirstRegisterDate, String lists,
                                    String ciBeginDate, String biBeginDate, String carTransDate,
                                    String carVehicleFgwCode, String carInfoId, String createdBy,
-                                   Long quoteGroup, Long submitGroup, String isSame, int forceTax,Double purchasePrice) {
+                                   Long quoteGroup, Long submitGroup, String isSame, int forceTax, Double purchasePrice) {
 
 
         String custKey = ThirdAPI.CUSTKEY;
@@ -873,7 +878,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
             param += "&IdCard=" + personCardID + "&OwnerIdCardType="
                     + personCardIDType;
         }
-        if (null!=purchasePrice) {//新车购置价
+        if (null != purchasePrice) {//新车购置价
             param += "&PurchasePrice=" + purchasePrice;
         }
 
@@ -1061,7 +1066,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
                         qpc.setQuoteStatus(0);//报价失败
                         qpc.setSubmitStatus(-1);//未核保
-                       // qpc.setSubmitresult("报价失败");//未核保
+                        // qpc.setSubmitresult("报价失败");//未核保
                         qpc.setQuoteResult("报价失败：" + quoteResult);//报价失败描述
                         if (repeatInsurance != null) {
                             qpc.setQuoteResult("报价失败：" + repeatInsurance + ":" + quoteResult);//信息描述
@@ -1577,12 +1582,12 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy,int isGetPayWay,String carInfoId) {
+    public Map<String, Object> getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
         Map<String, Object> map = new HashMap<>();
-        if(2!=payMent){//
+        if (2 != payMent) {//
             payMent = 1;//1微信支付2pos
         }
-        if(1!=isGetPayWay){//
+        if (1 != isGetPayWay) {//
             isGetPayWay = 0;//是否获取链接的支付类型0否1是
         }
         String factCode = "400";
@@ -1617,16 +1622,16 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 return maps;
             }
         }*/
-        String nowdate=DateUtil.getDateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        String nowdate = DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
         List<QuoteInfo> list = quoteInfoMapper.findListByDifferCondition(new QuoteInfo(quoteId));
-        if(CollectionUtils.isNotEmpty(list)){
-            QuoteInfo qpc=list.get(0);
-            if(null!=qpc){
-                String payUrl=qpc.getPayUrl();
-                String payEndDate=qpc.getPayEndDate();
-                if(StringUtils.isNotBlank(payUrl)&&StringUtils.isNotBlank(payEndDate)){
-                  int res=  DateUtil.compareDate(payEndDate,nowdate,"yyyy-MM-dd HH:mm:ss");
-                    if(res>=1){//1大于 0小于2等于-1有空值
+        if (CollectionUtils.isNotEmpty(list)) {
+            QuoteInfo qpc = list.get(0);
+            if (null != qpc) {
+                String payUrl = qpc.getPayUrl();
+                String payEndDate = qpc.getPayEndDate();
+                if (StringUtils.isNotBlank(payUrl) && StringUtils.isNotBlank(payEndDate)) {
+                    int res = DateUtil.compareDate(payEndDate, nowdate, "yyyy-MM-dd HH:mm:ss");
+                    if (res >= 1) {//1大于 0小于2等于-1有空值
                         map.put("code", "200");
                         map.put("msg", "查询成功");
                         map.put("data", qpc);
@@ -1635,7 +1640,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 }
             }
         }
-       // Map quoteList=this.findListByDifferCondition(quoteId,null,null,null);
+        // Map quoteList=this.findListByDifferCondition(quoteId,null,null,null);
 
 
         int agent = ThirdAPI.AGENT;
@@ -1648,37 +1653,37 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
-        try{
-            String ULR=ThirdAPI.PayAddressURL;
-            HttpResult httpResult=   HttpClientUtil.doGet(ULR+param,null);
-            int code=httpResult.getCode();
-            String body=httpResult.getBody();
-            message=httpResult.getMessage();
-            if(200==code){//请求成功
-                JSONObject json=JSONObject.parseObject(body);
-                int BusinessStatus=json.getIntValue("BusinessStatus");
+        try {
+            String ULR = ThirdAPI.PayAddressURL;
+            HttpResult httpResult = HttpClientUtil.doGet(ULR + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            message = httpResult.getMessage();
+            if (200 == code) {//请求成功
+                JSONObject json = JSONObject.parseObject(body);
+                int BusinessStatus = json.getIntValue("BusinessStatus");
                 String payAddessStatusMessage = json.getString("StatusMessage");
                 if (BusinessStatus == 1) {
-                    JSONObject data=json.getJSONObject("Data");
-                    if(data!=null){
-                        QuoteInfo qpc=new QuoteInfo(quoteId);
-                        String payUrl=data.getString("PayUrl");//人保支付地址
-                        String name=data.getString("Name");//车主
-                        if(null!=data.get("PayNum")){//流水号
-                            String  payNum=data.getString("PayNum");//太平洋等于校验码
+                    JSONObject data = json.getJSONObject("Data");
+                    if (data != null) {
+                        QuoteInfo qpc = new QuoteInfo(quoteId);
+                        String payUrl = data.getString("PayUrl");//人保支付地址
+                        String name = data.getString("Name");//车主
+                        if (null != data.get("PayNum")) {//流水号
+                            String payNum = data.getString("PayNum");//太平洋等于校验码
                             qpc.setCheckNo(payNum);//人保  payNum=serialrNo
                         }
-                        String transactionNum=data.getString("TransactionNum");//交易通知单号
+                        String transactionNum = data.getString("TransactionNum");//交易通知单号
                         //JFCD-JS201906061213556412082
-                        String serialrNo=data.getString("SerialrNo");//交易通知单号
+                        String serialrNo = data.getString("SerialrNo");//交易通知单号
                         qpc.setSerialNo(serialrNo);
-                        String failureTimeStamp=data.getString("FailureTimeStamp");//支付链接的截止日期
-                        Double money=data.getDouble("Money");
+                        String failureTimeStamp = data.getString("FailureTimeStamp");//支付链接的截止日期
+                        Double money = data.getDouble("Money");
                         //0=保司收款平台  1=pos
                         //2=微信  3=微信公众号 4=H5
-                        String payWay=data.getString ("PayWay");
-                        if(StringUtils.isNotBlank(failureTimeStamp)){
-                            failureTimeStamp= DateUtil.stampToDate(failureTimeStamp,"yyyy-MM-dd HH:mm:ss");
+                        String payWay = data.getString("PayWay");
+                        if (StringUtils.isNotBlank(failureTimeStamp)) {
+                            failureTimeStamp = DateUtil.stampToDate(failureTimeStamp, "yyyy-MM-dd HH:mm:ss");
                         }
                         qpc.setPayUrl(payUrl);
                         qpc.setPayTime(nowdate);
@@ -1686,7 +1691,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         qpc.setPayEndDate(failureTimeStamp);
                         qpc.setPaymentNotice(transactionNum);
                         this.updateByQuoteId(qpc);
-                       // (payUrl, nowdate, null, null, null, transactionNum, payNum, failureTimeStamp, payAddessStatusMessage);
+                        // (payUrl, nowdate, null, null, null, transactionNum, payNum, failureTimeStamp, payAddessStatusMessage);
                         OrderInfo orderInfo = new OrderInfo();
                         String oid = UUIDS.getDateUUID();
                         orderInfo.setOrderId(oid);
@@ -1702,7 +1707,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         map.put("msg", "查询成功");
                         map.put("data", orderInfo);
                         return map;
-                    }else{
+                    } else {
                         map.put("code", "400");
                         map.put("msg", "查询失败");
                         map.put("data", "");
@@ -1711,19 +1716,19 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
                 } else {
                     map.put("code", "400");
-                    map.put("msg", "获取支付查信息失败:"+payAddessStatusMessage);
+                    map.put("msg", "获取支付查信息失败:" + payAddessStatusMessage);
                     map.put("data", null);
                     return map;
                 }
 
-            }else{
+            } else {
                 map.put("code", "400");
                 map.put("msg", "获取支付查信息失败:请求异常");
                 map.put("data", "");
                 return map;
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             map.put("code", "500");
             map.put("msg", "请求异常");
             map.put("data", "");
@@ -1732,8 +1737,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> getPayInfo(String carVin, String licenseNo,  Long source, String buid, String bizNo, String forceNo, String channelId, String transactionNum,String orderId) {
-        Map<String, Object> map=new HashMap<>();
+    public Map<String, Object> getPayInfo(String carVin, String licenseNo, Long source, String buid, String bizNo, String forceNo, String channelId, String transactionNum, String orderId, String createBy, String quoteId) {
+        Map<String, Object> map = new HashMap<>();
 
         String factCode = "400";
         String message = "";
@@ -1758,74 +1763,120 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String param = "Agent=" + agent + "&BiztNo=" + bizNo + "&ForcetNo="
                 + forceNo + "&CarVin=" + carVin + "&LicenseNo=" + licenseNo
                 + "&Source=" + source + "&ChannelId="
-                + channelId + "&BuId=" + buid ;
+                + channelId + "&BuId=" + buid;
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
-        try{
-            String URL=ThirdAPI.PayResult;
-            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
-            int code=httpResult.getCode();
-            String body=httpResult.getBody();
-            message=httpResult.getMessage();
-            if(200==code){
-              JSONObject jsonObject=  JSONObject.parseObject(body);
-                int BusinessStatus=jsonObject.getIntValue("BusinessStatus");
-                message= jsonObject.getString("StatusMessage");
-                if(BusinessStatus==1){
+        try {
+            String URL = ThirdAPI.PayResult;
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            message = httpResult.getMessage();
+            if (200 == code) {
+                JSONObject jsonObject = JSONObject.parseObject(body);
+                int BusinessStatus = jsonObject.getIntValue("BusinessStatus");
+                message = jsonObject.getString("StatusMessage");
+                if (BusinessStatus == 1) {
                     int findPayResult = jsonObject.getJSONObject("Data").getIntValue("FindPayResult");
                     String money = jsonObject.getJSONObject("Data").getString("Money");
                     String bizpNo = jsonObject.getJSONObject("Data").getString("BizpNo");
                     String forcepNo = jsonObject.getJSONObject("Data").getString("ForcepNo");
                     map.put("code", "200");
 
+                    Date nowDate=DateUtil.getDateToDate(new Date(),"yyyy-MM-dd");
+
                     //支付状态0待支付,1完成2取消3过期4作废5已重新获取
-                    Integer status=0;
-                    if(findPayResult==1){
+                    Integer status = 0;
+                    OrderInfo orderInfo = new OrderInfo(orderId);
+                    if (findPayResult == 1) {
                         map.put("msg", "支付成功");
-                        status=1;
+                        status = 1;
+                        orderInfo.setFinishTime(nowDate);
+                        QuoteInfo quoteInfo = quoteInfoService.findBy("quoteId", quoteId);
+                        BigDecimal biz= quoteInfo.getBizTotal();//商业险
+                        BigDecimal force=  quoteInfo.getForceTotal();//交强险
+                        SeveralAccount data = accountInfoMapper.getParentLevel(createBy);//获取父级两层id
+                        CommissionPercentage percentage = commissionPercentageService.getLastUpdateData();
+                        BigDecimal bp=new BigDecimal(15);
+                        BigDecimal fp =  new BigDecimal(4);
+                        BigDecimal po =new  BigDecimal(1);
+                        BigDecimal pw =new  BigDecimal(0.5);
+                        BigDecimal rate=new BigDecimal(1.06);
+                        if(null==percentage){
+                            bp = new BigDecimal(percentage.getBizPercentage());//商业险百分比
+                            fp =  new BigDecimal(percentage.getForcePercentage());//交强险百分比
+                            po =  new BigDecimal(percentage.getLevelOne());//父一级提成
+                            pw =  new BigDecimal(percentage.getLevelTwo());//父二级提成
+                        }
+
+                        int level=data.getLevel();
+                        int level1=data.getLevel1();
+                        int level2=data.getLevel2();
+                        if(level==1){//本人做单，只有佣金
+                            BigDecimal balance=  data.getBalanceTotal();//剩余余额
+                            BigDecimal commission=   data.getCommissionTotal();//已有佣金
+                            BigDecimal bizCommission=biz.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(bp).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
+                            BigDecimal forceCommission=force.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(fp).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
+                            balance= balance.add(bizCommission).add(forceCommission);
+                            commission=commission.add(bizCommission).add(forceCommission);
+                            DrawCash drawCash=new DrawCash();
+
+                        }
+                        if(level1==1){//本人做单，父一级只拿提成
+                            String parentLevelOne = data.getbAccountId();
+                            BigDecimal balance=    data.getbBalanceTotal();//剩余余额
+                            BigDecimal drawPer=  data.getbDrawPercentageTotal();//已有提成
+                        }
+                        if(level2==2){//本人做单，父二级只拿提成
+                            String parentLevelTwo = data.getcAccountId();
+                            BigDecimal balance=   data.getcBalanceTotal();//剩余余额
+                            BigDecimal drawPer=   data.getcDrawPercentageTotal();//已有提成
+                        }
 
 
-                    }else if(findPayResult==11){
+
+
+
+
+
+                    } else if (findPayResult == 11) {
                         map.put("msg", "作废");
-                        status=4;
-                    }else  if(findPayResult==0){
+                        status = 4;
+                    } else if (findPayResult == 0) {
                         map.put("msg", "待交费");
                     }
-                   /* if(status!=0){
-
-                    }*/
-                    OrderInfo orderInfo=new OrderInfo(orderId,status);
+                    orderInfo.setPayStatus(status);
                     orderInfoService.updatePayStatus(orderInfo);
                     map.put("data", body);
                     return map;
-                }else{
-                    if(BusinessStatus==-1001){
+                } else {
+                    if (BusinessStatus == -1001) {
                         map.put("status", "200");
-                        map.put("msg","获取结果成功:"+ message);
+                        map.put("msg", "获取结果成功:" + message);
                         map.put("data", "");
                         return map;
-                    }else{
+                    } else {
                         map.put("status", "400");
-                        map.put("msg","获取结果成功"+ message);
+                        map.put("msg", "获取结果成功" + message);
                         map.put("data", "");
                         return map;
                     }
 
                 }
 
-            }else{
-                if(StringUtils.isNotBlank(body)){
-                    message=body;
-                }else{
-                    message="请求出错";
+            } else {
+                if (StringUtils.isNotBlank(body)) {
+                    message = body;
+                } else {
+                    message = "请求出错";
                 }
                 map.put("status", "400");
                 map.put("msg", message);
                 map.put("data", "");
                 return map;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             map.put("status", "400");
             map.put("msg", "请求出错");
             map.put("data", "");
@@ -1835,11 +1886,11 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay,String quoteId,String cancelMsg) {
+    public Map<String, Object> doVoidPay(String carVin, String licenseNo, Long source, String buid, String orderId, String bizNo, String transactionNum, String forceNo, String channelId, String payWay, String quoteId, String cancelMsg) {
         String factCode = "400";
         String message = "";
-        Map<String, Object> map=new HashMap();
-        if (StringUtils.isBlank(carVin) || StringUtils.isBlank(licenseNo) || StringUtils.isBlank(buid) || StringUtils.isBlank(channelId) || StringUtils.isBlank(transactionNum)|| StringUtils.isBlank(orderId) || null == source) {
+        Map<String, Object> map = new HashMap();
+        if (StringUtils.isBlank(carVin) || StringUtils.isBlank(licenseNo) || StringUtils.isBlank(buid) || StringUtils.isBlank(channelId) || StringUtils.isBlank(transactionNum) || StringUtils.isBlank(orderId) || null == source) {
             factCode = "18000";
             message = "获取支付信息失败:参数异常";
             map.put("code", "400");
@@ -1862,29 +1913,29 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String param = "Agent=" + agent + "&BiztNo=" + bizNo + "&ForcetNo="
                 + forceNo + "&CarVin=" + carVin + "&LicenseNo=" + licenseNo
                 + "&Source=" + source + "&ChannelId="
-                + channelId + "&BuId=" + buid +"&TransactionNum="+transactionNum;
-        if(1==source){//太保
-            if(StringUtils.isBlank(payWay)){//太保必须 6=刷卡、 2=划卡、  1=支票、
+                + channelId + "&BuId=" + buid + "&TransactionNum=" + transactionNum;
+        if (1 == source) {//太保
+            if (StringUtils.isBlank(payWay)) {//太保必须 6=刷卡、 2=划卡、  1=支票、
                 //chinapay=银联电子支付、 weixin=微信支付、5=网银转账、3A=集中支付
-                payWay="weixin";
-                param+="&PayWay="+payWay;
+                payWay = "weixin";
+                param += "&PayWay=" + payWay;
             }
         }
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
-        try{
-            String URL=ThirdAPI.VoidPay;
-            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
-            int code=httpResult.getCode();
-            String body=httpResult.getBody();
-            message=httpResult.getMessage();
-            if(200==code){
-                int BusinessStatus=JSONObject.parseObject(body).getIntValue("BusinessStatus");
-                String StatusMessage=JSONObject.parseObject(body).getString("StatusMessage");
-                if(BusinessStatus==1){
+        try {
+            String URL = ThirdAPI.VoidPay;
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            message = httpResult.getMessage();
+            if (200 == code) {
+                int BusinessStatus = JSONObject.parseObject(body).getIntValue("BusinessStatus");
+                String StatusMessage = JSONObject.parseObject(body).getString("StatusMessage");
+                if (BusinessStatus == 1) {
                     map.put("code", "200");
-                    QuoteInfo qpc=new QuoteInfo(quoteId);
+                    QuoteInfo qpc = new QuoteInfo(quoteId);
                     qpc.setCheckNo(null);//人保  payNum=serialrNo
                     qpc.setSerialNo(null);
                     qpc.setPayUrl(null);
@@ -1893,26 +1944,26 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setPayEndDate(null);
                     qpc.setPaymentNotice(null);
                     this.insertOrUpdate(qpc);
-                   // this.insertOrUpdate(qpc);
+                    // this.insertOrUpdate(qpc);
                     //此处修改订单信息为作废状态
                     System.out.println(cancelMsg);
-                    orderInfoService.updatePayStatus(new OrderInfo(orderId,2,cancelMsg));
-                }else{
+                    orderInfoService.updatePayStatus(new OrderInfo(orderId, 2, cancelMsg));
+                } else {
                     map.put("code", "400");
                 }
                 map.put("msg", StatusMessage);
 
-            }else{
+            } else {
                 map.put("code", "400");
-                if(StringUtils.isNotBlank(body)){
+                if (StringUtils.isNotBlank(body)) {
                     map.put("msg", body);
-                }else{
-                    map.put("msg", "请求异常，错误代码"+code);
+                } else {
+                    map.put("msg", "请求异常，错误代码" + code);
                 }
             }
             map.put("data", "");
             return map;
-        }catch (Exception e){
+        } catch (Exception e) {
             map.put("code", "500");
             map.put("msg", "请求出错，错误代码：500");
             map.put("data", "");
@@ -1938,48 +1989,48 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String param = "Agent=" + agent;
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
-        Map<String, Object> map=new HashMap();
+        Map<String, Object> map = new HashMap();
         try {
-            HttpResult httpResult  = HttpClientUtil.doGet(URL + param, null);
-            int code=httpResult.getCode();
-            String body=httpResult.getBody();
-            String message=httpResult.getMessage();
-            if(200==code){
-                CityChannelJsonBean cityChannelBean=  JSONObject.parseObject(body,CityChannelJsonBean.class);
-                int businessStatus=cityChannelBean.getBusinessStatus();
-                String StatusMessage=cityChannelBean.getStatusMessage();
-                List<CityChannelItem>  items=null;
-                if(1==businessStatus){
-                    map.put("code","200");
-                    map.put("message",StatusMessage);
-                    items= cityChannelBean.getItems();
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            String message = httpResult.getMessage();
+            if (200 == code) {
+                CityChannelJsonBean cityChannelBean = JSONObject.parseObject(body, CityChannelJsonBean.class);
+                int businessStatus = cityChannelBean.getBusinessStatus();
+                String StatusMessage = cityChannelBean.getStatusMessage();
+                List<CityChannelItem> items = null;
+                if (1 == businessStatus) {
+                    map.put("code", "200");
+                    map.put("message", StatusMessage);
+                    items = cityChannelBean.getItems();
                   /*  if(CollectionUtils.isNotEmpty(items)){
                         for (CityChannelItem item:items){
                             System.out.println("sss"+item.getCityCode());
                         }
                     }*/
-                }else{
-                    map.put("code","400");
-                    map.put("message",StatusMessage);
+                } else {
+                    map.put("code", "400");
+                    map.put("message", StatusMessage);
                 }
-                map.put("data",items);
-            }else{
-                map.put("code","400");
-                map.put("message",message);
-                map.put("data",null);
+                map.put("data", items);
+            } else {
+                map.put("code", "400");
+                map.put("message", message);
+                map.put("data", null);
             }
         } catch (Exception e) {
-            map.put("code","400");
-            map.put("message","请求异常，错误代码:500");
-            map.put("data",null);
+            map.put("code", "400");
+            map.put("message", "请求异常，错误代码:500");
+            map.put("data", null);
         }
         return map;
     }
 
     @Override
     public Map<String, Object> getFirstVehicleInfo(String carVin, String engineNo, String moldName, int cityCode) {
-        Map<String, Object> map=new HashMap<>();
-        String factCode="";
+        Map<String, Object> map = new HashMap<>();
+        String factCode = "";
         if (StringUtils.isBlank(carVin) || StringUtils.isBlank(engineNo) || StringUtils.isBlank(moldName)) {
             factCode = "18000";
             map.put("code", "400");
@@ -1989,46 +2040,46 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         }
         int agent = ThirdAPI.AGENT;
         String secretKey = ThirdAPI.SECRETKEY;
-        String custKey=ThirdAPI.CUSTKEY;
+        String custKey = ThirdAPI.CUSTKEY;
         String param = "EngineNo=" + engineNo + "&CarVin=" + carVin
-                + "&MoldName="+moldName + "&CityCode="+ cityCode+ "&Agent="+agent
-                + "&CustKey="+custKey ;
+                + "&MoldName=" + moldName + "&CityCode=" + cityCode + "&Agent=" + agent
+                + "&CustKey=" + custKey;
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
-        try{
-            String URL=ThirdAPI.GetFirstVehicleInfo;
-            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
-            int code= httpResult.getCode();
-            String body= httpResult.getBody();
-            String message=httpResult.getMessage();
-            List<NewCarVehicleInfoItem>items=null;
-            NewCarVehicleInfoJsonBean javaBean=JSONObject.parseObject(body,NewCarVehicleInfoJsonBean.class);
+        try {
+            String URL = ThirdAPI.GetFirstVehicleInfo;
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            String message = httpResult.getMessage();
+            List<NewCarVehicleInfoItem> items = null;
+            NewCarVehicleInfoJsonBean javaBean = JSONObject.parseObject(body, NewCarVehicleInfoJsonBean.class);
 
-            if(200==code){
-                int businessStatus=javaBean.getBusinessStatus();
-                message=javaBean.getStatusMessage();
-                if(1==businessStatus){
-                    items=javaBean.getItems();
-                    if(CollectionUtils.isNotEmpty(items)){
+            if (200 == code) {
+                int businessStatus = javaBean.getBusinessStatus();
+                message = javaBean.getStatusMessage();
+                if (1 == businessStatus) {
+                    items = javaBean.getItems();
+                    if (CollectionUtils.isNotEmpty(items)) {
                         map.put("code", "200");
-                    }else{
-                        message="请求成功,但未获取相关信息";
+                    } else {
+                        message = "请求成功,但未获取相关信息";
                         map.put("code", "400");
                     }
-                }else{
+                } else {
                     map.put("code", "400");
                 }
-            }else if(202==code){
+            } else if (202 == code) {
                 map.put("code", "400");
-                message=javaBean.getStatusMessage();
-            }else{
+                message = javaBean.getStatusMessage();
+            } else {
                 map.put("code", "400");
             }
             map.put("msg", message);
             map.put("data", items);
             return map;
-        }catch(Exception e){
+        } catch (Exception e) {
             map.put("code", "400");
             map.put("msg", "请求异常,错误代码：500");
             map.put("data", null);
@@ -2038,63 +2089,63 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
 
     @Override
     public Map<String, Object> getModelNameForImportCar(Integer cityCode, String carVin) {
-        Map<String, Object> map=new HashMap<>();
-        if(StringUtils.isBlank(carVin)){
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(carVin)) {
             map.put("code", "400");
             map.put("msg", "参数异常，不能为空");
             map.put("data", "");
             return map;
         }
-        int agent=ThirdAPI.AGENT;
-        String custKey=ThirdAPI.CUSTKEY;
-        String secretKey=ThirdAPI.SECRETKEY;
+        int agent = ThirdAPI.AGENT;
+        String custKey = ThirdAPI.CUSTKEY;
+        String secretKey = ThirdAPI.SECRETKEY;
         String param = "CarVin=" + carVin
-                +  "&CityCode="+ cityCode+ "&Agent="+agent
-                + "&CustKey="+custKey ;
+                + "&CityCode=" + cityCode + "&Agent=" + agent
+                + "&CustKey=" + custKey;
         String str = param + secretKey;
         String SecCode = MD5Utils.md5(str);
         param = param + "&SecCode=" + SecCode;
         System.out.println(param);
         param = param.replaceAll(" ", "%20");
-        try{
-            String URL=ThirdAPI.GetModelName;
-            HttpResult httpResult= HttpClientUtil.doGet(URL+param,null);
-            int code=httpResult.getCode();
-            String body =httpResult.getBody();
-            String msg=httpResult.getMessage();
-            String MoldName=null;
-            if(200==code){
-                int BusinessStatus=JSONObject.parseObject(body).getIntValue("BusinessStatus");
-                String StatusMessage=JSONObject.parseObject(body).getString("StatusMessage");
-                MoldName=JSONObject.parseObject(body).getString("MoldName");
-                if(1==BusinessStatus){
-                    map.put("code","200");
-                }else{
-                    map.put("code","400");
+        try {
+            String URL = ThirdAPI.GetModelName;
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            String msg = httpResult.getMessage();
+            String MoldName = null;
+            if (200 == code) {
+                int BusinessStatus = JSONObject.parseObject(body).getIntValue("BusinessStatus");
+                String StatusMessage = JSONObject.parseObject(body).getString("StatusMessage");
+                MoldName = JSONObject.parseObject(body).getString("MoldName");
+                if (1 == BusinessStatus) {
+                    map.put("code", "200");
+                } else {
+                    map.put("code", "400");
                 }
-                msg=StatusMessage;
-            }else if(202==code){
-                msg=JSONObject.parseObject(body).getString("StatusMessage");
-                map.put("code","400");
-            }else{
-                map.put("code","400");
-                msg=body;
+                msg = StatusMessage;
+            } else if (202 == code) {
+                msg = JSONObject.parseObject(body).getString("StatusMessage");
+                map.put("code", "400");
+            } else {
+                map.put("code", "400");
+                msg = body;
             }
-            map.put("msg",msg);
-            map.put("data",MoldName);
+            map.put("msg", msg);
+            map.put("data", MoldName);
 
-        }catch (Exception e){
-            map.put("code","400");
-            map.put("msg","请求异常，错误代买：500");
-            map.put("data",null);
+        } catch (Exception e) {
+            map.put("code", "400");
+            map.put("msg", "请求异常，错误代买：500");
+            map.put("data", null);
         }
         return map;
     }
 
     @Override
     public Map<String, Object> getCreditDetailInfo(String licenseNo, Integer renewalCarType) {
-        Map<String, Object> map=new HashMap<>();
-        if(StringUtils.isBlank(licenseNo)){
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(licenseNo)) {
             map.put("code", "400");
             map.put("msg", "参数异常，车牌不能为空");
             map.put("data", "");
@@ -2105,40 +2156,40 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String CustKey = ThirdAPI.CUSTKEY;
         int Agent = ThirdAPI.AGENT;
         String secretKey = ThirdAPI.SECRETKEY;
-        String param = "LicenseNo=" + licenseNo + "&RenewalCarType=" + renewalCarType+ "&Agent=" + Agent
-                + "&CustKey=" + CustKey ;
+        String param = "LicenseNo=" + licenseNo + "&RenewalCarType=" + renewalCarType + "&Agent=" + Agent
+                + "&CustKey=" + CustKey;
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         // param = param.replaceAll(" ", "%20");
-        try{
-            HttpResult httpResult=HttpClientUtil.doGet(URL+param,null);
-            int code=httpResult.getCode();
-            String body=httpResult.getBody();
-            String msg=httpResult.getMessage();
-            if(200==code){
-                CreditDetailInfoJsonBean javaBean=  JSONObject.parseObject(body,CreditDetailInfoJsonBean.class);
-                int businessStatus=javaBean.getBusinessStatus();
-                msg=javaBean.getStatusMessage();
-                List<CreditDetailInfoItems>lists=null;
-                if(1==businessStatus){
-                    lists=javaBean.getList();
-                    if(CollectionUtils.isNotEmpty(lists)){
+        try {
+            HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            String msg = httpResult.getMessage();
+            if (200 == code) {
+                CreditDetailInfoJsonBean javaBean = JSONObject.parseObject(body, CreditDetailInfoJsonBean.class);
+                int businessStatus = javaBean.getBusinessStatus();
+                msg = javaBean.getStatusMessage();
+                List<CreditDetailInfoItems> lists = null;
+                if (1 == businessStatus) {
+                    lists = javaBean.getList();
+                    if (CollectionUtils.isNotEmpty(lists)) {
                         map.put("code", "200");
-                    }else{
-                        msg="请求成功，但是未查询到信息";
+                    } else {
+                        msg = "请求成功，但是未查询到信息";
                         map.put("code", "400");
                     }
-                }else{
+                } else {
                     map.put("code", "400");
                 }
                 map.put("msg", msg);
                 map.put("data", lists);
-            }else {
+            } else {
                 map.put("code", "400");
                 map.put("msg", "参数异常，车牌不能为空");
                 map.put("data", "");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             map.put("code", "400");
             map.put("msg", "参数异常，车牌不能为空");
             map.put("data", "");
@@ -2391,108 +2442,108 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                 "YxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxj\n" +
                 "GmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaaYxjGmmMYxppjGMaa//Z";
         String strBase = "data:image/png;base64," + base64;
-            if (info.indexOf("投保人") > -1) {
-                if (info.indexOf("港澳身份证") > -1) {
-                    list.add(new BaseContect(strBase, "T4", 0));
-                } else if (info.indexOf("身份证") > -1) {
-                    list.add(new BaseContect(strBase, "T1", 0));
-                    //list.add(new BaseContect(strBase,"T1",0));
-                } else if (info.indexOf("组织机构") > -1) {
-                    list.add(new BaseContect(strBase, "T2", 0));
-                } else if (info.indexOf("营业执照") > -1) {
-                    list.add(new BaseContect(strBase, "T3", 0));
-                } else if (info.indexOf("通行证") > -1) {
-                    list.add(new BaseContect(strBase, "T5", 0));
-                }
-            }
-            if (info.indexOf("被保人") > -1) {
-                if (info.indexOf("港澳身份证") > -1) {
-                    list.add(new BaseContect(strBase, "B4", 0));
-                } else if (info.indexOf("身份证") > -1) {
-                    list.add(new BaseContect(strBase, "B1", 0));
-                    //list.add(new BaseContect(strBase,"T1",0));
-                } else if (info.indexOf("组织机构") > -1) {
-                    list.add(new BaseContect(strBase, "B2", 0));
-                } else if (info.indexOf("营业执照") > -1) {
-                    list.add(new BaseContect(strBase, "B3", 0));
-                } else if (info.indexOf("通行证") > -1) {
-                    list.add(new BaseContect(strBase, "B5", 0));
-                }
-            }
-            if (info.indexOf("车主") > -1) {
-                if (info.indexOf("港澳身份证") > -1) {
-                    list.add(new BaseContect(strBase, "C4", 0));
-                } else if (info.indexOf("身份证") > -1) {
-                    list.add(new BaseContect(strBase, "C1", 0));
-                    //list.add(new BaseContect(strBase,"T1",0));
-                } else if (info.indexOf("组织机构") > -1) {
-                    list.add(new BaseContect(strBase, "C2", 0));
-                } else if (info.indexOf("营业执照") > -1) {
-                    list.add(new BaseContect(strBase, "C3", 0));
-                } else if (info.indexOf("通行证") > -1) {
-                    list.add(new BaseContect(strBase, "C5", 0));
-                }
-            } else if (info.indexOf("行驶本") > -1 || info.indexOf("行驶证") > -1) {
-                list.add(new BaseContect(strBase, "C6", 0));
-            } else if (info.indexOf("居住证") > -1) {
-                list.add(new BaseContect(strBase, "C7", 0));
-            }
-            if (info.indexOf("完税") > -1) {
-                list.add(new BaseContect(strBase, "I3", 0));
-            }
-            if (info.indexOf("在京") > -1) {
-                list.add(new BaseContect(strBase, "I4", 0));
-            }
-            if (info.indexOf("验车") > -1) {
-                list.add(new BaseContect(strBase, "I2", 0));
-            }
-            //其他未添加
-            List<BaseContect> reslutList = BaseContect.getList(list);
-            JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(reslutList));
-            String res = jsonArray.toString();
-            String res1 = res.replaceAll("imgType", "ImgType");
-            String res2 = res1.replaceAll("isUpload", "IsUpload");
-            String res3 = res2.replaceAll("strBase", "StrBase");
-            jsonObject.put("ListBaseContect", res3);
-            String params2 = "{\"ListBaseContect\":" + res3 + ",\"BuId\":" + buid + ",\"Agent\":" + agent + ",\"SecCode\":\"" + SecCode + "\"}";
-
-            try {
-               HttpResult httpResult = HttpClientUtil.doPost(URL, params2);
-               // HttpResult httpResult=   HttpClientUtil.doPost(URL,null,"JSON",null,jsonObject.toJSONString());
-               int code=httpResult.getCode();
-                String body=httpResult.getBody();
-               if(200==code){
-                   JSONObject object = JSONObject.parseObject(body);
-                   if (object.containsKey("resultcode")) {
-                       int businessStatus = object.getIntValue("resultcode");// 请求状态值1成功，<0失败
-                       map.put("code", "200");
-                       if(1!=businessStatus){
-                           map.put("code", "400");
-                       }
-                       map.put("msg", object.getString("message"));
-                       map.put("data", body);
-                   } else if (object.containsKey("BusinessStatus")) {
-                       int businessStatus = object.getIntValue("BusinessStatus");// 请求状态值1成功，<0失败
-                       map.put("code", "200");
-                       if(1!=businessStatus){
-                           map.put("code", "400");
-                       }
-                       map.put("msg", object.getString("StatusMessage"));
-                       map.put("data", body);
-                   }
-               }else{
-                   map.put("code", "400");
-                   map.put("msg", "请求出现错误");
-                   map.put("data", body);
-
-               }
-                return map;
-            } catch (Exception e) {
-                map.put("code", "400");
-                map.put("msg", "请求异常");
-                map.put("data", null);
-                return map;
+        if (info.indexOf("投保人") > -1) {
+            if (info.indexOf("港澳身份证") > -1) {
+                list.add(new BaseContect(strBase, "T4", 0));
+            } else if (info.indexOf("身份证") > -1) {
+                list.add(new BaseContect(strBase, "T1", 0));
+                //list.add(new BaseContect(strBase,"T1",0));
+            } else if (info.indexOf("组织机构") > -1) {
+                list.add(new BaseContect(strBase, "T2", 0));
+            } else if (info.indexOf("营业执照") > -1) {
+                list.add(new BaseContect(strBase, "T3", 0));
+            } else if (info.indexOf("通行证") > -1) {
+                list.add(new BaseContect(strBase, "T5", 0));
             }
         }
+        if (info.indexOf("被保人") > -1) {
+            if (info.indexOf("港澳身份证") > -1) {
+                list.add(new BaseContect(strBase, "B4", 0));
+            } else if (info.indexOf("身份证") > -1) {
+                list.add(new BaseContect(strBase, "B1", 0));
+                //list.add(new BaseContect(strBase,"T1",0));
+            } else if (info.indexOf("组织机构") > -1) {
+                list.add(new BaseContect(strBase, "B2", 0));
+            } else if (info.indexOf("营业执照") > -1) {
+                list.add(new BaseContect(strBase, "B3", 0));
+            } else if (info.indexOf("通行证") > -1) {
+                list.add(new BaseContect(strBase, "B5", 0));
+            }
+        }
+        if (info.indexOf("车主") > -1) {
+            if (info.indexOf("港澳身份证") > -1) {
+                list.add(new BaseContect(strBase, "C4", 0));
+            } else if (info.indexOf("身份证") > -1) {
+                list.add(new BaseContect(strBase, "C1", 0));
+                //list.add(new BaseContect(strBase,"T1",0));
+            } else if (info.indexOf("组织机构") > -1) {
+                list.add(new BaseContect(strBase, "C2", 0));
+            } else if (info.indexOf("营业执照") > -1) {
+                list.add(new BaseContect(strBase, "C3", 0));
+            } else if (info.indexOf("通行证") > -1) {
+                list.add(new BaseContect(strBase, "C5", 0));
+            }
+        } else if (info.indexOf("行驶本") > -1 || info.indexOf("行驶证") > -1) {
+            list.add(new BaseContect(strBase, "C6", 0));
+        } else if (info.indexOf("居住证") > -1) {
+            list.add(new BaseContect(strBase, "C7", 0));
+        }
+        if (info.indexOf("完税") > -1) {
+            list.add(new BaseContect(strBase, "I3", 0));
+        }
+        if (info.indexOf("在京") > -1) {
+            list.add(new BaseContect(strBase, "I4", 0));
+        }
+        if (info.indexOf("验车") > -1) {
+            list.add(new BaseContect(strBase, "I2", 0));
+        }
+        //其他未添加
+        List<BaseContect> reslutList = BaseContect.getList(list);
+        JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(reslutList));
+        String res = jsonArray.toString();
+        String res1 = res.replaceAll("imgType", "ImgType");
+        String res2 = res1.replaceAll("isUpload", "IsUpload");
+        String res3 = res2.replaceAll("strBase", "StrBase");
+        jsonObject.put("ListBaseContect", res3);
+        String params2 = "{\"ListBaseContect\":" + res3 + ",\"BuId\":" + buid + ",\"Agent\":" + agent + ",\"SecCode\":\"" + SecCode + "\"}";
+
+        try {
+            HttpResult httpResult = HttpClientUtil.doPost(URL, params2);
+            // HttpResult httpResult=   HttpClientUtil.doPost(URL,null,"JSON",null,jsonObject.toJSONString());
+            int code = httpResult.getCode();
+            String body = httpResult.getBody();
+            if (200 == code) {
+                JSONObject object = JSONObject.parseObject(body);
+                if (object.containsKey("resultcode")) {
+                    int businessStatus = object.getIntValue("resultcode");// 请求状态值1成功，<0失败
+                    map.put("code", "200");
+                    if (1 != businessStatus) {
+                        map.put("code", "400");
+                    }
+                    map.put("msg", object.getString("message"));
+                    map.put("data", body);
+                } else if (object.containsKey("BusinessStatus")) {
+                    int businessStatus = object.getIntValue("BusinessStatus");// 请求状态值1成功，<0失败
+                    map.put("code", "200");
+                    if (1 != businessStatus) {
+                        map.put("code", "400");
+                    }
+                    map.put("msg", object.getString("StatusMessage"));
+                    map.put("data", body);
+                }
+            } else {
+                map.put("code", "400");
+                map.put("msg", "请求出现错误");
+                map.put("data", body);
+
+            }
+            return map;
+        } catch (Exception e) {
+            map.put("code", "400");
+            map.put("msg", "请求异常");
+            map.put("data", null);
+            return map;
+        }
+    }
 
 }
