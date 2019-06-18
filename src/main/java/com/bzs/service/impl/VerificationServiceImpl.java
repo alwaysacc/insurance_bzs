@@ -19,4 +19,8 @@ public class VerificationServiceImpl extends AbstractService<Verification> imple
     @Resource
     private VerificationMapper verificationMapper;
 
+    @Override
+    public int updateVerification(Verification verification) {
+        return verificationMapper.updateVerification(verification);
+    }
 }

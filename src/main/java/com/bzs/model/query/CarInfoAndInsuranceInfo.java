@@ -3,6 +3,7 @@ package com.bzs.model.query;
 import com.bzs.model.CarInfo;
 import com.bzs.model.InsuranceTypeInfo;
 import com.bzs.model.InsuredInfo;
+import com.bzs.model.QuoteInfo;
 
 import javax.persistence.Transient;
 import java.util.List;
@@ -14,24 +15,23 @@ import java.util.List;
  * @create: 2019-05-16 16:44
  */
 public class CarInfoAndInsuranceInfo extends CarInfo {
+    private InsuranceInfoAndType insuredInfo;
     @Transient
-    private InsuredInfo insuredInfo;
+    private List<QuoteInfo> quoteInfoList;//报价列表
 
-    public InsuredInfo getInsuredInfo() {
+    public InsuranceInfoAndType getInsuredInfo() {
         return insuredInfo;
     }
 
-    public void setInsuredInfo(InsuredInfo insuredInfo) {
+    public void setInsuredInfo(InsuranceInfoAndType insuredInfo) {
         this.insuredInfo = insuredInfo;
     }
-    @Transient
-    private List<InsuranceTypeInfo> insuranceTypeInfos;
 
-    public List<InsuranceTypeInfo> getInsuranceTypeInfos() {
-        return insuranceTypeInfos;
+    public List<QuoteInfo> getQuoteInfoList() {
+        return quoteInfoList;
     }
 
-    public void setInsuranceTypeInfos(List<InsuranceTypeInfo> insuranceTypeInfos) {
-        this.insuranceTypeInfos = insuranceTypeInfos;
+    public void setQuoteInfoList(List<QuoteInfo> quoteInfoList) {
+        this.quoteInfoList = quoteInfoList;
     }
 }

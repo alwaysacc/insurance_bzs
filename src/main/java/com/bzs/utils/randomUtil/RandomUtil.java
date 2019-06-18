@@ -1,4 +1,4 @@
-package com.bzs.utils.queueUtil.randomUtil;
+package com.bzs.utils.randomUtil;
 
 import java.security.SecureRandom;
 import java.util.Random;

@@ -38,6 +38,10 @@
     <result column="biz_last_year_out_danger" jdbcType="VARCHAR" property="bizLastYearOutDanger" />
     <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
   </resultMap>
+  <resultMap id="insuraneAndType" type="com.bzs.model.InsuredInfo" extends="BaseResultMap">
+    <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
+                ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+  </resultMap>
   <sql id="insertItems">
     <trim prefix="(" suffix=")" suffixOverrides=",">
       insured_id,

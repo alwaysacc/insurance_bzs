@@ -6,6 +6,7 @@ import com.bzs.service.CarInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.subject.Subject;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -126,12 +127,14 @@ public class CarInfoController {
     }
     @PostMapping("/getCarInfoIdByCarNoOrVinNo")
     public Result getCarInfoIdByCarNoOrVinNo(String carNo,String  vinNo,String createBy){
+
         Map<String,Object> result=carInfoService.getCarInfoIdByCarNoOrVinNo(carNo,vinNo,createBy);
         return ResultGenerator.genSuccessResult(result,"成功");
     }
-    @ApiOperation("获取车辆信息和续保信息")
+    @ApiOperation("获取车辆信息、续保险种、报价信息，")
     @PostMapping("/getCarInfoAndInsurance")
     public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,String isEnable,String isRenewSuccess){
+
         Map<String,Object> result=carInfoService.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess);
         return ResultGenerator.genSuccessResult(result,"成功");
     }
@@ -149,5 +152,6 @@ public class CarInfoController {
                                        @RequestParam String MoldName){
         return carInfoService.WX_GetNewVehicleInfo(LicenseNo,EngineNo,CarVin,IsNeedCarVin,MoldName);
     }
+
 
 }

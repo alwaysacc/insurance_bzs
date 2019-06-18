@@ -1,6 +1,7 @@
 package com.bzs.model;
 
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 @Table(name = "insured_info")
@@ -197,6 +198,8 @@ public class InsuredInfo {
      */
     @Column(name = "car_info_id")
     private String carInfoId;
+
+
 
     /**
      * 获取id

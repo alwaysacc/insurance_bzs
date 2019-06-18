@@ -237,4 +237,11 @@ public class AccountInfoController {
     public Result updateMoney(BigDecimal balanceTotal,BigDecimal commissionTotal,BigDecimal drawPercentageTotal,String accountId){
         return accountInfoService.updateMoney(balanceTotal,commissionTotal,drawPercentageTotal,accountId);
     }
+
+    @ApiOperation("账号管理-添加账号")
+    @PostMapping("/addOrUpdateAccount")
+    public Result addOrUpdateAccountForMananger(AccountInfo accountInfo){
+        return accountInfoService.addOrUpdateAccountForMananger(accountInfo);
+    }
+
 }

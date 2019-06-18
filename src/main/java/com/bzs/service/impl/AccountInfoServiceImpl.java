@@ -1,10 +1,14 @@
 package com.bzs.service.impl;
 
 import com.bzs.dao.AccountInfoMapper;
+import com.bzs.dao.AccountRoleInfoMapper;
 import com.bzs.model.AccountInfo;
+import com.bzs.model.AccountRoleInfo;
+import com.bzs.model.TMenu;
 import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
+import com.bzs.service.AccountRoleInfoService;
 import com.bzs.utils.*;
 import com.bzs.utils.stringUtil.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -14,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
@@ -30,10 +35,14 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
   private  static Logger logger=LoggerFactory.getLogger(AccountInfoServiceImpl.class);
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @Resource
+    private AccountRoleInfoMapper accountRoleInfoMapper;
     @Autowired
     private AccountInfoService accountInfoService;
     @Autowired
     private RedisUtil redisUtil;
+    @Resource
+    private AccountRoleInfoService accountRoleInfoService;
     private  static final String CODE="CODE_LIST";
     @Override
     public String getRoleIdByAccountId(String account_id) {
@@ -95,6 +104,11 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
                 }
             }
             try{
+                String loginPwd=accountInfo.getLoginPwd();
+                if(StringUtils.isNotBlank(loginPwd)){
+                    loginPwd=MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd());
+                    accountInfo.setLoginPwd(loginPwd);
+                }
                 int result= accountInfoMapper.addOrUpdate(accountInfo);
                 return ResultGenerator.genSuccessResult(result,msg+"成功");
             }catch(Exception e){
@@ -195,7 +209,76 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }catch (Exception e){
             return ResultGenerator.genFailResult("修改异常");
         }
+    }
 
-
+    @Override
+    public Result addOrUpdateAccountForMananger(AccountInfo accountInfo) {
+        if (null != accountInfo) {
+            String accountId = accountInfo.getAccountId();
+            String msg = "";
+            int code = -1;
+            if (StringUtils.isNotBlank(accountId)) {//修改
+                msg = "修改";
+                code =0;
+            } else {//添加
+                msg = "添加";
+                HashSet codeList=new HashSet<>();
+                int codes= UUIDS.getCode();
+                if (redisUtil.hasKey(CODE)){
+                    codeList= (HashSet) redisUtil.get(CODE);
+                }else{
+                    codeList=accountInfoMapper.getAllCode();
+                }
+                boolean b=false;
+                do{
+                    codes=UUIDS.getCode();
+                    b=codeList.contains(codes);
+                }while (b);
+                codeList.add(codes);
+                redisUtil.set(CODE,codeList,720000);
+                accountInfo.setAssociationLevel(codes+"");
+                accountInfo.setInvitecode(codes);
+                accountInfo.setInviteCodeLevel(1);
+                code = 1;
+                accountId = UUIDS.getDateUUID();
+            }
+            String loginPwd = accountInfo.getLoginPwd();
+            if (StringUtils.isNotBlank(loginPwd)) {
+                loginPwd = MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd());
+                accountInfo.setLoginPwd(loginPwd);
+            }
+            try {
+                int result = accountInfoMapper.addOrUpdate(accountInfo);
+                if (code == 1) {
+                    String roleIds = accountInfo.getRoleId();//存储的角色id
+                    if (StringUtils.isNotBlank(roleIds)) {
+                        String[] ids = roleIds.split(",");
+                        for (String id : ids) {
+                            accountRoleInfoMapper.insert(new AccountRoleInfo(Integer.valueOf(id), accountId, accountId));
+                        }
+                    }
+                    return ResultGenerator.genSuccessResult(result, "添加成功");
+                } else if (code == 0) {
+                    Example example = new Condition(AccountRoleInfo.class);
+                    Example.Criteria criteria = example.createCriteria();
+                    criteria.andCondition("account_id=", accountId);
+                    accountRoleInfoMapper.deleteByCondition(example);
+                    String roleIds = accountInfo.getRoleIds();
+                    if (StringUtils.isNotBlank(roleIds)) {
+                        String[] ids = roleIds.split(",");
+                        for (String id : ids) {
+                            accountRoleInfoMapper.insert(new AccountRoleInfo(Integer.valueOf(id), accountId, accountId));
+                        }
+                    }
+                    return ResultGenerator.genSuccessResult(result, "修改成功");
+                } else {
+                    return ResultGenerator.genFailResult(msg + "失败");
+                }
+            } catch (Exception e) {
+                return ResultGenerator.genFailResult(msg + "异常");
+            }
+        } else {
+            return ResultGenerator.genFailResult("参数异常");
+        }
     }
 }

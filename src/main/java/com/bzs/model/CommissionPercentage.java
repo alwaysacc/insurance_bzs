@@ -56,6 +56,11 @@ public class CommissionPercentage {
      */
     @Column(name = "update_by")
     private String updateBy;
+    /**
+     * 保司枚举值
+     */
+    @Column(name = "source")
+    private String source;
 
     /**
      * @return id
@@ -213,5 +218,13 @@ public class CommissionPercentage {
      */
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

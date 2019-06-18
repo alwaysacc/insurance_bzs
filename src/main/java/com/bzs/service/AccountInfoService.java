@@ -67,4 +67,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
      */
 
     Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId);
+
+    /**
+     * 账号管理添加或者修改
+     * @param accountInfo
+     * @return
+     */
+    Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
 }

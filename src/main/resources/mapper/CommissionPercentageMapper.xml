@@ -14,6 +14,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
         <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="source" jdbcType="VARCHAR" property="source"/>
     </resultMap>
     <sql id="insertItems">
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -23,6 +24,7 @@
             <if test="levelOne!=null and ''!=levelOne ">level_one,</if>
             <if test="levelTwo!=null and ''!=levelTwo ">level_two,</if>
             <if test="createBy!=null and ''!=createBy ">create_by,</if>
+            <if test="source!=null and ''!=source ">source,</if>
         </trim>
     </sql>
     <sql id="insertValues">
@@ -33,6 +35,7 @@
             <if test="levelOne!=null and ''!=levelOne ">#{levelOne},</if>
             <if test="levelTwo!=null and ''!=levelTwo ">#{levelTwo},</if>
             <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
+            <if test="source!=null and ''!=source ">#{source},</if>
         </trim>
     </sql>
     <sql id="updateOrAdd_update" >
@@ -43,9 +46,13 @@
             <if test="levelOne!=null and ''!=levelOne ">level_one=#{levelOne},</if>
             <if test="levelTwo!=null and ''!=levelTwo ">level_two=#{levelTwo},</if>
             <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
+            <if test="source!=null and ''!=source ">source=#{source},</if>
         </trim>
     </sql>
     <insert id="addOrUpdate" parameterType="com.bzs.model.CommissionPercentage">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         INSERT INTO commission_percentage
         <include refid="insertItems"/>
         values

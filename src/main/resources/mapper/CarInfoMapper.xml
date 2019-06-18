@@ -43,10 +43,19 @@
     </resultMap>
     <!--查询车辆、续保、续保险种 开始-->
     <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
-        <association property="insuredInfo" javaType="com.bzs.model.InsuredInfo"
-                     resultMap="com.bzs.dao.InsuredInfoMapper.BaseResultMap" columnPrefix="b_"/>
-        <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
-                    ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+        <association property="insuredInfo" javaType="com.bzs.model.query.InsuranceInfoAndType" >
+            <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId" />
+            <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
+            <result column="b_force_expire_date" jdbcType="VARCHAR" property="forceExpireDate" />
+            <result column="b_next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate" />
+            <result column="b_next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate" />
+            <result column="b_last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany" />
+            <result column="b_last_year_source" jdbcType="VARCHAR" property="lastYearSource" />
+            <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
+                        ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+        </association>
+        <collection property="quoteInfoList" resultMap="com.bzs.dao.QuoteInfoMapper.BaseResultMap"
+                    ofType="com.bzs.model.QuoteInfo" columnPrefix="q_"/>
     </resultMap>
     <select id="getCarInfoAndInsurance" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
         select a.*,
@@ -57,17 +66,22 @@
         b.next_force_start_date as b_next_force_start_date,
         b.last_year_insurance_company as b_last_year_insurance_company,
         b.last_year_source as b_last_year_source,
-        /*c.insurance_type_id as c_insurance_type_id,*/
         c.insurance_name as c_insurance_name,
         c.insurance_amount as c_insurance_amount,
         c.insurance_premium as c_insurance_premium,
+        c.insurance_type_id as c_insurance_type_id,
         c.excluding_deductible as c_excluding_deductible,
-        /* c.info_type as c_info_type,*/
         c.type_id as c_type_id,
-        c.standard_premium as standard_premium
+        c.info_type as c_info_type,
+        c.standard_premium as standard_premium,
+        q.quote_id as q_quote_id,
+        q.quote_status as q_quote_status,
+        q.submit_status as q_submit_status,
+        q.quote_source as q_quote_source
         from car_info a
         left join insured_info b on a.car_info_id =b.car_info_id
         left join insurance_type_info c on b.insured_id = c.type_id
+        left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
         <trim prefix="where" suffixOverrides="and">
             <if test="carInfoId!=null and carInfoId!=''">
                 a.car_info_id=#{carInfoId} and
@@ -78,6 +92,7 @@
             <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
             <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
         </trim>
+
     </select>
     <!--查询车辆、续保、续保险种 结束-->
     <!--批量更新isEnable-->

@@ -82,6 +82,8 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
         QuoteInfo quoteInfo = quoteInfoService.findBy("quoteId", quoteId);
         BigDecimal biz= quoteInfo.getBizTotal();//商业险
         BigDecimal force=  quoteInfo.getForceTotal();//交强险
+        if(null==biz)biz=new BigDecimal(0);
+        if(null==force)force=new BigDecimal(0);
         SeveralAccount data = accountInfoMapper.getParentLevel(createBy);//获取父级两层id
         CommissionPercentage percentage = commissionPercentageService.getLastUpdateData();
         BigDecimal bp=new BigDecimal(15);
@@ -109,8 +111,16 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
             BigDecimal forceCommission=force.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(fp).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
             balance= balance.add(bizCommission).add(forceCommission);
             commission=commission.add(bizCommission).add(forceCommission);
+            String bizCommission2="0";
+            if(biz.doubleValue()>0){
+                bizCommission2=bizCommission+"";
+            }
+            String forceCommission2="0";
+            if(force.doubleValue()>0){
+                forceCommission2=forceCommission+"";
+            }
            // DrawCash drawCash=new DrawCash();
-            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,0,  "0",  forceCommission+"",  createBy,  bp+"",  fp+"",  "0",   bizCommission+"");
+            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,0,  "0",  forceCommission2,  createBy,  bp+"",  fp+"",  "0",   bizCommission2);
             /*drawCash.setBizCash(bizCommission+"");//商业险佣金
             drawCash.setForceCash(forceCommission+"");//交强险佣金
             drawCash.setCash("0");//提成
@@ -133,7 +143,11 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
             BigDecimal bizDrawPer=biz.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(po).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
             balance= balance.add(bizDrawPer);
             drawPer=drawPer.add(bizDrawPer);
-            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,1,  bizDrawPer+"",  "0",  parentLevelOne,  bp+"",  fp+"",  po+"",   "0");
+            String bizDrawPer2="0";
+            if(bizDrawPer.doubleValue()>0){
+                bizDrawPer2=bizDrawPer+"";
+            }
+            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,1,  bizDrawPer2,  "0",  parentLevelOne,  bp+"",  fp+"",  po+"",   "0");
             this.save(drawCash);//添加提现信息
             accountInfoMapper.updateMoney(balance,null,drawPer,parentLevelOne);//修改金额
         }
@@ -144,7 +158,11 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
             BigDecimal bizDrawPer=biz.divide(rate,2,BigDecimal.ROUND_DOWN).multiply(pw).divide(new BigDecimal(100),2,BigDecimal.ROUND_DOWN);
             balance= balance.add(bizDrawPer);
             drawPer=drawPer.add(bizDrawPer);
-            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,1,  bizDrawPer+"",  "0",  parentLevelTwo,  bp+"",  fp+"",  pw+"",   "0");
+            String bizDrawPer2="0";
+            if(bizDrawPer.doubleValue()>0){
+                bizDrawPer2=bizDrawPer+"";
+            }
+            DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,1,  bizDrawPer2,  "0",  parentLevelTwo,  bp+"",  fp+"",  pw+"",   "0");
             this.save(drawCash);//添加提现信息
             accountInfoMapper.updateMoney(balance,null,drawPer,parentLevelTwo);//修改金额
         }
