@@ -15,6 +15,7 @@
         <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
         <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
         <result column="source" jdbcType="VARCHAR" property="source"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
     </resultMap>
     <sql id="insertItems">
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -25,6 +26,7 @@
             <if test="levelTwo!=null and ''!=levelTwo ">level_two,</if>
             <if test="createBy!=null and ''!=createBy ">create_by,</if>
             <if test="source!=null and ''!=source ">source,</if>
+            <if test="status!=null and ''!=source ">status,</if>
         </trim>
     </sql>
     <sql id="insertValues">
@@ -36,6 +38,7 @@
             <if test="levelTwo!=null and ''!=levelTwo ">#{levelTwo},</if>
             <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
             <if test="source!=null and ''!=source ">#{source},</if>
+            <if test="status!=null and ''!=source ">{status},</if>
         </trim>
     </sql>
     <sql id="updateOrAdd_update" >
@@ -47,6 +50,7 @@
             <if test="levelTwo!=null and ''!=levelTwo ">level_two=#{levelTwo},</if>
             <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
             <if test="source!=null and ''!=source ">source=#{source},</if>
+            <if test="status!=null and ''!=source ">status=#{status},</if>
         </trim>
     </sql>
     <insert id="addOrUpdate" parameterType="com.bzs.model.CommissionPercentage">

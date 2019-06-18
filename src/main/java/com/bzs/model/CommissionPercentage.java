@@ -61,6 +61,11 @@ public class CommissionPercentage {
      */
     @Column(name = "source")
     private String source;
+    /**
+     * 状态值1默认0废弃
+     */
+    @Column(name = "status")
+    private String status;
 
     /**
      * @return id
@@ -226,5 +231,13 @@ public class CommissionPercentage {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
