@@ -173,31 +173,6 @@ public class AccountInfo implements Serializable {
      */
     @Column(name = "draw_percentage_total")
     private BigDecimal drawPercentageTotal;
-
-    public BigDecimal getBalanceTotal() {
-        return balanceTotal;
-    }
-
-    public void setBalanceTotal(BigDecimal balanceTotal) {
-        this.balanceTotal = balanceTotal;
-    }
-
-    public BigDecimal getCommissionTotal() {
-        return commissionTotal;
-    }
-
-    public void setCommissionTotal(BigDecimal commissionTotal) {
-        this.commissionTotal = commissionTotal;
-    }
-
-    public BigDecimal getDrawPercentageTotal() {
-        return drawPercentageTotal;
-    }
-
-    public void setDrawPercentageTotal(BigDecimal drawPercentageTotal) {
-        this.drawPercentageTotal = drawPercentageTotal;
-    }
-
     /**
      * 获取id
      *

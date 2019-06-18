@@ -65,6 +65,10 @@ public class CommissionPercentageController {
     public CommissionPercentage  getLastUpdateData(){
         return commissionPercentageService.getLastUpdateData();
     }
-
+    @PostMapping("/select")
+    @ApiOperation("根据条件查询")
+    public List<CommissionPercentage>select(CommissionPercentage domain){
+        return  commissionPercentageService.select(domain);
+    }
 
 }

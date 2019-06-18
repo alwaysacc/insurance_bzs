@@ -42,6 +42,17 @@ public class CommissionPercentageServiceImpl extends AbstractService<CommissionP
             }else if(result>0){//添加
                 map.put("code","200");
                 map.put("msg","添加成功");
+                List<CommissionPercentage> list=  this.commissionPercentageMapper.select(new CommissionPercentage(domain.getSource(),"1"));
+                if(CollectionUtils.isNotEmpty(list)){
+                    list.forEach((item)->{
+                       if(item.getId()!=domain.getId()) {
+                           CommissionPercentage comm= new CommissionPercentage();
+                           comm.setId(item.getId());
+                           comm.setStatus("0");
+                           commissionPercentageMapper.addOrUpdate(comm);
+                       }
+                    });
+                }
             }else{
                 map.put("code","400");
                 map.put("msg","添加或更新失败");
@@ -86,5 +97,10 @@ public class CommissionPercentageServiceImpl extends AbstractService<CommissionP
             return data.getId();
         }
         return null;
+    }
+
+    @Override
+    public List<CommissionPercentage> select(CommissionPercentage comm) {
+        return commissionPercentageMapper.select(comm);
     }
 }

@@ -232,12 +232,20 @@ public class CommissionPercentage {
     public void setSource(String source) {
         this.source = source;
     }
-
     public String getStatus() {
         return status;
     }
-
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public CommissionPercentage() {
+    }
+
+    public CommissionPercentage(String source, String status) {
+        this.source = source;
+        this.status = status;
+    }
+
+
 }

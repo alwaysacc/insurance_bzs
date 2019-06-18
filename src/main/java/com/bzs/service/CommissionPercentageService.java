@@ -2,6 +2,7 @@ package com.bzs.service;
 import com.bzs.model.CommissionPercentage;
 import com.bzs.utils.Service;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,4 +29,11 @@ public interface CommissionPercentageService extends Service<CommissionPercentag
      * @return
      */
     Long getId();
+
+    /**
+     * 条件查询
+     * @param comm
+     * @return
+     */
+    List<CommissionPercentage> select(CommissionPercentage comm);
 }

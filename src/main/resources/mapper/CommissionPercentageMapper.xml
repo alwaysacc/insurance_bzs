@@ -38,7 +38,7 @@
             <if test="levelTwo!=null and ''!=levelTwo ">#{levelTwo},</if>
             <if test="createBy!=null and ''!=createBy ">#{createBy},</if>
             <if test="source!=null and ''!=source ">#{source},</if>
-            <if test="status!=null and ''!=source ">{status},</if>
+            <if test="status!=null and ''!=source ">#{status},</if>
         </trim>
     </sql>
     <sql id="updateOrAdd_update" >
