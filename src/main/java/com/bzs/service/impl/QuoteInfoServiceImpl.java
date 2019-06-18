@@ -1104,8 +1104,17 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     double bizTotal = item.getBizTotal();
                     long buid = item.getBuId();// 获取支付接口必备参数
                     double forceTotal = item.getForceTotal();
+                    BigDecimal  newForceTotal= BigDecimal.valueOf(forceTotal).divide(new BigDecimal(1), 2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal  newBizTotal= BigDecimal.valueOf(bizTotal).divide(new BigDecimal(1), 2, BigDecimal.ROUND_HALF_UP);
+
                     double taxTotal = item.getTaxTotal();
+                    BigDecimal  newTaxTotal= BigDecimal.valueOf(taxTotal).divide(new BigDecimal(1), 2, BigDecimal.ROUND_HALF_UP);
+
+                    //  BigDecimal newTotal=new BigDecimal(bizTotal);
+                   // newTotal= newTotal.add(new BigDecimal(forceTotal)).add(new BigDecimal(taxTotal));
                     double total = bizTotal + forceTotal + taxTotal;
+                    BigDecimal newTotal=new BigDecimal(total);
+                    newTotal= newTotal.divide(new BigDecimal(1), 2, BigDecimal.ROUND_HALF_UP);
                     long source = item.getSource();
                     double cheSunBaoE = item.getCheSun().getBaoE();
                     double cheSunBaoFei = item.getCheSun().getBaoFei();
@@ -1166,10 +1175,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     double rateFactor3 = item.getRateFactor3();//费率系数3（自主核保系数）
                     double rateFactor4 = item.getRateFactor4();//费率系数4（交通违法浮动系数）
                     String totalRate = item.getTotalRate();//折扣系数
-                    qpc.setBizTotal(BigDecimal.valueOf(bizTotal));
-                    qpc.setBizPremiumByDis(bizTotal + "");
-                    data.setBiPremiumByDis(bizTotal + "");
-                    qpc.setForceTotal(BigDecimal.valueOf(forceTotal));
+                    qpc.setBizTotal(newBizTotal);
+                    qpc.setBizPremiumByDis(newBizTotal + "");
+                    data.setBiPremiumByDis(newBizTotal + "");
+                    qpc.setForceTotal(newForceTotal);
                     qpc.setNoReparationSaleRate(rateFactor1 + "");//无赔款优惠系数
                     qpc.setIndependentChannelDate(rateFactor2 + "");//自主渠道系数
                     qpc.setIndependentSubmitRate(rateFactor3 + "");//自主核保系数
@@ -1184,10 +1193,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     data.setTrafficTransgressRate(rateFactor4 + "");
                     data.setUnderwritingRate(rateFactor3 + "");
                     data.setChannelRate(rateFactor2 + "");
-                    qpc.setTaxTotal(BigDecimal.valueOf(taxTotal));
-                    data.setCiPremium(forceTotal + "");
+                    qpc.setTaxTotal(newTaxTotal);
+                    data.setCiPremium(newForceTotal + "");
                     data.setCiBeginDate(forceStartDate);
-                    data.setCarshipTax(taxTotal + "");
+                    data.setCarshipTax(newTaxTotal + "");
                     data.setBiBeginDate(businessStartDate);
                     qpc.setBizStartTime(businessStartDate);
                     qpc.setForceStartTime(forceStartDate);
@@ -1393,10 +1402,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         arrayList.add(insuranceTypeInfo);
                     }
                     data.setInsurancesLists(arrayList);//添加险种
-
-
                     // qpc.setHcXiuLiChangType(hcXiuLiChangTypes);
-                    qpc.setTotal(BigDecimal.valueOf(total));
+                   // qpc.setTotal(BigDecimal.valueOf(total));
+                    qpc.setTotal(newTotal);
                     qpc.setBuid(buid + "");
                     double buJiMianTotal = buJiMianSanZheBaoE
                             + buJiMianSanZheBaoFei + buJiMianCheSunBaoE

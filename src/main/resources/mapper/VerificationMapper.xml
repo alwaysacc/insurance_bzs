@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="id" jdbcType="INTEGER" property="id" />
+    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="money" jdbcType="VARCHAR" property="money" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="pay_account_id" jdbcType="INTEGER" property="payAccountId" />
@@ -74,5 +74,19 @@ LEFT JOIN pay_account p on p.id=v.pay_account_id
         #{item}
       </foreach>
     </where>
+  </update>
+  <sql id="updateItems">
+    <trim prefix="set" suffixOverrides=",">
+      <if test="money!=null and ''!=money"> money=#{money},</if>
+      <if test="status!=null and ''!=status"> status=#{status},</if>
+      <if test="payAccountId!=null "> money=#{payAccountId},</if>
+      <if test="description!=null and ''!=description"> description=#{description},</if>
+      <if test="verificationTime!=null"> verification_time=#{verificationTime},</if>
+      <if test="createBy!=null and ''!=createBy"> create_by=#{createBy},</if>
+      <if test="verificationBy!=null and ''!=verificationBy"> verification_by=#{verificationBy},</if>
+    </trim>
+  </sql>
+  <update id="updateVerification" parameterType="com.bzs.model.Verification">
+    update verification <include refid="updateItems"/> where id=#{id}
   </update>
 </mapper>

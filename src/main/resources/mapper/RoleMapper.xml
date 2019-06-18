@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.Role">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="data_scope" jdbcType="VARCHAR" property="dataScope" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+  </resultMap>
+  <select id="findUserRole" resultMap="BaseResultMap">
+        select r.*
+        from role r
+                 left join account_role ar on (r.id = ar.role_id)
+                 left join account a on (a.account_id = ar.account_id)
+        where a.account_id = #{accountId}
+    </select>
+</mapper>

@@ -114,4 +114,14 @@ public class OrderInfoController {
         map.put("data",pageInfo);
         return map;
     }
+    @PostMapping("/updatePayStatus")
+    public Result ss(OrderInfo orderInfo){
+     int result=   orderInfoService. updatePayStatus(orderInfo);
+     if(1==result){
+         return ResultGenerator.genSuccessResult(result);
+     }else{
+         return ResultGenerator.genFailResult("修改失败");
+     }
+    }
+
 }

@@ -14,4 +14,5 @@ public interface VerificationService extends Service<Verification> {
     List getVerificationList(String  accountId);
 
     int updateVerificationStatus(String[] id,String status, String userName);
+    int updateVerification(Verification verification);
 }

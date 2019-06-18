@@ -21,7 +21,7 @@ public class Randoms {
      * @param max 比 min大的数
      * @return int 随机数字
      */
-    private static int num(int min, int max) {
+    public  static int num(int min, int max) {
         return min + RANDOM.nextInt(max - min);
     }
 
@@ -38,4 +38,6 @@ public class Randoms {
     public static char alpha() {
         return ALPHA[num(0, ALPHA.length)];
     }
+
+
 }

@@ -234,13 +234,16 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     insuredInfo.setInsuredId(insId);
 
                     //险种直接删除后添加
-                    List list = carInfoAndInsuranceInfoGloab.getInsuranceTypeInfos();
-                    for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
-                        if (null != datas) {
-                            datas.setTypeId(insId);
-                            insuranceTypeInfoService.save(datas);//续保险种
+                    if(null!=carInfoAndInsuranceInfoGloab.getInsuredInfo()){
+                        List list = carInfoAndInsuranceInfoGloab.getInsuredInfo().getInsuranceTypeInfos();
+                        for (InsuranceTypeInfo datas : insuranceTypeInfoList) {
+                            if (null != datas) {
+                                datas.setTypeId(insId);
+                                insuranceTypeInfoService.save(datas);//续保险种
+                            }
                         }
                     }
+
                 } else {
                     //车辆不存在，添加新的车辆信息id
                     insuredInfo.setInsuredId(uuid);
@@ -1389,7 +1392,10 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     j2.put("ciBeginDate", forceStartDate);
                     j2.put("source", source);
                     // insuredInfo.getUpdateBy();
-                    List<InsuranceTypeInfo> list = (List<InsuranceTypeInfo>) data.getInsuranceTypeInfos();
+                    List<InsuranceTypeInfo> list = null;
+                    if(null!=data.getInsuredInfo()){
+                        list=(List<InsuranceTypeInfo>) data.getInsuredInfo().getInsuranceTypeInfos();
+                    }
                     if (CollectionUtils.isNotEmpty(list)) {
                         for (int i = 0; i < list.size(); i++) {
                             InsuranceTypeInfo insuranceTypeInfo = list.get(i);

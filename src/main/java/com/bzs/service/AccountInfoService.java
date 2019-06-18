@@ -71,4 +71,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
     AccountInfo getWithdraw(String accountId);
 
     int deleteUser(String[] accountId,int status);
+
+    /**
+     * 账号管理添加或者修改
+     * @param accountInfo
+     * @return
+     */
+    Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
 }

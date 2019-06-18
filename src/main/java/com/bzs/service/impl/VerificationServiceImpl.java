@@ -24,6 +24,10 @@ public class VerificationServiceImpl extends AbstractService<Verification> imple
     private VerificationMapper verificationMapper;
 
     @Override
+    public int updateVerification(Verification verification) {
+        return verificationMapper.updateVerification(verification);
+    }
+    @Override
     public List getVerificationList(String accountId) {
         return verificationMapper.getVerificationList(accountId);
     }

@@ -185,21 +185,24 @@
         values
         <include refid="insertValues" />
         ON DUPLICATE KEY UPDATE
-        role_id=values(role_id),
-        role_name=values(role_name),
-        parent_id=values(parent_id),
-        ancestor_id=values(ancestor_id),
-        account_state=values(account_state),
-        login_name=values(login_name),
-        area_code=values(area_code),
-        mobile=values(mobile),
-        id_card=values(id_card),
-        wechat=values(wechat),
-        email=values(email),
-        delete_status=values(delete_status),
-        UPDATED_BY=values(UPDATED_BY),
-        CREATED_BY=values(CREATED_BY),
-        login_time=values(login_time)
+        <trim suffixOverrides=",">
+        <if test="parentId!=null and ''!=parentId ">parent_id=#{parentId},</if>
+        <if test="ancestorId!=null and ''!=ancestorId ">ancestor_id=#{ancestorId},</if>
+        <if test="accountState!=null or accountState==0 ">account_state=#{accountState},</if>
+        <if test="loginName!=null and ''!=loginName ">login_name=#{loginName},</if>
+        <if test="loginPwd!=null and ''!=loginPwd ">login_pwd=#{loginPwd},</if>
+        <if test="userName!=null and ''!=userName ">user_name=#{userName},</if>
+        <if test="areaCode!=null and ''!=areaCode ">area_code=#{areaCode},</if>
+        <if test="mobile!=null and ''!=mobile ">mobile=#{mobile},</if>
+        <if test="idCard!=null and ''!=idCard ">id_card=#{idCard},</if>
+        <if test="wechat!=null and ''!=wechat ">wechat=#{wechat},</if>
+        <if test="email!=null and ''!=email ">email=#{email},</if>
+        <if test="deleteStatus!=null and ''!=deleteStatus ">delete_status=#{deleteStatus},</if>
+        <if test="updatedBy!=null and ''!=updatedBy ">UPDATED_BY=#{updatedBy},</if>
+        <if test="createdBy!=null and ''!=createdBy ">CREATED_BY=#{createdBy},</if>
+        <if test="loginTime!=null and ''!=loginTime ">login_time=#{loginTime},</if>
+        <if test="updatedTime!=null and ''!=updatedTime ">UPDATED_TIME=#{updatedTime},</if>
+        </trim>
     </insert>
     <!--根据id 存在则更新不存在则修改 结束-->
     <!--获取父节点信息-->

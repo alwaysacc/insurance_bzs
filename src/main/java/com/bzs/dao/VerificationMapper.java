@@ -14,4 +14,5 @@ public interface VerificationMapper extends Mapper<Verification> {
     int updateVerificationStatus(@Param("id")String[] id, @Param("status")String status,
                                  @Param("userName") String userName,@Param("verificationTime") Timestamp verificationTime
                                  );
+    int updateVerification(Verification verification);
 }

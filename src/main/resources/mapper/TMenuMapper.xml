@@ -22,11 +22,11 @@
   <select id="findUserPermissions" resultMap="BaseResultMap">
         select distinct m.perms
         from t_role r
-                 left join t_user_role ur on (r.role_id = ur.role_id)
-                 left join t_user u on (u.user_id = ur.user_id)
-                 left join t_role_menu rm on (rm.role_id = r.role_id)
+                 left join account_role_info ur on (r.id = ur.role_id)
+                 left join account_info u on (u.account_id = ur.account_id)
+                 left join role_menu rm on (rm.role_id = r.id)
                  left join t_menu m on (m.menu_id = rm.menu_id)
-        where u.username = #{userName}
+        where u.account_id = #{accountId}
           and m.perms is not null
           and m.perms &lt;&gt; ''
     </select>
@@ -37,11 +37,11 @@
         where m.type &lt;&gt; 1
           and m.MENU_ID in
               (select distinct rm.menu_id
-               from roles_menus rm
-                        left join role r on (rm.role_id = r.role_id)
-                        left join account_role_info ur on (ur.role_id = r.role_id)
+               from role_menu rm
+                        left join role r on (rm.role_id = r.id)
+                        left join account_role_info ur on (ur.role_id = r.id)
                         left join account_info u on (u.account_id = ur.account_id)
-               where u.username = #{userName})
+               where u.account_id = #{accountId})
         order by m.order_num
     </select>
 
@@ -51,7 +51,7 @@
         FROM
            account_role_info
         WHERE
-            role_id IN ( SELECT rm.role_id FROM roles_menus rm WHERE rm.menu_id = #{menuId} )
+            role_id IN ( SELECT rm.role_id FROM role_menu rm WHERE rm.menu_id = #{menuId} )
     </select>
 
   <!-- 递归删除菜单，findMenuChildren为自定义的 MySQL函数，作用为根据当前 menuId递归查找出其所有下级菜单或按钮-->
@@ -62,5 +62,4 @@
         WHERE
             menu_id IN ( SELECT m.menu_id FROM ( SELECT menu_id FROM t_menu WHERE FIND_IN_SET( menu_id, findMenuChildren ( #{menuId} ) ) > 0 ) m )
     </delete>
-
 </mapper>

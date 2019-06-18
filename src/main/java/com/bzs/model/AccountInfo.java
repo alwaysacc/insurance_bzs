@@ -20,6 +20,11 @@ public class AccountInfo implements Serializable {
 
     @Column(name = "role_id")
     private String roleId;
+    /**
+     * 用于记录角色ids
+     */
+    @Transient
+    private String roleIds;
 
     @Column(name = "role_name")
     private String roleName;
@@ -595,5 +600,37 @@ public class AccountInfo implements Serializable {
 
     public void setInviteCodeLevel(Integer inviteCodeLevel) {
         this.inviteCodeLevel = inviteCodeLevel;
+    }
+
+    public String getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(String roleIds) {
+        this.roleIds = roleIds;
+    }
+
+    public BigDecimal getBalanceTotal() {
+        return balanceTotal;
+    }
+
+    public void setBalanceTotal(BigDecimal balanceTotal) {
+        this.balanceTotal = balanceTotal;
+    }
+
+    public BigDecimal getCommissionTotal() {
+        return commissionTotal;
+    }
+
+    public void setCommissionTotal(BigDecimal commissionTotal) {
+        this.commissionTotal = commissionTotal;
+    }
+
+    public BigDecimal getDrawPercentageTotal() {
+        return drawPercentageTotal;
+    }
+
+    public void setDrawPercentageTotal(BigDecimal drawPercentageTotal) {
+        this.drawPercentageTotal = drawPercentageTotal;
     }
 }

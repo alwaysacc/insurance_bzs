@@ -6,6 +6,7 @@ import com.bzs.model.Verification;
 import com.bzs.service.VerificationService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +42,20 @@ public class VerificationController {
     public Result update(Verification verification) {
         verificationService.update(verification);
         return ResultGenerator.genSuccessResult();
+    }
+    @PostMapping("/updateVerification")
+    @ApiOperation("修改字段为空时不修改此字段")
+    public Result updateVerification(Verification verification) {
+        if(null!=verification&&null!=verification.getId()){
+            int result=verificationService.updateVerification(verification);
+            if(1==result){
+                return ResultGenerator.genSuccessResult(verification,result+"");
+            }
+            return ResultGenerator.genFailResult("修改失败，信息不存在");
+        }else{
+            return ResultGenerator.genFailResult("参数异常，修改失败");
+        }
+
     }
 
     @PostMapping("/detail")
