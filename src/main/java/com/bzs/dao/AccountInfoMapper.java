@@ -75,4 +75,10 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     int updateMoney(@Param("balanceTotal") BigDecimal balanceTotal,@Param("commissionTotal") BigDecimal commissionTotal,@Param("drawPercentageTotal") BigDecimal drawPercentageTotal,@Param("accountId") String accountId);
 
     AccountInfo getWithdraw(String accountId);
-    }
+
+   int deleteUser(@Param("accountId")String[] accountId,@Param("status")int status);
+
+    AccountInfo login(String loginName);
+
+    int updateAccountStat(@Param("accountId")String accountId,@Param("status")int status);
+}

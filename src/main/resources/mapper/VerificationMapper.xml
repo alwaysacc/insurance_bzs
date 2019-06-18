@@ -15,6 +15,66 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="verification_by" jdbcType="VARCHAR" property="verificationBy" />
   </resultMap>
+  <select id="getVerificationList" resultType="map">
+    SELECT
+      v.id as vid,
+      v.money,
+      v.`status`,
+      v.pay_account_id,
+      v.description,
+      v.create_time,
+      v.verification_time,
+      v.create_by,
+      v.verification_by,
+      p.id,p.name,p.amount,p.type,p.account_id
+      FROM
+      verification v
+      LEFT JOIN pay_account p on v.pay_account_id=p.id
+<where>
+ v.create_by=#{accountId}
+</where>
+  </select>
+
+  <select id="getListByAdmin" resultType="map">
+    SELECT
+v.id,
+v.money,
+v.`status`,
+v.pay_account_id,
+v.description,
+v.create_time,
+v.verification_time,
+v.create_by,
+v.verification_by,
+a.account_id,
+a.user_name,
+a.mobile,
+a.login_name,
+a.invite_code_level,
+a.UPDATED_TIME,
+a.inviteCode,
+a.superiorInviteCode,
+a.superior,
+a.association_level,
+a.balance_total,
+a.commission_total,
+p.amount,
+p.`name`,
+p.type
+FROM
+verification v LEFT JOIN account_info a on v.create_by=a.account_id
+LEFT JOIN pay_account p on p.id=v.pay_account_id
+  </select>
+
+  <update id="updateVerificationStatus">
+    update verification set status=#{status},verification_by=#{userName},verification_time=#{verificationTime}
+    <where>
+      id in
+      <foreach item="item" collection="id" separator="," open="(" close=")">
+        #{item}
+      </foreach>
+    </where>
+  </update>
   <sql id="updateItems">
     <trim prefix="set" suffixOverrides=",">
       <if test="money!=null and ''!=money"> money=#{money},</if>

@@ -5,10 +5,12 @@ import com.bzs.dao.AccountRoleInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.model.AccountRoleInfo;
 import com.bzs.model.TMenu;
+import com.bzs.model.Verification;
 import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
 import com.bzs.service.AccountRoleInfoService;
+import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
 import com.bzs.utils.stringUtil.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,6 +43,8 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private AccountInfoService accountInfoService;
     @Autowired
     private RedisUtil redisUtil;
+    @Resource
+    private VerificationService verificationService;
     @Resource
     private AccountRoleInfoService accountRoleInfoService;
     private  static final String CODE="CODE_LIST";
@@ -104,11 +108,6 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
                 }
             }
             try{
-                String loginPwd=accountInfo.getLoginPwd();
-                if(StringUtils.isNotBlank(loginPwd)){
-                    loginPwd=MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd());
-                    accountInfo.setLoginPwd(loginPwd);
-                }
                 int result= accountInfoMapper.addOrUpdate(accountInfo);
                 return ResultGenerator.genSuccessResult(result,msg+"成功");
             }catch(Exception e){
@@ -157,8 +156,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         accountInfo.setInvitecode(code);
         accountInfo.setAccountId(UUIDS.getUUID());
         accountInfo.setRoleId("3");
-        accountInfo.setAccountState("2");
+        accountInfo.setAccountState(2);
         accountInfo.setRoleName("业务员");
+        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
         accountInfo.setParentId(accountInfo1.getAccountId());
         accountInfo.setSuperior(accountInfo1.getUserName());
         accountInfoService.save(accountInfo);
@@ -202,9 +202,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     }
 
     @Override
-    public Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId) {
+    public Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId, Verification verification) {
         try {
             accountInfoMapper.updateMoney(balanceTotal, commissionTotal, drawPercentageTotal, accountId);
+            verificationService.save(verification);
             return ResultGenerator.genSuccessResult("修改成功");
         }catch (Exception e){
             return ResultGenerator.genFailResult("修改异常");
@@ -281,9 +282,15 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             return ResultGenerator.genFailResult("参数异常");
         }
     }
-
     @Override
     public AccountInfo getWithdraw(String accountId) {
       return   accountInfoMapper.getWithdraw(accountId);
     }
+
+
+    @Override
+    public int deleteUser(String[] accountId, int status) {
+        return accountInfoMapper.deleteUser(accountId,status);
+    }
+
 }

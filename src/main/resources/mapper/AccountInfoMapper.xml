@@ -35,6 +35,12 @@
     <result column="draw_percentage_total" jdbcType="DECIMAL" property="drawPercentageTotal" />
 
   </resultMap>
+    <select id="login" resultMap="BaseResultMap">
+        select * from account_info <where>
+     login_name=#{loginName}
+    </where>
+    </select>
+
     <select id="getRoleIdByAccountId" resultType="String">
       select role_id from account_id where account_id=#{account_id}
     </select>
@@ -274,5 +280,22 @@
     </sql>
     <update id="updateMoney">
         update  account_info <include refid="updateMoneyItems"/> where account_id=#{accountId}
+    </update>
+    <!--获取收益-->
+    <select id="getWithdraw" resultMap="BaseResultMap">
+        select * from account_info <where>
+        account_id=#{accountId}
+    </where>
+    </select>
+    <!--删除用户-->
+    <update id="deleteUser">
+        update account_info set delete_status=#{status} where account_id in
+        <foreach item="item" collection="accountId" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--修改用户状态-->
+    <update id="updateAccountStat">
+         update account_info set account_state=#{status} where account_id=#{accountId}
     </update>
 </mapper>

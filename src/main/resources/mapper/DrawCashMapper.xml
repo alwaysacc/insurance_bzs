@@ -95,4 +95,42 @@
     values <include refid="batchInsertItems2"/>
   </insert>
 
+  <select id="getDrawCashList" resultType="map">
+      SELECT
+      d.id,
+      d.order_id,
+      d.commission_percentage_id,
+      d.type,
+      d.biz_cash,
+      d.force_cash,
+      d.cash,
+      d.`status`,
+      d.serial_no,
+      d.create_time,
+      d.descriton,
+      d.update_time,
+      d.create_by,
+      d.update_by,
+      d.income_person,
+      o.finish_time,
+      q.quote_source,
+      per.biz_percentage,
+      per.force_percentage,
+      c.car_number,
+      a.user_name,
+      q.total,
+      q.biz_total,
+      q.force_total,
+      q.quote_insurance_name
+      FROM
+      draw_cash d  LEFT JOIN order_info o  ON (d.order_id=o.order_id)
+      LEFT JOIN quote_info q on q.quote_id =o.pay_type_id
+      LEFT JOIN commission_percentage per ON per.id=d.commission_percentage_id
+      LEFT JOIN car_info c on q.car_info_id=c.car_info_id
+      LEFT JOIN account_info a on a.account_id=d.create_by
+      <where>
+  <if test="incomePerson!=null and incomePerson!=''">d.income_person=#{incomePerson} and  </if>
+ type=#{type}
+</where>
+  </select>
 </mapper>

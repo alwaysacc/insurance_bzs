@@ -1,7 +1,9 @@
 package com.bzs.service;
 import com.bzs.model.AccountInfo;
+import com.bzs.model.Verification;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -64,9 +66,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
 
-    Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId);
+    Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId, Verification verification);
 
     AccountInfo getWithdraw(String accountId);
+
+    int deleteUser(String[] accountId,int status);
 
     /**
      * 账号管理添加或者修改

@@ -4,10 +4,14 @@ import com.bzs.dao.VerificationMapper;
 import com.bzs.model.Verification;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.AbstractService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -22,5 +26,15 @@ public class VerificationServiceImpl extends AbstractService<Verification> imple
     @Override
     public int updateVerification(Verification verification) {
         return verificationMapper.updateVerification(verification);
+    }
+    @Override
+    public List getVerificationList(String accountId) {
+        return verificationMapper.getVerificationList(accountId);
+    }
+
+    @Override
+    public int updateVerificationStatus(String[] id, String status ,String userName) {
+        Timestamp verificationTime=new Timestamp(new Date().getTime());
+        return verificationMapper.updateVerificationStatus(id,status,userName,verificationTime);
     }
 }

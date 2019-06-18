@@ -1,5 +1,7 @@
 package com.bzs.controller;
 
+import com.bzs.dao.AccountInfoMapper;
+import com.bzs.model.Verification;
 import com.bzs.redis.RedisUtil;
 import com.bzs.shiro.FebsProperties;
 import com.bzs.utils.MD5Utils;
@@ -27,12 +29,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
+
 import java.math.BigDecimal;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -47,19 +52,35 @@ public class AccountInfoController {
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Resource
     private AccountInfoService accountInfoService;
-
+    private  static final String CODE="CODE_LIST";
     @Autowired
     private FebsProperties febsProperties;
     @Autowired
     private RedisUtil redisUtil;
-
+    @Resource
+    private AccountInfoMapper accountInfoMapper;
 
     @PostMapping("/add")
     public Result add(AccountInfo accountInfo) {
         accountInfo.setAccountId(UUIDS.getDateUUID());
         accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
         accountInfo.setRoleId("3");
-        accountInfo.setAccountState("0");
+        accountInfo.setAccountState(0);
+        HashSet codeList=new HashSet<>();
+        int code=0;
+        if (redisUtil.hasKey(CODE)){
+            codeList= (HashSet) redisUtil.get(CODE);
+        }else{
+            codeList=accountInfoMapper.getAllCode();
+        }
+        boolean b=false;
+        do{
+            code=UUIDS.getCode();
+            b=codeList.contains(code);
+        }while (b);
+        codeList.add(code);
+        redisUtil.set(CODE,codeList,720000);
+        accountInfo.setInvitecode(code);
         accountInfoService.save(accountInfo);
         return ResultGenerator.genSuccessResult(accountInfo);
     }
@@ -73,12 +94,17 @@ public class AccountInfoController {
         return ResultGenerator.genSuccessResult(accountInfoService.findByLoginName(id));
     }
 
-    @PostMapping("/update")
-    public Result update(AccountInfo accountInfo) {
+    @PostMapping("/updateUser")
+    public Result updateUser(AccountInfo accountInfo) {
+        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(),accountInfo.getLoginPwd()));
         accountInfoService.update(accountInfo);
         return ResultGenerator.genSuccessResult();
     }
-
+    @PostMapping("/update")
+    public Result update(String accountId,int accountState) {
+        accountInfoMapper.updateAccountStat(accountId,accountState);
+        return ResultGenerator.genSuccessResult();
+    }
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
         AccountInfo accountInfo = accountInfoService.findById(id);
@@ -88,7 +114,9 @@ public class AccountInfoController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<AccountInfo> list = accountInfoService.findAll();
+        Condition condition = new Condition(AccountInfo.class);
+        condition.createCriteria().andCondition("delete_status ="+0);
+        List<AccountInfo> list =  accountInfoService.findByCondition(condition);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -233,8 +261,8 @@ public class AccountInfoController {
 
     @ApiOperation("更新余额和佣金和提成")
     @PostMapping("/updateMoney")
-    public Result updateMoney(BigDecimal balanceTotal,BigDecimal commissionTotal,BigDecimal drawPercentageTotal,String accountId){
-        return accountInfoService.updateMoney(balanceTotal,commissionTotal,drawPercentageTotal,accountId);
+    public Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId, Verification verification){
+        return accountInfoService.updateMoney(balanceTotal,commissionTotal,drawPercentageTotal,accountId,verification);
     }
 
     @ApiOperation("账号管理-添加账号")
@@ -247,5 +275,11 @@ public class AccountInfoController {
     @PostMapping("/getWithdraw")
     public Result getWithdraw(String accountId){
         return ResultGenerator.genSuccessResult(accountInfoService.getWithdraw(accountId));
+    }
+
+    @ApiOperation("批量删除用户")
+    @PostMapping("/deleteUser")
+    public Result deleteUser(String[] accountId,int status){
+        return ResultGenerator.genSuccessResult(accountInfoService.deleteUser(accountId,status));
     }
 }
