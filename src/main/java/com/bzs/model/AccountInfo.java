@@ -40,7 +40,7 @@ public class AccountInfo implements Serializable {
      * 账号状态 0启用1禁用2待审核
      */
     @Column(name = "account_state")
-    private String accountState;
+    private int accountState;
 
     public String getSuperior() {
         return superior;
@@ -280,7 +280,7 @@ public class AccountInfo implements Serializable {
      *
      * @return account_state - 账号状态 0启用1禁用2待审核
      */
-    public String getAccountState() {
+    public int getAccountState() {
         return accountState;
     }
 
@@ -289,7 +289,7 @@ public class AccountInfo implements Serializable {
      *
      * @param accountState 账号状态 0启用1禁用2待审核
      */
-    public void setAccountState(String accountState) {
+    public void setAccountState(int accountState) {
         this.accountState = accountState;
     }
 

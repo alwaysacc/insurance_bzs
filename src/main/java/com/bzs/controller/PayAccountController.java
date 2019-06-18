@@ -45,7 +45,6 @@ public class PayAccountController {
         PayAccount payAccount = payAccountService.findById(id);
         return ResultGenerator.genSuccessResult(payAccount);
     }
-
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
