@@ -1,9 +1,7 @@
 package com.bzs.service;
-import com.alibaba.fastjson.JSONObject;
 import com.bzs.model.AccountInfo;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
-import io.swagger.annotations.ApiOperation;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -67,6 +65,8 @@ public interface AccountInfoService extends Service<AccountInfo> {
      */
 
     Result updateMoney(BigDecimal balanceTotal, BigDecimal commissionTotal, BigDecimal drawPercentageTotal, String accountId);
+
+    AccountInfo getWithdraw(String accountId);
 
     /**
      * 账号管理添加或者修改
