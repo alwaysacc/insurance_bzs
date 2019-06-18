@@ -293,4 +293,8 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return accountInfoMapper.deleteUser(accountId,status);
     }
 
+    @Override
+    public List getUserListByAdmin() {
+        return accountInfoMapper.getUserListByAdmin();
+    }
 }

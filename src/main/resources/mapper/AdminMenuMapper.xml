@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.AdminMenuMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.AdminMenu">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="menu_id" jdbcType="BIGINT" property="menuId" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="component" jdbcType="VARCHAR" property="component" />
+    <result column="perms" jdbcType="VARCHAR" property="perms" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="order_num" jdbcType="DOUBLE" property="orderNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <select id="getMenuByAdminName" resultMap="BaseResultMap">
+    SELECT
+    m.*
+    FROM
+    admin_menu m where  m.type &lt;&gt; 1 and m.menu_id in (
+    SELECT menu_id from admin_role_menu r where r.role_id=(SELECT a.role_id from admin a where a.login_name=#{adminName})
+    ) order by m.order_num
+  </select>
+</mapper>

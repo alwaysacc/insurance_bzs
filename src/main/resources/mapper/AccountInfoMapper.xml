@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.AccountInfoMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
-    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
-    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-    <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId" />
-    <result column="account_state" jdbcType="INTEGER" property="accountState" />
-    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
-    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
-    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
-    <result column="wechat" jdbcType="VARCHAR" property="wechat" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="delete_status" jdbcType="TINYINT" property="deleteStatus" />
-    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-    <result column="superior" jdbcType="VARCHAR" property="superior" />
-    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
-    <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-    <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-    <result column="inviteCode" jdbcType="INTEGER" property="invitecode" />
-    <result column="superiorInviteCode" jdbcType="INTEGER" property="superiorinvitecode" />
-    <result column="invite_code_level" jdbcType="INTEGER" property="inviteCodeLevel" />
-    <result column="association_level" jdbcType="VARCHAR" property="associationLevel" />
-    <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal" />
-    <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal" />
-    <result column="draw_percentage_total" jdbcType="DECIMAL" property="drawPercentageTotal" />
+    <resultMap id="BaseResultMap" type="com.bzs.model.AccountInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="account_id" jdbcType="VARCHAR" property="accountId"/>
+        <result column="role_id" jdbcType="VARCHAR" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="ancestor_id" jdbcType="VARCHAR" property="ancestorId"/>
+        <result column="account_state" jdbcType="INTEGER" property="accountState"/>
+        <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
+        <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="wechat" jdbcType="VARCHAR" property="wechat"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="delete_status" jdbcType="TINYINT" property="deleteStatus"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="superior" jdbcType="VARCHAR" property="superior"/>
+        <result column="login_time" jdbcType="TIMESTAMP" property="loginTime"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="inviteCode" jdbcType="INTEGER" property="invitecode"/>
+        <result column="superiorInviteCode" jdbcType="INTEGER" property="superiorinvitecode"/>
+        <result column="invite_code_level" jdbcType="INTEGER" property="inviteCodeLevel"/>
+        <result column="association_level" jdbcType="VARCHAR" property="associationLevel"/>
+        <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal"/>
+        <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal"/>
+        <result column="draw_percentage_total" jdbcType="DECIMAL" property="drawPercentageTotal"/>
 
-  </resultMap>
+    </resultMap>
     <select id="login" resultMap="BaseResultMap">
-        select * from account_info <where>
-     login_name=#{loginName}
-    </where>
+        select * from account_info
+        <where>
+            login_name=#{loginName}
+        </where>
     </select>
 
     <select id="getRoleIdByAccountId" resultType="String">
@@ -116,10 +117,13 @@
         </where>
     </select>
     <!--查询 账号和对应的第三方账号 开始-->
-    <resultMap extends="BaseResultMap" id="accountAndThridAccountResultMap" type="com.bzs.model.query.AccountAndThirdAccount">
-        <collection columnPrefix="b_" ofType="com.bzs.model.ThirdInsuranceAccountInfo" property="thridAccounts" resultMap="com.bzs.dao.ThirdInsuranceAccountInfoMapper.BaseResultMap" />
+    <resultMap extends="BaseResultMap" id="accountAndThridAccountResultMap"
+               type="com.bzs.model.query.AccountAndThirdAccount">
+        <collection columnPrefix="b_" ofType="com.bzs.model.ThirdInsuranceAccountInfo" property="thridAccounts"
+                    resultMap="com.bzs.dao.ThirdInsuranceAccountInfoMapper.BaseResultMap"/>
     </resultMap>
-    <select id="getAccountAndThridAccount" parameterType="com.bzs.model.AccountInfo" resultMap="accountAndThridAccountResultMap">
+    <select id="getAccountAndThridAccount" parameterType="com.bzs.model.AccountInfo"
+            resultMap="accountAndThridAccountResultMap">
         select
         a.* ,
         b.third_insurance_id as b_third_insurance_id,
@@ -181,27 +185,27 @@
     </sql>
     <insert id="addOrUpdate" parameterType="com.bzs.model.AccountInfo">
         insert into account_info
-        <include refid="insertItems" />
+        <include refid="insertItems"/>
         values
-        <include refid="insertValues" />
+        <include refid="insertValues"/>
         ON DUPLICATE KEY UPDATE
         <trim suffixOverrides=",">
-        <if test="parentId!=null and ''!=parentId ">parent_id=#{parentId},</if>
-        <if test="ancestorId!=null and ''!=ancestorId ">ancestor_id=#{ancestorId},</if>
-        <if test="accountState!=null or accountState==0 ">account_state=#{accountState},</if>
-        <if test="loginName!=null and ''!=loginName ">login_name=#{loginName},</if>
-        <if test="loginPwd!=null and ''!=loginPwd ">login_pwd=#{loginPwd},</if>
-        <if test="userName!=null and ''!=userName ">user_name=#{userName},</if>
-        <if test="areaCode!=null and ''!=areaCode ">area_code=#{areaCode},</if>
-        <if test="mobile!=null and ''!=mobile ">mobile=#{mobile},</if>
-        <if test="idCard!=null and ''!=idCard ">id_card=#{idCard},</if>
-        <if test="wechat!=null and ''!=wechat ">wechat=#{wechat},</if>
-        <if test="email!=null and ''!=email ">email=#{email},</if>
-        <if test="deleteStatus!=null and ''!=deleteStatus ">delete_status=#{deleteStatus},</if>
-        <if test="updatedBy!=null and ''!=updatedBy ">UPDATED_BY=#{updatedBy},</if>
-        <if test="createdBy!=null and ''!=createdBy ">CREATED_BY=#{createdBy},</if>
-        <if test="loginTime!=null and ''!=loginTime ">login_time=#{loginTime},</if>
-        <if test="updatedTime!=null and ''!=updatedTime ">UPDATED_TIME=#{updatedTime},</if>
+            <if test="parentId!=null and ''!=parentId ">parent_id=#{parentId},</if>
+            <if test="ancestorId!=null and ''!=ancestorId ">ancestor_id=#{ancestorId},</if>
+            <if test="accountState!=null or accountState==0 ">account_state=#{accountState},</if>
+            <if test="loginName!=null and ''!=loginName ">login_name=#{loginName},</if>
+            <if test="loginPwd!=null and ''!=loginPwd ">login_pwd=#{loginPwd},</if>
+            <if test="userName!=null and ''!=userName ">user_name=#{userName},</if>
+            <if test="areaCode!=null and ''!=areaCode ">area_code=#{areaCode},</if>
+            <if test="mobile!=null and ''!=mobile ">mobile=#{mobile},</if>
+            <if test="idCard!=null and ''!=idCard ">id_card=#{idCard},</if>
+            <if test="wechat!=null and ''!=wechat ">wechat=#{wechat},</if>
+            <if test="email!=null and ''!=email ">email=#{email},</if>
+            <if test="deleteStatus!=null and ''!=deleteStatus ">delete_status=#{deleteStatus},</if>
+            <if test="updatedBy!=null and ''!=updatedBy ">UPDATED_BY=#{updatedBy},</if>
+            <if test="createdBy!=null and ''!=createdBy ">CREATED_BY=#{createdBy},</if>
+            <if test="loginTime!=null and ''!=loginTime ">login_time=#{loginTime},</if>
+            <if test="updatedTime!=null and ''!=updatedTime ">UPDATED_TIME=#{updatedTime},</if>
         </trim>
     </insert>
     <!--根据id 存在则更新不存在则修改 结束-->
@@ -217,7 +221,7 @@
     </select>
     <select id="getParentOrChildList" resultMap="BaseResultMap">
         select * from account_info
-         <choose>
+        <choose>
             <when test='type=="0"'>
                 where FIND_IN_SET(account_id,getAccountInfoChildList(#{id},#{deep}))
             </when>
@@ -226,32 +230,32 @@
             </otherwise>
         </choose>
         <if test='isOwner=="1"'>and account_id!=#{id}</if>
-        <if test="accountState!=9"> and account_state=#{accountState}</if>
+        <if test="accountState!=9">and account_state=#{accountState}</if>
     </select>
     <select id="getAllCode" resultType="int">
         select inviteCode from account_info
     </select>
     <!--获取2层父级-->
     <resultMap id="SeveralAccount" type="com.bzs.model.query.SeveralAccount">
-        <result column="account_id" jdbcType="VARCHAR" property="accountId" />
-        <result column="user_name" jdbcType="VARCHAR" property="userName" />
-        <result column="bName" jdbcType="VARCHAR" property="bUserName" />
-        <result column="bAccountId" jdbcType="VARCHAR" property="bAccountId" />
-        <result column="cName" jdbcType="VARCHAR" property="cUserName" />
-        <result column="cAccountId" jdbcType="VARCHAR" property="cAccountId" />
-        <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal" />
-        <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal" />
-        <result column="bBalanceTotal" jdbcType="DECIMAL" property="bBalanceTotal" />
-        <result column="bDrawPercentageTotal" jdbcType="DECIMAL" property="bDrawPercentageTotal" />
-        <result column="cBalanceTotal" jdbcType="DECIMAL" property="cBalanceTotal" />
-        <result column="cDrawPercentageTotal" jdbcType="DECIMAL" property="cDrawPercentageTotal" />
-        <result column="level" jdbcType="INTEGER" property="level" />
-        <result column="level1" jdbcType="INTEGER" property="level1" />
-        <result column="level2" jdbcType="INTEGER" property="level2" />
+        <result column="account_id" jdbcType="VARCHAR" property="accountId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="bName" jdbcType="VARCHAR" property="bUserName"/>
+        <result column="bAccountId" jdbcType="VARCHAR" property="bAccountId"/>
+        <result column="cName" jdbcType="VARCHAR" property="cUserName"/>
+        <result column="cAccountId" jdbcType="VARCHAR" property="cAccountId"/>
+        <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal"/>
+        <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal"/>
+        <result column="bBalanceTotal" jdbcType="DECIMAL" property="bBalanceTotal"/>
+        <result column="bDrawPercentageTotal" jdbcType="DECIMAL" property="bDrawPercentageTotal"/>
+        <result column="cBalanceTotal" jdbcType="DECIMAL" property="cBalanceTotal"/>
+        <result column="cDrawPercentageTotal" jdbcType="DECIMAL" property="cDrawPercentageTotal"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="level1" jdbcType="INTEGER" property="level1"/>
+        <result column="level2" jdbcType="INTEGER" property="level2"/>
 
 
     </resultMap>
-    <select id="getParentLevel" resultMap="SeveralAccount" >
+    <select id="getParentLevel" resultMap="SeveralAccount">
         select a.user_name,
                 a.account_id ,
                 a.balance_total,
@@ -273,19 +277,22 @@
     </select>
     <sql id="updateMoneyItems">
         <trim suffixOverrides="," prefix="set">
-            <if test="balanceTotal!=null">balance_total=#{balanceTotal}, </if>
-            <if test="commissionTotal!=null">commission_total=#{commissionTotal}, </if>
-            <if test="drawPercentageTotal!=null">draw_percentage_total=#{drawPercentageTotal}, </if>
+            <if test="balanceTotal!=null">balance_total=#{balanceTotal},</if>
+            <if test="commissionTotal!=null">commission_total=#{commissionTotal},</if>
+            <if test="drawPercentageTotal!=null">draw_percentage_total=#{drawPercentageTotal},</if>
         </trim>
     </sql>
     <update id="updateMoney">
-        update  account_info <include refid="updateMoneyItems"/> where account_id=#{accountId}
+        update account_info
+        <include refid="updateMoneyItems"/>
+        where account_id=#{accountId}
     </update>
     <!--获取收益-->
     <select id="getWithdraw" resultMap="BaseResultMap">
-        select * from account_info <where>
-        account_id=#{accountId}
-    </where>
+        select * from account_info
+        <where>
+            account_id=#{accountId}
+        </where>
     </select>
     <!--删除用户-->
     <update id="deleteUser">
@@ -298,4 +305,44 @@
     <update id="updateAccountStat">
          update account_info set account_state=#{status} where account_id=#{accountId}
     </update>
+
+    <select id="getUserListByAdmin" resultType="map">
+        SELECT
+            a.account_id,
+            a.role_id,
+            a.role_name,
+            a.parent_id,
+            a.ancestor_id,
+            a.account_state,
+            a.login_name,
+            a.login_pwd,
+            a.user_name,
+            a.area_code,
+            a.mobile,
+            a.id_card,
+            a.wechat,
+            a.email,
+            a.delete_status,
+            a.UPDATED_BY,
+            a.CREATED_BY,
+            a.login_time,
+            a.CREATED_TIME,
+            a.UPDATED_TIME,
+            a.inviteCode,
+            a.superiorInviteCode,
+            a.superior,
+            a.association_level,
+            a.invite_code_level,
+            a.balance_total,
+            a.commission_total,
+            a.draw_percentage_total,
+            a1.user_name AS user_name1,
+            a2.user_name AS user_name2,
+            a1.account_id AS account_id1,
+            a2.account_id AS account_id2
+        FROM
+            account_info a
+        LEFT JOIN account_info a1 ON a.parent_id = a1.account_id
+        LEFT JOIN account_info a2 ON a1.parent_id = a2.account_id
+    </select>
 </mapper>

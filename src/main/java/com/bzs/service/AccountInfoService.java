@@ -78,4 +78,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
+
+    List getUserListByAdmin();
 }

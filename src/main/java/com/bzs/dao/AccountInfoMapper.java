@@ -81,4 +81,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     AccountInfo login(String loginName);
 
     int updateAccountStat(@Param("accountId")String accountId,@Param("status")int status);
+
+    List getUserListByAdmin();
 }

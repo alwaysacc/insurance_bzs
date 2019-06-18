@@ -114,9 +114,9 @@ public class AccountInfoController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        Condition condition = new Condition(AccountInfo.class);
-        condition.createCriteria().andCondition("delete_status ="+0);
-        List<AccountInfo> list =  accountInfoService.findByCondition(condition);
+      /*  Condition condition = new Condition(AccountInfo.class);
+        condition.createCriteria().andCondition("delete_status ="+0);*/
+        List list =  accountInfoService.getUserListByAdmin();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

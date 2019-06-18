@@ -77,6 +77,8 @@ public class TreeUtil {
         if (routes == null) {
             return null;
         }
+        ArrayList list = new ArrayList<>();
+
         List<VueRouter<T>> topRoutes = new ArrayList<>();
         VueRouter<T> router = new VueRouter<>();
         router.setName("系统主页");
@@ -84,13 +86,14 @@ public class TreeUtil {
         router.setComponent("HomePageView");
         router.setIcon("home");
         router.setChildren(null);
-        router.setMeta(new RouterMeta(false, true));
+        //router.setMeta(new RouterMeta(false, true));
         topRoutes.add(router);
 
         routes.forEach(route -> {
             String parentId = route.getParentId();
             if (parentId == null || TOP_NODE_ID.equals(parentId)) {
-                topRoutes.add(route);
+//                route.setMeta(new RouterMeta(route.getName(),route.getIcon()));
+                list.add(route);
                 return;
             }
             for (VueRouter<T> parent : routes) {
@@ -111,24 +114,9 @@ public class TreeUtil {
         router.setName("个人中心");
         router.setComponent("personal/Profile");
         router.setIcon("none");
-        router.setMeta(new RouterMeta(true, false));
+        //router.setMeta(new RouterMeta(true, false));
         topRoutes.add(router);
 
-        ArrayList<VueRouter<T>> list = new ArrayList<>();
-        VueRouter<T> root = new VueRouter<>();
-        root.setName("主页");
-        root.setComponent("MenuView");
-        root.setIcon("none");
-        root.setPath("/");
-        root.setRedirect("/home");
-        root.setChildren(topRoutes);
-        list.add(root);
-
-        root = new VueRouter<>();
-        root.setName("404");
-        root.setComponent("error/404");
-        root.setPath("*");
-        list.add(root);
 
         return list;
     }

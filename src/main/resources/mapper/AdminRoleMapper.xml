@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.AdminRoleMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.AdminRole">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="data_scope" jdbcType="VARCHAR" property="dataScope" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="is_enable_del" jdbcType="INTEGER" property="isEnableDel" />
+  </resultMap>
+</mapper>
