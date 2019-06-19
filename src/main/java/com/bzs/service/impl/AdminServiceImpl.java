@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -24,5 +25,10 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
     public int updateLoginTime(Date loginTime, String loginName) {
         loginTime=new Date();
         return adminMapper.updateLoginTime(loginTime,loginName);
+    }
+
+    @Override
+    public List getAdminList() {
+        return adminMapper.getAdminList();
     }
 }

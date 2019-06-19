@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by dl on 2019/06/17.
@@ -63,7 +65,10 @@ public class AdminController {
             adminService.updateLoginTime(null,username);
             //session.setAttribute("userName",username);
             //session.setAttribute("accountInfo",accountInfo);
-            return ResultGenerator.genSuccessResult(admin);
+            Map map=new HashMap();
+            map.put("user",admin);
+            map.put("token",token);
+            return ResultGenerator.genSuccessResult(map);
         }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
             return ResultGenerator.genFailResult(e.getMessage());
         }catch (AuthenticationException e){
@@ -97,7 +102,7 @@ public class AdminController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<Admin> list = adminService.findAll();
+        List list = adminService.getAdminList();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

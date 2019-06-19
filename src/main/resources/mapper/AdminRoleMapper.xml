@@ -14,4 +14,25 @@
     <result column="level" jdbcType="INTEGER" property="level" />
     <result column="is_enable_del" jdbcType="INTEGER" property="isEnableDel" />
   </resultMap>
+  <insert id="addAdminRole">
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into admin_role (name,remark) values (#{name},#{remark})
+  </insert>
+  <!--插入角色的菜单权限-->
+  <insert id="addAdminRoleMenu">
+    INSERT INTO admin_role_menu
+    (menu_id, role_id)
+    VALUES
+    <foreach collection ="list" item="item" separator =",">
+      (#{item.menuId}, #{item.roleId})
+    </foreach >
+  </insert>
+  <!--删除角色菜单-->
+  <delete id="deleteMenuByRoleId">
+    delete from admin_role_menu<where>
+    role_id=#{roleId}
+  </where>
+  </delete>
 </mapper>

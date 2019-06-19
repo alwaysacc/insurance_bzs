@@ -16,6 +16,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
     <result column="status" jdbcType="CHAR" property="status" />
+    <result column="role_id" jdbcType="BIGINT" property="status" />
   </resultMap>
   <update id="updateLoginTime">
     update admin set last_login_time=#{loginTime}
@@ -23,4 +24,8 @@
       login_name=#{loginName}
     </where>
   </update>
+
+  <select id="getAdminList" resultType="map">
+    select a.*,r.name as role_name from  admin a left join admin_role r on a.role_id=r.id
+  </select>
 </mapper>

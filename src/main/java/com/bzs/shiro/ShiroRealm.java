@@ -37,6 +37,8 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String username= (String) authenticationToken.getPrincipal();
+        System.out.println(authenticationToken.toString());
+        System.out.println(authenticationToken.getCredentials().toString());
         String pass=   new String((char[]) authenticationToken.getCredentials());
         System.out.println(pass);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
