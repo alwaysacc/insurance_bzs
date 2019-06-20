@@ -120,7 +120,12 @@ public class AccountInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
+    @PostMapping("/updateAccount")
+    public Result updateAccount(AccountInfo accountInfo) {
+      /*  Condition condition = new Condition(AccountInfo.class);
+        condition.createCriteria().andCondition("delete_status ="+0);*/
+        return ResultGenerator.genSuccessResult(accountInfoService.updateAccount(accountInfo));
+    }
     @GetMapping(value = "gifCode")
     public void getGifCode(HttpServletResponse response, HttpServletRequest request) {
         try {

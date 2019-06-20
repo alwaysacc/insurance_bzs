@@ -2,6 +2,7 @@ package com.bzs.shiro;
 
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -10,6 +11,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     private AccountInfoService accountInfoService;
@@ -42,11 +44,10 @@ public class ShiroRealm extends AuthorizingRealm {
         String pass=   new String((char[]) authenticationToken.getCredentials());
         System.out.println(pass);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
-        System.out.println(accountInfo.getLoginPwd());
         if (accountInfo==null)
-            throw new UnknownAccountException("用户名或密码错误");
+            throw new UnknownAccountException("用户名或密码错误555");
         if (!accountInfo.getLoginPwd().equals(pass))
-            throw new IncorrectCredentialsException("用户名或密码错误");
+            throw new IncorrectCredentialsException("用户名或密码错误66666");
         if (AccountInfo.STATUS_LOCK.equals(accountInfo.getAccountState()))
             throw new LockedAccountException("账号已锁定");
        /* List<Object> list=new ArrayList<Object>();

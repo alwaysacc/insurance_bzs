@@ -35,4 +35,13 @@
     role_id=#{roleId}
   </where>
   </delete>
+  <!--删除角色菜单-->
+  <delete id="deleteMenuByMenuId">
+    delete from admin_role_menu<where>
+    role_id=#{roleId} and menu_id in
+    <foreach item="item" collection="mentId" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </where>
+  </delete>
 </mapper>

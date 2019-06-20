@@ -11,4 +11,5 @@ public interface AdminMapper extends Mapper<Admin> {
     int updateLoginTime(@Param("loginTime")Date loginTime,@Param("loginName")String loginName);
 
     List getAdminList();
+    int updateAdmin(Admin admin);
 }

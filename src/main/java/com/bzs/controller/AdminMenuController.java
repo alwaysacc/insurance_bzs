@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.dao.AdminMenuMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AdminMenu;
@@ -21,7 +22,8 @@ import java.util.List;
 public class AdminMenuController {
     @Resource
     private AdminMenuService adminMenuService;
-
+    @Resource
+    private AdminMenuMapper adminMenuMapper;
     @PostMapping("/add")
     public Result add(AdminMenu adminMenu) {
         adminMenuService.save(adminMenu);
@@ -46,12 +48,13 @@ public class AdminMenuController {
         return ResultGenerator.genSuccessResult(adminMenu);
     }
 
-    @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<AdminMenu> list = adminMenuService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    @PostMapping("/getMenuList")
+    public Result getMenuList(Long id) {
+        return ResultGenerator.genSuccessResult(adminMenuService.getMenu());
+    }
+    @PostMapping("/getMenuIdByRoleId")
+    public Result getMenuIdByRoleId(Long id) {
+        return ResultGenerator.genSuccessResult(adminMenuMapper.getMenuIdByRoleId(id));
     }
     @PostMapping("/getMenuByAdminName")
     public Result getMenuByAdminName(@RequestParam String adminName) {

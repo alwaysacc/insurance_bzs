@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -47,5 +48,35 @@ public class AdminRoleServiceImpl extends AbstractService<AdminRole> implements 
         adminRoleMapper.deleteByIds(String.valueOf(roleId));
         adminRoleMapper.deleteMenuByRoleId(roleId);
     }
+
+    @Override
+    public void updateRoleAndMenu(AdminRole adminRole, String menuId, String beforeMenuId) {
+        List<String> list= JSONArray.parseArray(menuId).toJavaList(String.class);
+        List<String> beforeList= JSONArray.parseArray(beforeMenuId).toJavaList(String.class);
+        List<AdminRoleMenu> adminRoleMenuList=new ArrayList<>();
+        Long roleId= adminRole.getId();
+        AdminRoleMenu adminRoleMenu;
+        List<String> saveList=new ArrayList<String>(list);
+        List<String> deleteList=new ArrayList<String>(beforeList);
+        saveList.removeAll(beforeList);
+        deleteList.removeAll(list);
+        for (int i = 0; i <saveList.size() ; i++) {
+            adminRoleMenu=new AdminRoleMenu();
+            adminRoleMenu.setMenuId(Long.valueOf(saveList.get(i)));
+            adminRoleMenu.setRoleId(roleId);
+            adminRoleMenuList.add(adminRoleMenu);
+        }
+        if (adminRoleMenuList.size()!=0){
+            adminRoleMapper.addAdminRoleMenu(adminRoleMenuList);
+        }
+        String[] array=deleteList.toArray(new String[deleteList.size()]);
+        if (array.length!=0){
+            adminRoleMapper.deleteMenuByMenuId(roleId,array);
+        }
+        System.out.println(saveList);
+        System.out.println(deleteList);
+        System.out.println(array);
+    }
 }
+
 

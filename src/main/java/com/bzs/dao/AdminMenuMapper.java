@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface AdminMenuMapper extends Mapper<AdminMenu> {
     List<AdminMenu> getMenuByAdminName(String adminName);
+
+    List<AdminMenu> getMenuList( );
+
+    List<Long> getMenuIdByRoleId(Long roleId);
 }

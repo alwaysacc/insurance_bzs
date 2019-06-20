@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author MrBird
  */
-@Configuration
+//@Configuration
 public class ShiroConfig {
 
     @Autowired
@@ -139,7 +139,7 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 配置 SecurityManager，并注入 shiroRealm
-        securityManager.setRealm(shiroRealm());
+        //securityManager.setRealm(shiroRealm());
         // 配置 rememberMeCookie
         securityManager.setRememberMeManager(rememberMeManager());
         // 配置 缓存管理类 cacheManager
@@ -157,6 +157,7 @@ public class ShiroConfig {
     @Bean
     /*@DependsOn("lifecycleBeanPostProcessor")
     @ConditionalOnMissingBean*/
+/*
     public ShiroRealm shiroRealm() {
         // 配置 Realm，需自己实现
        // ShiroRealm authRealm = new ShiroRealm();
@@ -165,6 +166,7 @@ public class ShiroConfig {
        // return authRealm;
        return new ShiroRealm();
     }
+*/
 
     /**
      * rememberMe cookie 效果是重开浏览器后无需重新登录

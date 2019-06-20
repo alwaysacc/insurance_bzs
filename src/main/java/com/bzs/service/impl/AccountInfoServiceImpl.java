@@ -297,4 +297,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     public List getUserListByAdmin() {
         return accountInfoMapper.getUserListByAdmin();
     }
+
+    @Override
+    public int updateAccount(AccountInfo accountInfo) {
+        return accountInfoMapper.updateAccount(accountInfo);
+    }
 }

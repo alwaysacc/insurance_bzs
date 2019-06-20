@@ -40,7 +40,7 @@
         <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
         <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
         <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
-        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>
+<!--        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
     </resultMap>
     <resultMap id="quote" type="com.bzs.model.QuoteInfo">
         <!--
@@ -102,6 +102,7 @@
     </resultMap>
     <!--查询车辆、续保、续保险种 开始-->
     <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
         <association property="insuredInfo" javaType="com.bzs.model.query.InsuranceInfoAndType" >
             <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId" />
             <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
@@ -136,8 +137,11 @@
         q.quote_id as q_quote_id,
         q.quote_status as q_quote_status,
         q.submit_status as q_submit_status,
-        q.quote_source as q_quote_source
+        q.quote_source as q_quote_source,
+        q.quote_insurance_name as q_quote_insurance_name,
+        i.user_name as user_name
         from car_info a
+        left join account_info i on a.CREATED_BY=i.account_id
         left join insured_info b on a.car_info_id =b.car_info_id
         left join insurance_type_info c on b.insured_id = c.type_id
         left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
@@ -151,7 +155,6 @@
             <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
             <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
         </trim>
-
     </select>
     <!--查询车辆、续保、续保险种 结束-->
     <!--批量更新isEnable-->

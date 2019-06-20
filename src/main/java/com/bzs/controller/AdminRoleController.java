@@ -26,6 +26,11 @@ public class AdminRoleController {
     public Result addRoleAndMenu(AdminRole adminRole,String menuId) {
         return ResultGenerator.genSuccessResult(adminRoleService.addRoleAndMenu(adminRole,menuId));
     }
+    @PostMapping("/updateRoleAndMenu")
+    public Result updateRoleAndMenu(AdminRole adminRole,String menuId,String beforeMenuId) {
+        adminRoleService.updateRoleAndMenu(adminRole,menuId,beforeMenuId);
+        return ResultGenerator.genSuccessResult();
+    }
     @PostMapping("/deleteRole")
     public Result deleteRole(Long roleId) {
         adminRoleService.deleteRole(roleId);

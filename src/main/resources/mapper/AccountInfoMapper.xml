@@ -313,10 +313,10 @@
             a.role_name,
             a.parent_id,
             a.ancestor_id,
-            a.account_state,
-            a.login_name,
-            a.login_pwd,
-            a.user_name,
+            a.account_state as accountState,
+            a.login_name as loginName,
+            a.login_pwd as loginPwd,
+            a.user_name as userName,
             a.area_code,
             a.mobile,
             a.id_card,
@@ -344,5 +344,20 @@
             account_info a
         LEFT JOIN account_info a1 ON a.parent_id = a1.account_id
         LEFT JOIN account_info a2 ON a1.parent_id = a2.account_id
+        where a.delete_status=0
     </select>
+
+    <update id="updateAccount">
+        update account_info a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userName!=null and userName!=''">a.user_name=#{userName}, </if>
+            <if test="loginName!=null and loginName!=''">a.login_name=#{loginName}, </if>
+            <if test="loginPwd!=null and loginPwd!=''">a.login_pwd=#{loginPwd}, </if>
+            <if test="mobile!=null and mobile!=''">a.mobile=#{mobile}, </if>
+            <if test="accountState!=null and accountState!=''">a.account_state=#{accountState}, </if>
+        </trim>
+        <where>
+            account_id=#{accountId}
+        </where>
+    </update>
 </mapper>

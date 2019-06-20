@@ -4,6 +4,7 @@ import com.bzs.model.CarInfo;
 import com.bzs.model.InsuranceTypeInfo;
 import com.bzs.model.InsuredInfo;
 import com.bzs.model.QuoteInfo;
+import lombok.Data;
 
 import javax.persistence.Transient;
 import java.util.List;
@@ -14,11 +15,12 @@ import java.util.List;
  * @author: dengl
  * @create: 2019-05-16 16:44
  */
+@Data
 public class CarInfoAndInsuranceInfo extends CarInfo {
     private InsuranceInfoAndType insuredInfo;
     @Transient
     private List<QuoteInfo> quoteInfoList;//报价列表
-
+    private String userName;
     public InsuranceInfoAndType getInsuredInfo() {
         return insuredInfo;
     }

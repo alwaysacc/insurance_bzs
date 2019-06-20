@@ -8,6 +8,7 @@ import com.bzs.model.Admin;
 import com.bzs.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -26,6 +27,7 @@ import java.util.Map;
 /**
 * Created by dl on 2019/06/17.
 */
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -40,7 +42,7 @@ public class AdminController {
         if (StringUtils.isBlank(code)){
             return ResultGenerator.genFailResult("验证码不能为空");
         }
-        Session session= SecurityUtils.getSubject().getSession();
+//        Session session= SecurityUtils.getSubject().getSession();
 
 //        String sessionCode= (String) session.getAttribute(CODE_KEY);
 //        if (!code.equalsIgnoreCase(sessionCode)){
@@ -48,14 +50,21 @@ public class AdminController {
 //        }
         Admin admin=adminService.findBy("loginName",username);
         password= MD5Utils.encrypt(username.toLowerCase(),password);
+        log.info(password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
         if (admin==null)
-            return ResultGenerator.genFailResult("用户名或密码错误");
+        return ResultGenerator.genFailResult("用户名或密码错误111");
         else if (!admin.getLoginPwd().equals(password))
-            return ResultGenerator.genFailResult("用户名或密码错误");
+            return ResultGenerator.genFailResult("用户名或密码错误2222");
         else if ("1".equals(admin.getStatus()))
             return ResultGenerator.genFailResult("账号已锁定");
-        try {
+        //修改登录时间
+        adminService.updateLoginTime(null,username);
+        Map map=new HashMap();
+        map.put("user",admin);
+        map.put("token",token);
+        return ResultGenerator.genSuccessResult(map);
+      /*  try {
             Subject subject=SecurityUtils.getSubject();
             if (subject!=null)
                 subject.logout();
@@ -73,10 +82,15 @@ public class AdminController {
             return ResultGenerator.genFailResult(e.getMessage());
         }catch (AuthenticationException e){
             return  ResultGenerator.genFailResult("认证失败"+e.getMessage());
-        }
+        }*/
+    }
+    @PostMapping("/updateAdmin")
+    public Result updateAdmin(Admin admin) {
+        return ResultGenerator.genSuccessResult(adminService.updateAdmin(admin));
     }
     @PostMapping("/add")
     public Result add(Admin admin) {
+        admin.setLoginPwd(MD5Utils.encrypt(admin.getLoginName().toLowerCase(),admin.getLoginPwd()));
         adminService.save(admin);
         return ResultGenerator.genSuccessResult();
     }

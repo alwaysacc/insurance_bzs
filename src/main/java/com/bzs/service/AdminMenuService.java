@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface AdminMenuService extends Service<AdminMenu> {
     List<VueRouter<AdminMenu>> getMenuByAdminName(String adminName);
+
+    List<VueRouter<AdminMenu>> getMenu();
 }

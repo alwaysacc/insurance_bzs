@@ -24,8 +24,31 @@
       login_name=#{loginName}
     </where>
   </update>
-
+  <update id="updateAdmin">
+     update admin a
+    <trim prefix="set" suffixOverrides=",">
+      <if test="name!=null and name!=''">a.name=#{name}, </if>
+      <if test="loginName!=null and loginName!=''">a.login_name=#{loginName}, </if>
+      <if test="loginPwd!=null and loginPwd!=''">a.login_pwd=#{loginPwd}, </if>
+      <if test="roleId!=null and roleId!=''">a.role_id=#{roleId}, </if>
+      <if test="status!=null and status!=''">a.status=#{status}, </if>
+    </trim>
+    <where>
+      id=#{id}
+    </where>
+  </update>
   <select id="getAdminList" resultType="map">
-    select a.*,r.name as role_name from  admin a left join admin_role r on a.role_id=r.id
+    select a.id,
+      a.name,
+      a.login_name AS loginName,
+      a.login_pwd AS loginPwd,
+      a.mobile,
+      a.sex,
+      a.descripition,
+      a.create_time,
+      a.update_time,
+      a.last_login_time,
+      a.status,
+      a.role_id AS roleId,r.name as role_name from  admin a left join admin_role r on a.role_id=r.id
   </select>
 </mapper>

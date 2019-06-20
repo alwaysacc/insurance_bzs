@@ -10,4 +10,6 @@ public interface AdminRoleService extends Service<AdminRole> {
     int addRoleAndMenu(AdminRole adminRole,String menuId);
 
     void deleteRole(Long roleId);
+
+   void updateRoleAndMenu(AdminRole adminRole,String menuId,String beforeMenuId);
 }

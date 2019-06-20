@@ -14,4 +14,6 @@ public interface AdminService extends Service<Admin> {
     int updateLoginTime( Date loginTime, String loginName);
 
     List getAdminList();
+
+    int updateAdmin(Admin admin);
 }

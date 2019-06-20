@@ -80,4 +80,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
     Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
 
     List getUserListByAdmin();
+
+    int updateAccount(AccountInfo accountInfo);
 }

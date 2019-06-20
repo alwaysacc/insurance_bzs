@@ -22,7 +22,23 @@
     m.*
     FROM
     admin_menu m where  m.type &lt;&gt; 1 and m.menu_id in (
-    SELECT menu_id from admin_role_menu r where r.role_id=(SELECT a.role_id from admin a where a.login_name=#{adminName})
+    SELECT menu_id from admin_role_menu r where r.role_id=(SELECT a.role_id from admin a
+    where a.login_name=#{adminName})
     ) order by m.order_num
+  </select>
+  <select id="getMenuList" resultMap="BaseResultMap">
+    SELECT
+    m.*
+    FROM
+    admin_menu m
+    where m.type &lt;&gt; 1
+      order by m.order_num
+  </select>
+  <select id="getMenuIdByRoleId" resultType="int">
+    SELECT
+    menu_id
+    FROM
+    admin_role_menu <where> role_id=#{roleId}
+  </where>
   </select>
 </mapper>
