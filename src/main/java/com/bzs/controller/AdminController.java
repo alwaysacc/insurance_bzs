@@ -1,11 +1,13 @@
 package com.bzs.controller;
 import com.bzs.dao.AdminMapper;
 import com.bzs.model.AccountInfo;
+import com.bzs.redis.RedisUtil;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.Admin;
 import com.bzs.service.AdminService;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +38,8 @@ public class AdminController {
     private AdminService adminService;
     @Resource
     private AdminMapper adminMapper;
-
+    @Resource
+    private RedisUtil redisUtil;
 
     @PostMapping("/login")
     public Result login(String username,String password,String code,boolean rememberMe) {
@@ -53,9 +57,9 @@ public class AdminController {
         log.info(password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
         if (admin==null)
-        return ResultGenerator.genFailResult("用户名或密码错误111");
+        return ResultGenerator.genFailResult("用户名或密码错误");
         else if (!admin.getLoginPwd().equals(password))
-            return ResultGenerator.genFailResult("用户名或密码错误2222");
+            return ResultGenerator.genFailResult("用户名或密码错误");
         else if ("1".equals(admin.getStatus()))
             return ResultGenerator.genFailResult("账号已锁定");
         //修改登录时间
@@ -88,10 +92,24 @@ public class AdminController {
     public Result updateAdmin(Admin admin) {
         return ResultGenerator.genSuccessResult(adminService.updateAdmin(admin));
     }
+    @PostMapping("/checkAdminLoginName")
+    public boolean checkAdminLoginName(String loginName) {
+        return adminService.checkAdminLoginName(loginName);
+    }
     @PostMapping("/add")
     public Result add(Admin admin) {
         admin.setLoginPwd(MD5Utils.encrypt(admin.getLoginName().toLowerCase(),admin.getLoginPwd()));
         adminService.save(admin);
+        HashSet set;
+        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+            set=adminMapper.getAdminLoginName();
+            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+        }else{
+            log.info("账号存入redis");
+            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set.add(admin.getLoginName());
+            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+        }
         return ResultGenerator.genSuccessResult();
     }
 

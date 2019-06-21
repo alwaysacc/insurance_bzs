@@ -68,4 +68,22 @@
     <select id="getLastUpdateData" resultMap="BaseResultMap">
         select * from commission_percentage ORDER BY create_time desc limit 1
     </select>
+    <select id="getListAndUpdateBy" resultType="map">
+            SELECT
+        c.id,
+        c.biz_percentage as bizPercentage,
+        c.force_percentage as forcePercentage,
+        c.level_one as levelOne,
+        c.level_two as levelTwo,
+        c.create_time as createTime,
+        c.update_time as updateTime,
+        c.create_by as createBy,
+        c.update_by as updateBy,
+        c.source,
+        c.status,
+        a.name
+        FROM
+        commission_percentage AS c
+        left join admin a on c.update_by=a.id
+    </select>
 </mapper>

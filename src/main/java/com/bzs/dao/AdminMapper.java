@@ -5,6 +5,7 @@ import com.bzs.utils.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public interface AdminMapper extends Mapper<Admin> {
@@ -12,4 +13,6 @@ public interface AdminMapper extends Mapper<Admin> {
 
     List getAdminList();
     int updateAdmin(Admin admin);
+
+    HashSet getAdminLoginName();
 }

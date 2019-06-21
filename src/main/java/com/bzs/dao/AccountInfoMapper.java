@@ -85,4 +85,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     List getUserListByAdmin();
 
     int updateAccount(AccountInfo accountInfo);
+
+    HashSet getUserLoginName();
 }

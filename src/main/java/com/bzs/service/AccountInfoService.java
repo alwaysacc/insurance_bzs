@@ -82,4 +82,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
     List getUserListByAdmin();
 
     int updateAccount(AccountInfo accountInfo);
+
+    boolean checkUserLoginName(String loginName);
 }

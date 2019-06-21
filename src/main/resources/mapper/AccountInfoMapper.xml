@@ -360,4 +360,8 @@
             account_id=#{accountId}
         </where>
     </update>
+
+    <select id="getUserName" resultType="String">
+        select user_name from account_info
+    </select>
 </mapper>

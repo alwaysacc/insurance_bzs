@@ -16,4 +16,6 @@ public interface AdminService extends Service<Admin> {
     List getAdminList();
 
     int updateAdmin(Admin admin);
+
+    boolean checkAdminLoginName(String loginName);
 }

@@ -10,6 +10,7 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.saltEncryptionutil.SaltEncryptionUtil;
 import com.bzs.utils.vcode.Captcha;
 import com.bzs.utils.vcode.GifCaptcha;
@@ -59,6 +60,10 @@ public class AccountInfoController {
     private RedisUtil redisUtil;
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @PostMapping("/checkUserLoginName")
+    public boolean checkUserLoginName(String loginName) {
+        return accountInfoService.checkUserLoginName(loginName);
+    }
 
     @PostMapping("/add")
     public Result add(AccountInfo accountInfo) {
@@ -82,6 +87,16 @@ public class AccountInfoController {
         redisUtil.set(CODE,codeList,720000);
         accountInfo.setInvitecode(code);
         accountInfoService.save(accountInfo);
+        HashSet set;
+        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+            log.info("用户账号存入redis");
+            set=accountInfoMapper.getUserLoginName();
+            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+        }else{
+            log.info("从redis取出用户账号");
+            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set.add(accountInfo.getLoginName());
+        }
         return ResultGenerator.genSuccessResult(accountInfo);
     }
 

@@ -12,7 +12,9 @@ import com.bzs.service.AccountInfoService;
 import com.bzs.service.AccountRoleInfoService;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.stringUtil.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import java.util.*;
 /**
  * Created by alwaysacc on 2019/04/11.
  */
+@Slf4j
 @Service
 @Transactional
 public class AccountInfoServiceImpl extends AbstractService<AccountInfo> implements AccountInfoService {
@@ -301,5 +304,19 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     @Override
     public int updateAccount(AccountInfo accountInfo) {
         return accountInfoMapper.updateAccount(accountInfo);
+    }
+
+    @Override
+    public boolean checkUserLoginName(String loginName) {
+        HashSet set;
+        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+            log.info("用户账号存入redis");
+            set=accountInfoMapper.getUserLoginName();
+            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+        }else{
+            log.info("从redis取出用户账号");
+            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+        }
+        return  set.contains(loginName);
     }
 }
