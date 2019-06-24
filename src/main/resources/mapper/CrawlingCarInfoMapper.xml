@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.CrawlingCarInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.CrawlingCarInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="car_no" jdbcType="VARCHAR" property="carNo" />
+    <result column="new_car_no" jdbcType="VARCHAR" property="newCarNo" />
+    <result column="is_new_car_no" jdbcType="VARCHAR" property="isNewCarNo" />
+    <result column="car_owner" jdbcType="VARCHAR" property="carOwner" />
+    <result column="new_car_owner" jdbcType="VARCHAR" property="newCarOwner" />
+    <result column="is_new_car_owner" jdbcType="VARCHAR" property="isNewCarOwner" />
+    <result column="vin_no" jdbcType="VARCHAR" property="vinNo" />
+    <result column="new_vin_no" jdbcType="VARCHAR" property="newVinNo" />
+    <result column="is_new_vin_no" jdbcType="VARCHAR" property="isNewVinNo" />
+    <result column="brand" jdbcType="VARCHAR" property="brand" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="engine_no" jdbcType="VARCHAR" property="engineNo" />
+    <result column="register_date" jdbcType="VARCHAR" property="registerDate" />
+    <result column="transfer_date" jdbcType="VARCHAR" property="transferDate" />
+    <result column="force_company" jdbcType="VARCHAR" property="forceCompany" />
+    <result column="force_end_date" jdbcType="VARCHAR" property="forceEndDate" />
+    <result column="biz_company" jdbcType="VARCHAR" property="bizCompany" />
+    <result column="biz_end_date" jdbcType="VARCHAR" property="bizEndDate" />
+    <result column="out_danger_count" jdbcType="VARCHAR" property="outDangerCount" />
+    <result column="break_reles_count" jdbcType="VARCHAR" property="breakRelesCount" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="series_no" jdbcType="VARCHAR" property="seriesNo" />
+    <result column="is_drawling" jdbcType="VARCHAR" property="isDrawling" />
+    <result column="is_last_drawling" jdbcType="VARCHAR" property="isLastDrawling" />
+    <result column="index_no" jdbcType="INTEGER" property="indexNo" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="result_message" jdbcType="VARCHAR" property="resultMessage" />
+    <result column="biz_start_date" jdbcType="VARCHAR" property="bizStartDate" />
+    <result column="force_start_date" jdbcType="VARCHAR" property="forceStartDate" />
+  </resultMap>
+  <resultMap id="crawlingResultMap" type="com.bzs.model.query.CrawlingQuery" extends="BaseResultMap">
+    <result column="b_status" jdbcType="VARCHAR" property="sStatus" />
+    <result column="b_type" jdbcType="VARCHAR" property="sType" />
+    <result column="b_id" jdbcType="INTEGER" property="bId" />
+  </resultMap>
+  <insert id="batchInsertImport" parameterType="java.util.List">
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert  into crawling_car_info
+    (id,car_no,car_owner,vin_no,id_card,mobile,series_no,index_no,create_by) values
+    <foreach collection="list" item="item" separator="," index="index">
+      (id,
+      #{item.carNo},
+      #{item.carOwner},
+      #{item.vinNo},
+      #{item.idCard},
+      #{item.mobile},
+      #{item.seriesNo},
+      #{item.indexNo},
+      #{item.createBy})
+    </foreach>
+  </insert>
+
+  <select id="crawlingDataList"  resultMap="BaseResultMap">
+    select
+    a.id,
+    a.car_no,
+    a.car_owner,
+    a.vin_no,
+    a.status,
+    a.series_no,
+    a.index_no
+    from crawling_car_info a  inner join crawling_excel_info b on a.series_no = b.series_no where a.series_no=#{seriesNo}
+    and a.status='0' and b.status in('0','2') limit #{startRow},#{pageSize}
+  </select>
+  <select id="crawlingDataCount" resultType="int">
+    select count(a.id)
+    from crawling_car_info a  inner join crawling_excel_info b on a.series_no =b.series_no where a.series_no=#{seriesNo}
+    and a.status='0' and b.status in('0','2')
+  </select>
+
+  <select id="exportDataListBySeriesNo" resultMap="BaseResultMap">
+    select
+    a.*
+    from crawling_car_info a where  a.series_no=#{seriesNo} limit #{startRow},#{pageSize}
+  </select>
+    <!-- 爬取成功后修改-->
+    <sql id="crawlingInsertItems">
+        <trim suffixOverrides="," prefix="(" suffix=")">
+            <if test="newCarNo!=null and newCarNo!=''">new_car_no,</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no,</if>
+            <if test="newCarOwner!=null and newCarOwner!=''">new_car_owner,</if>
+            <if test="isNewCarOwner!=null and isNewCarOwner!=''">is_new_car_owner,</if>
+            <if test="newVinNo!=null and newVinNo!=''">new_vin_no,</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no,</if>
+            <if test="brand!=null and brand!=''">brand,</if>
+            <if test="model!=null and model!=''">model,</if>
+            <if test="engineNo!=null and engineNo!=''">engine_no,</if>
+            <if test="registerDate!=null and registerDate!=''">register_date,</if>
+            <if test="transferDate!=null and transferDate!=''">transfer_date,</if>
+            <if test="forceCompany!=null and forceCompany!=''">force_company,</if>
+            <if test="forceEndDate!=null and forceEndDate!=''">force_end_date,</if>
+            <if test="bizCompany!=null and bizCompany!=''">biz_company,</if>
+            <if test="bizEndDate!=null and bizEndDate!=''">biz_end_date,</if>
+            <if test="outDangerCount!=null and outDangerCount!=''">out_danger_count,</if>
+            <if test="breakRelesCount!=null and breakRelesCount!=''">break_reles_count,</if>
+            <if test="isDrawling!=null and isDrawling!=''">is_drawling,</if>
+            <if test='isLastDrawling!=null and isLastDrawling="1"'>is_last_drawling,</if>
+            <if test="status!=null and status!=''">status,</if>
+            <if test="resultMessage!=null and resultMessage!=''">result_message,</if>
+            <if test="bizStartDate!=null and bizStartDate!=''">biz_start_date,</if>
+            <if test="forceStartDate!=null and forceStartDate!=''">force_start_date,</if>
+        </trim>
+    </sql>
+    <sql id="crawlingUpdate">
+        <trim suffixOverrides="," prefix="set"  >
+            <if test="newCarNo!=null and newCarNo!=''">new_car_no=#{newCarNo},</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no=#{isNewCarNo},</if>
+            <if test="newCarOwner!=null and newCarOwner!=''">new_car_owner=#{newCarOwner},</if>
+            <if test="isNewCarOwner!=null and isNewCarOwner!=''">is_new_car_owner=#{isNewCarOwner},</if>
+            <if test="newVinNo!=null and newVinNo!=''">new_vin_no=#{newVinNo},</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no=#{isNewCarNo},</if>
+            <if test="brand!=null and brand!=''">brand=#{brand},</if>
+            <if test="model!=null and model!=''">model=#{brand},</if>
+            <if test="engineNo!=null and engineNo!=''">engine_no=#{engineNo},</if>
+            <if test="registerDate!=null and registerDate!=''">register_date=#{registerDate},</if>
+            <if test="transferDate!=null and transferDate!=''">transfer_date=#{transferDate},</if>
+            <if test="forceCompany!=null and forceCompany!=''">force_company=#{forceCompany},</if>
+            <if test="forceEndDate!=null and forceEndDate!=''">force_end_date=#{forceEndDate},</if>
+            <if test="bizCompany!=null and bizCompany!=''">biz_company=#{bizCompany},</if>
+            <if test="bizEndDate!=null and bizEndDate!=''">biz_end_date=#{bizEndDate},</if>
+            <if test="outDangerCount!=null and outDangerCount!=''">out_danger_count=#{outDangerCount},</if>
+            <if test="breakRelesCount!=null and breakRelesCount!=''">break_reles_count=#{breakRelesCount},</if>
+            <if test="isDrawling!=null and isDrawling!=''">is_drawling=#{isDrawling},</if>
+            <if test='isLastDrawling!=null and isLastDrawling="1"'>is_last_drawling=#{isLastDrawling},</if>
+            <if test="status!=null and status!=''">status=#{status},</if>
+            <if test="resultMessage!=null and resultMessage!=''">result_message=#{resultMessage},</if>
+            <if test="bizStartDate!=null and bizStartDate!=''">biz_start_date=#{bizStartDate},</if>
+            <if test="forceStartDate!=null and forceStartDate!=''">force_start_date=#{forceStartDate},</if>
+        </trim>
+    </sql>
+    <sql id="crawlingInsertValues">
+        <trim suffixOverrides="," prefix="(" suffix=")" >
+            <if test="newCarNo!=null and newCarNo!=''">#{newCarNo},</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">#{isNewCarNo},</if>
+            <if test="newCarOwner!=null and newCarOwner!=''">#{newCarOwner},</if>
+            <if test="isNewCarOwner!=null and isNewCarOwner!=''">#{isNewCarOwner},</if>
+            <if test="newVinNo!=null and newVinNo!=''">#{newVinNo},</if>
+            <if test="isNewCarNo!=null and isNewCarNo!=''">#{isNewCarNo},</if>
+            <if test="brand!=null and brand!=''">#{brand},</if>
+            <if test="model!=null and model!=''">#{model},</if>
+            <if test="engineNo!=null and engineNo!=''">#{engineNo},</if>
+            <if test="registerDate!=null and registerDate!=''">#{registerDate},</if>
+            <if test="transferDate!=null and transferDate!=''">#{transferDate},</if>
+            <if test="forceCompany!=null and forceCompany!=''">#{forceCompany},</if>
+            <if test="forceEndDate!=null and forceEndDate!=''">#{forceEndDate},</if>
+            <if test="bizCompany!=null and bizCompany!=''">#{bizCompany},</if>
+            <if test="bizEndDate!=null and bizEndDate!=''">#{bizEndDate},</if>
+            <if test="outDangerCount!=null and outDangerCount!=''">#{outDangerCount},</if>
+            <if test="breakRelesCount!=null and breakRelesCount!=''">#{breakRelesCount},</if>
+            <if test="isDrawling!=null and isDrawling!=''">#{isDrawling},</if>
+            <if test='isLastDrawling!=null and isLastDrawling="1"'>#{isLastDrawling},</if>
+            <if test="status!=null and status!=''">#{status},</if>
+            <if test="resultMessage!=null and resultMessage!=''">#{resultMessage},</if>
+            <if test="bizStartDate!=null and bizStartDate!=''">#{bizStartDate},</if>
+            <if test="forceStartDate!=null and forceStartDate!=''">#{forceStartDate},</if>
+        </trim>
+    </sql>
+
+
+    <update id="crawlingUpdate" parameterType="com.bzs.model.CrawlingCarInfo">
+        update crawling_car_info <include refid="crawlingUpdate"/>
+        where id=#{id}
+    </update>
+
+</mapper>
