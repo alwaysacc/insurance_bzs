@@ -18,7 +18,7 @@
     <result column="status" jdbcType="CHAR" property="status" />
     <result column="role_id" jdbcType="BIGINT" property="status" />
   </resultMap>
-  <select id="getLoginName" resultType="String">
+  <select id="getAdminLoginName" resultType="String">
     select login_name from admin
   </select>
   <update id="updateLoginTime">

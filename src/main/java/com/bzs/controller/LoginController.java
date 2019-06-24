@@ -42,9 +42,9 @@ public class LoginController {
         if (StringUtils.isBlank(code)){
             return ResultGenerator.genFailResult("验证码不能为空");
         }
-        Session session=SecurityUtils.getSubject().getSession();
+//        Session session=SecurityUtils.getSubject().getSession();
 
-        String sessionCode= (String) session.getAttribute(CODE_KEY);
+//        String sessionCode= (String) session.getAttribute(CODE_KEY);
 //        if (!code.equalsIgnoreCase(sessionCode)){
 //            return ResultGenerator.genFailResult("验证码错误");
 //        }
