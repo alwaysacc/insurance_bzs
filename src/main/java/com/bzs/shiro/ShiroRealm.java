@@ -13,12 +13,16 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Slf4j
-import javax.management.relation.RoleInfo;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+import javax.management.relation.RoleInfo;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+@Slf4j
 public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     private AccountInfoService accountInfoService;
@@ -33,6 +37,7 @@ public class ShiroRealm extends AuthorizingRealm {
         String username=accountInfo.getLoginName();
         System.out.println("username"+username);
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
+        String accountId=accountInfo.getAccountId();
         List<Role> roleInfoList=roleService.findUserRoleByAccountId(accountId);
         Set<String> roleSet=roleInfoList.stream().map(Role::getCode).collect(Collectors.toSet());
         simpleAuthorizationInfo.setRoles(roleSet);
