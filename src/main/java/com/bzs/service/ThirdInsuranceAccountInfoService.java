@@ -4,6 +4,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.enumUtil.InsuranceNameEnum2;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,23 @@ public interface ThirdInsuranceAccountInfoService extends Service<ThirdInsurance
     /**
      * 添加或修改
      * @param accountInfo
-     * @param type 0添加1修改 空不反回
+     * @param crrateBy
      * @return
      */
-    Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String type);
+    Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String crrateBy);
 
-
+    /**
+     * 条件查询集合
+     * @param thirdInsuranceAccountInfo
+     * @return
+     */
+    List<ThirdInsuranceAccountInfo> select(ThirdInsuranceAccountInfo thirdInsuranceAccountInfo);
+    List <ThirdInsuranceAccountInfo>selectByCreateBy(String crateBy);
+    /**
+     * 批量删除
+     * @param ids
+     * @param createBy
+     * @return
+     */
+    Result deleteBatch(String ids, String createBy);
 }

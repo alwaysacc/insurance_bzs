@@ -1,13 +1,16 @@
 package com.bzs.controller;
+
 import com.bzs.model.TMenu;
 import com.bzs.service.TMenuService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.Role;
 import com.bzs.service.RoleService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,8 +20,8 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by dl on 2019/06/16.
-*/
+ * Created by dl on 2019/06/16.
+ */
 @RestController
 @RequestMapping("/role")
 public class RoleController {
@@ -26,6 +29,7 @@ public class RoleController {
     private RoleService roleService;
     @Resource
     private TMenuService tMenuService;
+
 
     @PostMapping("/add")
     public Result add(Role role) {
@@ -58,9 +62,20 @@ public class RoleController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
     @PostMapping("/findUserRole")
     public Result findUserRole(String accountId) {
         List<TMenu> list = tMenuService.findUserMenus(accountId);
+        if (CollectionUtils.isNotEmpty(list)) {
+            return ResultGenerator.genSuccessResult(list, "成功");
+        } else {
+            return ResultGenerator.genFailResult("获取失败");
+        }
+    }
+
+    @PostMapping("/findUserRoleByAccountId")
+    public Result findUserRoleByAccountId(String accountId) {
+        List list = roleService.findUserRoleByAccountId(accountId);
         if (CollectionUtils.isNotEmpty(list)) {
             return ResultGenerator.genSuccessResult(list, "成功");
         } else {

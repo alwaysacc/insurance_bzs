@@ -16,6 +16,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.utils.UUIDS;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,10 +83,16 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
         QuoteInfo quoteInfo = quoteInfoService.findBy("quoteId", quoteId);
         BigDecimal biz= quoteInfo.getBizTotal();//商业险
         BigDecimal force=  quoteInfo.getForceTotal();//交强险
+        String source=quoteInfo.getQuoteSource();
         if(null==biz)biz=new BigDecimal(0);
         if(null==force)force=new BigDecimal(0);
         SeveralAccount data = accountInfoMapper.getParentLevel(createBy);//获取父级两层id
-        CommissionPercentage percentage = commissionPercentageService.getLastUpdateData();
+//        CommissionPercentage percentage = commissionPercentageService.getLastUpdateData();
+        CommissionPercentage percentage = null;
+        List<CommissionPercentage>percentages=  commissionPercentageService.select(new CommissionPercentage (source,"1"));
+        if(CollectionUtils.isNotEmpty(percentages)){
+            percentage= percentages.get(0);
+        }
         BigDecimal bp=new BigDecimal(15);
         BigDecimal fp =  new BigDecimal(4);
         BigDecimal po =new  BigDecimal(1);
@@ -119,19 +126,7 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
             if(force.doubleValue()>0){
                 forceCommission2=forceCommission+"";
             }
-           // DrawCash drawCash=new DrawCash();
             DrawCash  drawCash=new  DrawCash( orderId, percentageId.intValue(),UUIDS.getDateUUID(), createBy,0,  "0",  forceCommission2,  createBy,  bp+"",  fp+"",  "0",   bizCommission2);
-            /*drawCash.setBizCash(bizCommission+"");//商业险佣金
-            drawCash.setForceCash(forceCommission+"");//交强险佣金
-            drawCash.setCash("0");//提成
-            drawCash.setIncomePerson(createBy);//收益人
-            drawCash.setBizPercentage(bp+"");//商业险比例
-            drawCash.setForcePercentage(fp+"");//交强险比例
-            //drawCash.setDrawPercentage("100");
-            drawCash.setOrderId(orderId);//订单号
-            drawCash.setSerialNo(UUIDS.getDateUUID());//流水号
-            drawCash.setType(0);
-            drawCash.setCreateBy(createBy);*/
             this.save(drawCash);//添加提现信息
             accountInfoMapper.updateMoney(balance,commission,null,createBy);//修改金额
 

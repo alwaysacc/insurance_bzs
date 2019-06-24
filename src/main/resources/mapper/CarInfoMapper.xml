@@ -40,6 +40,7 @@
         <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
         <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
         <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
+        <!--<collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
 <!--        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
     </resultMap>
     <resultMap id="quote" type="com.bzs.model.QuoteInfo">

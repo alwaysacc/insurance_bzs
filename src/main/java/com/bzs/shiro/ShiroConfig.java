@@ -1,6 +1,7 @@
 package com.bzs.shiro;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.SessionListener;
@@ -13,6 +14,9 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +38,8 @@ import java.util.Map;
  */
 //@Configuration
 public class ShiroConfig {
+
+    private static Logger log=LoggerFactory.getLogger(ShiroConfig.class);
 
     @Autowired
     private FebsProperties febsProperties;
@@ -94,7 +100,12 @@ public class ShiroConfig {
         redisManager.setTimeout(timeout);
         return redisManager;
     }
-
+    /**
+     * cacheManager 缓存 redis实现
+     * 使用的是shiro-redis开源插件
+     *
+     * @return
+     */
     private RedisCacheManager cacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager());
@@ -137,14 +148,16 @@ public class ShiroConfig {
 
     @Bean
     public SecurityManager securityManager() {
+        log.info("开始执行securityManager()方法");
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 配置 SecurityManager，并注入 shiroRealm
-        //securityManager.setRealm(shiroRealm());
+        securityManager.setRealm(shiroRealm());
         // 配置 rememberMeCookie
         securityManager.setRememberMeManager(rememberMeManager());
-        // 配置 缓存管理类 cacheManager
+        // 配置 缓存管理类 cacheManager // 自定义缓存实现 使用redis
         securityManager.setCacheManager(cacheManager());
-        //securityManager.setSessionManager(sessionManager());
+        // 自定义session管理 使用redis
+        securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
     /**
@@ -159,13 +172,17 @@ public class ShiroConfig {
     @ConditionalOnMissingBean*/
 /*
     public ShiroRealm shiroRealm() {
-        // 配置 Realm，需自己实现
-       // ShiroRealm authRealm = new ShiroRealm();
+        ShiroRealm authRealm = new ShiroRealm();
+        //authRealm.setCredentialsMatcher(credentialsMatcher());
         //根据情况使用缓存器
+        //authRealm.setCacheManager(cacheManager());
      //   authRealm.setCacheManager(cacheManager());
-       // return authRealm;
-       return new ShiroRealm();
+        return authRealm;
     }
+//    @Bean
+//    public CredentialsMatcher credentialsMatcher() {
+//        return new CredentialsMatcher();
+//    }
 */
 
     /**
@@ -211,12 +228,13 @@ public class ShiroConfig {
      *
      * @return ShiroDialect shiro 方言对象
      */
-//    @Bean
-//    public RedisSessionDAO redisSessionDAO() {
-//        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
-//        redisSessionDAO.setRedisManager(redisManager());
-//        return redisSessionDAO;
-//    }
+    @Bean
+    public RedisSessionDAO redisSessionDAO() {
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager());
+        redisSessionDAO.setKeyPrefix("BZS_SESSION:");
+        return redisSessionDAO;
+    }
 
     /**
      * session 管理对象

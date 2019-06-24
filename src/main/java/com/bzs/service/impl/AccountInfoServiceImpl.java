@@ -2,10 +2,7 @@ package com.bzs.service.impl;
 
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.AccountRoleInfoMapper;
-import com.bzs.model.AccountInfo;
-import com.bzs.model.AccountRoleInfo;
-import com.bzs.model.TMenu;
-import com.bzs.model.Verification;
+import com.bzs.model.*;
 import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
@@ -17,6 +14,7 @@ import com.bzs.utils.stringUtil.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import com.bzs.model.query.QueryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -296,6 +294,23 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return accountInfoMapper.deleteUser(accountId,status);
     }
 
+    @Override
+    public AccountInfo findByName(String username) {
+        AccountInfo param = new AccountInfo();
+        param.setUserName(username);
+        List<AccountInfo> list = findUserDetail(param, new QueryRequest());
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public List<AccountInfo> findUserDetail(AccountInfo user, QueryRequest request) {
+        try {
+            return this.accountInfoMapper.select(user);
+        } catch (Exception e) {
+            logger.error("查询用户异常", e);
+            return new ArrayList<>();
+        }
+    }
     @Override
     public List getUserListByAdmin() {
         return accountInfoMapper.getUserListByAdmin();

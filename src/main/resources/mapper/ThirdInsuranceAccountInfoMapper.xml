@@ -20,6 +20,7 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="enable_start_date" jdbcType="VARCHAR" property="enableStartDate" />
     <result column="enable_end_date" jdbcType="VARCHAR" property="enableEndDate" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
   </resultMap>
 
 
@@ -75,11 +76,11 @@
       <if test="isPay!=null and ''!=isPay ">is_pay,</if>
       <if test="accountType!=null and ''!=accountType ">account_type,</if>
       <if test="ip!=null and ''!=ip ">ip,</if>
-
       <if test="port!=null and ''!=port ">port,</if>
       <if test="status!=null and ''!=status ">status,</if>
       <if test="enableStartDate!=null and ''!=enableStartDate ">enable_start_date,</if>
       <if test="enableEndDate!=null and ''!=enableEndDate ">enable_end_date,</if>
+      <if test="level!=null and ''!=level ">level,</if>
     </trim>
   </sql>
 
@@ -98,21 +99,44 @@
       <if test="status!=null and ''!=status ">#{status},</if>
       <if test="enableStartDate!=null and ''!=enableStartDate ">#{enableStartDate},</if>
       <if test="enableEndDate!=null and ''!=enableEndDate ">#{enableEndDate},</if>
+      <if test="level!=null and ''!=level ">#{level},</if>
     </trim>
   </sql>
   <insert id="addOrUpdate" parameterType="com.bzs.model.AccountInfo">
-    insert into third_insurance_account_info <include refid="insertItems"/> values <include refid="insertValues"/>
+    insert into third_insurance_account_info
+      <include refid="insertItems"/>values <include refid="insertValues"/>
     ON DUPLICATE KEY UPDATE
-    create_id=values(create_id),
-    account_name=values(account_name),
-    account_pwd=values(account_pwd),
-    vpn=values(vpn),
-    ip=values(ip),
-    port=values(port),
-    status=values(status),
-    enable_start_date=values(enable_start_date),
-    enable_end_date=values(enable_end_date)
+    <trim suffixOverrides=",">
+      <if test="createId!=null and ''!=createId ">create_id=#{createId},</if>
+      <if test="accountName!=null and ''!=accountName ">account_name=#{accountName},</if>
+      <if test="accountPwd!=null and ''!=accountPwd ">account_pwd=#{accountPwd},</if>
+      <if test="vpn!=null and ''!=vpn ">vpn=#{vpn},</if>
+      <if test="accountId!=null and ''!=accountId ">account_id=#{accountId},</if>
+      <if test="isPay!=null and ''!=isPay ">is_pay=#{isPay},</if>
+      <if test="accountType!=null and ''!=accountType ">account_type=#{accountType},</if>
+      <if test="ip!=null and ''!=ip ">ip=#{ip},</if>
+      <if test="port!=null and ''!=port ">port=#{port},</if>
+      <if test="status!=null and ''!=status ">status=#{status},</if>
+      <if test="enableStartDate!=null and ''!=enableStartDate">enable_start_date=#{enableStartDate},</if>
+      <if test="enableEndDate!=null and ''!=enableEndDate ">enable_end_date=#{enableEndDate},</if>
+    </trim>
   </insert>
+  <delete id="deleteBatchAdmin" parameterType="java.util.List">
+    delete FROM  third_insurance_account_info  where  third_insurance_id in
+    <foreach collection="list" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <delete id="deleteBatch" >
+    delete FROM  third_insurance_account_info  where
+
+    <if test="createBy!=null and ''!=createBy">create_id=#{createBy} and </if>
+    third_insurance_id in
+    <foreach collection="list" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
 
   <!--修改或添加 结束-->
 </mapper>

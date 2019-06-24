@@ -169,11 +169,12 @@ public class AccountInfoController {
             return ResultGenerator.genFailResult("登录账号或者密码为空");
         }
         Subject subject = SecurityUtils.getSubject();
-        //password  =SaltEncryptionUtil.getEncryptionByName(userName,password);
+//        password  =SaltEncryptionUtil.getEncryptionByName(userName,password);
         password = MD5Utils.encrypt(userName.toLowerCase(), password);
+        System.out.println("输入的密码MD5装换后"+password);
         UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
         String failMsg = "";
-        if (!subject.isAuthenticated()) {//是否通过login()进行了身份验证
+//        if (!subject.isAuthenticated()) {//是否通过login()进行了身份验证
             // remembermMe记住密码
             //token.setRememberMe(true);
             try {
@@ -200,8 +201,8 @@ public class AccountInfoController {
                 failMsg = "系统异常";
             }
             return ResultGenerator.genFailResult(failMsg);
-        }
-        return ResultGenerator.genSuccessResult("已经登录");
+//        }
+//        return ResultGenerator.genSuccessResult("已经登录");
     }
 
     @RequestMapping(value = "test1", method = RequestMethod.GET)
@@ -225,7 +226,7 @@ public class AccountInfoController {
         }*/
         Map<String, Object> map = new HashMap<>();
         if (a != null) {
-            map.put("status", "400");
+            map.put("status", "200");
             map.put("msg", a.getLoginName() + "已登录");
         } else {
             map.put("status", "400");

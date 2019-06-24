@@ -34,4 +34,14 @@ public interface ThirdInsuranceAccountInfoMapper extends Mapper<ThirdInsuranceAc
      * @return
      */
     int addOrUpdate(ThirdInsuranceAccountInfo accountInfo);
+
+    /**
+     * 查询分页列表
+     * @param list
+     * @param createBy
+     * @return
+     */
+    int deleteBatch(@Param("list") List<String> list, @Param("createBy") String createBy);
+
+    int deleteBatchAdmin(List<String> list);
 }

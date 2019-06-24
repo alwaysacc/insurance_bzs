@@ -21,7 +21,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.hssf.record.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,13 +182,15 @@ public class HttpClientUtil {
      * @return
      * @description post请求 java原生HttpURLConnection 未调试
      */
-    public static String doPostHttpURL(String httpUrl, String param) {
-
+    public static HttpResult doPostHttpURL(String httpUrl, String param) {
+        logger.info("请求路径URL"+httpUrl);
+        logger.info("请求参数"+param);
         HttpURLConnection connection = null;
         InputStream is = null;
         OutputStream os = null;
         BufferedReader br = null;
         String result = null;
+        HttpResult httpResult=new HttpResult();
         try {
             URL url = new URL(httpUrl);
             // 通过远程url连接对象打开连接
@@ -200,7 +201,6 @@ public class HttpClientUtil {
             connection.setConnectTimeout(15000);
             // 设置读取主机服务器返回数据超时时间：60000毫秒
             connection.setReadTimeout(60000);
-
             // 默认值为：false，当向远程服务器传送数据/写数据时，需要设置为true
             connection.setDoOutput(true);
             // 默认值为：true，当前向远程服务读取数据时，设置为true，该参数可有可无
@@ -217,7 +217,8 @@ public class HttpClientUtil {
             }
 
             // 通过连接对象获取一个输入流，向远程读取
-            if (connection.getResponseCode() == 200) {
+            int code=  connection.getResponseCode();
+            if (200==code) {
                 is = connection.getInputStream();
                 // 对输入流对象进行包装:charset根据工作项目组的要求来设置
                 br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -230,38 +231,59 @@ public class HttpClientUtil {
                     sbf.append("\r\n");
                 }
                 result = sbf.toString();
+                logger.info("请求返回内容:"+result);
+                httpResult.setBody(result);
+                httpResult.setMessage("获取成功");
+            }else {
+                httpResult.setMessage("获取失败");
             }
+            httpResult.setCode(code);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            logger.error("请求异常",e);
+            httpResult.setMessage("请求异常");
+            httpResult.setCode(500);
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            logger.error("请求异常",e);
+            httpResult.setMessage("请求异常");
+            httpResult.setCode(500);
         } finally {
             // 关闭资源
             if (null != br) {
                 try {
                     br.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
+                    logger.error("请求异常",e);
+                    httpResult.setCode(500);
+                    httpResult.setMessage("请求异常");
                 }
             }
             if (null != os) {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
+                    logger.error("请求异常",e);
+                    httpResult.setCode(500);
+                    httpResult.setMessage("请求异常");
                 }
             }
             if (null != is) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                  //  e.printStackTrace();
+                    logger.error("请求异常",e);
+                    httpResult.setMessage("请求异常");
+                    httpResult.setCode(500);
                 }
             }
             // 断开与远程地址url的连接
             connection.disconnect();
         }
-        return result;
+        return httpResult;
     }
 
 
