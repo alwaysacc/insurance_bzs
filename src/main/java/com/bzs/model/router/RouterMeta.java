@@ -16,8 +16,8 @@ public class RouterMeta implements Serializable {
 
     private static final long serialVersionUID = 5499925008927195914L;
 
-    private Boolean closeable;
+    private String title;
 
-    private Boolean isShow;
+    private String icon;
 
 }

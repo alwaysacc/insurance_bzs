@@ -67,4 +67,7 @@ public interface CarInfoService extends Service<CarInfo> {
 
     Result WX_GetNewVehicleInfo(String LicenseNo,String EngineNo,String CarVin,int IsNeedCarVin,
                                 String MoldName);
+
+    List getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,String  isRenewSuccess);
+
 }

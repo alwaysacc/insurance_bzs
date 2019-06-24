@@ -60,7 +60,12 @@ public class LoginController {
             return ResultGenerator.genFailResult("账号已锁定");
         else if (2==accountInfo.getAccountState())
             return ResultGenerator.genFailResult("账号待审核");
-        try {
+
+        accountInfoService.updateLoginTime(username);
+        //session.setAttribute("userName",username);
+        //session.setAttribute("accountInfo",accountInfo);
+        return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
+     /*   try {
             Subject subject=SecurityUtils.getSubject();
             if (subject!=null)
                 subject.logout();
@@ -75,7 +80,7 @@ public class LoginController {
             return ResultGenerator.genFailResult(e.getMessage());
         }catch (AuthenticationException e){
             return  ResultGenerator.genFailResult("认证失败"+e.getMessage());
-        }
+        }*/
     }
     private Map<String,Object> getUserInfo(String username){
         Map<String,Object> userInfo=null;

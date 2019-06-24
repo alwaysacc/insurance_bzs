@@ -4,6 +4,7 @@ import com.bzs.model.AccountInfo;
 import com.bzs.model.Role;
 import com.bzs.service.AccountInfoService;
 import com.bzs.service.RoleService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -12,6 +13,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 import javax.management.relation.RoleInfo;
 import java.util.List;
 import java.util.Set;
@@ -29,8 +31,7 @@ public class ShiroRealm extends AuthorizingRealm {
         //AccountInfo accountInfo= (AccountInfo) SecurityUtils.getSubject().getPrincipal();
         AccountInfo accountInfo=(AccountInfo)principalCollection.getPrimaryPrincipal();
         String username=accountInfo.getLoginName();
-        String accountId=accountInfo.getAccountId();
-        System.out.println("username:"+username);
+        System.out.println("username"+username);
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
         List<Role> roleInfoList=roleService.findUserRoleByAccountId(accountId);
         Set<String> roleSet=roleInfoList.stream().map(Role::getCode).collect(Collectors.toSet());
@@ -51,14 +52,15 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String username= (String) authenticationToken.getPrincipal();
+        System.out.println(authenticationToken.toString());
+        System.out.println(authenticationToken.getCredentials().toString());
         String pass=   new String((char[]) authenticationToken.getCredentials());
-        System.out.println("当前密码："+pass);
+        System.out.println(pass);
         AccountInfo accountInfo=accountInfoService.findByLoginName(username);
-        System.out.println("获取的密码："+accountInfo.getLoginPwd());
         if (accountInfo==null)
-            throw new UnknownAccountException("用户名或密码错误");
+            throw new UnknownAccountException("用户名或密码错误555");
         if (!accountInfo.getLoginPwd().equals(pass))
-            throw new IncorrectCredentialsException("用户名或密码错误");
+            throw new IncorrectCredentialsException("用户名或密码错误66666");
         if (AccountInfo.STATUS_LOCK.equals(accountInfo.getAccountState()))
             throw new LockedAccountException("账号已锁定");
        /* List<Object> list=new ArrayList<Object>();

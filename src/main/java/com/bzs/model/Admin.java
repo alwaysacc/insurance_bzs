@@ -41,6 +41,16 @@ public class Admin {
      * 状态 0锁定 1有效
      */
     private String status;
+    @Column(name = "role_id")
+    private Long roleId;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     /**
      * @return id

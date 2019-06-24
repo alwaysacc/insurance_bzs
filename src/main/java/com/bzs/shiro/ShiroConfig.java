@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author MrBird
  */
-@Configuration
+//@Configuration
 public class ShiroConfig {
 
     private static Logger log=LoggerFactory.getLogger(ShiroConfig.class);
@@ -94,7 +94,7 @@ public class ShiroConfig {
         // 缓存时间，单位为秒
         //redisManager.setExpire(febsProperties.getShiro().getExpireIn()); // removed from shiro-redis v3.1.0 api
         redisManager.setHost(host);
-       // redisManager.setPort(6379);
+        //redisManager.setPort(port);
         if (StringUtils.isNotBlank(password))
             redisManager.setPassword(password);
         redisManager.setTimeout(timeout);
@@ -170,6 +170,7 @@ public class ShiroConfig {
     @Bean
     /*@DependsOn("lifecycleBeanPostProcessor")
     @ConditionalOnMissingBean*/
+/*
     public ShiroRealm shiroRealm() {
         ShiroRealm authRealm = new ShiroRealm();
         //authRealm.setCredentialsMatcher(credentialsMatcher());
@@ -182,6 +183,7 @@ public class ShiroConfig {
 //    public CredentialsMatcher credentialsMatcher() {
 //        return new CredentialsMatcher();
 //    }
+*/
 
     /**
      * rememberMe cookie 效果是重开浏览器后无需重新登录
@@ -239,33 +241,16 @@ public class ShiroConfig {
      *
      * @return DefaultWebSessionManager
      */
-    @Bean
-    public DefaultWebSessionManager sessionManager() {
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setSessionDAO(redisSessionDAO());
-        /*Collection<SessionListener> listeners = new ArrayList<>();
-        listeners.add(new ShiroSessionListener());
-        // 设置session超时时间，单位为毫秒
-        sessionManager.setGlobalSessionTimeout(febsProperties.getShiro().getSessionTimeout());
-        sessionManager.setSessionListeners(listeners);
-        sessionManager.setSessionDAO(redisSessionDAO());
-        sessionManager.setSessionIdUrlRewritingEnabled(false);*/
-        return sessionManager;
-    }
-
-    /**
-     * 限制同一账号登录同时登录人数控制
-     *
-     * @return
-     */
 //    @Bean
-//    public SessionControlFilter  kickoutSessionControlFilter() {
-//        KickoutSessionControlFilter kickoutSessionControlFilter = new KickoutSessionControlFilter();
-//        kickoutSessionControlFilter.setCacheManager(cacheManager());
-//        kickoutSessionControlFilter.setSessionManager(sessionManager());
-//        kickoutSessionControlFilter.setKickoutAfter(false);
-//        kickoutSessionControlFilter.setMaxSession(1);
-//        kickoutSessionControlFilter.setKickoutUrl("/auth/kickout");
-//        return kickoutSessionControlFilter;
+//    public DefaultWebSessionManager sessionManager() {
+//        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+//        Collection<SessionListener> listeners = new ArrayList<>();
+//        listeners.add(new ShiroSessionListener());
+//        // 设置session超时时间，单位为毫秒
+//        sessionManager.setGlobalSessionTimeout(febsProperties.getShiro().getSessionTimeout());
+//        sessionManager.setSessionListeners(listeners);
+//        sessionManager.setSessionDAO(redisSessionDAO());
+//        sessionManager.setSessionIdUrlRewritingEnabled(false);
+//        return sessionManager;
 //    }
 }

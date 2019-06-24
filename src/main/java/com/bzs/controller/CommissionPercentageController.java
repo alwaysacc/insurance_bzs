@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.dao.CommissionPercentageMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.CommissionPercentage;
@@ -51,7 +52,7 @@ public class CommissionPercentageController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<CommissionPercentage> list = commissionPercentageService.findAll();
+        List list = commissionPercentageService.getListAndUpdateBy();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

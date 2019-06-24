@@ -11,11 +11,14 @@ import com.bzs.utils.*;
 import com.bzs.utils.commons.ThirdAPI;
 import com.bzs.utils.httpUtil.HttpClientUtil;
 import com.bzs.utils.httpUtil.HttpResult;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
@@ -199,5 +202,17 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
         }else{
             return ResultGenerator.genFailResult(object.getString("StatusMessage"));
         }
+    }
+
+    @Override
+    public List getCarInfoQuote(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess) {
+        CarInfo carInfo=new CarInfo();
+        carInfo.setCarInfoId(carInfoId);
+        carInfo.setCreatedBy(createBy);
+        carInfo.setCarNumber(carNo);
+        carInfo.setFrameNumber(vinNo);
+        carInfo.setIsEnable(isEnable);
+        carInfo.setIsRenewSuccess(isRenewSuccess);
+        return  carInfoMapper.getCarInfoAndInsurance(carInfo);
     }
 }

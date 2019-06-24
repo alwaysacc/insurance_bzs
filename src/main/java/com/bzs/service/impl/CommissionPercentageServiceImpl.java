@@ -99,4 +99,9 @@ public class CommissionPercentageServiceImpl extends AbstractService<CommissionP
     public List<CommissionPercentage> select(CommissionPercentage comm) {
         return commissionPercentageMapper.select(comm);
     }
+
+    @Override
+    public List getListAndUpdateBy() {
+        return commissionPercentageMapper.getListAndUpdateBy();
+    }
 }

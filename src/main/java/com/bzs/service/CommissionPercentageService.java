@@ -36,4 +36,6 @@ public interface CommissionPercentageService extends Service<CommissionPercentag
      * @return
      */
     List<CommissionPercentage> select(CommissionPercentage comm);
+
+    List getListAndUpdateBy();
 }

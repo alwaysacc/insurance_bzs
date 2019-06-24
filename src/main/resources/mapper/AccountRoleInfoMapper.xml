@@ -13,4 +13,7 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
   </resultMap>
+
+
+
 </mapper>

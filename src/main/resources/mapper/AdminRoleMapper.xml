@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.AdminRoleMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.AdminRole">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="data_scope" jdbcType="VARCHAR" property="dataScope" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="is_enable_del" jdbcType="INTEGER" property="isEnableDel" />
+  </resultMap>
+  <insert id="addAdminRole">
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into admin_role (name,remark) values (#{name},#{remark})
+  </insert>
+  <!--插入角色的菜单权限-->
+  <insert id="addAdminRoleMenu">
+    INSERT INTO admin_role_menu
+    (menu_id, role_id)
+    VALUES
+    <foreach collection ="list" item="item" separator =",">
+      (#{item.menuId}, #{item.roleId})
+    </foreach >
+  </insert>
+  <!--删除角色菜单-->
+  <delete id="deleteMenuByRoleId">
+    delete from admin_role_menu<where>
+    role_id=#{roleId}
+  </where>
+  </delete>
+  <!--删除角色菜单-->
+  <delete id="deleteMenuByMenuId">
+    delete from admin_role_menu<where>
+    role_id=#{roleId} and menu_id in
+    <foreach item="item" collection="mentId" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </where>
+  </delete>
+</mapper>
