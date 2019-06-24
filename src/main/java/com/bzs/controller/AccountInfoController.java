@@ -10,6 +10,7 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.saltEncryptionutil.SaltEncryptionUtil;
 import com.bzs.utils.vcode.Captcha;
@@ -86,16 +87,18 @@ public class AccountInfoController {
         codeList.add(code);
         redisUtil.set(CODE,codeList,720000);
         accountInfo.setInvitecode(code);
+        accountInfo.setRoleName("业务员");
         accountInfoService.save(accountInfo);
         HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
             log.info("用户账号存入redis");
             set=accountInfoMapper.getUserLoginName();
-            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
         }else{
             log.info("从redis取出用户账号");
-            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
             set.add(accountInfo.getLoginName());
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
         }
         return ResultGenerator.genSuccessResult(accountInfo);
     }
@@ -302,5 +305,10 @@ public class AccountInfoController {
     @PostMapping("/deleteUser")
     public Result deleteUser(String[] accountId,int status){
         return ResultGenerator.genSuccessResult(accountInfoService.deleteUser(accountId,status));
+    }
+    @ApiOperation("发送验证码")
+    @PostMapping("/getCode")
+    public Result getCode(String mobile){
+        return ResultGenerator.genSuccessResult(JuHeHttpUtil.getRequest(mobile));
     }
 }

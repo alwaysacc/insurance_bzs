@@ -52,13 +52,15 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
     @Override
     public boolean checkAdminLoginName(String loginName) {
         HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+        if (!redisUtil.hasKey(RedisConstant.ADMIN_LOGIN_NAME_LIST)){
             log.info("管理员账号存入redis");
             set=adminMapper.getAdminLoginName();
-            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+            System.out.println(set.toString());
+            redisUtil.set(RedisConstant.ADMIN_LOGIN_NAME_LIST,set,720000);
         }else{
             log.info("从redis取出管理员账号");
-            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set= (HashSet) redisUtil.get(RedisConstant.ADMIN_LOGIN_NAME_LIST);
+            System.out.println(set.toString());
         }
         return  set.contains(loginName);
     }
