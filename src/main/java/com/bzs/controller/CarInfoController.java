@@ -134,7 +134,6 @@ public class CarInfoController {
     @ApiOperation("获取车辆信息、续保险种、报价信息，")
     @PostMapping("/getCarInfoAndInsurance")
     public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,String isEnable,String isRenewSuccess){
-
         Map<String,Object> result=carInfoService.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess);
         return ResultGenerator.genSuccessResult(result,"成功");
     }

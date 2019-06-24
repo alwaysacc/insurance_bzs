@@ -1,5 +1,7 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.bzs.dao.ThirdInsuranceAccountInfoMapper;
 import com.bzs.model.ThirdInsuranceAccountInfo;
 import com.bzs.service.ThirdInsuranceAccountInfoService;
@@ -10,17 +12,18 @@ import com.bzs.utils.UUIDS;
 import com.bzs.utils.commons.ObjectUtil;
 import com.bzs.utils.enumUtil.InsuranceNameEnum;
 import com.bzs.utils.enumUtil.InsuranceNameEnum2;
+import com.bzs.utils.stringUtil.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -133,12 +136,8 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
     }
 
     @Override
-    public Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String type) {
+    public Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String createBy) {
        String msg="";
-        if(StringUtils.isNotBlank(type)){
-            if("0".equals(type))msg="添加";
-            else if("1".equals(type))msg="修改";
-        }
         //初始化后的对象不为null,根据属性值判断，属性值如果是 "" 则释为空
         //if(!ObjectUtil.isEmptyIncludeQuotationMark(accountInfo)){
         if(null!=accountInfo){
@@ -148,14 +147,71 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             }else{
                 String uuid=UUIDS.getDateUUID();
                 accountInfo.setThirdInsuranceId(uuid);
+                Subject subject = SecurityUtils.getSubject();
+                boolean b= subject.hasRole("SADMIN");
+                if(!b){
+                     accountInfo.setLevel("1");
+                }
                 msg="添加";
             }
             int result=  thirdInsuranceAccountInfoMapper.addOrUpdate(accountInfo);
-            return  ResultGenerator.genSuccessResult(result,msg+"成功");
+            if(result>1){//更新
+                return  ResultGenerator.genSuccessResult(result,"修改成功");
+            }else if(result>0){//添加
+                return  ResultGenerator.genSuccessResult(result,"添加成功");
+            }else{
+                return  ResultGenerator.genSuccessResult(result,msg+"失败");
+            }
         }else {
             String msg2="参数异常,"+msg+"失败";
             return ResultGenerator.genFailResult(msg2);
         }
+    }
 
+    @Override
+    public List<ThirdInsuranceAccountInfo> select(ThirdInsuranceAccountInfo thirdInsuranceAccountInfo) {
+       if(null!=thirdInsuranceAccountInfo){
+           String createBy=thirdInsuranceAccountInfo.getCreateId();
+           if(StringUtils.isNotBlank(createBy)){
+               Subject subject = SecurityUtils.getSubject();
+               boolean b= subject.hasRole("SADMIN");
+               if(b){
+                   logger.info("是否超级管理员"+b);
+                   createBy=null;
+               }
+           }
+       }
+        return this.thirdInsuranceAccountInfoMapper.select(thirdInsuranceAccountInfo);
+    }
+
+    @Override
+    public Result deleteBatch(String ids, String createBy) {
+        if(StringUtils.isNotBlank(ids)){
+            List<String> list= JSONArray.parseArray(ids).toJavaList(String.class);
+            Subject subject = SecurityUtils.getSubject();
+            boolean b= subject.hasRole("SADMIN");
+            if(b){
+                logger.info("是否超级管理员"+b);
+                createBy=null;
+            }else{
+                if(StringUtils.isBlank(createBy)){
+                    return ResultGenerator.genFailResult("删除失败");
+                }
+            }
+            int result=  this.thirdInsuranceAccountInfoMapper.deleteBatch(list,createBy);
+            if(result>0){
+                return  ResultGenerator.genSuccessResult(result,"删除成功");
+            }else{
+                return ResultGenerator.genFailResult("删除失败");
+            }
+        }
+        return ResultGenerator.genFailResult("参数为空，删除失败");
+    }
+
+    @Override
+    public List<ThirdInsuranceAccountInfo> selectByCreateBy(String crateBy) {
+        ThirdInsuranceAccountInfo data=new ThirdInsuranceAccountInfo();
+        data.setCreateId(crateBy);
+        return this.select(data);
     }
 }

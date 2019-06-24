@@ -40,7 +40,7 @@
         <result column="is_addtion" jdbcType="VARCHAR" property="isAddtion"/>
         <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
         <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
-        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>
+        <!--<collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
     </resultMap>
     <resultMap id="quote" type="com.bzs.model.QuoteInfo">
         <!--
@@ -103,18 +103,18 @@
     <!--查询车辆、续保、续保险种 开始-->
     <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
         <association property="insuredInfo" javaType="com.bzs.model.query.InsuranceInfoAndType" >
-            <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId" />
-            <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
-            <result column="b_force_expire_date" jdbcType="VARCHAR" property="forceExpireDate" />
-            <result column="b_next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate" />
-            <result column="b_next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate" />
-            <result column="b_last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany" />
-            <result column="b_last_year_source" jdbcType="VARCHAR" property="lastYearSource" />
-            <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
-                        ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
-        </association>
+        <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId" />
+        <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
+        <result column="b_force_expire_date" jdbcType="VARCHAR" property="forceExpireDate" />
+        <result column="b_next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate" />
+        <result column="b_next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate" />
+        <result column="b_last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany" />
+        <result column="b_last_year_source" jdbcType="VARCHAR" property="lastYearSource" />
+        <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
+                    ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
+    </association>
         <collection property="quoteInfoList" resultMap="com.bzs.dao.QuoteInfoMapper.BaseResultMap"
-                    ofType="com.bzs.model.QuoteInfo" columnPrefix="q_"/>
+                                                                                        ofType="com.bzs.model.QuoteInfo" columnPrefix="q_"/>
     </resultMap>
     <select id="getCarInfoAndInsurance" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
         select a.*,

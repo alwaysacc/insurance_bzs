@@ -1,4 +1,4 @@
-package com.bzs.utils;
+package com.bzs.utils.function;
 
 /**
  * @program: insurance_bzs

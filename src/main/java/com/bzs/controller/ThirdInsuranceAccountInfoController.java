@@ -6,6 +6,7 @@ import com.bzs.service.ThirdInsuranceAccountInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,9 +50,24 @@ public class ThirdInsuranceAccountInfoController {
     }
 
     @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,ThirdInsuranceAccountInfo thirdInsuranceAccountInfo) {
         PageHelper.startPage(page, size);
-        List<ThirdInsuranceAccountInfo> list = thirdInsuranceAccountInfoService.findAll();
+        List<ThirdInsuranceAccountInfo> list = thirdInsuranceAccountInfoService.select(thirdInsuranceAccountInfo);
+        PageInfo pageInfo = new PageInfo(list);
+        return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    /**
+     * 通过createBy获取分页列表
+     * @param page
+     * @param size
+     * @param createBy
+     * @return
+     */
+    @PostMapping("/listByCreateBy")
+    public Result listByCreateBy(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String  createBy) {
+        PageHelper.startPage(page, size);
+        List<ThirdInsuranceAccountInfo> list = thirdInsuranceAccountInfoService.selectByCreateBy(createBy);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -62,8 +78,13 @@ public class ThirdInsuranceAccountInfoController {
     }
     @ApiOperation("添加或者修改，数据为空不修改")
     @PostMapping("/addOrUpdate")
-    public Result addOrUpdate (ThirdInsuranceAccountInfo accountInfo,String type){
-        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,type);
+    public Result addOrUpdate (ThirdInsuranceAccountInfo accountInfo,String createBy){
+        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,createBy);
+    }
+    @ApiOperation("批量删除")
+    @PostMapping("/deleteBatch")
+    public Result deleteBatch(String ids,String createBy){
+        return thirdInsuranceAccountInfoService.deleteBatch(ids,createBy);
     }
 
 

@@ -92,6 +92,12 @@ public class ThirdInsuranceAccountInfo {
     private String enableEndDate;
 
     /**
+     * 有效期截止日期
+     */
+    @Column(name = "level")
+    private String level;
+
+    /**
      * @return third_insurance_id
      */
     public String getThirdInsuranceId() {
@@ -355,5 +361,13 @@ public class ThirdInsuranceAccountInfo {
      */
     public void setEnableEndDate(String enableEndDate) {
         this.enableEndDate = enableEndDate;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 }

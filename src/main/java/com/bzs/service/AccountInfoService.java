@@ -3,7 +3,7 @@ import com.bzs.model.AccountInfo;
 import com.bzs.model.Verification;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
-import org.apache.ibatis.annotations.Param;
+import com.bzs.model.query.QueryRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -78,4 +78,30 @@ public interface AccountInfoService extends Service<AccountInfo> {
      * @return
      */
     Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
+
+
+    /**
+     * 通过用户名查找用户
+     *
+     * @param username username
+     * @return user
+     */
+    AccountInfo findByName(String username);
+
+    /**
+     * 通过用户 id 查找用户
+     *
+     * @param userId userId
+     * @return user
+     */
+
+    /**
+     * 查询用户详情，包括基本信息，用户角色，用户部门
+     *
+     * @param user    user
+     * @param request QueryRequest
+     * @return List<User>
+     */
+    List<AccountInfo> findUserDetail(AccountInfo user, QueryRequest request);
+
 }

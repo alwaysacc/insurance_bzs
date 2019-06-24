@@ -70,10 +70,6 @@ public class CommissionPercentageServiceImpl extends AbstractService<CommissionP
     public CommissionPercentage get(CommissionPercentage domain) {
         Condition example=new Condition(CommissionPercentage.class);
         Example.Criteria  criteria= example.createCriteria();
-       /* if (StringUtils.isNotBlank(menu.getMenuName()))
-            criteria.andCondition("menu_name=", menu.getMenuName());
-       */
-
         example.setOrderByClause("create_time");
         List<CommissionPercentage> menus = mapper.selectByCondition(example);
         if(CollectionUtils.isNotEmpty(menus)){

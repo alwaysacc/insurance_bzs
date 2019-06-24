@@ -1,7 +1,6 @@
 package com.bzs.controller;
 
-import com.bzs.model.router.VueRouter;
-import com.bzs.utils.FebsException;
+import com.bzs.utils.function.FebsException;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.TMenu;
@@ -10,9 +9,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.java.Log;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +76,7 @@ public class TMenuController {
         }
     }
     @PostMapping("/findUserMenus")
+    @RequiresRoles(value="ADMIN")
     public Result findUserMenus(String accountId) {
         List<TMenu> list = tMenuService.findUserMenus(accountId);
         if (CollectionUtils.isNotEmpty(list)) {
