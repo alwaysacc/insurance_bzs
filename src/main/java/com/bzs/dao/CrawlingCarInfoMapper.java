@@ -20,6 +20,7 @@ public interface CrawlingCarInfoMapper extends Mapper<CrawlingCarInfo> {
      * @return
      */
     List  crawlingDataList(@Param("seriesNo") String seriesNo,@Param("startRow")Integer startRow,@Param("pageSize")Integer pageSize);
+
     int crawlingDataCount(@Param("seriesNo") String seriesNo);
 
     List exportDataListBySeriesNo(@Param("seriesNo") String seriesNo,@Param("startRow")Integer startRow,@Param("pageSize")Integer pageSize);

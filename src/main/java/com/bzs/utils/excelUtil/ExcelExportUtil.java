@@ -1,5 +1,6 @@
 package com.bzs.utils.excelUtil;
 
+import com.bzs.utils.UUIDS;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.wuwenze.poi.util.POIUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +39,8 @@ public class ExcelExportUtil {
         SXSSFWorkbook wb = new SXSSFWorkbook(100);
 
         Integer sheetCount = ((totalRowCount
-                % ExcelInterface.PER_SHEET_ROW_COUNT == 0) ? (totalRowCount / ExcelInterface.PER_SHEET_ROW_COUNT)
-                : (totalRowCount / ExcelInterface.PER_SHEET_ROW_COUNT + 1));
+                % ExcelConstant.PER_SHEET_ROW_COUNT == 0) ? (totalRowCount / ExcelConstant.PER_SHEET_ROW_COUNT)
+                : (totalRowCount / ExcelConstant.PER_SHEET_ROW_COUNT + 1));
 
         // 根据总记录数创建sheet并分配标题
         for (int i = 0; i < sheetCount; i++) {
@@ -106,7 +107,7 @@ public class ExcelExportUtil {
         response.setHeader("Content-disposition", "attachment; filename="
                 + new String((fileName + ".xlsx").getBytes("utf-8"),
                 "ISO8859-1"));// 设置下载的文件名
-
+       // response.setHeader("Content-Length", String.valueOf(resourceAsStream.available()));
         OutputStream outputStream = null;
         try {
             outputStream = response.getOutputStream();
@@ -140,36 +141,34 @@ public class ExcelExportUtil {
      * @param writeExcelDataDelegated 向EXCEL写数据/处理格式的委托类 自行实现
      * @throws Exception
      */
-    public static final void exportExcelToLocalPath(Integer totalRowCount, String[] titles, String exportPath, List list, WriteExcelDataDelegated writeExcelDataDelegated) throws Exception {
-
-        log.info("开始导出：" + DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-
+    public static final void exportExcelToLocalPath(Integer totalRowCount, String[] titles, String exportPath,  WriteExcelDataDelegated writeExcelDataDelegated) throws Exception {
+        log.info("开始导出：" + exportPath);
         // 初始化EXCEL
         SXSSFWorkbook wb = ExcelExportUtil.initExcel(totalRowCount, titles);
-      /* if(totalRowCount>){
-
-       }*/
+        int forCount=((totalRowCount%ExcelConstant.PER_WRITE_ROW_COUNT)==0)?(totalRowCount/ExcelConstant.PER_WRITE_ROW_COUNT):(totalRowCount/ExcelInterface.PER_WRITE_ROW_COUNT+1);
 
         // 调用委托类分批写数据
         int sheetCount = wb.getNumberOfSheets();
-        System.out.println("sheetCount"+sheetCount);
         log.info("sheetCount"+sheetCount);
+        int ss=forCount<ExcelConstant.PER_SHEET_WRITE_COUNT?forCount:ExcelConstant.PER_SHEET_WRITE_COUNT;
         for (int i = 0; i < sheetCount; i++) {
             SXSSFSheet eachSheet = wb.getSheetAt(i);
-            for (int j = 1; j <= ExcelInterface.PER_SHEET_WRITE_COUNT; j++) {
-                int currentPage = i * ExcelInterface.PER_SHEET_WRITE_COUNT + j;
-                int pageSize = ExcelInterface.PER_WRITE_ROW_COUNT;
-                int startRowCount = (j - 1) * ExcelInterface.PER_WRITE_ROW_COUNT + 1;
+            for (int j = 1; j <=forCount ; j++) {
+                int currentPage = i * ss + j;
+                int pageSize = ExcelConstant.PER_WRITE_ROW_COUNT;
+                int startRowCount = (j - 1) * ExcelConstant.PER_WRITE_ROW_COUNT + 1;
                 int endRowCount = startRowCount + pageSize - 1;
+                if(endRowCount>totalRowCount){
+                    endRowCount=startRowCount+totalRowCount%ExcelConstant.PER_WRITE_ROW_COUNT -1;
+                }
                 writeExcelDataDelegated.writeExcelData(eachSheet, startRowCount, endRowCount, currentPage, pageSize);
             }
         }
 
-
         // 下载EXCEL
-        ExcelExportUtil.downLoadExcelToLocalPath(wb, exportPath);
+        ExcelExportUtil.downLoadExcelToLocalPath(wb,exportPath);
 
-        log.info("导出完成：" + DateUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        log.info("导出完成：" + exportPath);
     }
 
     /**
@@ -188,23 +187,26 @@ public class ExcelExportUtil {
 
         // 初始化EXCEL
         SXSSFWorkbook wb = ExcelExportUtil.initExcel(totalRowCount, titles);
-        int forCount=((totalRowCount%ExcelInterface.PER_WRITE_ROW_COUNT)==0)?(totalRowCount/ExcelInterface.PER_WRITE_ROW_COUNT):(totalRowCount/ExcelInterface.PER_WRITE_ROW_COUNT+1);
+        int forCount=((totalRowCount%ExcelConstant.PER_WRITE_ROW_COUNT)==0)?(totalRowCount/ExcelConstant.PER_WRITE_ROW_COUNT):(totalRowCount/ExcelConstant.PER_WRITE_ROW_COUNT+1);
+
+        //int forCount=((totalRowCount%ExcelInterface.PER_WRITE_ROW_COUNT)==0)?(totalRowCount/ExcelInterface.PER_WRITE_ROW_COUNT):(totalRowCount/ExcelInterface.PER_WRITE_ROW_COUNT+1);
 //https://blog.csdn.net/qq_35206261/article/details/82844159
 
         // 调用委托类分批写数据
         int sheetCount = wb.getNumberOfSheets();
         // System.out.println("sheetCount"+sheetCount);
         log.info("sheetCount"+sheetCount);
-        int ss=forCount<ExcelInterface.PER_SHEET_WRITE_COUNT?forCount:ExcelInterface.PER_SHEET_WRITE_COUNT;
+        int ss=forCount<ExcelConstant.PER_SHEET_WRITE_COUNT?forCount:ExcelConstant.PER_SHEET_WRITE_COUNT;
         for (int i = 0; i < sheetCount; i++) {
             SXSSFSheet eachSheet = wb.getSheetAt(i);
             for (int j = 1; j <=forCount ; j++) {
+               // eachSheet.setDefaultRowHeight((short)(2*256));
                 int currentPage = i * ss + j;
-                int pageSize = ExcelInterface.PER_WRITE_ROW_COUNT;
-                int startRowCount = (j - 1) * ExcelInterface.PER_WRITE_ROW_COUNT + 1;
+                int pageSize = ExcelConstant.PER_WRITE_ROW_COUNT;
+                int startRowCount = (j - 1) * ExcelConstant.PER_WRITE_ROW_COUNT + 1;
                 int endRowCount = startRowCount + pageSize - 1;
                 if(endRowCount>totalRowCount){
-                    endRowCount=startRowCount+totalRowCount%ExcelInterface.PER_WRITE_ROW_COUNT -1;
+                    endRowCount=startRowCount+totalRowCount%ExcelConstant.PER_WRITE_ROW_COUNT -1;
                 }
                 writeExcelDataDelegated.writeExcelData(eachSheet, startRowCount, endRowCount, currentPage, pageSize);
             }

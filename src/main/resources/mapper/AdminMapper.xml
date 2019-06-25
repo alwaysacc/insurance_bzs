@@ -18,6 +18,9 @@
     <result column="status" jdbcType="CHAR" property="status" />
     <result column="role_id" jdbcType="BIGINT" property="status" />
   </resultMap>
+  <resultMap id="adminAndRoleResultMap" type="com.bzs.model.query.AdminAndRole">
+    <result column="code" jdbcType="VARCHAR" property="roleCode" />
+  </resultMap>
   <select id="getAdminLoginName" resultType="String">
     select login_name from admin
   </select>
@@ -54,4 +57,8 @@
       a.status,
       a.role_id AS roleId,r.name as role_name from  admin a left join admin_role r on a.role_id=r.id
   </select>
+  <select id="adminAndRoleByAdminId" resultMap="adminAndRoleResultMap">
+    select a.*,r.code from admin a left  join admin_role r on  a.role_id=r.id where a.id=#{adminId}
+  </select>
+
 </mapper>

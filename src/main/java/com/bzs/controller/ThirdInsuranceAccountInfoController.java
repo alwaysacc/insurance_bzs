@@ -56,6 +56,23 @@ public class ThirdInsuranceAccountInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+    @ApiOperation("添加")
+    @PostMapping("/addAccount")
+    public Result addAccount (@RequestParam String createBy,@RequestParam String accountName,@RequestParam String accountPwd,@RequestParam String accountId,@RequestParam(defaultValue = "0") String level){
+        ThirdInsuranceAccountInfo accountInfo=new ThirdInsuranceAccountInfo();
+        accountInfo.setAccountId(accountId);
+        accountInfo.setAccountName(accountName);
+        accountInfo.setAccountPwd(accountPwd);
+        accountInfo.setCreateId(createBy);
+        accountInfo.setLevel(level);
+        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,createBy);
+    }
+
+    @ApiOperation("添加或者修改，数据为空不修改")
+    @PostMapping("/addOrUpdate")
+    public Result addOrUpdate (ThirdInsuranceAccountInfo accountInfo,String createBy){
+        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,createBy);
+    }
 
     /**
      * 通过createBy获取分页列表
@@ -76,11 +93,7 @@ public class ThirdInsuranceAccountInfoController {
     public Result updateById (ThirdInsuranceAccountInfo thirdInsuranceAccountInfo){
         return thirdInsuranceAccountInfoService.updateById(thirdInsuranceAccountInfo);
     }
-    @ApiOperation("添加或者修改，数据为空不修改")
-    @PostMapping("/addOrUpdate")
-    public Result addOrUpdate (ThirdInsuranceAccountInfo accountInfo,String createBy){
-        return thirdInsuranceAccountInfoService.addOrUpdate(accountInfo,createBy);
-    }
+
     @ApiOperation("批量删除")
     @PostMapping("/deleteBatch")
     public Result deleteBatch(String ids,String createBy){
@@ -117,6 +130,17 @@ public class ThirdInsuranceAccountInfoController {
     public Map findDifferSourceAccount(String accountId){
         return thirdInsuranceAccountInfoService.findDifferSourceAccount(accountId,"1");
     }
+
+    @ApiOperation("获取爬取数据的账号")
+    @PostMapping("/getCrawlingAdminList")
+    public Result getCrawlingAdminList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,@RequestParam String createBy){
+         PageHelper.startPage(page, size);
+        List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+        PageInfo pageInfo = new PageInfo(list);
+        return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+
 
 
 

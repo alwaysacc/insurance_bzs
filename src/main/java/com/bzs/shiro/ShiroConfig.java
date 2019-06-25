@@ -151,13 +151,13 @@ public class ShiroConfig {
         log.info("开始执行securityManager()方法");
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 配置 SecurityManager，并注入 shiroRealm
-        securityManager.setRealm(shiroRealm());
+       // securityManager.setRealm(shiroRealm());
         // 配置 rememberMeCookie
         securityManager.setRememberMeManager(rememberMeManager());
         // 配置 缓存管理类 cacheManager // 自定义缓存实现 使用redis
         securityManager.setCacheManager(cacheManager());
         // 自定义session管理 使用redis
-        securityManager.setSessionManager(sessionManager());
+        //securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
     /**

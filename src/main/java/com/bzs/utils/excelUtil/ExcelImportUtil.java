@@ -86,7 +86,7 @@ public class ExcelImportUtil {
             }
         }
     }
-    public static  Map<String,Object> readExcel(String suffix, String fileName, CrawlingCarInfoService basedao, CrawlingExcelInfoService crawlingExcelInfoService, String seriesNo, String createBy) throws Exception {
+    public static  Map<String,Object> readExcel(String suffix,String path, String fileName, CrawlingCarInfoService basedao, CrawlingExcelInfoService crawlingExcelInfoService, String seriesNo, String createBy,String type) throws Exception {
         crawlingCarInfoService=basedao;
         ExcelInterface excelInterface;
         int totalRows =0;
@@ -170,7 +170,7 @@ public class ExcelImportUtil {
 
                 }
             };
-            totalRows =excelInterface.process(fileName);
+            totalRows =excelInterface.process(path);
             List<Map<String, Object>> l=excelInterface.getListMap();
             if(CollectionUtils.isNotEmpty(l)){
                 List<CrawlingCarInfo> listData=new ArrayList<CrawlingCarInfo>();
@@ -256,7 +256,7 @@ public class ExcelImportUtil {
 
                 }
             };
-            totalRows = excelInterface.process(fileName);
+            totalRows = excelInterface.process(path);
             List<Map<String, Object>> l=excelInterface.getListMap();
             if(CollectionUtils.isNotEmpty(l)){
                 List<CrawlingCarInfo> listData=new ArrayList<CrawlingCarInfo>();
@@ -275,7 +275,7 @@ public class ExcelImportUtil {
         Map<String,Object> map=new HashMap<String, Object>();
         map.put("totalRows", totalRows);
         map.put("code", excelInterface);
-        CrawlingExcelInfo data=new CrawlingExcelInfo(fileName,seriesNo,createBy,null,totalRows);
+        CrawlingExcelInfo data=new CrawlingExcelInfo(fileName,seriesNo,createBy,type,totalRows);
         crawlingExcelInfoService.add(data);
         return map;
     }

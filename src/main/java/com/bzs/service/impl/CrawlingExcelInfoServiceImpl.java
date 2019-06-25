@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.Transient;
+import java.util.Date;
 
 
 /**
@@ -39,5 +41,34 @@ public class CrawlingExcelInfoServiceImpl extends AbstractService<CrawlingExcelI
     @Override
     public CrawlingExcelInfo findBy(String fieldName, Object value) throws TooManyResultsException {
         return super.findBy(fieldName, value);
+    }
+
+    @Override
+    public int updateCrawlingFinish(CrawlingExcelInfo data) {
+        return crawlingExcelInfoMapper.updateCrawlingFinish(data);
+    }
+
+    @Transient
+    @Override
+    public int updateCrawlingFinish(String  seriesNo,Integer lastCrawling, String status, Integer finishTotal, Date finishDate) {
+        CrawlingExcelInfo data=new CrawlingExcelInfo();
+        if(StringUtils.isNotBlank(seriesNo)){
+            data.setSeriesNo(seriesNo);
+        }else{
+            return 0;
+        }
+        if(null!=lastCrawling){
+            data.setLastCrawling(lastCrawling);
+        }
+        if(StringUtils.isNotBlank(status)){
+            data.setStatus(status);
+        }
+        if(null!=finishTotal){
+            data.setFinishTotal(finishTotal);
+        }
+        if(null!=finishDate){
+            data.setFinishDate(finishDate);
+        }
+        return updateCrawlingFinish(data);
     }
 }

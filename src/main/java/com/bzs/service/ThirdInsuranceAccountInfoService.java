@@ -68,4 +68,11 @@ public interface ThirdInsuranceAccountInfoService extends Service<ThirdInsurance
      * @return
      */
     Result deleteBatch(String ids, String createBy);
+
+    /**
+     * 获取账号下的所有第三方账号
+     * @param createBy
+     * @return
+     */
+    List getCrawlingAndAdminList(String createBy);
 }

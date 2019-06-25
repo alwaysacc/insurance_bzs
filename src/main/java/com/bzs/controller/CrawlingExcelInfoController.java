@@ -17,7 +17,7 @@ import java.util.List;
 * Created by dl on 2019/06/20.
 */
 @RestController
-@RequestMapping("/crawling/excel/info")
+@RequestMapping("/crawling/excelinfo")
 public class CrawlingExcelInfoController {
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;

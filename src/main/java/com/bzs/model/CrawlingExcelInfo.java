@@ -41,7 +41,7 @@ public class CrawlingExcelInfo {
     private Date finishDate;
 
     /**
-     * 0车牌1车架
+     * 1车牌2车架
      */
     private String type;
 

@@ -2,8 +2,11 @@ package com.bzs.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.bzs.dao.AdminMapper;
 import com.bzs.dao.ThirdInsuranceAccountInfoMapper;
 import com.bzs.model.ThirdInsuranceAccountInfo;
+import com.bzs.model.query.AdminAndRole;
+import com.bzs.service.AdminRoleService;
 import com.bzs.service.ThirdInsuranceAccountInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
@@ -35,6 +38,8 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
    private static Logger logger=LoggerFactory.getLogger(ThirdInsuranceAccountInfoServiceImpl.class);
     @Resource
     private ThirdInsuranceAccountInfoMapper thirdInsuranceAccountInfoMapper;
+    @Resource
+    private AdminMapper adminMapper;
 
     @Override
     public Result updateById(ThirdInsuranceAccountInfo accountInfo) {
@@ -137,6 +142,18 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
 
     @Override
     public Result addOrUpdate(ThirdInsuranceAccountInfo accountInfo, String createBy) {
+        if(StringUtils.isBlank(createBy)){
+            return  ResultGenerator.genFailResult("账号信息不能为空");
+        }
+        AdminAndRole ar= adminMapper.adminAndRoleByAdminId(Integer.valueOf(createBy));
+        if(ar!=null){
+            String  code=ar.getRoleCode();
+            if(StringUtils.isBlank(code)||!"SADMIN".equals(code)||!"CADMIN".equals(code)){
+                return  ResultGenerator.genFailResult("未获取权限");
+            }
+        }else{
+            return  ResultGenerator.genFailResult("无查询到次账号信息");
+        }
        String msg="";
         //初始化后的对象不为null,根据属性值判断，属性值如果是 "" 则释为空
         //if(!ObjectUtil.isEmptyIncludeQuotationMark(accountInfo)){
@@ -147,11 +164,11 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             }else{
                 String uuid=UUIDS.getDateUUID();
                 accountInfo.setThirdInsuranceId(uuid);
-                Subject subject = SecurityUtils.getSubject();
+              /*  Subject subject = SecurityUtils.getSubject();
                 boolean b= subject.hasRole("SADMIN");
                 if(!b){
                      accountInfo.setLevel("1");
-                }
+                }*/
                 msg="添加";
             }
             int result=  thirdInsuranceAccountInfoMapper.addOrUpdate(accountInfo);
@@ -213,5 +230,34 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         ThirdInsuranceAccountInfo data=new ThirdInsuranceAccountInfo();
         data.setCreateId(crateBy);
         return this.select(data);
+    }
+
+    @Override
+    public List getCrawlingAndAdminList(String createBy) {
+        if(StringUtils.isBlank(createBy)){
+            return null;
+        }
+        AdminAndRole ar= adminMapper.adminAndRoleByAdminId(Integer.valueOf(createBy));
+        if(ar!=null){
+            String  code=ar.getRoleCode();
+            if(StringUtils.isBlank(code)){
+                return null;
+            }else{
+                if("SADMIN".equals(code)||"CADMIN".equals(code)){
+                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAdminList(null,null);
+               return  list;
+                }else if("CRAWLING".equalsIgnoreCase(code)){
+                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAdminList(createBy,code);
+                    return  list;
+                }else{
+                    return null;
+                }
+
+            }
+        }else{
+            return null;
+        }
+
+
     }
 }

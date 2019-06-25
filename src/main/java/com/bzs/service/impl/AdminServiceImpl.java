@@ -62,4 +62,6 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
         }
         return  set.contains(loginName);
     }
+
+
 }

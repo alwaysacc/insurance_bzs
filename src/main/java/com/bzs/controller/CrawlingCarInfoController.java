@@ -16,17 +16,16 @@ import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import static com.bzs.utils.excelUtil.ExcelImportUtil.readExcel;
  * Created by dl on 2019/06/19.
  */
 @RestController
-@RequestMapping("/crawling/car/info")
+@RequestMapping("/crawling/carinfo")
 public class CrawlingCarInfoController {
     private static final Logger log = LoggerFactory.getLogger(CrawlingCarInfoController.class);
     @Resource
@@ -75,9 +74,9 @@ public class CrawlingCarInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
+    @ApiOperation("上传需要导入的数据")
     @PostMapping("/import")
-    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy) {
+    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy,@RequestParam(defaultValue = "2") String type) {
         String fileName = new File(file.getOriginalFilename()).getName();
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
         String seriesNo = UUIDS.getDateUUID();
@@ -88,7 +87,7 @@ public class CrawlingCarInfoController {
                 file.transferTo(f);
                 f.deleteOnExit();
                 String path = f.getAbsolutePath();
-                readExcel(suffix, path, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy);
+                readExcel(suffix, path,fileName, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy,type);
             } catch (Exception e) {
                 return ResultGenerator.genFailResult("上传异常");
             }
@@ -101,11 +100,26 @@ public class CrawlingCarInfoController {
         }
 
     }
-
-    @PostMapping("/importTest")
-    public Result om() {
+    /**
+     * 开始爬取
+     * @return
+     */
+    @ApiOperation("执行爬取")
+    @PostMapping("/startCrawling")
+    public Result startCrawling(String seriesNo){
+        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
+        return crawlingCarInfoService.startCrawling(seriesNo);
+    }
+    @ApiOperation("导出数据")
+    @GetMapping("/exportCrawlingDataList")
+    public void exportCrawlingDataList(HttpServletResponse response , HttpServletRequest request,String seriesNo){
+        crawlingCarInfoService.exportCrawlingDataList(response,request,seriesNo);
+    }
+    /* @ApiOperation("导入测试")
+    @PostMapping("/importTest")*/
+    public Result importTest() {
         try {
-            String path = "B:\\testExcelData\\模板不要删.xls";
+            String path = "B:\\testExcelData\\模板.xls";
             File file = new File(path);
             FileInputStream fileInputStream = new FileInputStream(file);
             MultipartFile multipartFile = new MockMultipartFile(file.getName(), file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
@@ -116,7 +130,7 @@ public class CrawlingCarInfoController {
             multipartFile.transferTo(f);
             f.deleteOnExit();
             String paths = f.getAbsolutePath();
-            readExcel(suffix, paths, crawlingCarInfoService, crawlingExcelInfoService, UUIDS.getDateUUID(), "1");
+            readExcel(suffix, paths,fileName, crawlingCarInfoService, crawlingExcelInfoService, UUIDS.getDateUUID(), "1","2");
             return ResultGenerator.genSuccessResult("上传成功");
         } catch (Exception e) {
             log.error("异常", e);
@@ -125,7 +139,7 @@ public class CrawlingCarInfoController {
 
     }
 
-    @PostMapping("/batchInsertImportTest")
+   // @PostMapping("/batchInsertImportTest")
     public Result batchInsertImportTest() {
         List<CrawlingCarInfo> list = new ArrayList<>();
         CrawlingCarInfo carInfo = null;
@@ -140,7 +154,7 @@ public class CrawlingCarInfoController {
             return ResultGenerator.genFailResult("批量添加失败");
         }
     }
-
+    @ApiOperation("爬取测试")
     @PostMapping("/textss")
     public Result textss(String username, String password, String flag, String no) {
         String map = crawlingCarInfoService.httpCrawling(username, password, flag, no);
@@ -166,18 +180,5 @@ public class CrawlingCarInfoController {
     public int crawlingDataCount(String seriesNo) {
         return crawlingCarInfoService.crawlingDataCount(seriesNo);
     }
-    @ApiOperation("导出数据")
-    @PostMapping("/exportCrawlingDataList")
-    public void exportCrawlingDataList(HttpServletResponse response ,String seriesNo){
-        crawlingCarInfoService.exportCrawlingDataList(response,seriesNo);
-    }
-    /**
-     * 开始爬取
-     * @return
-     */
-    @ApiOperation("执行爬取")
-    @PostMapping("/startCrawling")
-    public Result startCrawling(String seriesNo){
-        return crawlingCarInfoService.startCrawling(seriesNo);
-    }
-}
+
+ }

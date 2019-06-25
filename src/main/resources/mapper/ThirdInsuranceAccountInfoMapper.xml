@@ -139,4 +139,32 @@
   </delete>
 
   <!--修改或添加 结束-->
+  <resultMap id="CrawlingAndAdminListResultMap" type="com.bzs.model.query.ThridAccountAndAdminDomain">
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="account_pwd" jdbcType="VARCHAR" property="accountPwd" />
+    <result column="third_insurance_id" jdbcType="VARCHAR" property="thirdInsuranceId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+  </resultMap>
+
+  <select id="getCrawlingAndAdminList" resultMap="CrawlingAndAdminListResultMap">
+    select
+      b.account_name,
+      b.account_pwd,
+      b.third_insurance_id,
+      a.name,
+      a.login_name,
+      a.id  as  admin_id
+      from  third_insurance_account_info  b left  join  admin a on  a.id = b.account_id left join admin_role  ar on ar.id=a.role_id
+      <trim prefix="where" suffixOverrides="and">
+        <if test="createBy!=null and createBy!=''">
+          b.account_id =#{createBy} and
+        </if>
+        <if test="code!=null and code!=''">
+          ar.code =#{code} and
+        </if>
+      </trim>
+
+  </select>
 </mapper>

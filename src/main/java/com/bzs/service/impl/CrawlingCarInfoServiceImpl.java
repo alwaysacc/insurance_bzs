@@ -3,6 +3,7 @@ package com.bzs.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.CrawlingCarInfoMapper;
+import com.bzs.dao.CrawlingExcelInfoMapper;
 import com.bzs.model.CommissionPercentage;
 import com.bzs.model.CrawlingCarInfo;
 import com.bzs.model.CrawlingExcelInfo;
@@ -12,6 +13,7 @@ import com.bzs.service.CrawlingExcelInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
+import com.bzs.utils.UUIDS;
 import com.bzs.utils.dateUtil.DateUtil;
 import com.bzs.utils.excelUtil.ExcelExportUtil;
 import com.bzs.utils.excelUtil.WriteExcelDataDelegated;
@@ -32,7 +34,9 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +53,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     private CrawlingCarInfoMapper crawlingCarInfoMapper;
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;
+    @Resource
+    private CrawlingExcelInfoMapper crawlingExcelInfoMapper;
 
     @Override
     public int batchInsertImport(List<CrawlingCarInfo> list) {
@@ -108,26 +114,32 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     @Override
     public Result startCrawling(String seriesNo) {
         if (StringUtils.isBlank(seriesNo)) {
+            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
+
             return ResultGenerator.genFailResult("请选择需要执行的文件");
         }
         CrawlingExcelInfo excelInfo = crawlingExcelInfoService.findBy("seriesNo", seriesNo);
         if (null == excelInfo) {
+            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
+
             return ResultGenerator.genFailResult("请选择需要执行的文件");
         } else {
             String status = excelInfo.getStatus();
             String type = excelInfo.getType();
+            int count=excelInfo.getTotal();
             if ("1".equals(status)) {//1完成
+                crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
                 return ResultGenerator.genFailResult("文件已经爬取完毕");
-            } else {//状态0未执行 2暂停
+            } else {//状态0未执行 2暂停 3执行中
                 String username = "HAICzl01";
                 String passWord = "ZLzl123";
-
+                //开始执行修改为执行中
+//                crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"3");
                 int total = crawlingCarInfoMapper.crawlingDataCount(seriesNo);
-
                 if (total > 0) {
-                    Integer pageSize = 10;
-                    Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
-                    page = 1;
+                    Integer pageSize = 100;
+                    //Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
+                    Integer page = 1;
                     for (int i = 0; i < page; page--) {
                         Integer startRow = (page - 1) * pageSize;
                         List<CrawlingCarInfo> list = crawlingCarInfoMapper.crawlingDataList(seriesNo, startRow, pageSize);
@@ -138,6 +150,10 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 String carOwner = data.getCarOwner();
                                 String no = "";
                                 Long id = data.getId();
+                                int indexNo=data.getIndexNo();
+                                if((indexNo+"").equals(count+"")){
+                                    crawlingExcelInfoService.updateCrawlingFinish(seriesNo, id.intValue(),"1",total,new Date());
+                                }
                                 if (!"1".equals(type)) {
                                     no = vinNo;
                                 } else {//等于1车牌
@@ -193,6 +209,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                         data.setEngineNo(resData.getFadongji_no());//发送机号
                                         data.setIsDrawling(type);//2车架爬取1车牌爬取
                                         data.setModel(resData.getCar_type());//车辆型号
+                                        log.info("车辆和型号："+resData.getCar_type()+",品牌："+resData.getCn_type());
                                         data.setRegisterDate(resData.getStart_time());//初登日期
                                         String newCarNo = resData.getChepai_no();
                                         data.setNewCarNo(newCarNo);//车牌
@@ -230,15 +247,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 }
                                 crawlingCarInfoMapper.crawlingUpdate(data);//修改爬取的车辆信息
                             }
-
                         } else {
                             break;
                         }
                         // return ResultGenerator.genSuccessResult(list, "文件已经爬取完毕");
                     }
+                    crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"1");
                     return ResultGenerator.genSuccessResult("文件已经爬取完毕");
 
                 } else {
+                    crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"1");
                     return ResultGenerator.genFailResult("文件已经爬取完毕");
                 }
             }
@@ -246,10 +264,13 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     }
 
     @Override
-    public String exportCrawlingDataList(HttpServletResponse response, String seriesNo) {
-        int totalRowCount = crawlingDataCount(seriesNo);
+    public String exportCrawlingDataList(HttpServletResponse response, HttpServletRequest request, String seriesNo) {
+        int totalRowCount = exportDataCountBySeriesNo(seriesNo);
         // 导出EXCEL文件名称
-        String filaName = "数据表";
+        String path= request.getSession().getServletContext().getRealPath("");
+      //  path=request.getSession().getServletContext().getRealPath(request.getRequestURI());
+        String filaName = UUIDS.getDateUUID();
+        path+=filaName+".xlsx";
         // 标题
         String[] titles = {"车辆牌照","新车牌", "车主","新车主","车架号",
                 "品牌","车辆型号","发动机号","登记日期","过户日期(没有过户没有)",
@@ -257,11 +278,12 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                 "违章次数", "身份证号码","联系电话","序号"};
         // 开始导入
         try {
-            ExcelExportUtil.exportExcelToWebsite(response, totalRowCount, filaName, titles, new WriteExcelDataDelegated() {
+//         ExcelExportUtil.exportExcelToLocalPath(totalRowCount,  titles,path, new WriteExcelDataDelegated() {
+          ExcelExportUtil.exportExcelToWebsite(response, totalRowCount, filaName, titles, new WriteExcelDataDelegated() {
                 @Override
                 public void writeExcelData(SXSSFSheet eachSheet, Integer startRowCount, Integer endRowCount, Integer currentPage, Integer pageSize) throws Exception {
                     int startRow = (currentPage - 1) * pageSize;
-                    List<CrawlingCarInfo> userVOList = crawlingDataList(seriesNo, startRow, pageSize);
+                    List<CrawlingCarInfo> userVOList = crawlingCarInfoMapper.exportDataListBySeriesNo(seriesNo, startRow, pageSize);
                     if (!CollectionUtils.isEmpty(userVOList)) {
                         if (userVOList.size() < pageSize) {
                             endRowCount = pageSize * currentPage + userVOList.size();
@@ -289,7 +311,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
                                 eachDataRow.createCell(8).setCellValue(
                                         eachUserVO.getRegisterDate() == null ? "" : eachUserVO.getRegisterDate());// 登记日期
-
                                 eachDataRow.createCell(9).setCellValue(
                                         eachUserVO.getTransferDate() == null ? "" : eachUserVO.getTransferDate());// 过户日期(没有过户没有)
 
@@ -298,10 +319,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
                                 eachDataRow.createCell(11).setCellValue(
                                         eachUserVO.getForceEndDate() == null ? "" : eachUserVO.getForceEndDate());// 交强险到期日期
-
                                 eachDataRow.createCell(12).setCellValue(
                                         eachUserVO.getBizCompany()== null ? "" : eachUserVO.getBizCompany());// 商业险承保公司
-
                                 eachDataRow.createCell(13).setCellValue(
                                         eachUserVO.getBizEndDate()== null ? "" : eachUserVO.getBizEndDate());// 商业险到期日期
 
@@ -315,17 +334,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                         eachUserVO.getMobile()== null ? "" : eachUserVO.getMobile());// 电话
                                 eachDataRow.createCell(18).setCellValue(
                                         eachUserVO.getIndexNo()== null ? 0 : eachUserVO.getIndexNo());// 电话
-
-                                      /*  if (null != eachUserVO.getEndDate()) {
-                                            eachDataRow
-                                                    .createCell(12)
-                                                    .setCellValue(
-                                                            DateUtil.getDateToString(
-                                                                    eachUserVO
-                                                                            .getEndDate(),
-                                                                    "yyyy-MM-dd"));// 保险到期日期
-                                        }*/
-
                             }
                         }
                     }

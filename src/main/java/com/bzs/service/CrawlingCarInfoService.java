@@ -4,6 +4,7 @@ import com.bzs.model.query.CrawlingQuery;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,11 @@ public interface CrawlingCarInfoService extends Service<CrawlingCarInfo> {
      */
     public List<CrawlingCarInfo> exportDataListBySeriesNo(String seriesNo);
 
+    /**
+     * 通过序列号查询
+     * @param seriesNo
+     * @return
+     */
     public int exportDataCountBySeriesNo(String seriesNo);
 
     /**
@@ -56,5 +62,5 @@ public interface CrawlingCarInfoService extends Service<CrawlingCarInfo> {
      */
     Result startCrawling(String  seriesNo);
 
-    String exportCrawlingDataList(HttpServletResponse response, String seriesNo);
+    String exportCrawlingDataList(HttpServletResponse response, HttpServletRequest request, String seriesNo);
 }

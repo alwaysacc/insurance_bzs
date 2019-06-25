@@ -73,12 +73,12 @@
     a.series_no,
     a.index_no
     from crawling_car_info a  inner join crawling_excel_info b on a.series_no = b.series_no where a.series_no=#{seriesNo}
-    and a.status='0' and b.status in('0','2') limit #{startRow},#{pageSize}
+     limit #{startRow},#{pageSize}
   </select>
+    <!--and a.status='0' and b.status in('0','2','3')-->
   <select id="crawlingDataCount" resultType="int">
     select count(a.id)
     from crawling_car_info a  inner join crawling_excel_info b on a.series_no =b.series_no where a.series_no=#{seriesNo}
-    and a.status='0' and b.status in('0','2')
   </select>
 
   <select id="exportDataListBySeriesNo" resultMap="BaseResultMap">
@@ -123,7 +123,7 @@
             <if test="newVinNo!=null and newVinNo!=''">new_vin_no=#{newVinNo},</if>
             <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no=#{isNewCarNo},</if>
             <if test="brand!=null and brand!=''">brand=#{brand},</if>
-            <if test="model!=null and model!=''">model=#{brand},</if>
+            <if test="model!=null and model!=''">model=#{model},</if>
             <if test="engineNo!=null and engineNo!=''">engine_no=#{engineNo},</if>
             <if test="registerDate!=null and registerDate!=''">register_date=#{registerDate},</if>
             <if test="transferDate!=null and transferDate!=''">transfer_date=#{transferDate},</if>
