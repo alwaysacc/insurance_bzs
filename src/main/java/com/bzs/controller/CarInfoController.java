@@ -133,7 +133,7 @@ public class CarInfoController {
     }
     @ApiOperation("获取车辆信息、续保险种、报价信息，")
     @PostMapping("/getCarInfoAndInsurance")
-        public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,
+    public Result getCarInfoAndInsurance(String carInfoId, String createBy,String carNo,String vinNo,
                                          @RequestParam(defaultValue = "0")Integer page,
                                          @RequestParam(defaultValue = "0") Integer size,
                                          String isEnable,String isRenewSuccess){
@@ -156,7 +156,7 @@ public class CarInfoController {
     }
 
     @PostMapping("/getCarInfoQuote")
-    public Result getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,String isRenewSuccess,
+    public Result getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,String  isRenewSuccess,
     @RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size
     ){
         PageHelper.startPage(page, size);

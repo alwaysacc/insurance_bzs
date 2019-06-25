@@ -58,7 +58,8 @@ public class JuHeHttpUtil {
     public static String  getRequest(String mobile){
         String result =null;
         Map map=new HashMap();
-        map.put("#code#",Randoms.num(1000,9999));
+        int code=Randoms.num(1000,9999);
+        map.put("#code#",code);
         String tplValue=urlencode(map);
         String url ="http://v.juhe.cn/sms/send";//请求接口地址
         Map params = new HashMap();//请求参数
@@ -73,7 +74,7 @@ public class JuHeHttpUtil {
            // return  result;
             JSONObject object = JSONObject.fromObject(result);
             if(object.getInt("error_code")==0){
-                results= (String)object.get("result");
+                results= object.getString("result");
             }else{
                 results= object.get("error_code")+":"+object.get("reason");
             }
@@ -81,7 +82,7 @@ public class JuHeHttpUtil {
             results=  "{\"error_code\":500,\"reason\":\"请求异常\"}";
         }
         log.info("发送验证码返回信息："+results);
-        return results;
+        return code+"";
     }
 
 

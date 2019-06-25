@@ -70,7 +70,7 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
 
     @Override
     public AccountInfo findByLoginName(String userName) {
-        return accountInfoService.findBy("loginName", userName);
+        return accountInfoMapper.login(userName);
     }
 
     @Override
@@ -163,6 +163,17 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         accountInfo.setParentId(accountInfo1.getAccountId());
         accountInfo.setSuperior(accountInfo1.getUserName());
         accountInfoService.save(accountInfo);
+        HashSet set;
+        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
+            log.info("用户账号存入redis");
+            set=accountInfoMapper.getUserLoginName();
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
+        }else{
+            log.info("从redis取出用户账号");
+            set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
+            set.add(accountInfo.getLoginName());
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
+        }
         Map map=new HashMap();
         map.put("superior",accountInfo1);
         map.put("account",accountInfo);
@@ -324,13 +335,14 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     @Override
     public boolean checkUserLoginName(String loginName) {
         HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
             log.info("用户账号存入redis");
             set=accountInfoMapper.getUserLoginName();
-            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
         }else{
             log.info("从redis取出用户账号");
-            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
+            System.out.println(set.toString());
         }
         return  set.contains(loginName);
     }

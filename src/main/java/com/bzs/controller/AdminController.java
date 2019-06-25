@@ -102,14 +102,14 @@ public class AdminController {
         admin.setLoginPwd(MD5Utils.encrypt(admin.getLoginName().toLowerCase(),admin.getLoginPwd()));
         adminService.save(admin);
         HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.LOGIN_NAME_LIST)){
+        if (!redisUtil.hasKey(RedisConstant.ADMIN_LOGIN_NAME_LIST)){
             set=adminMapper.getAdminLoginName();
-            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+            redisUtil.set(RedisConstant.ADMIN_LOGIN_NAME_LIST,set,720000);
         }else{
             log.info("账号存入redis");
-            set= (HashSet) redisUtil.get(RedisConstant.LOGIN_NAME_LIST);
+            set= (HashSet) redisUtil.get(RedisConstant.ADMIN_LOGIN_NAME_LIST);
             set.add(admin.getLoginName());
-            redisUtil.set(RedisConstant.LOGIN_NAME_LIST,set,3600);
+            redisUtil.set(RedisConstant.ADMIN_LOGIN_NAME_LIST,set,720000);
         }
         return ResultGenerator.genSuccessResult();
     }
