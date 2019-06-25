@@ -157,7 +157,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 if (!"1".equals(type)) {
                                     no = vinNo;
                                 } else {//等于1车牌
-                                    type = "2";
                                     no = carNo;
                                 }
                                 String resultMap = httpCrawling(username, passWord, type, no);

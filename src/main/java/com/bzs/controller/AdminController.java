@@ -139,5 +139,4 @@ public class AdminController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
 }

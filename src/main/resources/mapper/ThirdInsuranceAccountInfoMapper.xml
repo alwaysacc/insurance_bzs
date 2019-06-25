@@ -146,6 +146,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="login_name" jdbcType="VARCHAR" property="loginName" />
     <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
   </resultMap>
 
   <select id="getCrawlingAndAdminList" resultMap="CrawlingAndAdminListResultMap">
@@ -155,8 +156,15 @@
       b.third_insurance_id,
       a.name,
       a.login_name,
-      a.id  as  admin_id
-      from  third_insurance_account_info  b left  join  admin a on  a.id = b.account_id left join admin_role  ar on ar.id=a.role_id
+      a.id  as  admin_id,
+      case  when ar.code='SADMIN' then '超级管理员'
+            when ar.code='CADMIN' then '普通管理员'
+            when ar.code='CRAWLING' then '数据爬取员'
+      else '其他'
+      end  as role_name
+    from  third_insurance_account_info  b
+    left  join  admin a on  a.id = b.account_id
+    left join admin_role  ar on ar.id=a.role_id
       <trim prefix="where" suffixOverrides="and">
         <if test="createBy!=null and createBy!=''">
           b.account_id =#{createBy} and

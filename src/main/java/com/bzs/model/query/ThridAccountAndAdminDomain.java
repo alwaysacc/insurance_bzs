@@ -13,6 +13,7 @@ public class ThridAccountAndAdminDomain {
     private String thirdInsuranceId;
     private String name;
     private String loginName;
+    private String roleName;//角色名称
 
     public String getAccountName() {
         return accountName;
@@ -60,5 +61,13 @@ public class ThridAccountAndAdminDomain {
 
     public void setLoginName(String loginName) {
         this.loginName = loginName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }
