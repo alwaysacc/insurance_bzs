@@ -1,6 +1,10 @@
 package com.bzs.controller;
 
 import com.bzs.dao.AccountInfoMapper;
+import com.bzs.dao.OrderInfoMapper;
+import com.bzs.dao.QuoteInfoMapper;
+import com.bzs.model.OrderInfo;
+import com.bzs.model.QuoteInfo;
 import com.bzs.model.Verification;
 import com.bzs.redis.RedisUtil;
 import com.bzs.shiro.FebsProperties;
@@ -61,6 +65,33 @@ public class AccountInfoController {
     private RedisUtil redisUtil;
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @Resource
+    private OrderInfoMapper orderInfoMapper;
+    @Resource
+    private QuoteInfoMapper quoteInfoMapper;
+
+    @PostMapping("/getHomeInfo")
+    public Result getHomeInfo(String loginName){
+        HashMap map;
+        if (redisUtil.hasKey(RedisConstant.HOME_MAP)) {
+            map= (HashMap) redisUtil.get(RedisConstant.HOME_MAP);
+        }else{
+            AccountInfo accountInfo=null;
+            int userCount=accountInfoMapper.selectCount(accountInfo);
+            OrderInfo orderInfo=null;
+            int orderCount=orderInfoMapper.selectCount(orderInfo);
+            QuoteInfo quoteInfo=null;
+            int quoteCount=quoteInfoMapper.selectCount(quoteInfo);
+            int todayCount=accountInfoMapper.getTodayLoginCount();
+            map=new HashMap();
+            map.put("userCount",userCount);
+            map.put("orderCount",orderCount);
+            map.put("quoteCount",quoteCount);
+            map.put("todayCount",todayCount);
+            redisUtil.set(RedisConstant.HOME_MAP,map,3600);
+        }
+        return ResultGenerator.genSuccessResult(map);
+    }
     @PostMapping("/checkUserLoginName")
     public boolean checkUserLoginName(String loginName) {
         return accountInfoService.checkUserLoginName(loginName);
@@ -310,5 +341,9 @@ public class AccountInfoController {
     @PostMapping("/getCode")
     public Result getCode(String mobile){
         return ResultGenerator.genSuccessResult(JuHeHttpUtil.getRequest(mobile));
+    }
+    @PostMapping("/getUserNameAndId")
+    public Result getUserNameAndId(){
+        return ResultGenerator.genSuccessResult(accountInfoService.getUserNameAndId());
     }
 }

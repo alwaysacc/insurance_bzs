@@ -364,4 +364,15 @@
     <select id="getUserLoginName" resultType="String">
         select login_name from account_info
     </select>
+
+    <!--获取添加第三方账号的用户名id-->
+    <select id="getUserNameAndId" resultMap="BaseResultMap">
+        select user_name,account_id from account_info <where>
+        delete_status=0 and
+        account_state=0
+    </where>
+    </select>
+    <select id="getTodayLoginCount" resultType="int">
+        select count(account_id) from account_info where datediff(login_time,now())=0
+    </select>
 </mapper>
