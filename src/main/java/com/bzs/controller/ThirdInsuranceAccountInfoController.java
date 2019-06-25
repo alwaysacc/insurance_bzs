@@ -134,14 +134,9 @@ public class ThirdInsuranceAccountInfoController {
     @ApiOperation("获取爬取数据的账号")
     @PostMapping("/getCrawlingAdminList")
     public Result getCrawlingAdminList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,@RequestParam String createBy){
-         PageHelper.startPage(page, size);
+        PageHelper.startPage(page, size);
         List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
-
-
-
-
 }
