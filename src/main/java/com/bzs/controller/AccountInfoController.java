@@ -311,4 +311,7 @@ public class AccountInfoController {
     public Result getCode(String mobile){
         return ResultGenerator.genSuccessResult(JuHeHttpUtil.getRequest(mobile));
     }
+
+
+
 }

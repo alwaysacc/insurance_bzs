@@ -113,7 +113,6 @@ public class AdminController {
         }
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         adminService.deleteById(id);
@@ -125,13 +124,11 @@ public class AdminController {
         adminService.update(admin);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
         Admin admin = adminService.findById(id);
         return ResultGenerator.genSuccessResult(admin);
     }
-
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
