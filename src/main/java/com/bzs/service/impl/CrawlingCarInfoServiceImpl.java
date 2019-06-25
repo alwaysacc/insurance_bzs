@@ -138,8 +138,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                 int total = crawlingCarInfoMapper.crawlingDataCount(seriesNo);
                 if (total > 0) {
                     Integer pageSize = 100;
-                    //Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
-                    Integer page = 1;
+                    Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
+                    //Integer page = 1;
                     for (int i = 0; i < page; page--) {
                         Integer startRow = (page - 1) * pageSize;
                         List<CrawlingCarInfo> list = crawlingCarInfoMapper.crawlingDataList(seriesNo, startRow, pageSize);
