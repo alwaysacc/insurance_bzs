@@ -28,6 +28,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
@@ -111,6 +112,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
         return crawlingCarInfoMapper.crawlingDataCount(seriesNo);
     }
 
+    @Async
     @Override
     public Result startCrawling(String seriesNo) {
         if (StringUtils.isBlank(seriesNo)) {
@@ -157,7 +159,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 if (!"1".equals(type)) {
                                     no = vinNo;
                                 } else {//等于1车牌
-                                    type = "2";
                                     no = carNo;
                                 }
                                 String resultMap = httpCrawling(username, passWord, type, no);

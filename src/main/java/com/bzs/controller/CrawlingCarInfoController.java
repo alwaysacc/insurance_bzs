@@ -16,6 +16,7 @@ import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ import static com.bzs.utils.excelUtil.ExcelImportUtil.readExcel;
  */
 @RestController
 @RequestMapping("/crawling/carinfo")
+@EnableAsync
 public class CrawlingCarInfoController {
     private static final Logger log = LoggerFactory.getLogger(CrawlingCarInfoController.class);
     @Resource
@@ -107,8 +109,8 @@ public class CrawlingCarInfoController {
     @ApiOperation("执行爬取")
     @PostMapping("/startCrawling")
     public Result startCrawling(String seriesNo){
-        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
-        return crawlingCarInfoService.startCrawling(seriesNo);
+        crawlingCarInfoService.startCrawling(seriesNo);
+        return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null));
     }
     @ApiOperation("导出数据")
     @GetMapping("/exportCrawlingDataList")
