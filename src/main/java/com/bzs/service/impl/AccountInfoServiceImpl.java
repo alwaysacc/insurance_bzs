@@ -346,4 +346,18 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }
         return  set.contains(loginName);
     }
+
+    @Override
+    public List<AccountInfo> getUserNameAndId() {
+        /*List<AccountInfo> list;
+        if (!redisUtil.hasKey(RedisConstant.USER_NAME_LIST)){
+            log.info("用户账号存入redis");
+            list=accountInfoMapper.getUserNameAndId();
+            redisUtil.set(RedisConstant.USER_NAME_LIST,list,720000);
+        }else{
+            log.info("从redis取出用户账号");
+            list= (List<AccountInfo>) redisUtil.get(RedisConstant.USER_NAME_LIST);
+        }*/
+        return accountInfoMapper.getUserNameAndId();
+    }
 }

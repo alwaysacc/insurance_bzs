@@ -71,8 +71,11 @@ public interface ThirdInsuranceAccountInfoService extends Service<ThirdInsurance
 
     /**
      * 获取账号下的所有第三方账号
-     * @param createBy
+//     * @param createBy
      * @return
      */
-    List getCrawlingAndAdminList(String createBy);
+//    List getCrawlingAndAdminList(String createBy);
+    List getCrawlingAndAdminList();
+
+    int deleteAccount(String accountId);
 }

@@ -110,4 +110,5 @@ public interface AccountInfoService extends Service<AccountInfo> {
      */
     List<AccountInfo> findUserDetail(AccountInfo user, QueryRequest request);
 
+    List<AccountInfo> getUserNameAndId();
 }

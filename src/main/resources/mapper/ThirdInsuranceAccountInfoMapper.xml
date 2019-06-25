@@ -149,7 +149,7 @@
     <result column="role_name" jdbcType="VARCHAR" property="roleName" />
   </resultMap>
 
-  <select id="getCrawlingAndAdminList" resultMap="CrawlingAndAdminListResultMap">
+ <!-- <select id="getCrawlingAndAdminList" resultMap="CrawlingAndAdminListResultMap">
     select
       b.account_name,
       b.account_pwd,
@@ -173,6 +173,27 @@
           ar.code =#{code} and
         </if>
       </trim>
-
+  </select>-->
+  <select id="getCrawlingAndAdminList" resultType="map">
+    select
+    b.account_name as accountName,
+    b.account_pwd as accountPwd,
+    b.third_insurance_id as thirdInsuranceId,
+    a.user_name as userName
+    from  third_insurance_account_info  b
+    left  join  account_info a on  a.account_id = b.account_id
+      <trim prefix="where" suffixOverrides="and">
+        <if test="createBy!=null and createBy!=''">
+          b.account_id =#{createBy} and
+        </if>
+        <if test="code!=null and code!=''">
+          ar.code =#{code} and
+        </if>
+      </trim>
   </select>
+  <delete id="deleteAccount">
+    delete FROM third_insurance_account_info <where>
+    third_insurance_id=#{accountId}
+  </where>
+  </delete>
 </mapper>

@@ -232,7 +232,7 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         return this.select(data);
     }
 
-    @Override
+    /*@Override
     public List getCrawlingAndAdminList(String createBy) {
         if(StringUtils.isBlank(createBy)){
             return null;
@@ -259,5 +259,15 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         }
 
 
+    }*/
+
+    @Override
+    public List getCrawlingAndAdminList() {
+        return thirdInsuranceAccountInfoMapper.getCrawlingAndAdminList();
+    }
+
+    @Override
+    public int deleteAccount(String accountId) {
+        return thirdInsuranceAccountInfoMapper.deleteAccount(accountId);
     }
 }

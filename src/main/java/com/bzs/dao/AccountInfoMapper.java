@@ -13,7 +13,6 @@ import java.util.List;
 
 public interface AccountInfoMapper extends Mapper<AccountInfo> {
     String getRoleIdByAccountId(String account_id);
-
     /**
      * 根据用户名和密码查询对应的用户
      */
@@ -87,4 +86,8 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     int updateAccount(AccountInfo accountInfo);
 
     HashSet getUserLoginName();
+
+    List<AccountInfo> getUserNameAndId();
+    // 获取今日登陆的用户数量
+    int getTodayLoginCount();
 }

@@ -3,6 +3,7 @@ import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.ThirdInsuranceAccountInfo;
 import com.bzs.service.ThirdInsuranceAccountInfoService;
+import com.bzs.utils.UUIDS;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -27,13 +28,14 @@ public class ThirdInsuranceAccountInfoController {
 
     @PostMapping("/add")
     public Result add(ThirdInsuranceAccountInfo thirdInsuranceAccountInfo) {
+        thirdInsuranceAccountInfo.setThirdInsuranceId(UUIDS.getUUID());
         thirdInsuranceAccountInfoService.save(thirdInsuranceAccountInfo);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/delete")
-    public Result delete(@RequestParam Integer id) {
-        thirdInsuranceAccountInfoService.deleteById(id);
+    public Result delete(String accountId) {
+        thirdInsuranceAccountInfoService.deleteAccount(accountId);
         return ResultGenerator.genSuccessResult();
     }
 
@@ -133,9 +135,10 @@ public class ThirdInsuranceAccountInfoController {
 
     @ApiOperation("获取爬取数据的账号")
     @PostMapping("/getCrawlingAdminList")
-    public Result getCrawlingAdminList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,@RequestParam String createBy){
+//    public Result getCrawlingAdminList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,@RequestParam String createBy){
+    public Result getCrawlingAdminList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size){
         PageHelper.startPage(page, size);
-        List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+        List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
