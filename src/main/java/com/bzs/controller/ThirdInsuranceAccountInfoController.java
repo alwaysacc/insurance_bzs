@@ -4,6 +4,7 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.ThirdInsuranceAccountInfo;
 import com.bzs.service.ThirdInsuranceAccountInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.aspect.AspectInterface;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -141,5 +142,12 @@ public class ThirdInsuranceAccountInfoController {
         List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+    @AspectInterface
+    @ApiOperation("根据角色获取爬取账号信息")
+    @PostMapping("/getCrawlingAndAccountList")
+    public Result getCrawlingAndAccountList(@RequestParam String createBy){
+        List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+        return ResultGenerator.genSuccessResult(list);
     }
 }

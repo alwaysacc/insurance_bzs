@@ -8,8 +8,10 @@ import com.bzs.model.CommissionPercentage;
 import com.bzs.model.CrawlingCarInfo;
 import com.bzs.model.CrawlingExcelInfo;
 import com.bzs.model.query.CrawlingQuery;
+import com.bzs.model.query.ThridAccountAndAdminDomain;
 import com.bzs.service.CrawlingCarInfoService;
 import com.bzs.service.CrawlingExcelInfoService;
+import com.bzs.service.ThirdInsuranceAccountInfoService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
@@ -37,10 +39,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -56,6 +55,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     private CrawlingExcelInfoService crawlingExcelInfoService;
     @Resource
     private CrawlingExcelInfoMapper crawlingExcelInfoMapper;
+    @Resource
+    private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
 
     @Override
     public int batchInsertImport(List<CrawlingCarInfo> list) {
@@ -116,25 +117,38 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     @Override
     public Result startCrawling(String seriesNo) {
         if (StringUtils.isBlank(seriesNo)) {
-            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
-
             return ResultGenerator.genFailResult("请选择需要执行的文件");
         }
         CrawlingExcelInfo excelInfo = crawlingExcelInfoService.findBy("seriesNo", seriesNo);
         if (null == excelInfo) {
-            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
-
             return ResultGenerator.genFailResult("请选择需要执行的文件");
         } else {
             String status = excelInfo.getStatus();
             String type = excelInfo.getType();
             int count=excelInfo.getTotal();
+            String createBy=excelInfo.getCreateBy();
             if ("1".equals(status)) {//1完成
-                crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
+                crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
                 return ResultGenerator.genFailResult("文件已经爬取完毕");
             } else {//状态0未执行 2暂停 3执行中
-                String username = "HAICzl01";
-                String passWord = "ZLzl123";
+                String username = "";
+                String passWord = "";
+                List<ThridAccountAndAdminDomain> lists = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+                if(CollectionUtils.isNotEmpty(lists)){
+                    int size=lists.size();
+                    int random= new Random().nextInt(size);
+                    ThridAccountAndAdminDomain domain= lists.get(random);
+                    username=domain.getAccountName();
+                    passWord=domain.getAccountPwd();
+                    if(StringUtils.isBlank(username)||StringUtils.isBlank(passWord)){
+                        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
+                        return ResultGenerator.genFailResult("爬取的账号或者密码为空");
+                    }
+
+                }else{
+                    crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
+                    return ResultGenerator.genFailResult("请添加爬取的账号");
+                }
                 //开始执行修改为执行中
 //                crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"3");
                 int total = crawlingCarInfoMapper.crawlingDataCount(seriesNo);
@@ -301,8 +315,12 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                         eachUserVO.getCarOwner() == null ? "" : eachUserVO.getCarOwner());// 车主
                                 eachDataRow.createCell(3).setCellValue(
                                         eachUserVO.getNewCarOwner() == null ? "" : eachUserVO.getNewCarOwner());// 新车主
+                                String vinNo=eachUserVO.getVinNo();
+                                if(StringUtils.isBlank(vinNo)){//防止本身没有车架号，导出时车架为空
+                                    vinNo=eachUserVO.getNewVinNo();
+                                }
                                 eachDataRow.createCell(4).setCellValue(
-                                        eachUserVO.getVinNo() == null ? "" : eachUserVO.getVinNo());// 车架号
+                                        vinNo == null ? "" : vinNo);// 车架号
                                 eachDataRow.createCell(5).setCellValue(
                                 eachUserVO.getBrand() == null ? "" : eachUserVO.getBrand());// 品牌
                                 eachDataRow.createCell(6).setCellValue(
@@ -334,7 +352,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 eachDataRow.createCell(17).setCellValue(
                                         eachUserVO.getMobile()== null ? "" : eachUserVO.getMobile());// 电话
                                 eachDataRow.createCell(18).setCellValue(
-                                        eachUserVO.getIndexNo()== null ? 0 : eachUserVO.getIndexNo());// 电话
+                                        eachUserVO.getIndexNo()== null ? 0 : eachUserVO.getIndexNo());// 序号
                             }
                         }
                     }
