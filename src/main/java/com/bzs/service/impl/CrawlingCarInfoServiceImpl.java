@@ -39,10 +39,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -120,6 +117,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     @Override
     public Result startCrawling(String seriesNo) {
         if (StringUtils.isBlank(seriesNo)) {
+            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
+
             return ResultGenerator.genFailResult("请选择需要执行的文件");
         }
         CrawlingExcelInfo excelInfo = crawlingExcelInfoService.findBy("seriesNo", seriesNo);
@@ -324,7 +323,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 }
                                 eachDataRow.createCell(4).setCellValue(
                                         vinNo == null ? "" : vinNo);// 车架号
-                                        eachUserVO.getVinNo() == null ? "" : eachUserVO.getNewVinNo());// 车架号
                                 eachDataRow.createCell(5).setCellValue(
                                 eachUserVO.getBrand() == null ? "" : eachUserVO.getBrand());// 品牌
                                 eachDataRow.createCell(6).setCellValue(
@@ -356,7 +354,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 eachDataRow.createCell(17).setCellValue(
                                         eachUserVO.getMobile()== null ? "" : eachUserVO.getMobile());// 电话
                                 eachDataRow.createCell(18).setCellValue(
-                                        eachUserVO.getIndexNo()== null ? 0 : eachUserVO.getIndexNo());// 序号
+                                        eachUserVO.getIndexNo()== null ? 0 : eachUserVO.getIndexNo());// 电话
                             }
                         }
                     }
