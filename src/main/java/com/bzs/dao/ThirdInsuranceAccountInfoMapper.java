@@ -45,7 +45,7 @@ public interface ThirdInsuranceAccountInfoMapper extends Mapper<ThirdInsuranceAc
 
     int deleteBatchAdmin(List<String> list);
 
-//    List getCrawlingAndAdminList(@Param("createBy") String createBy,@Param("code")String code);
+    List getCrawlingAndAccountList(@Param("createBy") String createBy,@Param("code")String code);
 
     List getCrawlingAndAdminList();
 

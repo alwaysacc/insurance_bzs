@@ -232,22 +232,24 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
         return this.select(data);
     }
 
-    /*@Override
+    @Override
     public List getCrawlingAndAdminList(String createBy) {
         if(StringUtils.isBlank(createBy)){
             return null;
         }
-        AdminAndRole ar= adminMapper.adminAndRoleByAdminId(Integer.valueOf(createBy));
+        List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAccountList(createBy,null);
+        return list;
+        /*AdminAndRole ar= adminMapper.adminAndRoleByAdminId(Integer.valueOf(createBy));
         if(ar!=null){
             String  code=ar.getRoleCode();
             if(StringUtils.isBlank(code)){
                 return null;
             }else{
                 if("SADMIN".equals(code)||"CADMIN".equals(code)){
-                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAdminList(null,null);
+                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAccountList(null,null);
                return  list;
                 }else if("CRAWLING".equalsIgnoreCase(code)){
-                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAdminList(createBy,code);
+                    List list=  thirdInsuranceAccountInfoMapper.getCrawlingAndAccountList(createBy,code);
                     return  list;
                 }else{
                     return null;
@@ -256,10 +258,10 @@ public class ThirdInsuranceAccountInfoServiceImpl extends AbstractService<ThirdI
             }
         }else{
             return null;
-        }
+        }*/
 
 
-    }*/
+    }
 
     @Override
     public List getCrawlingAndAdminList() {

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @author: 原文：https://blog.csdn.net/u010096717/article/details/82221263
  * @create: 2019-06-25 10:27
  */
+@Order(5)
 @Aspect
 @Component
 @Slf4j
@@ -23,7 +25,7 @@ public class TestAspect {
     //@Pointcut("execution(public * com.kzj.kzj_rabbitmq.controller.MessageController.*(..))")
 
     //统一切点,对com.kzj.kzj_rabbitmq.controller及其子包中所有的类的所有方法切面
-    @Pointcut("execution(public * com.bzs.controller.CrawlingCarInfoController.crawlingDataCount*(..))")
+    @Pointcut("execution(public * com.bzs.controller..*.*(..))&&@annotation(com.bzs.utils.aspect.AspectInterface)")
     public void Pointcut() {
         log.info("执行了切点");
     }

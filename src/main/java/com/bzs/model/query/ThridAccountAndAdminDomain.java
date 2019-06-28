@@ -7,13 +7,13 @@ package com.bzs.model.query;
  * @create: 2019-06-24 16:25
  */
 public class ThridAccountAndAdminDomain {
-    private String accountName;
-    private String accountPwd;
-    private String adminId;
-    private String thirdInsuranceId;
-    private String name;
-    private String loginName;
-    private String roleName;//角色名称
+    private String accountName;//爬取的账号
+    private String accountPwd;//爬取的密码
+    private String adminId;//当前账号的id
+    private String thirdInsuranceId; //爬取账号的id
+    private String name;//当前账号的的用户名
+    private String loginName;//当前账号的登录名
+    private String roleName;//当前账号的角色名称//
 
     public String getAccountName() {
         return accountName;
