@@ -116,7 +116,8 @@
                         ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
         </association>
         <collection property="quoteInfoList" resultMap="com.bzs.dao.QuoteInfoMapper.BaseResultMap"
-                    ofType="com.bzs.model.QuoteInfo" columnPrefix="q_"/>
+                    ofType="com.bzs.model.QuoteInfo" columnPrefix="q_">
+        </collection>
     </resultMap>
     <select id="getCarInfoAndInsurance" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
         select a.*,
@@ -140,6 +141,7 @@
         q.submit_status as q_submit_status,
         q.quote_source as q_quote_source,
         q.quote_insurance_name as q_quote_insurance_name,
+        q.total as q_total,
         i.user_name as user_name
         from car_info a
         left join account_info i on a.CREATED_BY=i.account_id
@@ -199,15 +201,13 @@
         car_info.license_owner,
         car_info.license_owner_id_card,
         car_info.license_owner_id_card_type,
-        quote_info.quote_status,
-        quote_info.submit_status,
         insured_info.busines_expire_date,
         insured_info.force_expire_date,
         insured_info.next_force_start_date,
         insured_info.next_busines_start_date,
         insured_info.last_year_insurance_company
         FROM
-        car_info left join quote_info on (car_info.car_info_id = quote_info.car_info_id)
+        car_info
         left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
         <where>
             car_info.status=0
@@ -220,8 +220,8 @@
 
             </if>
             <if test="roleId==3">
-                and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId})
+                and
+                car_info.CREATED_BY = #{accountId}
             </if>
             <if test="salesman!=null  and salesman!=''">
                 and car_info.salesman != #{salesman}

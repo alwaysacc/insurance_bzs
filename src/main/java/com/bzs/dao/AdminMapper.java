@@ -12,7 +12,7 @@ import java.util.List;
 public interface AdminMapper extends Mapper<Admin> {
     int updateLoginTime(@Param("loginTime")Date loginTime,@Param("loginName")String loginName);
 
-    List getAdminList();
+    List getAdminList(@Param("adminName")String adminName);
     int updateAdmin(Admin admin);
 
     HashSet getAdminLoginName();

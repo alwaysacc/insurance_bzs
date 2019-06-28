@@ -1,19 +1,24 @@
 package com.bzs.controller;
 
+import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.OrderInfoMapper;
+import com.bzs.redis.RedisUtil;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SpringBootTest
 public class Test {
     @Autowired
     private OrderInfoMapper orderInfoMapper;
-
+    @Autowired
+    private RedisUtil redisUtil;
     @org.junit.Test
     public void testSelect() {
 

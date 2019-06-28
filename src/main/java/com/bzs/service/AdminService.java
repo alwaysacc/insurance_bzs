@@ -4,6 +4,7 @@ import com.bzs.utils.Service;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -13,9 +14,9 @@ import java.util.List;
 public interface AdminService extends Service<Admin> {
     int updateLoginTime( Date loginTime, String loginName);
 
-    List getAdminList();
+    List getAdminList(String adminName);
 
     int updateAdmin(Admin admin);
 
-    boolean checkAdminLoginName(String loginName);
+    HashSet checkAdminLoginName();
 }

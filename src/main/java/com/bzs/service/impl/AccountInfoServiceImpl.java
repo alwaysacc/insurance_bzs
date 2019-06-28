@@ -1,7 +1,10 @@
 package com.bzs.service.impl;
 
+import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.AccountRoleInfoMapper;
+import com.bzs.dao.OrderInfoMapper;
+import com.bzs.dao.QuoteInfoMapper;
 import com.bzs.model.*;
 import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
@@ -46,6 +49,11 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private RedisUtil redisUtil;
     @Resource
     private VerificationService verificationService;
+    @Resource
+    private OrderInfoMapper orderInfoMapper;
+    @Resource
+    private QuoteInfoMapper quoteInfoMapper;
+
     @Resource
     private AccountRoleInfoService accountRoleInfoService;
     private  static final String CODE="CODE_LIST";
@@ -323,28 +331,22 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }
     }
     @Override
-    public List getUserListByAdmin() {
-        return accountInfoMapper.getUserListByAdmin();
+    public List getUserListByAdmin(String userName) {
+        return accountInfoMapper.getUserListByAdmin(userName);
     }
 
     @Override
     public int updateAccount(AccountInfo accountInfo) {
+        if (StringUtils.isNotBlank(accountInfo.getLoginPwd())){
+            accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
+        }
         return accountInfoMapper.updateAccount(accountInfo);
     }
 
+    @RedisAnnotation(key = RedisConstant.USER_LOGIN_NAME_LIST,time = 3600)
     @Override
-    public boolean checkUserLoginName(String loginName) {
-        HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
-            log.info("用户账号存入redis");
-            set=accountInfoMapper.getUserLoginName();
-            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
-        }else{
-            log.info("从redis取出用户账号");
-            set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
-            System.out.println(set.toString());
-        }
-        return  set.contains(loginName);
+    public HashSet checkUserLoginName() {
+        return  accountInfoMapper.getUserLoginName();
     }
 
     @Override
@@ -359,5 +361,24 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             list= (List<AccountInfo>) redisUtil.get(RedisConstant.USER_NAME_LIST);
         }*/
         return accountInfoMapper.getUserNameAndId();
+    }
+
+    @RedisAnnotation(key = RedisConstant.HOME_MAP,time=3600)
+    @Override
+    public HashMap getHomeInfo() {
+        HashMap map;
+        AccountInfo accountInfo=null;
+        int userCount=accountInfoMapper.selectCount(accountInfo);
+        OrderInfo orderInfo=null;
+        int orderCount=orderInfoMapper.selectCount(orderInfo);
+        QuoteInfo quoteInfo=null;
+        int quoteCount=quoteInfoMapper.selectCount(quoteInfo);
+        int todayCount=accountInfoMapper.getTodayLoginCount();
+        map=new HashMap();
+        map.put("userCount",userCount);
+        map.put("orderCount",orderCount);
+        map.put("quoteCount",quoteCount);
+        map.put("todayCount",todayCount);
+        return map;
     }
 }

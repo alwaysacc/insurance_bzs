@@ -37,33 +37,38 @@
 
   <select id="getListByAdmin" resultType="map">
     SELECT
-v.id,
-v.money,
-v.`status`,
-v.pay_account_id,
-v.description,
-v.create_time,
-v.verification_time,
-v.create_by,
-v.verification_by,
-a.account_id,
-a.user_name,
-a.mobile,
-a.login_name,
-a.invite_code_level,
-a.UPDATED_TIME,
-a.inviteCode,
-a.superiorInviteCode,
-a.superior,
-a.association_level,
-a.balance_total,
-a.commission_total,
-p.amount,
-p.`name`,
-p.type
-FROM
-verification v LEFT JOIN account_info a on v.create_by=a.account_id
-LEFT JOIN pay_account p on p.id=v.pay_account_id
+        v.id,
+        v.money,
+        v.`status`,
+        v.pay_account_id,
+        v.description,
+        v.create_time,
+        v.verification_time,
+        v.create_by,
+        v.verification_by,
+        a.account_id,
+        a.user_name,
+        a.mobile,
+        a.login_name,
+        a.invite_code_level,
+        a.UPDATED_TIME,
+        a.inviteCode,
+        a.superiorInviteCode,
+        a.superior,
+        a.association_level,
+        a.balance_total,
+        a.commission_total,
+        p.amount,
+        p.`name`,
+        p.type
+        FROM
+        verification v LEFT JOIN account_info a on v.create_by=a.account_id
+        LEFT JOIN pay_account p on p.id=v.pay_account_id
+        <where>
+          <if test="userName!=null and userName!=''">
+            a.user_name like CONCAT(CONCAT('%', #{userName}), '%');
+          </if>
+        </where>
   </select>
 
   <update id="updateVerificationStatus">
@@ -89,4 +94,32 @@ LEFT JOIN pay_account p on p.id=v.pay_account_id
   <update id="updateVerification" parameterType="com.bzs.model.Verification">
     update verification <include refid="updateItems"/> where id=#{id}
   </update>
+
+    <select id="getVeriftcationDetail" resultType="map">
+        SELECT
+            a.draw_percentage_total,
+            a.balance_total,
+            a.commission_total,
+            v.id,
+            v.money,
+            v.`status`,
+            v.pay_account_id,
+            v.description,
+            v.create_time,
+            v.verification_time,
+            v.create_by,
+            v.verification_by,
+            p.amount,
+            p.`name`,
+            p.type,
+            a.account_id
+            FROM
+            verification AS v
+            left JOIN   account_info AS a on  a.account_id = v.create_by
+            LEFT JOIN pay_account p on v.pay_account_id=p.id
+            <where>
+                <if test="id!=null and id!=''">v.id=#{id}</if>
+            </where>
+
+    </select>
 </mapper>
