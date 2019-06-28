@@ -1,5 +1,7 @@
 package com.bzs.utils.jsontobean.crawlingcar;
 
+import java.util.List;
+
 /**
  * @program: insurance_bzs
  * @description: 爬取的rootBean
@@ -8,7 +10,7 @@ package com.bzs.utils.jsontobean.crawlingcar;
  */
 public class CrawlingCarRootBean {
     private int code;
-    private CrawlingCarData data;
+    private List<CrawlingCarData> data;
     private String msg;;
 
     public int getCode() {
@@ -19,11 +21,11 @@ public class CrawlingCarRootBean {
         this.code = code;
     }
 
-    public CrawlingCarData getData() {
+    public List<CrawlingCarData> getData() {
         return data;
     }
 
-    public void setData(CrawlingCarData data) {
+    public void setData(List<CrawlingCarData> data) {
         this.data = data;
     }
 

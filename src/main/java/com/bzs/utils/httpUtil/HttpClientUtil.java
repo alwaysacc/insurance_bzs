@@ -239,12 +239,12 @@ public class HttpClientUtil {
             }
             httpResult.setCode(code);
         } catch (MalformedURLException e) {
-           // e.printStackTrace();
+           e.printStackTrace();
             logger.error("请求异常",e);
             httpResult.setMessage("请求异常");
             httpResult.setCode(500);
         } catch (IOException e) {
-           // e.printStackTrace();
+           e.printStackTrace();
             logger.error("请求异常",e);
             httpResult.setMessage("请求异常");
             httpResult.setCode(500);
@@ -254,7 +254,7 @@ public class HttpClientUtil {
                 try {
                     br.close();
                 } catch (IOException e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     logger.error("请求异常",e);
                     httpResult.setCode(500);
                     httpResult.setMessage("请求异常");
@@ -264,7 +264,7 @@ public class HttpClientUtil {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    //e.printStackTrace();
+                   e.printStackTrace();
                     logger.error("请求异常",e);
                     httpResult.setCode(500);
                     httpResult.setMessage("请求异常");
@@ -274,7 +274,7 @@ public class HttpClientUtil {
                 try {
                     is.close();
                 } catch (IOException e) {
-                  //  e.printStackTrace();
+                    e.printStackTrace();
                     logger.error("请求异常",e);
                     httpResult.setMessage("请求异常");
                     httpResult.setCode(500);

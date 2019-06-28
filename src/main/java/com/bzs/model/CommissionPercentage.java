@@ -14,17 +14,6 @@ public class CommissionPercentage {
      */
     @Column(name = "biz_percentage")
     private String bizPercentage;
-
-    public String getSubsidy() {
-        return subsidy;
-    }
-
-    public void setSubsidy(String subsidy) {
-        this.subsidy = subsidy;
-    }
-
-    private String subsidy;
-
     /**
      * 交强险佣金百分点
      */
@@ -76,6 +65,11 @@ public class CommissionPercentage {
      */
     @Column(name = "status")
     private String status;
+    /**
+     * 商业险补贴
+     */
+    @Column(name = "subsidy")
+    private String	subsidy;
 
     /**
      * @return id
@@ -247,6 +241,14 @@ public class CommissionPercentage {
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSubsidy() {
+        return subsidy;
+    }
+
+    public void setSubsidy(String subsidy) {
+        this.subsidy = subsidy;
     }
 
     public CommissionPercentage() {
