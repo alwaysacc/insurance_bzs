@@ -126,7 +126,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
             String type = excelInfo.getType();
             int count = excelInfo.getTotal();
             String createBy = excelInfo.getCreateBy();
-            if ("1".equals(status)) {//1完成
+            if ("1".equals(status)) {//1完成，修改状态信息为完成
                 crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
                 return ResultGenerator.genFailResult("文件已经爬取完毕");
             } else {//状态0未执行 2暂停 3执行中
@@ -136,21 +136,22 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                 List<ThridAccountAndAdminDomain> lists = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
                 if (CollectionUtils.isNotEmpty(lists)) {
                     int size = lists.size();
-                    int random = new Random().nextInt(size);
-                    ThridAccountAndAdminDomain domain = lists.get(random);
-                    username = domain.getAccountName();
-                    passWord = domain.getAccountPwd();
+                    int random = new Random().nextInt(size);//随机一个账号
+                    ThridAccountAndAdminDomain domain = lists.get(random);//获取随机账号信息
+                    username = domain.getAccountName();//账号
+                    passWord = domain.getAccountPwd();//密码
+                    //账号不能为空
                     if (StringUtils.isBlank(username) || StringUtils.isBlank(passWord)) {
                         crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
                         return ResultGenerator.genFailResult("爬取的账号或者密码为空");
                     }
 
-                } else {
+                } else {//未获取到账号信息,修改回原来的状态
                     crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
                     return ResultGenerator.genFailResult("请添加爬取的账号");
                 }
                 //获取爬取账号结束
-                //查询表中所有数据，根据 seriesNo
+                //查询表中所有数据数量，根据 seriesNo
                 int total = crawlingCarInfoMapper.crawlingDataCount(seriesNo);
                 if (total > 0) {
                     Integer pageSize = 10;
@@ -158,33 +159,34 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                     //Integer page = 1;
                     for (int i = 0; i < page; page--) {
                         Integer startRow = (page - 1) * pageSize;
-                        //获取数据库基础数据
+                        //分页获取数据库基础数据，然后将车牌或者车架组装，供爬取接口调用
                         List<CrawlingCarInfo> list = crawlingCarInfoMapper.crawlingDataList(seriesNo, startRow, pageSize);
+                        //新建一个装爬取结果的集合
                         List<CrawlingCarInfo> resltDataList = new ArrayList<>();
                         if (CollectionUtils.isNotEmpty(list)) {
                             String no = "";
                             for (CrawlingCarInfo crawlingCarInfo : list) {//遍历数据库基础数据
                                 Long id = crawlingCarInfo.getId();
                                 int indexNo = crawlingCarInfo.getIndexNo();
-                                if ((indexNo + "").equals(count + "")) {
+                                if ((indexNo + "").equals(count + "")) {//查询到本次上传的excel中最大的序列号，等于总数,则修改数据更新完毕
                                     crawlingExcelInfoService.updateCrawlingFinish(seriesNo, id.intValue(), "1", total, new Date());
                                 }
-                                CrawlingCarInfo crawling = new CrawlingCarInfo();
+                                CrawlingCarInfo crawling = new CrawlingCarInfo();//单个装爬取的数据对象
                                 String carNo = crawlingCarInfo.getCarNo();
-                                crawling.setCarNo(carNo);
+                                crawling.setCarNo(carNo);//原车牌
                                 String vinNo = crawlingCarInfo.getVinNo();
-                                crawling.setVinNo(vinNo);
+                                crawling.setVinNo(vinNo);//原车架
                                 String carOwner=crawlingCarInfo.getCarOwner();
-                                crawling.setCarOwner(carOwner);
+                                crawling.setCarOwner(carOwner);//元车主
                                 crawling.setId(id);
-                                String isCrawling = "2";
+                                String isCrawling = "2";//默认根据车架爬取
                                 if (!"1".equals(type)) {
                                     if (StringUtils.isNotBlank(no)) {
                                         no += "," + vinNo;
                                     } else {
                                         no = vinNo;
                                     }
-                                } else {//等于1车牌
+                                } else {//等于1车牌  车牌爬取
                                     if (StringUtils.isNotBlank(no)) {
                                         no += "," + carNo;
                                     } else {
@@ -193,16 +195,17 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     isCrawling = "1";
                                 }
                                 crawling.setIsDrawling(isCrawling);
-                                resltDataList.add(crawling);
+                                resltDataList.add(crawling);//添加到爬取结果的结合
                             }
                             try {
-                                //调用爬取接口 0（n） 验证码验证（5-(n)）次
+                                //调用爬取接口 ,只有验证码验证错误,才会连续调用，最多执行5-count次，刚开始count=0；其他成功或者异常不会多次调用直接返回，
                                 String resultMap = nodeCrawling(no, type, username, passWord, 0);
+                                //将结果变成java对象
                                 CrawlingCarRootBean bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
                                 int code = bean.getCode();
-                                if (-2 == code) {
+                                if (-2 == code) {//账号密码错误，爬去接口返回
                                     return ResultGenerator.genFailResult("表示用户名密码错误（可以换用户名密码之后再次请求）");
-                                } else if (-1 == code) {//
+                                } else if (-1 == code) {//验证码错误，已验证5次
                                     log.info("验证码出险5次验证错误", "车牌号为" + no);
                                     for (CrawlingCarInfo resData : resltDataList) {
                                         resData.setStatus("2");
@@ -210,11 +213,11 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     }
                                     //return ResultGenerator.genFailResult("表示验证码识别出错,已识别5次");
                                 } else if(0 == code){//成功
-                                    List<CrawlingCarData> resDatas = bean.getData();
+                                    List<CrawlingCarData> resDatas = bean.getData();//爬取返回的结果集合
                                     if (CollectionUtils.isNotEmpty(resDatas)) {
-                                        for (int j=0;j<resDatas.size();j++) {
+                                        for (int j=0;j<resDatas.size();j++) {//遍历爬取的返回结果
                                             CrawlingCarData resData=resDatas.get(j);//获取的数据
-                                            CrawlingCarInfo  data=resltDataList.get(j);//数据源数据
+                                            CrawlingCarInfo  data=resltDataList.get(j);//数据源数据，【ye可改为list,即分页数据进行遍历】
                                             String  carNo=data.getCarNo();
                                             String vinNo=data.getVinNo();
                                             String carOwner=data.getCarOwner();
@@ -258,15 +261,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
                                         }
                                     }else{
-                                    log.error("爬取出现异常", "车牌号为" + no);
+                                    log.error("爬取出现异常，爬取接口异常", "车牌号为" + no);
                                     for (CrawlingCarInfo resData : resltDataList) {
                                         resData.setStatus("2");
                                         resData.setResultMessage("爬取失败，状态码"+code);
                                     }
                                     }
                                 }catch (Exception e) {
-                                log.error("爬取出险异常",e);
+                                log.error("爬取出险异常,本地接口异常",e);
                             }
+                            //遍历爬取结果并修改
                             if(CollectionUtils.isNotEmpty(resltDataList)){
                                 for (CrawlingCarInfo result:resltDataList){
                                     crawlingCarInfoMapper.crawlingUpdate(result);//修改爬取的车辆信息
@@ -282,7 +286,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                     return ResultGenerator.genSuccessResult("文件已经爬取完毕");
 
                 } else {
-                    crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo, "1");
+                    crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo, status);
                     return ResultGenerator.genFailResult("文件已经爬取完毕");
                 }
             }
