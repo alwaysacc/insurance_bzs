@@ -1,6 +1,7 @@
 package com.bzs.controller;
 
 import com.bzs.model.query.CrawlingQuery;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.CrawlingExcelInfoService;
 import com.bzs.service.impl.CrawlingCarInfoServiceImpl;
 import com.bzs.utils.Result;
@@ -9,12 +10,14 @@ import com.bzs.model.CrawlingCarInfo;
 import com.bzs.service.CrawlingCarInfoService;
 import com.bzs.utils.UUIDS;
 import com.bzs.utils.excelUtil.ExcelImportUtil;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +47,8 @@ public class CrawlingCarInfoController {
     private CrawlingCarInfoService crawlingCarInfoService;
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @PostMapping("/add")
     public Result add(CrawlingCarInfo crawlingCarInfo) {
@@ -109,7 +114,16 @@ public class CrawlingCarInfoController {
     @ApiOperation("执行爬取")
     @PostMapping("/startCrawling")
     public Result startCrawling(String seriesNo){
-        crawlingCarInfoService.startCrawling(seriesNo);
+        List list=new ArrayList();
+        if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)){
+            list.add(seriesNo);
+            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
+            crawlingCarInfoService.startCrawling1();
+        }else{
+            list= (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
+            list.add(seriesNo);
+            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
+        }
         return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null));
     }
     @ApiOperation("导出数据")

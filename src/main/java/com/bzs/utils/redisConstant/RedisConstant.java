@@ -7,4 +7,8 @@ public final class RedisConstant {
     public static final String USER_NAME_LIST="bzs.user.name";
     public static final String HOME_MAP="bzs.home.count";
     public static final String MENT_LIST="bzs.menu.list";
+
+
+    public static final String CRAWLING_LIST="bzs.crawling.list";
+
 }

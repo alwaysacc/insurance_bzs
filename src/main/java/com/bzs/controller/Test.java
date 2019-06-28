@@ -9,9 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @SpringBootTest
 public class Test {
@@ -21,7 +19,18 @@ public class Test {
     private RedisUtil redisUtil;
     @org.junit.Test
     public void testSelect() {
-
+        List oldList=new ArrayList();
+        oldList.add("123");
+        List newList=new ArrayList();
+        newList.add("456");
+        newList.add("123");
+        System.out.println("list with dup:"+ newList.toString());
+        System.out.println("list without dup:"+ oldList.toString());
+        newList.removeAll(oldList);
+        System.out.println("list with dup:"+ newList.toString());
+        System.out.println("list without dup:"+ oldList.toString());
+        oldList=newList;
+        System.out.println("list 1 dup:"+ oldList.toString());
     }
 
     public static void main(String[] args) {

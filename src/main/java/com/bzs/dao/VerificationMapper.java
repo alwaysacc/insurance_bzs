@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public interface VerificationMapper extends Mapper<Verification> {
@@ -16,5 +17,5 @@ public interface VerificationMapper extends Mapper<Verification> {
                                  );
     int updateVerification(Verification verification);
 
-    List getVeriftcationDetail(@Param("id")int id);
+    HashMap getVeriftcationDetail(@Param("id")int id);
 }
