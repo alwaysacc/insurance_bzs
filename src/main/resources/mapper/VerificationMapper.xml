@@ -100,6 +100,7 @@
             a.draw_percentage_total,
             a.balance_total,
             a.commission_total,
+            a.user_name,
             v.id,
             v.money,
             v.`status`,

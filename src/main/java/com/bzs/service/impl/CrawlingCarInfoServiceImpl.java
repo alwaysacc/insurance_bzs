@@ -9,6 +9,7 @@ import com.bzs.model.CrawlingCarInfo;
 import com.bzs.model.CrawlingExcelInfo;
 import com.bzs.model.query.CrawlingQuery;
 import com.bzs.model.query.ThridAccountAndAdminDomain;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.CrawlingCarInfoService;
 import com.bzs.service.CrawlingExcelInfoService;
 import com.bzs.service.ThirdInsuranceAccountInfoService;
@@ -25,12 +26,14 @@ import com.bzs.utils.httpUtil.HttpResult;
 import com.bzs.utils.jsontobean.PCICResponseBean;
 import com.bzs.utils.jsontobean.crawlingcar.CrawlingCarData;
 import com.bzs.utils.jsontobean.crawlingcar.CrawlingCarRootBean;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.wuwenze.poi.util.POIUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +61,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     private CrawlingExcelInfoMapper crawlingExcelInfoMapper;
     @Resource
     private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public int batchInsertImport(List<CrawlingCarInfo> list) {
@@ -427,6 +432,190 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
         return null;
     }
 
+    @Async
+    @Override
+    public Result startCrawling1() {
+        boolean stat=true;
+        List redisList= (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
+        while (stat){
+            log.info("oldList:"+redisList.toString());
+            String seriesNo="";
+            Iterator it = redisList.iterator();
+            while(it.hasNext()) {
+                seriesNo= (String) it.next();
+                CrawlingExcelInfo excelInfo = crawlingExcelInfoService.findBy("seriesNo", seriesNo);
+                if (null == excelInfo) {
+//                    return ResultGenerator.genFailResult("请选择需要执行的文件");
+                } else {
+                    String status = excelInfo.getStatus();
+                    String type = excelInfo.getType();
+                    int count=excelInfo.getTotal();
+                    String createBy=excelInfo.getCreateBy();
+                    if ("1".equals(status)) {//1完成
+                        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
+//                        return ResultGenerator.genFailResult("文件已经爬取完毕");
+                    } else {//状态0未执行 2暂停 3执行中
+                        String username = "";
+                        String passWord = "";
+                        List<ThridAccountAndAdminDomain> lists = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+                        if(CollectionUtils.isNotEmpty(lists)){
+                            int size=lists.size();
+                            int random= new Random().nextInt(size);
+                            ThridAccountAndAdminDomain domain= lists.get(random);
+                            username=domain.getAccountName();
+                            passWord=domain.getAccountPwd();
+                            if(StringUtils.isBlank(username)||StringUtils.isBlank(passWord)){
+                                crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
+                                //    return ResultGenerator.genFailResult("爬取的账号或者密码为空");
+                            }
+
+                        }else{
+                            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,status,null,null);
+                            // return ResultGenerator.genFailResult("请添加爬取的账号");
+                        }
+                        //开始执行修改为执行中
+//                crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"3");
+                        int total = crawlingCarInfoMapper.crawlingDataCount(seriesNo);
+                        if (total > 0) {
+                            Integer pageSize = 100;
+                            Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
+                            //Integer page = 1;
+                            for (int i = 0; i < page; page--) {
+                                Integer startRow = (page - 1) * pageSize;
+                                List<CrawlingCarInfo> list = crawlingCarInfoMapper.crawlingDataList(seriesNo, startRow, pageSize);
+                                if (CollectionUtils.isNotEmpty(list)) {
+                                    for (CrawlingCarInfo data : list) {
+                                        String carNo = data.getCarNo();
+                                        String vinNo = data.getVinNo();
+                                        String carOwner = data.getCarOwner();
+                                        String no = "";
+                                        Long id = data.getId();
+                                        int indexNo=data.getIndexNo();
+                                        if((indexNo+"").equals(count+"")){
+                                            crawlingExcelInfoService.updateCrawlingFinish(seriesNo, id.intValue(),"1",total,new Date());
+                                        }
+                                        if (!"1".equals(type)) {
+                                            no = vinNo;
+                                        } else {//等于1车牌
+                                            no = carNo;
+                                        }
+                                        String resultMap = httpCrawling(username, passWord, type, no);
+                                        try {
+                                            CrawlingCarRootBean bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                            int code = bean.getCode();
+                                            if (-1 == code) {
+                                                resultMap = httpCrawling(username, passWord, type, no);
+                                                bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                                code = bean.getCode();
+                                                if (-1 == code) {
+                                                    resultMap = httpCrawling(username, passWord, type, no);
+                                                    bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                                    code = bean.getCode();
+                                                    if (-1 == code) {
+                                                        resultMap = httpCrawling(username, passWord, type, no);
+                                                        bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                                        code = bean.getCode();
+                                                        if (-1 == code) {
+                                                            resultMap = httpCrawling(username, passWord, type, no);
+                                                            bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                                            code = bean.getCode();
+                                                            if (-1 == code) {
+                                                                resultMap = httpCrawling(username, passWord, type, no);
+                                                                bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
+                                                                code = bean.getCode();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (-2 == code) {
+                                                //  return ResultGenerator.genFailResult("表示用户名密码错误（可以换用户名密码之后再次请求）");
+                                            } else if (-1 == code) {
+                                                //  return ResultGenerator.genFailResult("表示验证码识别出错,已识别5次");
+                                            }
+
+                                            CrawlingCarData resData =  bean.getData().get(0);
+                                            if (null != resData) {
+                                                data.setStatus("1");
+                                                data.setBizCompany(resData.getShangye_comp());//商业险公司
+                                                data.setBizEndDate(resData.getShangye_ed());//商业险到期
+                                                data.setBizStartDate(resData.getShangye_st());//商业险起期
+                                                data.setForceCompany(resData.getJiaoqiang_comp());//交强险公司
+                                                data.setForceEndDate(resData.getJiaoqiang_et());//交强险到期
+                                                data.setForceStartDate(resData.getJiaoqiang_st());//交强险起期
+                                                data.setBrand(resData.getCn_type());//品牌
+                                                data.setEngineNo(resData.getFadongji_no());//发送机号
+                                                data.setIsDrawling(type);//2车架爬取1车牌爬取
+                                                data.setModel(resData.getCar_type());//车辆型号
+                                                log.info("车辆和型号："+resData.getCar_type()+",品牌："+resData.getCn_type());
+                                                data.setRegisterDate(resData.getStart_time());//初登日期
+                                                String newCarNo = resData.getChepai_no();
+                                                data.setNewCarNo(newCarNo);//车牌
+                                                if (StringUtils.isNotBlank(carNo)) {
+                                                    if (!carNo.equals(newCarNo)) {
+                                                        data.setIsNewCarNo("1");//新车牌
+                                                    }
+                                                }
+                                                String newCarOwner = resData.getName();
+                                                data.setNewCarOwner(newCarOwner);//车主
+                                                if (StringUtils.isNotBlank(carOwner)) {
+                                                    if (!carOwner.equals(newCarOwner)) {
+                                                        data.setIsNewCarOwner("1");//新车主
+                                                    }
+                                                }
+
+                                                String newVinNo = resData.getChejia_no();
+                                                data.setNewVinNo(newVinNo);//车架
+                                                if (StringUtils.isNotBlank(vinNo)) {
+                                                    if (!vinNo.equals(newVinNo)) {
+                                                        data.setIsNewVinNo("1");//新车架
+                                                    }
+                                                }
+                                                data.setTransferDate(resData.getTrans_time());//转户日期
+                                            } else {
+                                                data.setStatus("2");//失败
+                                                data.setResultMessage("失败");
+                                            }
+                                        } catch (Exception e) {
+                                            data.setStatus("2");//失败
+                                            if (resultMap.length() > 255) {
+                                                resultMap = resultMap.substring(0, 255);
+                                            }
+                                            data.setResultMessage(resultMap);
+                                        }
+                                        crawlingCarInfoMapper.crawlingUpdate(data);//修改爬取的车辆信息
+                                    }
+                                } else {
+                                    break;
+                                }
+                                // return ResultGenerator.genSuccessResult(list, "文件已经爬取完毕");
+                            }
+                            crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"1");
+                            // return ResultGenerator.genSuccessResult("文件已经爬取完毕");
+
+                        } else {
+                            crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo,"1");
+                            //  return ResultGenerator.genFailResult("文件已经爬取完毕");
+                        }
+                    }
+                }
+            }
+            List newList=new ArrayList();
+            newList= (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
+            newList.removeAll(redisList);
+            if (newList==null || newList.size()==0){
+                log.info(newList.toString());
+                stat=false;
+                redisUtil.del(RedisConstant.CRAWLING_LIST);
+            }else{
+                 redisList=newList;
+                log.info("redisList:"+redisList.toString());
+                redisUtil.set(RedisConstant.CRAWLING_LIST,redisList);
+            }
+            log.info("newList:"+newList.toString());
+        }
+        return null;
+    }
     @Override
     public String exportCrawlingDataList(HttpServletResponse response, HttpServletRequest request, String seriesNo) {
         int totalRowCount = exportDataCountBySeriesNo(seriesNo);

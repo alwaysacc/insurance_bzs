@@ -2,6 +2,7 @@ package com.bzs.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.model.query.CrawlingQuery;
+import com.bzs.redis.RedisUtil;
 import com.bzs.service.CrawlingExcelInfoService;
 import com.bzs.service.impl.CrawlingCarInfoServiceImpl;
 import com.bzs.utils.Result;
@@ -12,6 +13,7 @@ import com.bzs.utils.UUIDS;
 import com.bzs.utils.async.AsyncVo;
 import com.bzs.utils.async.RequestQueue;
 import com.bzs.utils.excelUtil.ExcelImportUtil;
+import com.bzs.utils.redisConstant.RedisConstant;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,8 @@ public class CrawlingCarInfoController {
     private CrawlingCarInfoService crawlingCarInfoService;
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private RequestQueue queue;
@@ -122,6 +125,21 @@ public class CrawlingCarInfoController {
         crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
         crawlingCarInfoService.startCrawling(seriesNo);
         return ResultGenerator.genSuccessResult();
+    }
+    @ApiOperation("执行爬取")
+    @PostMapping("/startCrawling1")
+    public Result startCrawling1(String seriesNo){
+        List list=new ArrayList();
+        if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)){
+            list.add(seriesNo);
+            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
+            crawlingCarInfoService.startCrawling1();
+        }else{
+            list= (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
+            list.add(seriesNo);
+            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
+        }
+        return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null));
     }
     @ApiOperation("导出数据")
     @GetMapping("/exportCrawlingDataList")
