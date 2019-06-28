@@ -95,7 +95,7 @@ public class AdminController {
     }
     @PostMapping("/checkAdminLoginName")
     public boolean checkAdminLoginName(String loginName) {
-        return adminService.checkAdminLoginName(loginName);
+        return adminService.checkAdminLoginName().contains(loginName);
     }
     @PostMapping("/add")
     public Result add(Admin admin) {
@@ -130,10 +130,11 @@ public class AdminController {
         return ResultGenerator.genSuccessResult(admin);
     }
     @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String adminName) {
         PageHelper.startPage(page, size);
-        List list = adminService.getAdminList();
+        List list = adminService.getAdminList(adminName);
         PageInfo pageInfo = new PageInfo(list);
+        System.out.println(redisUtil.get("bzs*"));
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 }

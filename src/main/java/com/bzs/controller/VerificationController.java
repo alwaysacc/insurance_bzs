@@ -79,14 +79,20 @@ public class VerificationController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     @PostMapping("/getListByAdmin")
-    public Result getListByAdmin(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result getListByAdmin(@RequestParam(defaultValue = "0") Integer page,
+                                 @RequestParam(defaultValue = "0") Integer size,
+                                 String userName) {
         PageHelper.startPage(page, size);
-        List<Verification> list = verificationMapper.getListByAdmin();
+        List<Verification> list = verificationMapper.getListByAdmin(userName);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     @PostMapping("/updateVerificationStatus")
     public Result updateVerificationStatus(String[] id, String status,String userName) {
         return ResultGenerator.genSuccessResult(verificationService.updateVerificationStatus(id,status,userName));
+    }
+    @PostMapping("/getVeriftcationDetail")
+    public Result getVeriftcationDetail(int id) {
+        return ResultGenerator.genSuccessResult(verificationMapper.getVeriftcationDetail(id));
     }
 }

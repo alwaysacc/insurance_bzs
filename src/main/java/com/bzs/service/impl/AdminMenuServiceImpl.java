@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AdminMenuMapper;
 import com.bzs.model.AdminMenu;
 import com.bzs.model.router.RouterMeta;
@@ -31,10 +32,11 @@ public class AdminMenuServiceImpl extends AbstractService<AdminMenu> implements 
     private AdminMenuMapper adminMenuMapper;
     @Resource
     private RedisUtil redisUtil;
+
+    @RedisAnnotation(key=RedisConstant.MENU_LIST_NAME,time=3600)
     @Override
     public List<VueRouter<AdminMenu>> getMenuByAdminName(String adminName) {
         List<VueRouter<AdminMenu>> list;
-        if (!redisUtil.hasKey(RedisConstant.MENU_LIST_NAME+adminName)) {
             List<VueRouter<AdminMenu>>  routes = new ArrayList<>();
             List<AdminMenu> menus = adminMenuMapper.getMenuByAdminName(adminName);
             menus.forEach(menu -> {
@@ -49,15 +51,9 @@ public class AdminMenuServiceImpl extends AbstractService<AdminMenu> implements 
                 routes.add(route);
             });
             list=TreeUtil.buildVueRouter(routes);
-            log.info("菜单存入redis");
-            redisUtil.set(RedisConstant.MENU_LIST_NAME+adminName,list,3600);
-        }else{
-            log.info("从redis获取菜单");
-            list= (List<VueRouter<AdminMenu>>) redisUtil.get(RedisConstant.MENU_LIST_NAME+adminName);
-        }
         return list;
     }
-
+    @RedisAnnotation(key = RedisConstant.MENT_LIST,time=3600)
     @Override
     public List<VueRouter<AdminMenu>> getMenu() {
         List<VueRouter<AdminMenu>> routes = new ArrayList<>();

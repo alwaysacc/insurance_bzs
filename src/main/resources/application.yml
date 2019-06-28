@@ -13,18 +13,16 @@ spring:
     password: alwaysacc1
     default-encoding: utf-8
   redis:
-    database: 0
     host: 127.0.0.1
-    password: 123456
     port: 6379
-    pool:
+    password: 123456
     jedis:
       pool:
-        max-active: 800
-        max-idle: 800
-        min-idle: 10
-    # 连接超时时间（毫秒）
-    timeout: 1000
+        min-idle: 8
+        max-idle: 500
+        max-active: 2000
+        max-wait: 10000
+    timeout: 800
   servlet:
     multipart:
       max-file-size: 100MB

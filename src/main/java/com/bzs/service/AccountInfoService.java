@@ -6,6 +6,8 @@ import com.bzs.utils.Service;
 import com.bzs.model.query.QueryRequest;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -79,11 +81,11 @@ public interface AccountInfoService extends Service<AccountInfo> {
      */
     Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
 
-    List getUserListByAdmin();
+    List getUserListByAdmin(String userName);
 
     int updateAccount(AccountInfo accountInfo);
 
-    boolean checkUserLoginName(String loginName);
+    HashSet checkUserLoginName();
 
 
     /**
@@ -111,4 +113,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
     List<AccountInfo> findUserDetail(AccountInfo user, QueryRequest request);
 
     List<AccountInfo> getUserNameAndId();
+
+    HashMap getHomeInfo();
 }

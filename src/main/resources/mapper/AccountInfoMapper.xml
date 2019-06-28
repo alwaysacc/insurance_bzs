@@ -308,7 +308,7 @@
 
     <select id="getUserListByAdmin" resultType="map">
         SELECT
-            a.account_id,
+            a.account_id as accountId,
             a.role_id,
             a.role_name,
             a.parent_id,
@@ -344,7 +344,12 @@
             account_info a
         LEFT JOIN account_info a1 ON a.parent_id = a1.account_id
         LEFT JOIN account_info a2 ON a1.parent_id = a2.account_id
-        where a.delete_status=0
+        <where>
+            a.delete_status=0
+            <if test="userName!=null and userName!=''">
+              and  a.user_name LIKE CONCAT(CONCAT('%', #{userName}), '%');
+            </if>
+        </where>
     </select>
 
     <update id="updateAccount">
@@ -354,7 +359,7 @@
             <if test="loginName!=null and loginName!=''">a.login_name=#{loginName}, </if>
             <if test="loginPwd!=null and loginPwd!=''">a.login_pwd=#{loginPwd}, </if>
             <if test="mobile!=null and mobile!=''">a.mobile=#{mobile}, </if>
-            <if test="accountState!=null and accountState!=''">a.account_state=#{accountState}, </if>
+            a.account_state=#{accountState}
         </trim>
         <where>
             account_id=#{accountId}

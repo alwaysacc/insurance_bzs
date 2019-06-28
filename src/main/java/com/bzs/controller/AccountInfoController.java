@@ -1,5 +1,6 @@
 package com.bzs.controller;
 
+import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
@@ -65,36 +66,14 @@ public class AccountInfoController {
     private RedisUtil redisUtil;
     @Resource
     private AccountInfoMapper accountInfoMapper;
-    @Resource
-    private OrderInfoMapper orderInfoMapper;
-    @Resource
-    private QuoteInfoMapper quoteInfoMapper;
 
     @PostMapping("/getHomeInfo")
-    public Result getHomeInfo(String loginName){
-        HashMap map;
-        if (redisUtil.hasKey(RedisConstant.HOME_MAP)) {
-            map= (HashMap) redisUtil.get(RedisConstant.HOME_MAP);
-        }else{
-            AccountInfo accountInfo=null;
-            int userCount=accountInfoMapper.selectCount(accountInfo);
-            OrderInfo orderInfo=null;
-            int orderCount=orderInfoMapper.selectCount(orderInfo);
-            QuoteInfo quoteInfo=null;
-            int quoteCount=quoteInfoMapper.selectCount(quoteInfo);
-            int todayCount=accountInfoMapper.getTodayLoginCount();
-            map=new HashMap();
-            map.put("userCount",userCount);
-            map.put("orderCount",orderCount);
-            map.put("quoteCount",quoteCount);
-            map.put("todayCount",todayCount);
-            redisUtil.set(RedisConstant.HOME_MAP,map,3600);
-        }
-        return ResultGenerator.genSuccessResult(map);
+    public Result getHomeInfo(){
+        return ResultGenerator.genSuccessResult(accountInfoService.getHomeInfo());
     }
     @PostMapping("/checkUserLoginName")
     public boolean checkUserLoginName(String loginName) {
-        return accountInfoService.checkUserLoginName(loginName);
+        return accountInfoService.checkUserLoginName().contains(loginName);
     }
 
     @PostMapping("/add")
@@ -143,9 +122,8 @@ public class AccountInfoController {
         return ResultGenerator.genSuccessResult(accountInfoService.findByLoginName(id));
     }
 
-    @PostMapping("/updateUser")
-    public Result updateUser(AccountInfo accountInfo) {
-        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(),accountInfo.getLoginPwd()));
+    @PostMapping("/updateUserIdCard")
+    public Result updateUserIdCard(AccountInfo accountInfo) {
         accountInfoService.update(accountInfo);
         return ResultGenerator.genSuccessResult();
     }
@@ -161,11 +139,11 @@ public class AccountInfoController {
     }
 
     @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String userName) {
         PageHelper.startPage(page, size);
       /*  Condition condition = new Condition(AccountInfo.class);
         condition.createCriteria().andCondition("delete_status ="+0);*/
-        List list =  accountInfoService.getUserListByAdmin();
+        List list =  accountInfoService.getUserListByAdmin(userName);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

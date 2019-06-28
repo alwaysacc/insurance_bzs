@@ -49,7 +49,7 @@ public class AdminMenuController {
     }
 
     @PostMapping("/getMenuList")
-    public Result getMenuList(Long id) {
+    public Result getMenuList() {
         return ResultGenerator.genSuccessResult(adminMenuService.getMenu());
     }
     @PostMapping("/getMenuIdByRoleId")

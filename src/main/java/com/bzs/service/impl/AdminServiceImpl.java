@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AdminMapper;
 import com.bzs.model.Admin;
 import com.bzs.redis.RedisUtil;
@@ -38,8 +39,8 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
     }
 
     @Override
-    public List getAdminList() {
-        return adminMapper.getAdminList();
+    public List getAdminList(String adminName) {
+        return adminMapper.getAdminList(adminName);
     }
 
     @Override
@@ -49,20 +50,10 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
         }
         return adminMapper.updateAdmin(admin);
     }
+    @RedisAnnotation(key =RedisConstant.ADMIN_LOGIN_NAME_LIST,time=3600 )
     @Override
-    public boolean checkAdminLoginName(String loginName) {
-        HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.ADMIN_LOGIN_NAME_LIST)){
-            log.info("管理员账号存入redis");
-            set=adminMapper.getAdminLoginName();
-            System.out.println(set.toString());
-            redisUtil.set(RedisConstant.ADMIN_LOGIN_NAME_LIST,set,720000);
-        }else{
-            log.info("从redis取出管理员账号");
-            set= (HashSet) redisUtil.get(RedisConstant.ADMIN_LOGIN_NAME_LIST);
-            System.out.println(set.toString());
-        }
-        return  set.contains(loginName);
+    public HashSet checkAdminLoginName() {
+        return  adminMapper.getAdminLoginName();
     }
 
 

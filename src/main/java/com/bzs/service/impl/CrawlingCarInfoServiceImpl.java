@@ -302,7 +302,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                 eachDataRow.createCell(3).setCellValue(
                                         eachUserVO.getNewCarOwner() == null ? "" : eachUserVO.getNewCarOwner());// 新车主
                                 eachDataRow.createCell(4).setCellValue(
-                                        eachUserVO.getVinNo() == null ? "" : eachUserVO.getVinNo());// 车架号
+                                        eachUserVO.getVinNo() == null ? "" : eachUserVO.getNewVinNo());// 车架号
                                 eachDataRow.createCell(5).setCellValue(
                                 eachUserVO.getBrand() == null ? "" : eachUserVO.getBrand());// 品牌
                                 eachDataRow.createCell(6).setCellValue(
