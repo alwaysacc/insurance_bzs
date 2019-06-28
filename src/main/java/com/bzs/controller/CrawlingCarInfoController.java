@@ -1,5 +1,6 @@
 package com.bzs.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bzs.model.query.CrawlingQuery;
 import com.bzs.service.CrawlingExcelInfoService;
 import com.bzs.service.impl.CrawlingCarInfoServiceImpl;
@@ -8,6 +9,8 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.CrawlingCarInfo;
 import com.bzs.service.CrawlingCarInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.async.AsyncVo;
+import com.bzs.utils.async.RequestQueue;
 import com.bzs.utils.excelUtil.ExcelImportUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -15,9 +18,11 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -25,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +50,10 @@ public class CrawlingCarInfoController {
     private CrawlingCarInfoService crawlingCarInfoService;
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;
+
+    @Autowired
+    private RequestQueue queue;
+
 
     @PostMapping("/add")
     public Result add(CrawlingCarInfo crawlingCarInfo) {
@@ -109,8 +119,9 @@ public class CrawlingCarInfoController {
     @ApiOperation("执行爬取")
     @PostMapping("/startCrawling")
     public Result startCrawling(String seriesNo){
+        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
         crawlingCarInfoService.startCrawling(seriesNo);
-        return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null));
+        return ResultGenerator.genSuccessResult();
     }
     @ApiOperation("导出数据")
     @GetMapping("/exportCrawlingDataList")
@@ -183,4 +194,22 @@ public class CrawlingCarInfoController {
         return crawlingCarInfoService.crawlingDataCount(seriesNo);
     }
 
+    @PostMapping("/crawlingtest1")
+    public DeferredResult<Object> order(String seriesNo,String loginName,String logPwd,String flag,String no) throws InterruptedException{
+        System.out.println("[ OrderController ] 接到爬取的请求");
+        System.out.println("当前待处理爬取的数： " + queue.getCrawlingQueue().size());
+        AsyncVo<String, Object> vo = new AsyncVo<>();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("seriesNo",seriesNo);
+        jsonObject.put("loginName",loginName);
+        jsonObject.put("logPwd",logPwd);
+        jsonObject.put("flag",flag);
+        jsonObject.put("no",no);
+        DeferredResult<Object> result = new DeferredResult<>();
+        vo.setParams(jsonObject.toJSONString());
+        vo.setResult(result);
+        queue.getCrawlingQueue().put(vo);
+        System.out.println("[ OrderController ] 返回爬取结果");
+        return result;
+    }
  }
