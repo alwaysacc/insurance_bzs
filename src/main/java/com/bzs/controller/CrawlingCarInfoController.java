@@ -125,6 +125,10 @@ public class CrawlingCarInfoController {
         crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
         crawlingCarInfoService.startCrawling(seriesNo);
         return ResultGenerator.genSuccessResult();
+    }
+    @ApiOperation("执行爬取")
+    @PostMapping("/startCrawling1")
+    public Result startCrawling1(String seriesNo){
         List list=new ArrayList();
         if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)){
             list.add(seriesNo);

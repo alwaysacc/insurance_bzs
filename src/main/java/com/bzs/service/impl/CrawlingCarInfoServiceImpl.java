@@ -533,7 +533,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                 //  return ResultGenerator.genFailResult("表示验证码识别出错,已识别5次");
                                             }
 
-                                            CrawlingCarData resData = bean.getData();
+                                            CrawlingCarData resData =  bean.getData().get(0);
                                             if (null != resData) {
                                                 data.setStatus("1");
                                                 data.setBizCompany(resData.getShangye_comp());//商业险公司
