@@ -44,6 +44,11 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     private InsuredInfoService insuredInfoService;
 
     @Override
+    public List getOrderListByAdmin() {
+        return orderInfoMapper.getOrderListByAdmin();
+    }
+
+    @Override
     public List getOrderList(String accountId, int payStatus) {
         return orderInfoMapper.getOrderList(accountId,payStatus);
     }

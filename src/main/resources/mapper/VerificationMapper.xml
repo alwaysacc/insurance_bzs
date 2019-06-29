@@ -14,6 +14,7 @@
     <result column="verification_time" jdbcType="TIMESTAMP" property="verificationTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="verification_by" jdbcType="VARCHAR" property="verificationBy" />
+    <result column="is_pay" jdbcType="VARCHAR" property="isPay" />
   </resultMap>
   <select id="getVerificationList" resultType="map">
     SELECT
@@ -26,6 +27,7 @@
       v.verification_time,
       v.create_by,
       v.verification_by,
+      v.is_pay as isPay,
       p.id,p.name,p.amount,p.type,p.account_id
       FROM
       verification v
@@ -60,6 +62,7 @@
         a.commission_total,
         p.amount,
         p.`name`,
+        v.is_pay as isPay,
         p.type
         FROM
         verification v LEFT JOIN account_info a on v.create_by=a.account_id
@@ -71,8 +74,18 @@
         </where>
   </select>
 
+
+    <sql id="update">
+        <trim prefix="set" suffixOverrides=",">
+            <if test="status!=null and ''!=status"> status=#{status},</if>
+            <if test="isPay!=null and isPay!='' "> is_pay=#{isPay},</if>
+            <if test="verificationTime!=null"> verification_time=#{verificationTime},</if>
+            <if test="userName!=null and ''!=userName"> verification_by=#{userName},</if>
+        </trim>
+    </sql>
   <update id="updateVerificationStatus">
-    update verification set status=#{status},verification_by=#{userName},verification_time=#{verificationTime}
+    update verification
+      <include refid="update"/>
     <where>
       id in
       <foreach item="item" collection="id" separator="," open="(" close=")">
@@ -80,17 +93,18 @@
       </foreach>
     </where>
   </update>
-  <sql id="updateItems">
-    <trim prefix="set" suffixOverrides=",">
-      <if test="money!=null and ''!=money"> money=#{money},</if>
-      <if test="status!=null and ''!=status"> status=#{status},</if>
-      <if test="payAccountId!=null "> money=#{payAccountId},</if>
-      <if test="description!=null and ''!=description"> description=#{description},</if>
-      <if test="verificationTime!=null"> verification_time=#{verificationTime},</if>
-      <if test="createBy!=null and ''!=createBy"> create_by=#{createBy},</if>
-      <if test="verificationBy!=null and ''!=verificationBy"> verification_by=#{verificationBy},</if>
-    </trim>
-  </sql>
+
+    <sql id="updateItems">
+        <trim prefix="set" suffixOverrides=",">
+            <if test="money!=null and ''!=money"> money=#{money},</if>
+            <if test="status!=null and ''!=status"> status=#{status},</if>
+            <if test="payAccountId!=null "> money=#{payAccountId},</if>
+            <if test="description!=null and ''!=description"> description=#{description},</if>
+            <if test="verificationTime!=null"> verification_time=#{verificationTime},</if>
+            <if test="createBy!=null and ''!=createBy"> create_by=#{createBy},</if>
+            <if test="verificationBy!=null and ''!=verificationBy"> verification_by=#{verificationBy},</if>
+        </trim>
+    </sql>
   <update id="updateVerification" parameterType="com.bzs.model.Verification">
     update verification <include refid="updateItems"/> where id=#{id}
   </update>
@@ -110,6 +124,7 @@
             v.verification_time,
             v.create_by,
             v.verification_by,
+            v.is_pay as isPay,
             p.amount,
             p.`name`,
             p.type,

@@ -349,6 +349,9 @@
             <if test="userName!=null and userName!=''">
               and  a.user_name LIKE CONCAT(CONCAT('%', #{userName}), '%');
             </if>
+            <if test="mobile!=null and mobile!=''">
+                and  a.mobile LIKE CONCAT(CONCAT('%', #{mobile}), '%');
+            </if>
         </where>
     </select>
 
@@ -379,5 +382,8 @@
     </select>
     <select id="getTodayLoginCount" resultType="int">
         select count(account_id) from account_info where datediff(login_time,now())=0
+    </select>
+    <select id="getUserNameList" resultType="map">
+        select account_id,user_name from account_info
     </select>
 </mapper>

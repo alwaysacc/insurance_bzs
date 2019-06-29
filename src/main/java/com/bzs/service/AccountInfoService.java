@@ -81,7 +81,7 @@ public interface AccountInfoService extends Service<AccountInfo> {
      */
     Result addOrUpdateAccountForMananger(AccountInfo accountInfo);
 
-    List getUserListByAdmin(String userName);
+    List getUserListByAdmin(String userName,String mobile);
 
     int updateAccount(AccountInfo accountInfo);
 

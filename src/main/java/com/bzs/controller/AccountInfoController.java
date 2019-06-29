@@ -72,8 +72,8 @@ public class AccountInfoController {
         return ResultGenerator.genSuccessResult(accountInfoService.getHomeInfo());
     }
     @PostMapping("/checkUserLoginName")
-    public boolean checkUserLoginName(String loginName) {
-        return accountInfoService.checkUserLoginName().contains(loginName);
+    public Result checkUserLoginName(String loginName) {
+        return ResultGenerator.genSuccessResult(accountInfoService.checkUserLoginName().contains(loginName));
     }
 
     @PostMapping("/add")
@@ -139,11 +139,11 @@ public class AccountInfoController {
     }
 
     @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String userName) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,String userName,String mobile) {
         PageHelper.startPage(page, size);
       /*  Condition condition = new Condition(AccountInfo.class);
         condition.createCriteria().andCondition("delete_status ="+0);*/
-        List list =  accountInfoService.getUserListByAdmin(userName);
+        List list =  accountInfoService.getUserListByAdmin(userName,mobile);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
@@ -320,8 +320,14 @@ public class AccountInfoController {
     public Result getCode(String mobile){
         return ResultGenerator.genSuccessResult(JuHeHttpUtil.getRequest(mobile));
     }
+
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){
         return ResultGenerator.genSuccessResult(accountInfoService.getUserNameAndId());
+    }
+
+    @PostMapping("/getUserNameList")
+    public Result getUserNameList(){
+        return ResultGenerator.genSuccessResult(accountInfoMapper.getUserNameList());
     }
 }

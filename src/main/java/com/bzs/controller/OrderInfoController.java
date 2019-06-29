@@ -30,6 +30,15 @@ public class OrderInfoController {
     @Resource
     private OrderInfoService orderInfoService;
 
+
+
+    @PostMapping("/getOrderListByAdmin")
+    public Result getOrderListByAdmin(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderInfo> list=orderInfoService.getOrderListByAdmin();
+        PageInfo pageInfo = new PageInfo(list);
+        return ResultGenerator.genSuccessResult(pageInfo);
+    }
     /**
      * @Author 孙鹏程
      * @Description  获取订单列表 payStatus订单支付状态

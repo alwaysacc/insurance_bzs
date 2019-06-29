@@ -23,6 +23,8 @@ public class Verification {
      */
     @Column(name = "pay_account_id")
     private Integer payAccountId;
+    @Column(name = "is_pay")
+    private Integer isPay;
 
     /**
      * 反馈信息
