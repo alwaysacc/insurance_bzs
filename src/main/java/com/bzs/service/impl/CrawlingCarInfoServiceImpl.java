@@ -147,12 +147,12 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                     passWord = domain.getAccountPwd();//密码
                     //账号不能为空
                     if (StringUtils.isBlank(username) || StringUtils.isBlank(passWord)) {
-                        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
+                        crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, "-1", null, null);
                         return ResultGenerator.genFailResult("爬取的账号或者密码为空");
                     }
 
                 } else {//未获取到账号信息,修改回原来的状态
-                    crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
+                    crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, "-1", null, null);
                     return ResultGenerator.genFailResult("请添加爬取的账号");
                 }
                 //获取爬取账号结束
@@ -266,11 +266,11 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
                                         }
                                     }else{
-                                    log.error("爬取出现异常，爬取接口异常", "车牌号为" + no);
-                                    for (CrawlingCarInfo resData : resltDataList) {
-                                        resData.setStatus("2");
-                                        resData.setResultMessage("爬取失败，状态码"+code);
-                                    }
+                                        log.error("爬取出现异常，爬取接口异常", "车牌号为" + no);
+                                        for (CrawlingCarInfo resData : resltDataList) {
+                                            resData.setStatus("2");
+                                            resData.setResultMessage("爬取失败，状态码"+code);
+                                        }
                                     }
                                 }catch (Exception e) {
                                 log.error("爬取出险异常,本地接口异常",e);
@@ -310,6 +310,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     public  String nodeCrawling(String no, String type, String username, String passWord, int count) {
 //        synchronized (this){
             log.info("第"+(count+1)+"次验证");
+            //调用爬取接口
             String resultMap = httpCrawling(username, passWord, type, no);
             CrawlingCarRootBean bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
             int code = bean.getCode();
