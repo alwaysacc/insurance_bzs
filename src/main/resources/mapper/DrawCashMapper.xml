@@ -130,8 +130,11 @@
       LEFT JOIN quote_info q ON o.pay_type_id = q.quote_id
       LEFT JOIN car_info c on q.car_info_id=c.car_info_id
       <where>
-    <if test="incomePerson!=null and incomePerson!=''">d.income_person=#{incomePerson} </if>
-          <if test="type!=null and type !=''">and type=#{type}</if>
+    <if test="incomePerson!=null and incomePerson!=''">d.income_person=#{incomePerson} and</if>
+       <!--   <if test="type!=null and type !=''"> type=#{type} and</if>-->
+          <if test="startTime!=null and endTime!=null">
+              d.create_time  between #{startTime} and  #{endTime}
+          </if>
 </where>
   </select>
 </mapper>

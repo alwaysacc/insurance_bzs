@@ -48,7 +48,7 @@ public class CrawlingExcelInfoServiceImpl extends AbstractService<CrawlingExcelI
         return crawlingExcelInfoMapper.updateCrawlingFinish(data);
     }
 
-    @Transient
+//    @Transient
     @Override
     public int updateCrawlingFinish(String  seriesNo,Integer lastCrawling, String status, Integer finishTotal, Date finishDate) {
         CrawlingExcelInfo data=new CrawlingExcelInfo();

@@ -57,4 +57,8 @@
     </trim>
     where series_no=#{seriesNo}
   </update>
+
+  <update id="updateStatus">
+    update crawling_excel_info set status=#{status} where series_no=#{seriesNo}
+  </update>
 </mapper>

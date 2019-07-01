@@ -13,5 +13,7 @@ public interface CrawlingExcelInfoMapper extends Mapper<CrawlingExcelInfo> {
      * @return
      */
     int updateCrawlingFinish(CrawlingExcelInfo data);
+
     int updateCrawlingStatus(@Param("seriesNo") String seriesNo,@Param("status") String status);
+    int updateStatus(@Param("seriesNo") String seriesNo,@Param("status") String status);
 }

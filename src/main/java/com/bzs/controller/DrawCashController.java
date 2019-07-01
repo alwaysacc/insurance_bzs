@@ -76,9 +76,9 @@ public class DrawCashController {
      */
     @PostMapping("/getDrawCashList")
     @ApiOperation("获取佣金列表")
-    public Result getDrawCashList(String incomePerson,@RequestParam(defaultValue = "0")Integer type,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size){
+    public Result getDrawCashList(String incomePerson,@RequestParam(defaultValue = "0")Integer type,String createTime,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size){
         PageHelper.startPage(page, size);
-        List<DrawCash> list = drawCashService.getDrawCashList(incomePerson,type);
+        List<DrawCash> list = drawCashService.getDrawCashList(incomePerson,type,createTime);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

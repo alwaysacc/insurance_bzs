@@ -19,7 +19,7 @@ public interface DrawCashService extends Service<DrawCash> {
      */
     Map insertBatch(String list,String createBy);
 
-    List getDrawCashList(String incomePerson,int type);
+    List getDrawCashList(String incomePerson,int type,String createTime);
 
     /**
      * 添加并修改总额

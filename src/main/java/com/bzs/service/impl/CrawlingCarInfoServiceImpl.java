@@ -63,6 +63,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
     @Autowired
     private RedisUtil redisUtil;
+    private static  final String PROGRESS="progress.";
 
     @Override
     public int batchInsertImport(List<CrawlingCarInfo> list) {
@@ -572,7 +573,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                             data.setIsNewCarOwner("1");//新车主
                                                         }
                                                     }
-
                                                     String newVinNo = resData.getChejia_no();
                                                     data.setNewVinNo(newVinNo);//车架
                                                     if (StringUtils.isNotBlank(vinNo)) {
@@ -581,8 +581,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                         }
                                                     }
                                                     data.setTransferDate(resData.getTrans_time());//转户日期
+                                                    log.info(String.valueOf(resltDataList.size()));
                                                 }
-
                                             }
                                         }else{
                                             log.error("爬取出现异常，爬取接口异常", "车牌号为" + no);
@@ -590,6 +590,14 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                 resData.setStatus("2");
                                                 resData.setResultMessage("爬取失败，状态码"+code);
                                             }
+                                        }
+                                        //进度条 存储已爬取的数量到redis
+                                        if (redisUtil.hasKey(PROGRESS+seriesNo)){
+                                            redisUtil.set(PROGRESS+seriesNo,
+                                                    resltDataList.size()+(Integer) redisUtil.get(PROGRESS+seriesNo),
+                                                    1800);
+                                        }else{
+                                            redisUtil.set(PROGRESS+seriesNo, resltDataList.size(), 1800);
                                         }
                                     }catch (Exception e) {
                                         log.error("爬取出险异常,本地接口异常",e);
@@ -719,6 +727,10 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
             e.printStackTrace();
         }
         return "导出用户EXCEL成功";
+    }
 
+    @Override
+    public int getProgress(String seriesNo) {
+        return (int) redisUtil.get(PROGRESS+seriesNo);
     }
 }

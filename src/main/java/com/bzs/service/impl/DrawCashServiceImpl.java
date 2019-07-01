@@ -74,8 +74,15 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
     }
 
     @Override
-    public List getDrawCashList(String incomePerson, int type) {
-        return drawCashMapper.getDrawCashList(incomePerson, type);
+    public List getDrawCashList(String incomePerson, int type,String createTime) {
+        String startTime=null;
+        String endTime=null;
+        if (createTime!=null && createTime!=""){
+            List<String> timeList= JSONArray.parseArray(createTime).toJavaList(String.class);
+            startTime=timeList.get(0);
+            endTime=timeList.get(1);
+        }
+        return drawCashMapper.getDrawCashList(incomePerson, type,startTime,endTime);
     }
 
     @Override
