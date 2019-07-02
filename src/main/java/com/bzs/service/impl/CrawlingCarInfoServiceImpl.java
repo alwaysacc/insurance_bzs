@@ -310,14 +310,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
      */
     public  String nodeCrawling(String no, String type, String username, String passWord, int count) {
 //        synchronized (this){
-            log.info("第"+(count+1)+"次验证");
+
             //调用爬取接口
             String resultMap = httpCrawling(username, passWord, type, no);
             CrawlingCarRootBean bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
             int code = bean.getCode();
+            log.info("第"+(count+1)+"次验证");
+            log.info("爬取的返回值code="+code);
             if (-1 == code && count <5) {
                 count++;
-                nodeCrawling(no, type, username, passWord, count);
+                resultMap= nodeCrawling(no, type, username, passWord, count);
             }
             return resultMap;
 //        }
@@ -762,7 +764,9 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     }else if("0".equals(status)){
                                         resultMessage="未爬取";
                                     }else if("2".equals(status)){
-
+                                        isNewCarOwner="获取失败";
+                                        isNewCarNo="获取失败";
+                                        resultMessage="获取失败";
                                     }
                                 }
                                 eachDataRow.createCell(18).setCellValue(
