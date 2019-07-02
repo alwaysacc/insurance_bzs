@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.CarInfoMapper;
@@ -205,14 +206,15 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
     }
 
     @Override
-    public List getCarInfoQuote(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess) {
-        CarInfo carInfo=new CarInfo();
-        carInfo.setCarInfoId(carInfoId);
-        carInfo.setCreatedBy(createBy);
-        carInfo.setCarNumber(carNo);
-        carInfo.setFrameNumber(vinNo);
-        carInfo.setIsEnable(isEnable);
-        carInfo.setIsRenewSuccess(isRenewSuccess);
-        return  carInfoMapper.getCarInfoAndInsurance(carInfo);
+    public List getCarInfoQuote(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess,String queryTime) {
+        String startTime=null;
+        String endTime=null;
+        if (queryTime!=null && queryTime!=""){
+            List<String> timeList= JSONArray.parseArray(queryTime).toJavaList(String.class);
+            startTime=timeList.get(0);
+            endTime=timeList.get(1);
+        }
+
+        return  carInfoMapper.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess,startTime,endTime);
     }
 }

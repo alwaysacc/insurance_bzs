@@ -331,8 +331,8 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         }
     }
     @Override
-    public List getUserListByAdmin(String userName) {
-        return accountInfoMapper.getUserListByAdmin(userName);
+    public List getUserListByAdmin(String userName,String mobile) {
+        return accountInfoMapper.getUserListByAdmin(userName,mobile);
     }
 
     @Override

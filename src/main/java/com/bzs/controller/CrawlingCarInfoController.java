@@ -1,6 +1,8 @@
 package com.bzs.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bzs.dao.CrawlingExcelInfoMapper;
+import com.bzs.model.CrawlingExcelInfo;
 import com.bzs.model.query.CrawlingQuery;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.CrawlingExcelInfoService;
@@ -51,6 +53,8 @@ public class CrawlingCarInfoController {
     private CrawlingCarInfoService crawlingCarInfoService;
     @Resource
     private CrawlingExcelInfoService crawlingExcelInfoService;
+    @Resource
+    private CrawlingExcelInfoMapper crawlingExcelInfoMapper;
     @Autowired
     private RedisUtil redisUtil;
 
@@ -72,8 +76,8 @@ public class CrawlingCarInfoController {
 
     @PostMapping("/update")
     public Result update(CrawlingCarInfo crawlingCarInfo) {
-        crawlingCarInfoService.update(crawlingCarInfo);
-        return ResultGenerator.genSuccessResult();
+//        crawlingCarInfoService.update(crawlingCarInfo);
+        return ResultGenerator.genSuccessResult(crawlingExcelInfoMapper.updateStatus(crawlingCarInfo.getSeriesNo(),"3"));
     }
 
     @PostMapping("/detail")
@@ -89,9 +93,10 @@ public class CrawlingCarInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
     @ApiOperation("上传需要导入的数据")
     @PostMapping("/import")
-    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy,@RequestParam(defaultValue = "2") String type) {
+    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy, @RequestParam(defaultValue = "2") String type) {
         String fileName = new File(file.getOriginalFilename()).getName();
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
         String seriesNo = UUIDS.getDateUUID();
@@ -102,7 +107,7 @@ public class CrawlingCarInfoController {
                 file.transferTo(f);
                 f.deleteOnExit();
                 String path = f.getAbsolutePath();
-                readExcel(suffix, path,fileName, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy,type);
+                readExcel(suffix, path, fileName, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy, type);
             } catch (Exception e) {
                 return ResultGenerator.genFailResult("上传异常");
             }
@@ -115,22 +120,25 @@ public class CrawlingCarInfoController {
         }
 
     }
+
     /**
      * 开始爬取
+     *
      * @return
      */
-    @ApiOperation("执行爬取")
+    /*@ApiOperation("执行爬取")
     @PostMapping("/startCrawling")
     public Result startCrawling(String seriesNo){
         crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null);
         crawlingCarInfoService.startCrawling(seriesNo);
         return ResultGenerator.genSuccessResult();
-    }
+    }*/
     @ApiOperation("执行爬取")
-    @PostMapping("/startCrawling1")
-    public  Result startCrawling1(String seriesNo){
-        List list=new ArrayList();
-        synchronized(this) {
+    @PostMapping("/startCrawling")
+    public Result startCrawling(String seriesNo) {
+        int result=0;
+        synchronized (this){
+            List list = new ArrayList();
             if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)) {
                 list.add(seriesNo);
                 redisUtil.set(RedisConstant.CRAWLING_LIST, list);
@@ -140,15 +148,18 @@ public class CrawlingCarInfoController {
                 list.add(seriesNo);
                 redisUtil.set(RedisConstant.CRAWLING_LIST, list);
             }
+            result=crawlingExcelInfoMapper.updateCrawlingStatus(seriesNo, "3");
         }
-            return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, "3", null, null));
 
-        }
+        return ResultGenerator.genSuccessResult(result);
+    }
+
     @ApiOperation("导出数据")
     @GetMapping("/exportCrawlingDataList")
-    public void exportCrawlingDataList(HttpServletResponse response , HttpServletRequest request,String seriesNo){
-        crawlingCarInfoService.exportCrawlingDataList(response,request,seriesNo);
+    public void exportCrawlingDataList(HttpServletResponse response, HttpServletRequest request, String seriesNo) {
+        crawlingCarInfoService.exportCrawlingDataList(response, request, seriesNo);
     }
+
     /* @ApiOperation("导入测试")
     @PostMapping("/importTest")*/
     public Result importTest() {
@@ -164,7 +175,7 @@ public class CrawlingCarInfoController {
             multipartFile.transferTo(f);
             f.deleteOnExit();
             String paths = f.getAbsolutePath();
-            readExcel(suffix, paths,fileName, crawlingCarInfoService, crawlingExcelInfoService, UUIDS.getDateUUID(), "1","2");
+            readExcel(suffix, paths, fileName, crawlingCarInfoService, crawlingExcelInfoService, UUIDS.getDateUUID(), "1", "2");
             return ResultGenerator.genSuccessResult("上传成功");
         } catch (Exception e) {
             log.error("异常", e);
@@ -173,7 +184,7 @@ public class CrawlingCarInfoController {
 
     }
 
-   // @PostMapping("/batchInsertImportTest")
+    // @PostMapping("/batchInsertImportTest")
     public Result batchInsertImportTest() {
         List<CrawlingCarInfo> list = new ArrayList<>();
         CrawlingCarInfo carInfo = null;
@@ -188,13 +199,18 @@ public class CrawlingCarInfoController {
             return ResultGenerator.genFailResult("批量添加失败");
         }
     }
+
     @ApiOperation("爬取测试")
     @PostMapping("/textss")
     public Result textss(String username, String password, String flag, String no) {
         String map = crawlingCarInfoService.httpCrawling(username, password, flag, no);
         return ResultGenerator.genSuccessResult(map);
     }
-
+    @ApiOperation("获取已爬取数量，进度条")
+    @PostMapping("/getProgress")
+    public Result getProgress(String seriesNo) {
+        return ResultGenerator.genSuccessResult(crawlingCarInfoService.getProgress(seriesNo));
+    }
     @PostMapping("/exportDataListBySeriesNo")
     public Result exportDataListBySeriesNo(String seriesNo) {
         List list = crawlingCarInfoService.exportDataListBySeriesNo(seriesNo);
@@ -210,22 +226,23 @@ public class CrawlingCarInfoController {
     public List crawlingDataList(String seriesNo, Integer startRow, Integer pageSize) {
         return crawlingCarInfoService.crawlingDataList(seriesNo, startRow, pageSize);
     }
+
     @PostMapping("/crawlingDataCount")
     public int crawlingDataCount(String seriesNo) {
         return crawlingCarInfoService.crawlingDataCount(seriesNo);
     }
 
     @PostMapping("/crawlingtest1")
-    public DeferredResult<Object> order(String seriesNo,String loginName,String logPwd,String flag,String no) throws InterruptedException{
+    public DeferredResult<Object> order(String seriesNo, String loginName, String logPwd, String flag, String no) throws InterruptedException {
         System.out.println("[ OrderController ] 接到爬取的请求");
         System.out.println("当前待处理爬取的数： " + queue.getCrawlingQueue().size());
         AsyncVo<String, Object> vo = new AsyncVo<>();
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("seriesNo",seriesNo);
-        jsonObject.put("loginName",loginName);
-        jsonObject.put("logPwd",logPwd);
-        jsonObject.put("flag",flag);
-        jsonObject.put("no",no);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("seriesNo", seriesNo);
+        jsonObject.put("loginName", loginName);
+        jsonObject.put("logPwd", logPwd);
+        jsonObject.put("flag", flag);
+        jsonObject.put("no", no);
         DeferredResult<Object> result = new DeferredResult<>();
         vo.setParams(jsonObject.toJSONString());
         vo.setResult(result);
@@ -233,4 +250,4 @@ public class CrawlingCarInfoController {
         System.out.println("[ OrderController ] 返回爬取结果");
         return result;
     }
- }
+}

@@ -55,6 +55,24 @@ public interface CarInfoMapper extends Mapper<CarInfo> {
     List  getCarInfoAndInsurance(CarInfo carInfo);
 
     /**
+     * 查询车辆信息，报价List和续保List信息
+     * @param carInfoId
+     * @param carNumber
+     * @param createdBy
+     * @param frameNumber
+     * @param isEnable
+     * @param isRenewSuccess
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List  getCarInfoAndInsurance(@Param("carInfoId")String carInfoId,@Param("carNumber")String carNumber,
+                                 @Param("createdBy")String createdBy,@Param("frameNumber")String frameNumber,
+                                 @Param("isEnable")String isEnable,@Param("isRenewSuccess")String isRenewSuccess,
+                                 @Param("startTime")String startTime,@Param("endTime")String endTime
+    );
+
+    /**
      * 批量修改 isEnable
      * @param carInfoIds
      * @param isEnable

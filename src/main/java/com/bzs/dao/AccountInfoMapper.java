@@ -81,7 +81,7 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
 
     int updateAccountStat(@Param("accountId")String accountId,@Param("status")int status);
 
-    List getUserListByAdmin(@Param("userName")String userName);
+    List getUserListByAdmin(@Param("userName")String userName,@Param("mobile") String mobile);
 
     int updateAccount(AccountInfo accountInfo);
 
@@ -90,4 +90,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     List<AccountInfo> getUserNameAndId();
     // 获取今日登陆的用户数量
     int getTodayLoginCount();
+
+    List getUserNameList();
 }

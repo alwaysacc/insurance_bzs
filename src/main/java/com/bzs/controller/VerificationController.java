@@ -88,8 +88,8 @@ public class VerificationController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     @PostMapping("/updateVerificationStatus")
-    public Result updateVerificationStatus(String[] id, String status,String userName) {
-        return ResultGenerator.genSuccessResult(verificationService.updateVerificationStatus(id,status,userName));
+    public Result updateVerificationStatus(String[] id, String status,String userName, String isPay) {
+        return ResultGenerator.genSuccessResult(verificationService.updateVerificationStatus(id,status,userName,isPay));
     }
     @PostMapping("/getVeriftcationDetail")
     public Result getVeriftcationDetail(int id) {

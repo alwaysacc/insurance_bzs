@@ -33,8 +33,8 @@ public class VerificationServiceImpl extends AbstractService<Verification> imple
     }
 
     @Override
-    public int updateVerificationStatus(String[] id, String status ,String userName) {
+    public int updateVerificationStatus(String[] id, String status ,String userName, String isPay) {
         Timestamp verificationTime=new Timestamp(new Date().getTime());
-        return verificationMapper.updateVerificationStatus(id,status,userName,verificationTime);
+        return verificationMapper.updateVerificationStatus(id,status,userName,verificationTime,isPay);
     }
 }

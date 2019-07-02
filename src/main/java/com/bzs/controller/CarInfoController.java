@@ -156,11 +156,12 @@ public class CarInfoController {
     }
 
     @PostMapping("/getCarInfoQuote")
-    public Result getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,String  isRenewSuccess,
+    public Result getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,String isEnable,
+                                  String  isRenewSuccess,String queryTime,
     @RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size
     ){
         PageHelper.startPage(page, size);
-        List list=carInfoService.getCarInfoQuote(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess);
+        List list=carInfoService.getCarInfoQuote(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess,queryTime);
         PageInfo pageInfo=new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

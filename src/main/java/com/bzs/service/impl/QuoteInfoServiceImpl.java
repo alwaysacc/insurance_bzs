@@ -1778,6 +1778,10 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
         String SecCode = MD5Utils.md5(param + secretKey);
         param = param + "&SecCode=" + SecCode;
         param = param.replaceAll(" ", "%20");
+        /*drawCashService.addDrawCash(orderId,quoteId,createBy);//支付成功后添加佣金分成修改总金额等
+        OrderInfo orderInfo1 = new OrderInfo(orderId);
+        orderInfo1.setPayStatus(1);
+        orderInfoService.updatePayStatus(orderInfo1);*/
         try {
             String URL = ThirdAPI.PayResult;
             HttpResult httpResult = HttpClientUtil.doGet(URL + param, null);
@@ -1812,6 +1816,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         map.put("msg", "待交费");
                     }
                     orderInfo.setPayStatus(status);
+                    orderInfo.setFinishTime(new Date());
                     orderInfoService.updatePayStatus(orderInfo);
                     map.put("data", body);
                     return map;

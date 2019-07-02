@@ -41,8 +41,49 @@
     <result column="level_two" jdbcType="VARCHAR" property="levelTwo" />
   </resultMap>
 
-
-
+  <select id="getOrderListByAdmin" resultType="map">
+          SELECT
+                o.order_id,
+                c.car_number,
+                c.brand_model,
+                c.salesman,
+                c.license_owner,
+                o.create_time,
+                date_format(o.finish_time, '%Y-%m-%d') AS finish_time,
+                o.create_by,
+                o.pay_status,
+                o.pay_type,
+                o.pay_type_id,
+                o.payment,
+                o.pay_money,
+                o.car_info_id,
+                o.delivery_way,
+                o.delivery_address,
+                o.cancel_msg,
+                o.update_time,
+                o.contact_name,
+                o.contact_tel,
+                i.posted_name,
+                i.insurance_company,
+                q.quote_insurance_name,
+                q.quote_source,
+                q.pay_end_date,
+                q.force_total,
+                q.tax_total,
+                q.biz_total,
+                q.total,
+                a.user_name
+            FROM
+                order_info AS o
+            LEFT JOIN insured_info AS i ON (
+                o.car_info_id = i.car_info_id
+            )
+            LEFT JOIN car_info AS c ON (
+                o.car_info_id = c.car_info_id
+            )
+            LEFT JOIN quote_info AS q ON (o.pay_type_id = q.quote_id)
+            LEFT JOIN account_info AS a ON o.create_by = a.account_id
+  </select>
   <select id="getOrderList" resultType="map">
     SELECT
     order_info.order_id,
