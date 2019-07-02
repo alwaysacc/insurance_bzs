@@ -128,19 +128,22 @@ public class CrawlingCarInfoController {
     }
     @ApiOperation("执行爬取")
     @PostMapping("/startCrawling1")
-    public Result startCrawling1(String seriesNo){
+    public  Result startCrawling1(String seriesNo){
         List list=new ArrayList();
-        if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)){
-            list.add(seriesNo);
-            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
-            crawlingCarInfoService.startCrawling1();
-        }else{
-            list= (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
-            list.add(seriesNo);
-            redisUtil.set(RedisConstant.CRAWLING_LIST,list);
+        synchronized(this) {
+            if (!redisUtil.hasKey(RedisConstant.CRAWLING_LIST)) {
+                list.add(seriesNo);
+                redisUtil.set(RedisConstant.CRAWLING_LIST, list);
+                crawlingCarInfoService.startCrawling1();
+            } else {
+                list = (List) redisUtil.get(RedisConstant.CRAWLING_LIST);
+                list.add(seriesNo);
+                redisUtil.set(RedisConstant.CRAWLING_LIST, list);
+            }
         }
-        return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null,"3",null,null));
-    }
+            return ResultGenerator.genSuccessResult(crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, "3", null, null));
+
+        }
     @ApiOperation("导出数据")
     @GetMapping("/exportCrawlingDataList")
     public void exportCrawlingDataList(HttpServletResponse response , HttpServletRequest request,String seriesNo){
