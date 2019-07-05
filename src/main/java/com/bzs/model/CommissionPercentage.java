@@ -70,6 +70,26 @@ public class CommissionPercentage {
      */
     @Column(name = "subsidy")
     private String	subsidy;
+    @Column(name = "insurance_biz_percentage")
+    private String	insuranceBizPercentage;
+    @Column(name = "insurance_force_percentage")
+    private String	insuranceForcePercentage;
+
+    public String getInsuranceBizPercentage() {
+        return insuranceBizPercentage;
+    }
+
+    public void setInsuranceBizPercentage(String insuranceBizPercentage) {
+        this.insuranceBizPercentage = insuranceBizPercentage;
+    }
+
+    public String getInsuranceForcePercentage() {
+        return insuranceForcePercentage;
+    }
+
+    public void setInsuranceForcePercentage(String insuranceForcePercentage) {
+        this.insuranceForcePercentage = insuranceForcePercentage;
+    }
 
     /**
      * @return id

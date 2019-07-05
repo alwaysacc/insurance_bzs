@@ -69,7 +69,8 @@
         LEFT JOIN pay_account p on p.id=v.pay_account_id
         <where>
           <if test="userName!=null and userName!=''">
-            a.user_name like CONCAT(CONCAT('%', #{userName}), '%');
+--                 a.user_name LIKE CONCAT(CONCAT('%', #{userName}), '%')
+              a.user_name=#{userName}
           </if>
         </where>
   </select>

@@ -731,6 +731,12 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
     @Override
     public int getProgress(String seriesNo) {
-        return (int) redisUtil.get(PROGRESS+seriesNo);
+        int count=0;
+        if (redisUtil.hasKey(PROGRESS+seriesNo)){
+            return (int) redisUtil.get(PROGRESS+seriesNo);
+        }else {
+            redisUtil.set(PROGRESS+seriesNo,count);
+            return count;
+        }
     }
 }

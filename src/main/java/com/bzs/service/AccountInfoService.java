@@ -4,6 +4,8 @@ import com.bzs.model.Verification;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
 import com.bzs.model.query.QueryRequest;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -87,6 +89,7 @@ public interface AccountInfoService extends Service<AccountInfo> {
 
     HashSet checkUserLoginName();
 
+    HashSet checkUserMobile();
 
     /**
      * 通过用户名查找用户
@@ -115,4 +118,7 @@ public interface AccountInfoService extends Service<AccountInfo> {
     List<AccountInfo> getUserNameAndId();
 
     HashMap getHomeInfo();
-}
+
+    HashMap accountVerified( MultipartFile file, String type, String accountId);
+
+    }

@@ -25,6 +25,7 @@ public class CommissionPercentageController {
     @Resource
     private CommissionPercentageService commissionPercentageService;
 
+
     @PostMapping("/add")
     public Result add(CommissionPercentage commissionPercentage) {
         commissionPercentageService.save(commissionPercentage);

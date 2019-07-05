@@ -12,6 +12,8 @@ import com.bzs.service.AccountInfoService;
 import com.bzs.service.AccountRoleInfoService;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
+import com.bzs.utils.base64Util.Base64Util;
+import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.stringUtil.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -349,6 +354,12 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return  accountInfoMapper.getUserLoginName();
     }
 
+    @RedisAnnotation(key = RedisConstant.USER_MOILE,time = 3600)
+    @Override
+    public HashSet checkUserMobile() {
+        return accountInfoMapper.checkUserMobile();
+    }
+
     @Override
     public List<AccountInfo> getUserNameAndId() {
         /*List<AccountInfo> list;
@@ -380,5 +391,24 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         map.put("quoteCount",quoteCount);
         map.put("todayCount",todayCount);
         return map;
+    }
+
+    @Override
+    public HashMap accountVerified(MultipartFile f, String type, String accountId) {
+        String path = "D:\\img\\";
+//        String path = "\\img";
+        File file = new File(path,accountId+"-type"+".jpg");
+        // 得到MultipartFile文件
+        try {
+            f.transferTo(file);
+            String base64=Base64Util.ImageToBase64(file);
+//            System.out.println(Base64Util.ImageToBase64(file));
+            log.info(JuHeHttpUtil.accountVerified(base64,type));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 输出绝对路径
+        System.out.println(file.getAbsolutePath());
+        return null;
     }
 }

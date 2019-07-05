@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.CommissionEveryDayMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.CommissionEveryDay">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="insurance_biz_percentage" jdbcType="VARCHAR" property="insuranceBizPercentage" />
+    <result column="insurance_force_percentage" jdbcType="VARCHAR" property="insuranceForcePercentage" />
+    <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage" />
+    <result column="subsidy" jdbcType="VARCHAR" property="subsidy" />
+    <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage" />
+    <result column="level_one" jdbcType="VARCHAR" property="levelOne" />
+    <result column="level_two" jdbcType="VARCHAR" property="levelTwo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+  </resultMap>
+</mapper>

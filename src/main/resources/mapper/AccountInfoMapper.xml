@@ -380,10 +380,16 @@
         account_state=0
     </where>
     </select>
+    <!--查询今天登陆用户数-->
     <select id="getTodayLoginCount" resultType="int">
         select count(account_id) from account_info where datediff(login_time,now())=0
     </select>
+    <!--查询用户名-->
     <select id="getUserNameList" resultType="map">
         select account_id,user_name from account_info
+    </select>
+    <!--判断手机号是否存在-->
+    <select id="checkUserMobile" resultType="String">
+        select mobile from account_info
     </select>
 </mapper>

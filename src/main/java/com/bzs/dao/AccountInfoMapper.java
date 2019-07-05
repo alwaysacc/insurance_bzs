@@ -92,4 +92,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     int getTodayLoginCount();
 
     List getUserNameList();
+    //判断手机号是否存在
+    HashSet checkUserMobile();
 }
