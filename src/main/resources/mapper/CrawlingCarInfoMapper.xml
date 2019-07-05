@@ -116,6 +116,8 @@
     </sql>
     <sql id="crawlingUpdate">
         <trim suffixOverrides="," prefix="set"  >
+            <if test="carNo!=null and carNo!=''">car_no=#{carNo},</if>
+            <if test="carOwner!=null and carOwner!=''">car_owner=#{carOwner},</if>
             <if test="newCarNo!=null and newCarNo!=''">new_car_no=#{newCarNo},</if>
             <if test="isNewCarNo!=null and isNewCarNo!=''">is_new_car_no=#{isNewCarNo},</if>
             <if test="newCarOwner!=null and newCarOwner!=''">new_car_owner=#{newCarOwner},</if>
@@ -168,8 +170,6 @@
             <if test="forceStartDate!=null and forceStartDate!=''">#{forceStartDate},</if>
         </trim>
     </sql>
-
-
     <update id="crawlingUpdate" parameterType="com.bzs.model.CrawlingCarInfo">
         update crawling_car_info <include refid="crawlingUpdate"/>
         where id=#{id}

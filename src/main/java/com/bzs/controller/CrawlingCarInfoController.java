@@ -114,7 +114,6 @@ public class CrawlingCarInfoController {
             long end = System.currentTimeMillis();
             System.out.println((end - start) / 1000);
             return ResultGenerator.genSuccessResult("上传成功");
-
         } else {
             return ResultGenerator.genFailResult("文件格式错误，只能上传xls和xlsx文件");
         }

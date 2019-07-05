@@ -310,14 +310,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
      */
     public  String nodeCrawling(String no, String type, String username, String passWord, int count) {
 //        synchronized (this){
-            log.info("第"+(count+1)+"次验证");
+
             //调用爬取接口
             String resultMap = httpCrawling(username, passWord, type, no);
             CrawlingCarRootBean bean = JSONObject.parseObject(resultMap, CrawlingCarRootBean.class);
             int code = bean.getCode();
+            log.info("第"+(count+1)+"次验证");
+            log.info("爬取的返回值code="+code);
             if (-1 == code && count <5) {
                 count++;
-                nodeCrawling(no, type, username, passWord, count);
+                resultMap= nodeCrawling(no, type, username, passWord, count);
             }
             return resultMap;
 //        }
@@ -561,9 +563,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                     data.setRegisterDate(resData.getStart_time());//初登日期
                                                     String newCarNo = resData.getChepai_no();
                                                     data.setNewCarNo(newCarNo);//车牌
-                                                    if (StringUtils.isNotBlank(carNo)) {
+                                                    if("2".equals(type)){//2车架爬取
+
+                                                    }
+                                                    if (StringUtils.isNotBlank(carNo)) {//原车牌号不为空
                                                         if (!carNo.equals(newCarNo)) {
                                                             data.setIsNewCarNo("1");//新车牌
+                                                        }
+                                                    }else{
+                                                        if(StringUtils.isNotBlank(newCarNo)){
+                                                            data.setCarNo(newCarNo);
                                                         }
                                                     }
                                                     String newCarOwner = resData.getName();
@@ -572,6 +581,11 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                         if (!carOwner.equals(newCarOwner)) {
                                                             data.setIsNewCarOwner("1");//新车主
                                                         }
+                                                    }else{
+                                                        if(StringUtils.isNotBlank(newCarOwner)){
+                                                            data.setCarOwner(newCarOwner);
+                                                        }
+
                                                     }
                                                     String newVinNo = resData.getChejia_no();
                                                     data.setNewVinNo(newVinNo);//车架
@@ -650,7 +664,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
         String[] titles = {"车辆牌照", "新车牌", "车主", "新车主", "车架号",
                 "品牌", "车辆型号", "发动机号", "登记日期", "过户日期(没有过户没有)",
                 "交强险承保公司", "交强险到期日期", "商业险承保公司", "商业险到期日期", "出险次数",
-                "违章次数", "身份证号码", "联系电话", "序号"};
+                "违章次数", "身份证号码", "联系电话", "序号","车牌是否一致","车主是否一致","爬取结果"};
         // 开始导入
         try {
 //         ExcelExportUtil.exportExcelToLocalPath(totalRowCount,  titles,path, new WriteExcelDataDelegated() {
@@ -667,14 +681,16 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                             SXSSFRow eachDataRow = eachSheet.createRow(i);
                             if ((i - startRowCount) < userVOList.size()) {
                                 CrawlingCarInfo eachUserVO = (CrawlingCarInfo) userVOList.get(i - startRowCount);
-                                String carNo = eachUserVO.getCarNo();
-                                if (StringUtils.isBlank(carNo)) {//防止本身没有车架号，导出时车架为空
+                                String carNo = eachUserVO.getCarNo();//原车牌
+                                String newCarNO=eachUserVO.getNewCarNo();//爬取的车牌
+                                if (StringUtils.isBlank(carNo)) {//防止本身没有车架号，导出时车牌为空
                                     carNo = eachUserVO.getNewCarNo();
                                 }
                                 eachDataRow.createCell(0).setCellValue(
                                         carNo == null ? "" : carNo);// 车辆牌照
                                 eachDataRow.createCell(1).setCellValue(
-                                        eachUserVO.getNewCarNo() == null ? "" : eachUserVO.getNewCarNo());// 新车牌
+                                        eachUserVO.getNewCarNo() == null ? "" : newCarNO);// 新车牌
+
                                 eachDataRow.createCell(2).setCellValue(
                                         eachUserVO.getCarOwner() == null ? "" : eachUserVO.getCarOwner());// 车主
                                 eachDataRow.createCell(3).setCellValue(
@@ -717,6 +733,50 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                         eachUserVO.getMobile() == null ? "" : eachUserVO.getMobile());// 电话
                                 eachDataRow.createCell(18).setCellValue(
                                         eachUserVO.getIndexNo() == null ? 0 : eachUserVO.getIndexNo());// 序号
+                                String status=eachUserVO.getStatus();
+                                String isNewCarNo=eachUserVO.getIsNewCarNo();//是否车牌一致
+                                String isNewCarOwner=eachUserVO.getIsNewCarOwner();//是否车主一致
+
+                                String resultMessage=eachUserVO.getResultMessage();
+                                if (StringUtils.isNotBlank(status)){
+                                    if("1".equals(status)){
+                                        resultMessage="成功";
+                                        if(StringUtils.isNotBlank(isNewCarNo)){
+                                            if("0".equals(isNewCarNo)){//车牌一致
+                                                isNewCarNo="车牌一致";
+                                            }else{//车牌一致
+                                                isNewCarNo="车牌不一致";
+                                            }
+                                        }else{
+                                            isNewCarNo="";
+                                        }
+
+                                        if(StringUtils.isNotBlank(isNewCarOwner)){
+                                            if("0".equals(isNewCarOwner)){//车牌一致
+                                                isNewCarOwner="车主一致";
+                                            }else{//车牌一致
+                                                isNewCarOwner="车主不一致";
+                                            }
+                                        }else{
+                                            isNewCarOwner="";
+                                        }
+
+                                    }else if("0".equals(status)){
+                                        resultMessage="未爬取";
+                                    }else if("2".equals(status)){
+                                        isNewCarOwner="获取失败";
+                                        isNewCarNo="获取失败";
+                                        resultMessage="获取失败";
+                                    }
+                                }
+                                eachDataRow.createCell(18).setCellValue(
+                                        eachUserVO.getIndexNo() == null ? 0 : eachUserVO.getIndexNo());// 序号
+                                eachDataRow.createCell(19).setCellValue(
+                                        isNewCarNo == null ? "" : isNewCarNo);// 车牌是否一致
+                                eachDataRow.createCell(20).setCellValue(
+                                        isNewCarOwner == null ? "" : isNewCarOwner);// 车主是否一致
+                                eachDataRow.createCell(21).setCellValue(
+                                        resultMessage == null ? "" : resultMessage);// 爬取结果
                             }
                         }
                     }
