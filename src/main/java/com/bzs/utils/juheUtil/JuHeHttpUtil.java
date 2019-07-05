@@ -24,8 +24,10 @@ public class JuHeHttpUtil {
     public static final int DEF_CONN_TIMEOUT = 30000;
     public static final int DEF_READ_TIMEOUT = 30000;
     public static String userAgent =  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
-    //配置您申请的KEY
+    //验证码
     public static final String APPKEY ="d23ab875630098cc890cbfeea7670761";
+    //身份证识别
+    public static final String VerifiedAPPKEY ="fc450f2b71fe03fe72f1da952b489353";
 
     //1.屏蔽词检查测
     public static void getRequest1(){
@@ -86,9 +88,34 @@ public class JuHeHttpUtil {
     }
 
 
-
+    public static String  accountVerified(String img,String type){
+        String result =null;
+        Map map=new HashMap();
+        String url ="http://apis.juhe.cn/idimage/verify";//请求接口地址
+        Map params = new HashMap();//请求参数
+        params.put("image",img);//身份证图片
+        params.put("side",type);//身份证方向 	front:正面识别;back:反面识别;
+        params.put("key",VerifiedAPPKEY);//应用APPKEY(应用详细页查询)
+        String results="";
+        try {
+            result =net(url, params, "POST");
+            // return  result;
+            JSONObject object = JSONObject.fromObject(result);
+            if(object.getInt("error_code")==0){
+                results= object.getString("result");
+            }else{
+                results= object.get("error_code")+":"+object.get("reason");
+            }
+        } catch (Exception e) {
+            results=  "{\"error_code\":500,\"reason\":\"请求异常\"}";
+        }
+        log.info("发送验证码返回信息："+results);
+        return results+"";
+    }
     public static void main(String[] args) {
-      String result=  getRequest("15295032076");
+//      String result=  getRequest("15295032076");
+//        System.out.println(result);
+        String result= JuHeHttpUtil.accountVerified(null,"12");
         System.out.println(result);
     }
 

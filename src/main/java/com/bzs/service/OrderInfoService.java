@@ -11,13 +11,13 @@ import java.util.Map;
  * Created by alwaysacc on 2019/04/12.
  */
 public interface OrderInfoService extends Service<OrderInfo> {
-    List getOrderListByAdmin();
+    List getOrderListByAdmin(int payStatus,String userName,String carNumber);
 
     List getOrderList(String accountId, int payStatus);
 
-    List searchOrderList(@Param("accountId") String accountId, @Param("payStatus") int payStatus,
-                         @Param("carInfoId") String carInfoId, @Param("postedName") String postedName,
-                         @Param("deliveryWay") int deliveryWay, @Param("insuranceCompany") String insuranceCompany
+    List searchOrderList(String accountId,  int payStatus,
+                          String carInfoId, String postedName,
+                         int deliveryWay, String insuranceCompany
     );
     Map orderDetails(String orderId,String quoteId);
     int updatePayStatus(OrderInfo orederNo);

@@ -12,6 +12,7 @@ import java.util.List;
 public interface VerificationMapper extends Mapper<Verification> {
     List getVerificationList(String  accountId);
     List getListByAdmin(@Param("userName")String userName);
+
     int updateVerificationStatus(@Param("id")String[] id, @Param("status")String status,
                                  @Param("userName") String userName,@Param("verificationTime") Timestamp verificationTime,
                                  @Param("isPay") String isPay

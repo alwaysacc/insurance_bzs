@@ -61,4 +61,10 @@
   <update id="updateStatus">
     update crawling_excel_info set status=#{status} where series_no=#{seriesNo}
   </update>
+
+  <select id="getFinishTotal" resultType="int">
+        select finish_total from crawling_excel_info <where>
+    series_no=#{seriesNo}
+  </where>
+    </select>
 </mapper>

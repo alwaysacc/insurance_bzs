@@ -15,6 +15,8 @@ import com.bzs.utils.ResultGenerator;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.UUIDS;
+import com.bzs.utils.base64Util.Base64Util;
+import com.bzs.utils.jsontobean.F;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.saltEncryptionutil.SaltEncryptionUtil;
@@ -36,17 +38,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Condition;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by alwaysacc on 2019/04/15.
@@ -70,6 +74,10 @@ public class AccountInfoController {
     @PostMapping("/getHomeInfo")
     public Result getHomeInfo(){
         return ResultGenerator.genSuccessResult(accountInfoService.getHomeInfo());
+    }
+    @PostMapping("/checkUserMoile")
+    public Result checkUserMoile(String mobile) {
+        return ResultGenerator.genSuccessResult(accountInfoService.checkUserMobile().contains(mobile));
     }
     @PostMapping("/checkUserLoginName")
     public Result checkUserLoginName(String loginName) {
@@ -101,14 +109,21 @@ public class AccountInfoController {
         accountInfoService.save(accountInfo);
         HashSet set;
         if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
-            log.info("用户账号存入redis");
             set=accountInfoMapper.getUserLoginName();
             redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
         }else{
-            log.info("从redis取出用户账号");
             set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
             set.add(accountInfo.getLoginName());
             redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
+        }
+        HashSet set1;
+        if (!redisUtil.hasKey(RedisConstant.USER_MOILE)){
+            set1=accountInfoMapper.checkUserMobile();
+            redisUtil.set(RedisConstant.USER_MOILE,set1,720000);
+        }else{
+            set1= (HashSet) redisUtil.get(RedisConstant.USER_MOILE);
+            set1.add(accountInfo.getMobile());
+            redisUtil.set(RedisConstant.USER_MOILE,set1,720000);
         }
         return ResultGenerator.genSuccessResult(accountInfo);
     }
@@ -320,7 +335,19 @@ public class AccountInfoController {
     public Result getCode(String mobile){
         return ResultGenerator.genSuccessResult(JuHeHttpUtil.getRequest(mobile));
     }
+    @ApiOperation("实名认证")
+    @PostMapping("/accountVerified")
+    public Result accountVerified(@RequestParam(value = "file", required = false) MultipartFile f,String type,String accountId){
 
+        // 操作完上的文件 需要删除在根目录下生成的文件
+      /*  if (file.delete()){
+            System.out.println("删除成功");
+        }else {
+            System.out.println("删除失败");
+
+        }*/
+        return ResultGenerator.genSuccessResult();
+    }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){
         return ResultGenerator.genSuccessResult(accountInfoService.getUserNameAndId());

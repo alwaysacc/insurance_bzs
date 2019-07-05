@@ -83,6 +83,17 @@
             )
             LEFT JOIN quote_info AS q ON (o.pay_type_id = q.quote_id)
             LEFT JOIN account_info AS a ON o.create_by = a.account_id
+            <where>
+              <if test="payStatus!=9">
+                and pay_status = #{payStatus}
+              </if>
+              <if test="userName!='' and userName!=null">
+                a.user_name=#{userName}
+              </if>
+              <if test="carNumber!='' and carNumber!=null">
+                c.car_number=#{carNumber}
+              </if>
+            </where>
   </select>
   <select id="getOrderList" resultType="map">
     SELECT

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface OrderInfoMapper extends Mapper<OrderInfo> {
-    List getOrderListByAdmin();
+    List getOrderListByAdmin(@Param("payStatus")int payStatus,@Param("userName")String userName,@Param("carNumber")String carNumber);
 
     List getOrderList(@Param("accountId")String accountId,@Param("payStatus")int payStatus);
 

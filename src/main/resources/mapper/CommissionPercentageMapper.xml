@@ -7,6 +7,8 @@
         -->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage"/>
+        <result column="insurance_biz_percentage" jdbcType="VARCHAR" property="insuranceBizPercentage"/>
+        <result column="insurance_force_percentage" jdbcType="VARCHAR" property="insuranceForcePercentage"/>
         <result column="subsidy" jdbcType="VARCHAR" property="subsidy"/>
         <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage"/>
         <result column="level_one" jdbcType="VARCHAR" property="levelOne"/>
@@ -52,6 +54,8 @@
             <if test="updateBy!=null and ''!=updateBy ">update_by=#{updateBy},</if>
             <if test="source!=null and ''!=source ">source=#{source},</if>
             <if test="status!=null and ''!=source ">status=#{status},</if>
+            <if test="insuranceBizPercentage!=null and ''!=insuranceBizPercentage ">insurance_biz_percentage=#{insuranceBizPercentage},</if>
+            <if test="insuranceForcePercentage!=null and ''!=insuranceForcePercentage">insurance_force_percentage=#{insuranceBizPercentage},</if>
         </trim>
     </sql>
     <insert id="addOrUpdate" parameterType="com.bzs.model.CommissionPercentage">
@@ -80,6 +84,8 @@
         c.update_time as updateTime,
         c.create_by as createBy,
         c.update_by as updateBy,
+        c.insurance_biz_percentage as insuranceBizPercentage,
+        c.insurance_force_percentage as insuranceForcePercentage,
         c.subsidy,
         c.source,
         c.status,
