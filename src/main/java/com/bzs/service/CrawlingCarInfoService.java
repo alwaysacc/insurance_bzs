@@ -64,6 +64,12 @@ public interface CrawlingCarInfoService extends Service<CrawlingCarInfo> {
 
     void startCrawling1();
 
+    /**
+     * 爬取2019-07-08
+     * @return
+     */
+    String  startCrawling();
+
     String exportCrawlingDataList(HttpServletResponse response, HttpServletRequest request, String seriesNo);
 
     int getProgress(String seriesNo);

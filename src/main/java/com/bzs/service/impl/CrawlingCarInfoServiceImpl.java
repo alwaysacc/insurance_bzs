@@ -484,8 +484,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                             Integer pageSize = 10;
                             Integer page = (total % pageSize == 0) ? total / pageSize : total / pageSize + 1;
                             //Integer page = 1;
-                            for (int i = 0; i < page; page--) {
-                                Integer startRow = (page - 1) * pageSize;
+                            for (int i = 0; i < page; i++) {
+                                Integer startRow = i * pageSize;
                                 //分页获取数据库基础数据，然后将车牌或者车架组装，供爬取接口调用
                                 List<CrawlingCarInfo> list = crawlingCarInfoMapper.crawlingDataList(seriesNo, startRow, pageSize);
                                 //新建一个装爬取结果的集合
@@ -618,6 +618,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     }
                                     //遍历爬取结果并修改
                                     if(CollectionUtils.isNotEmpty(resltDataList)){
+                                        System.out.println("执行修改");
                                         for (CrawlingCarInfo result:resltDataList){
                                             crawlingCarInfoMapper.crawlingUpdate(result);//修改爬取的车辆信息
                                         }
@@ -798,5 +799,10 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
             redisUtil.set(PROGRESS+seriesNo,count);
             return count;
         }
+    }
+
+    @Override
+    public String startCrawling() {
+        return null;
     }
 }
