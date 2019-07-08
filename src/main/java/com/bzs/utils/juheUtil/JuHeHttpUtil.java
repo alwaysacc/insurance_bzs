@@ -109,7 +109,7 @@ public class JuHeHttpUtil {
         } catch (Exception e) {
             results=  "{\"error_code\":500,\"reason\":\"请求异常\"}";
         }
-        log.info("发送验证码返回信息："+results);
+        log.info("身份证验证返回信息："+results);
         return results+"";
     }
     public static void main(String[] args) {

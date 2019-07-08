@@ -1,10 +1,9 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bzs.cache.RedisAnnotation;
-import com.bzs.dao.AccountInfoMapper;
-import com.bzs.dao.AccountRoleInfoMapper;
-import com.bzs.dao.OrderInfoMapper;
-import com.bzs.dao.QuoteInfoMapper;
+import com.bzs.dao.*;
 import com.bzs.model.*;
 import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
@@ -58,7 +57,8 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private OrderInfoMapper orderInfoMapper;
     @Resource
     private QuoteInfoMapper quoteInfoMapper;
-
+    @Resource
+    private CardInfoMapper cardInfoMapper;
     @Resource
     private AccountRoleInfoService accountRoleInfoService;
     private  static final String CODE="CODE_LIST";
@@ -394,21 +394,28 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     }
 
     @Override
-    public HashMap accountVerified(MultipartFile f, String type, String accountId) {
-        String path = "D:\\img\\";
-//        String path = "\\img";
-        File file = new File(path,accountId+"-type"+".jpg");
+    public Result accountVerified(MultipartFile f, String type, String accountId) {
+        String msg="";
+//        String path = "D:\\img\\";
+        String path = "www\\bts\\img";
+        File file = new File(path,accountId+"-"+type+".jpg");
         // 得到MultipartFile文件
         try {
             f.transferTo(file);
-            String base64=Base64Util.ImageToBase64(file);
-//            System.out.println(Base64Util.ImageToBase64(file));
-            log.info(JuHeHttpUtil.accountVerified(base64,type));
+/*            String base64=Base64Util.ImageToBase64(file);
+            msg=JuHeHttpUtil.accountVerified(base64,type);
+            JSONObject jsonObject= JSON.parseObject(msg);
+            CardInfo cardInfo=JSONObject.toJavaObject(jsonObject,CardInfo.class);
+            if (cardInfo.getRealname()!=null || cardInfo.getBegin()!=null){
+                cardInfo.setAccountId(accountId);
+                cardInfoMapper.saveCardInfo(cardInfo);
+            }else{
+                return ResultGenerator.genFailResult("证据上传有误");
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         }
         // 输出绝对路径
-        System.out.println(file.getAbsolutePath());
-        return null;
+        return ResultGenerator.genSuccessResult(msg);
     }
 }

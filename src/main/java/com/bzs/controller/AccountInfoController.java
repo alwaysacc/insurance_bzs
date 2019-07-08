@@ -346,7 +346,7 @@ public class AccountInfoController {
             System.out.println("删除失败");
 
         }*/
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(f,type,accountId));
     }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){

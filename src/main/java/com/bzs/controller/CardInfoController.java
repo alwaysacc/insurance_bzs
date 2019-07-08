@@ -1,8 +1,8 @@
 package com.bzs.controller;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
-import com.bzs.model.CrawlingExcelInfo;
-import com.bzs.service.CrawlingExcelInfoService;
+import com.bzs.model.CardInfo;
+import com.bzs.service.CardInfoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,51 +14,43 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by dl on 2019/06/20.
+* Created by dl on 2019/07/05.
 */
 @RestController
-@RequestMapping("/crawling/excelinfo")
-public class CrawlingExcelInfoController {
+@RequestMapping("/card/info")
+public class CardInfoController {
     @Resource
-    private CrawlingExcelInfoService crawlingExcelInfoService;
+    private CardInfoService cardInfoService;
 
     @PostMapping("/add")
-    public Result add(CrawlingExcelInfo crawlingExcelInfo) {
-        crawlingExcelInfoService.save(crawlingExcelInfo);
-        return ResultGenerator.genSuccessResult();
-    }
-    @PostMapping("/save")
-    public Result save(CrawlingExcelInfo crawlingExcelInfo) {
-        crawlingExcelInfoService.add(crawlingExcelInfo);
+    public Result add(CardInfo cardInfo) {
+        cardInfoService.save(cardInfo);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/delete")
-    public Result delete( String id) {
-        crawlingExcelInfoService.deleteByIds(id);
+    public Result delete(@RequestParam Integer id) {
+        cardInfoService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/update")
-    public Result update(CrawlingExcelInfo crawlingExcelInfo) {
-        crawlingExcelInfoService.update(crawlingExcelInfo);
+    public Result update(CardInfo cardInfo) {
+        cardInfoService.update(cardInfo);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
-        CrawlingExcelInfo crawlingExcelInfo = crawlingExcelInfoService.findById(id);
-        return ResultGenerator.genSuccessResult(crawlingExcelInfo);
+        CardInfo cardInfo = cardInfoService.findById(id);
+        return ResultGenerator.genSuccessResult(cardInfo);
     }
 
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<CrawlingExcelInfo> list = crawlingExcelInfoService.findAll();
+        List<CardInfo> list = cardInfoService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-
-
-
 }

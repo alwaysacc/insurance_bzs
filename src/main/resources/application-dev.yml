@@ -13,6 +13,7 @@ spring:
 #    username: root
     username: insurance_bzs
 #    password: bzs820077
+#    password: root
     password: trpShzYSTmztzKW6
     druid:
       # 连接池的配置信息
