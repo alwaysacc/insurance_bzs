@@ -620,7 +620,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     if(CollectionUtils.isNotEmpty(resltDataList)){
                                         System.out.println("执行修改");
                                         for (CrawlingCarInfo result:resltDataList){
-                                            crawlingCarInfoMapper.crawlingUpdate(result);//修改爬取的车辆信息
+                                            this.crawlingUpdate(result);//修改爬取的车辆信息
                                         }
                                     }
 
@@ -804,5 +804,10 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     @Override
     public String startCrawling() {
         return null;
+    }
+
+    @Override
+    public int crawlingUpdate(CrawlingCarInfo data) {
+       return  crawlingCarInfoMapper.crawlingUpdate(data);
     }
 }
