@@ -41,7 +41,7 @@ public class VueRouter<T> implements Serializable {
     private boolean hasParent = false;
 
     @JsonIgnore
-    private boolean hasChildren = false;
+    private boolean alwaysShow = false;
 
     public void initChildren(){
         this.children = new ArrayList<>();

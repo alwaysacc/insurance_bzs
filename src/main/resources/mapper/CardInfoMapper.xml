@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.CardInfoMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.CardInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="realname" jdbcType="VARCHAR" property="realname" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="born" jdbcType="VARCHAR" property="born" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="idcard" jdbcType="VARCHAR" property="idcard" />
+    <result column="begin" jdbcType="VARCHAR" property="begin" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="end" jdbcType="VARCHAR" property="end" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+  </resultMap>
+  <sql id="insertItems">
+  <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="realname!=null and ''!=realname ">realname,</if>
+    <if test="sex!=null and ''!=sex ">sex,</if>
+    <if test="born!=null and ''!=born ">born,</if>
+    <if test="idcard!=null and ''!=idcard ">idcard,</if>
+    <if test="nation!=null and ''!=nation ">nation,</if>
+    <if test="address!=null and ''!=address ">address,</if>
+    <if test="begin!=null and ''!=begin ">begin,</if>
+    <if test="department!=null ">department,</if>
+    <if test="end!=null ">end,</if>
+    <if test="accountId!=null ">account_id,</if>
+  </trim>
+</sql>
+  <sql id="insertValues">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="realname!=null and ''!=realname ">#{realname},</if>
+      <if test="sex!=null and ''!=sex ">#{sex},</if>
+      <if test="born!=null and ''!=born ">#{born},</if>
+      <if test="idcard!=null and ''!=idcard ">#{idcard},</if>
+      <if test="nation!=null and ''!=nation ">#{nation},</if>
+      <if test="address!=null and ''!=address ">#{address},</if>
+      <if test="begin!=null and ''!=begin ">#{begin},</if>
+      <if test="department!=null ">#{department},</if>
+      <if test="end!=null ">#{end},</if>
+        <if test="accountId!=null ">#{accountId},</if>
+    </trim>
+  </sql>
+    <sql id="update">
+        <trim>
+            account_id = values (account_id)
+            <if test="realname!=null and ''!=realname ">,realname=#{realname}</if>
+            <if test="sex!=null and ''!=sex ">,sex=#{sex}</if>
+            <if test="born!=null and ''!=born ">,born=#{born}</if>
+            <if test="idcard!=null and ''!=idcard ">,idcard=#{idcard}</if>
+            <if test="nation!=null and ''!=nation ">,nation=#{nation}</if>
+            <if test="address!=null and ''!=address ">,address=#{address}</if>
+            <if test="begin!=null and ''!=begin ">,begin=#{begin}</if>
+            <if test="department!=null ">,department=#{department}</if>
+            <if test="end!=null ">,end=#{end}</if>
+        </trim>
+    </sql>
+  <insert id="saveCardInfo" parameterType="com.bzs.model.CardInfo">
+    INSERT INTO card_info
+    <include refid="insertItems"/>
+    values
+    <include refid="insertValues"/>
+    ON DUPLICATE KEY UPDATE
+       <include refid="update"></include>
+  </insert>
+</mapper>

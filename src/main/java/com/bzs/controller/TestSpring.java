@@ -1,8 +1,11 @@
 package com.bzs.controller;
 
 import com.bzs.cache.RedisAnnotation;
+import com.bzs.dao.CardInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
+import com.bzs.model.CardInfo;
 import com.bzs.redis.RedisUtil;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,26 +14,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.lang.annotation.Target;
 import java.util.*;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
-public class Test {
+public class TestSpring {
     @Autowired
     private OrderInfoMapper orderInfoMapper;
     @Autowired
+    private CardInfoMapper cardInfoMapper;
+    @Autowired
     private RedisUtil redisUtil;
-    @org.junit.Test
+    @Test
     public void testSelect() {
-        List oldList=new ArrayList();
-        oldList.add("123");
-        List newList=new ArrayList();
-        newList.add("456");
-        newList.add("123");
-        System.out.println("list with dup:"+ newList.toString());
-        System.out.println("list without dup:"+ oldList.toString());
-        newList.removeAll(oldList);
-        System.out.println("list with dup:"+ newList.toString());
-        System.out.println("list without dup:"+ oldList.toString());
-        oldList=newList;
-        System.out.println("list 1 dup:"+ oldList.toString());
+        CardInfo cardInfo=new CardInfo();
+        cardInfo.setAccountId("123");
+        cardInfo.setAddress("123");
+        cardInfo.setRealname("123");
+        System.out.println(cardInfoMapper.saveCardInfo(cardInfo));
     }
 
     public static void main(String[] args) {

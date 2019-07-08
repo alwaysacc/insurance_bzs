@@ -1,8 +1,6 @@
 package com.bzs.utils.treeUtil;
 
-import com.bzs.model.router.RouterMeta;
-import com.bzs.model.router.Tree;
-import com.bzs.model.router.VueRouter;
+import com.bzs.model.router.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,23 +86,64 @@ public class TreeUtil {
         router.setChildren(null);
         //router.setMeta(new RouterMeta(false, true));
         topRoutes.add(router);
-
+     /*   routes.forEach(route -> {
+            String parentId = route.getParentId();
+            if (parentId == null || TOP_NODE_ID.equals(parentId)) {
+                route.setMeta(new RouterMeta(route.getName(),route.getIcon()));
+                Parent parent=new Parent();
+                parent.setAlwaysShow(true);
+                parent.setComponent(route.getComponent());
+                parent.setName(route.getName());
+                parent.setPath(route.getPath());
+                parent.setRedirect("noredirect");
+                parent.setMeta(new RouterMeta(route.getName(),route.getIcon()));
+                list.add(parent);
+                return;
+            }
+            for (VueRouter<T> p : routes) {
+                String id = p.getId();
+                if (id != null && id.equals(parentId)) {
+                    if (p.getChildren() == null)
+                        p.initChildren();
+                    p.getChildren().add(route);
+                    Children children=new Children();
+                    children.setComponent(p.getComponent());
+                    children.setMeta(new RouterMeta(p.getName(),p.getIcon()));
+                    children.setName(p.getName());
+                    children.setPath(p.getPath());
+                    p.getChildren().add(children);
+                    p.setAlwaysShow(true);
+                    //route.setHasParent(true);
+                    p.setHasParent(true);
+                    return;
+                }
+            }
+        });*/
         routes.forEach(route -> {
             String parentId = route.getParentId();
             if (parentId == null || TOP_NODE_ID.equals(parentId)) {
-//                route.setMeta(new RouterMeta(route.getName(),route.getIcon()));
+                route.setMeta(new RouterMeta(route.getName(),route.getIcon()));
+                route.setAlwaysShow(true);
+                route.setRedirect("noredirect");
+          /*      Parent parent=new Parent();
+                parent.setAlwaysShow(true);
+                parent.setComponent(route.getComponent());
+                parent.setName(route.getName());
+                parent.setPath(route.getPath());
+                parent.setRedirect("noredirect");
+                parent.setMeta(new RouterMeta(route.getName(),route.getIcon()));*/
                 list.add(route);
                 return;
             }
-            for (VueRouter<T> parent : routes) {
-                String id = parent.getId();
+            for (VueRouter<T> p : routes) {
+                String id = p.getId();
                 if (id != null && id.equals(parentId)) {
-                    if (parent.getChildren() == null)
-                        parent.initChildren();
-                    parent.getChildren().add(route);
-                    parent.setHasChildren(true);
-                    route.setHasParent(true);
-                    parent.setHasParent(true);
+                    if (p.getChildren() == null)
+                        p.initChildren();
+                    p.getChildren().add(route);
+                    p.setAlwaysShow(true);
+                    //route.setHasParent(true);
+                    p.setHasParent(true);
                     return;
                 }
             }

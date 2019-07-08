@@ -94,8 +94,8 @@ public class AdminController {
         return ResultGenerator.genSuccessResult(adminService.updateAdmin(admin));
     }
     @PostMapping("/checkAdminLoginName")
-    public boolean checkAdminLoginName(String loginName) {
-        return adminService.checkAdminLoginName().contains(loginName);
+    public Result checkAdminLoginName(String loginName) {
+        return  ResultGenerator.genSuccessResult(adminService.checkAdminLoginName().contains(loginName));
     }
     @PostMapping("/add")
     public Result add(Admin admin) {
