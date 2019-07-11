@@ -97,8 +97,8 @@ public class ExcelImportUtil {
                 @Override
                 public void sendRow(Boolean isTitle, String filePath, String sheetName,
                                     int sheetIndex, int curRow,List<String>cellList, List<Map<String, Object>> listMap) {
-                    System.out.println(Arrays.asList(cellList));
-                    logger.info("打印导入数据》》》"+Arrays.asList(cellList));
+//                    System.out.println(Arrays.asList(cellList));
+//                    logger.info("打印导入数据》》》"+Arrays.asList(cellList));
                     if(isTitle){
                         titleName.clear();
                         titleField.clear();
@@ -163,12 +163,7 @@ public class ExcelImportUtil {
                         }else{
                             logger.info("请补充标题行");
                         }
-
-
-
                     }
-
-
                 }
             };
             totalRows =excelInterface.process(path);

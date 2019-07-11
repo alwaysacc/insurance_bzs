@@ -560,7 +560,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                     data.setEngineNo(resData.getFadongji_no());//发送机号
                                                     data.setIsDrawling(type);//2车架爬取1车牌爬取
                                                     data.setModel(resData.getCar_type());//车辆型号
-                                                    log.info("车辆和型号：" + resData.getCar_type() + ",品牌：" + resData.getCn_type());
+//                                                    log.info("车辆和型号：" + resData.getCar_type() + ",品牌：" + resData.getCn_type());
                                                     data.setRegisterDate(resData.getStart_time());//初登日期
                                                     String newCarNo = resData.getChepai_no();
                                                     data.setNewCarNo(newCarNo);//车牌
@@ -596,7 +596,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                         }
                                                     }
                                                     data.setTransferDate(resData.getTrans_time());//转户日期
-                                                    log.info(String.valueOf(resltDataList.size()));
                                                 }
                                             }
                                         }else{
@@ -619,12 +618,11 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     }
                                     //遍历爬取结果并修改
                                     if(CollectionUtils.isNotEmpty(resltDataList)){
-                                        System.out.println("执行修改");
+                                        log.info("执行修改");
                                         for (CrawlingCarInfo result:resltDataList){
                                             this.crawlingUpdate(result);//修改爬取的车辆信息
                                         }
                                     }
-
                                 } else {
                                     continue;
                                 }

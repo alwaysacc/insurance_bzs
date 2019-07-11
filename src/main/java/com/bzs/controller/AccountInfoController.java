@@ -9,12 +9,9 @@ import com.bzs.model.QuoteInfo;
 import com.bzs.model.Verification;
 import com.bzs.redis.RedisUtil;
 import com.bzs.shiro.FebsProperties;
-import com.bzs.utils.MD5Utils;
-import com.bzs.utils.Result;
-import com.bzs.utils.ResultGenerator;
+import com.bzs.utils.*;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
-import com.bzs.utils.UUIDS;
 import com.bzs.utils.base64Util.Base64Util;
 import com.bzs.utils.jsontobean.F;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
@@ -337,16 +334,11 @@ public class AccountInfoController {
     }
     @ApiOperation("实名认证")
     @PostMapping("/accountVerified")
-    public Result accountVerified(@RequestParam(value = "file", required = false) MultipartFile f,String type,String accountId){
+    public Result accountVerified(@RequestParam(value = "file", required = false) MultipartFile front,
+                                  @RequestParam(value = "file", required = false) MultipartFile back,String accountId) throws Exception {
 
-        // 操作完上的文件 需要删除在根目录下生成的文件
-      /*  if (file.delete()){
-            System.out.println("删除成功");
-        }else {
-            System.out.println("删除失败");
-
-        }*/
-        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(f,type,accountId));
+//        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(front,back,accountId));
+        return ResultGenerator.genSuccessResult(QiniuCloudUtil.put64image("哈哈哈",front));
     }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){

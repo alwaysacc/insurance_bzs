@@ -394,15 +394,17 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     }
 
     @Override
-    public Result accountVerified(MultipartFile f, String type, String accountId) {
-        String msg="";
+    public Result accountVerified(MultipartFile front, MultipartFile back, String accountId) {
+
+
+     /*   String msg="";
 //        String path = "D:\\img\\";
         String path = "www\\bts\\img";
         File file = new File(path,accountId+"-"+type+".jpg");
         // 得到MultipartFile文件
         try {
             f.transferTo(file);
-/*            String base64=Base64Util.ImageToBase64(file);
+          String base64=Base64Util.ImageToBase64(file);
             msg=JuHeHttpUtil.accountVerified(base64,type);
             JSONObject jsonObject= JSON.parseObject(msg);
             CardInfo cardInfo=JSONObject.toJavaObject(jsonObject,CardInfo.class);
@@ -411,11 +413,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
                 cardInfoMapper.saveCardInfo(cardInfo);
             }else{
                 return ResultGenerator.genFailResult("证据上传有误");
-            }*/
+            }/*
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        // 输出绝对路径
-        return ResultGenerator.genSuccessResult(msg);
+        }*/
+        return ResultGenerator.genSuccessResult(null);
     }
 }

@@ -119,6 +119,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
 
     HashMap getHomeInfo();
 
-    Result accountVerified( MultipartFile file, String type, String accountId);
+    Result accountVerified( MultipartFile front, MultipartFile back, String accountId);
 
     }
