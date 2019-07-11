@@ -36,6 +36,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
@@ -51,7 +52,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-@Transactional
+/*@Transactional*/
 public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo> implements CrawlingCarInfoService {
     @Resource
     private CrawlingCarInfoMapper crawlingCarInfoMapper;
@@ -805,7 +806,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
     public String startCrawling() {
         return null;
     }
-
+   // @Transactional(propagation= Propagation.REQUIRES_NEW)
     @Override
     public int crawlingUpdate(CrawlingCarInfo data) {
        return  crawlingCarInfoMapper.crawlingUpdate(data);
