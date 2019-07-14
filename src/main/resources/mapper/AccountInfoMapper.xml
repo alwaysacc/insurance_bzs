@@ -33,6 +33,7 @@
         <result column="balance_total" jdbcType="DECIMAL" property="balanceTotal"/>
         <result column="commission_total" jdbcType="DECIMAL" property="commissionTotal"/>
         <result column="draw_percentage_total" jdbcType="DECIMAL" property="drawPercentageTotal"/>
+        <result column="verified_stat" jdbcType="INTEGER" property="verifiedStat"/>
 
     </resultMap>
     <select id="login" resultMap="BaseResultMap">

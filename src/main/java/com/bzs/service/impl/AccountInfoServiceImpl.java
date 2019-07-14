@@ -9,6 +9,7 @@ import com.bzs.model.query.SeveralAccount;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AccountInfoService;
 import com.bzs.service.AccountRoleInfoService;
+import com.bzs.service.IdCardImgService;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
 import com.bzs.utils.base64Util.Base64Util;
@@ -42,7 +43,7 @@ import java.util.*;
 @Service
 @Transactional
 public class AccountInfoServiceImpl extends AbstractService<AccountInfo> implements AccountInfoService {
-  private  static Logger logger=LoggerFactory.getLogger(AccountInfoServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(AccountInfoServiceImpl.class);
     @Resource
     private AccountInfoMapper accountInfoMapper;
     @Resource
@@ -58,10 +59,9 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     @Resource
     private QuoteInfoMapper quoteInfoMapper;
     @Resource
-    private CardInfoMapper cardInfoMapper;
-    @Resource
-    private AccountRoleInfoService accountRoleInfoService;
-    private  static final String CODE="CODE_LIST";
+    private IdCardImgService idCardImgService;
+    private static final String CODE = "CODE_LIST";
+
     @Override
     public String getRoleIdByAccountId(String account_id) {
         return accountInfoMapper.getRoleIdByAccountId(account_id);
@@ -102,69 +102,69 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             if (CollectionUtils.isNotEmpty(list)) {
                 return ResultGenerator.genSuccessResult(list, "获取成功");
             } else {
-                return ResultGenerator.gen("不存在,获取失败","",ResultCode.FAIL);
+                return ResultGenerator.gen("不存在,获取失败", "", ResultCode.FAIL);
             }
         } catch (Exception e) {
-            logger.error("获取异常",e);
-            return ResultGenerator.gen("获取异常","",ResultCode.INTERNAL_SERVER_ERROR);
+            logger.error("获取异常", e);
+            return ResultGenerator.gen("获取异常", "", ResultCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public Result insertOrUpdate(AccountInfo accountInfo,String type) {
-        if(null!=accountInfo){
-            String  msg="";
-            if(StringUtils.isNotBlank(type)){
-                if("0".equals(type)){
-                    msg="添加";
-                }else if("1".equals(type)){
-                    msg="修改";
+    public Result insertOrUpdate(AccountInfo accountInfo, String type) {
+        if (null != accountInfo) {
+            String msg = "";
+            if (StringUtils.isNotBlank(type)) {
+                if ("0".equals(type)) {
+                    msg = "添加";
+                } else if ("1".equals(type)) {
+                    msg = "修改";
                 }
             }
-            try{
-                int result= accountInfoMapper.addOrUpdate(accountInfo);
-                return ResultGenerator.genSuccessResult(result,msg+"成功");
-            }catch(Exception e){
-                logger.error("插入或者更新异常",e);
-                return ResultGenerator.genFailResult(msg+"异常");
+            try {
+                int result = accountInfoMapper.addOrUpdate(accountInfo);
+                return ResultGenerator.genSuccessResult(result, msg + "成功");
+            } catch (Exception e) {
+                logger.error("插入或者更新异常", e);
+                return ResultGenerator.genFailResult(msg + "异常");
             }
 
-        }else{
+        } else {
             return ResultGenerator.genFailResult("参数为空");
         }
     }
 
     @Override
     public List getUserList(String roleId, String accountId) {
-        return accountInfoMapper.getUserList(roleId,accountId);
+        return accountInfoMapper.getUserList(roleId, accountId);
     }
 
     @Override
     public Map registerForWX(AccountInfo accountInfo) {
-        AccountInfo accountInfo1=accountInfoService.findBy("invitecode",accountInfo.getSuperiorinvitecode());
-        HashSet codeList=new HashSet<>();
-        int code= UUIDS.getCode();
-        if (redisUtil.hasKey(CODE)){
-            codeList= (HashSet) redisUtil.get(CODE);
-        }else{
-            codeList=accountInfoMapper.getAllCode();
+        AccountInfo accountInfo1 = accountInfoService.findBy("invitecode", accountInfo.getSuperiorinvitecode());
+        HashSet codeList = new HashSet<>();
+        int code = UUIDS.getCode();
+        if (redisUtil.hasKey(CODE)) {
+            codeList = (HashSet) redisUtil.get(CODE);
+        } else {
+            codeList = accountInfoMapper.getAllCode();
         }
-        boolean b=false;
-        do{
-            code=UUIDS.getCode();
-            b=codeList.contains(code);
-        }while (b);
+        boolean b = false;
+        do {
+            code = UUIDS.getCode();
+            b = codeList.contains(code);
+        } while (b);
         codeList.add(code);
-        redisUtil.set(CODE,codeList,720000);
+        redisUtil.set(CODE, codeList, 720000);
         System.out.println(codeList.toString());
-        Integer pInvitecode= accountInfo1.getInvitecode();
-        String pAssociation=accountInfo1.getAssociationLevel();
-        if(StringUtils.isNotBlank(pAssociation)){
-            accountInfo.setAssociationLevel(pAssociation+"-"+code);
-            int count=StringUtil.getCharacterCount(pAssociation,"-")+2;
+        Integer pInvitecode = accountInfo1.getInvitecode();
+        String pAssociation = accountInfo1.getAssociationLevel();
+        if (StringUtils.isNotBlank(pAssociation)) {
+            accountInfo.setAssociationLevel(pAssociation + "-" + code);
+            int count = StringUtil.getCharacterCount(pAssociation, "-") + 2;
             accountInfo.setInviteCodeLevel(count);
-        }else{
-            accountInfo.setAssociationLevel(pInvitecode+"-"+code);
+        } else {
+            accountInfo.setAssociationLevel(pInvitecode + "-" + code);
             accountInfo.setInviteCodeLevel(2);
         }
         accountInfo.setInvitecode(code);
@@ -177,52 +177,53 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         accountInfo.setSuperior(accountInfo1.getUserName());
         accountInfoService.save(accountInfo);
         HashSet set;
-        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)){
+        if (!redisUtil.hasKey(RedisConstant.USER_LOGIN_NAME_LIST)) {
             log.info("用户账号存入redis");
-            set=accountInfoMapper.getUserLoginName();
-            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
-        }else{
+            set = accountInfoMapper.getUserLoginName();
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST, set, 720000);
+        } else {
             log.info("从redis取出用户账号");
-            set= (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
+            set = (HashSet) redisUtil.get(RedisConstant.USER_LOGIN_NAME_LIST);
             set.add(accountInfo.getLoginName());
-            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST,set,720000);
+            redisUtil.set(RedisConstant.USER_LOGIN_NAME_LIST, set, 720000);
         }
-        Map map=new HashMap();
-        map.put("superior",accountInfo1);
-        map.put("account",accountInfo);
+        Map map = new HashMap();
+        map.put("superior", accountInfo1);
+        map.put("account", accountInfo);
         return map;
     }
+
     @Override
-    public Result getParentOrChildList(String id, Integer deep, String isOwner,String type,int accountState) {
-        if(null==deep||deep<1){
-            deep=1;
+    public Result getParentOrChildList(String id, Integer deep, String isOwner, String type, int accountState) {
+        if (null == deep || deep < 1) {
+            deep = 1;
         }
-        if(StringUtils.isNotBlank(id)){
-            if(StringUtils.isBlank(type)||!"1".equals(type)){
-                type="0";//0子节点1父节点
+        if (StringUtils.isNotBlank(id)) {
+            if (StringUtils.isBlank(type) || !"1".equals(type)) {
+                type = "0";//0子节点1父节点
             }
-            if(StringUtils.isBlank(isOwner)||!"1".equals(isOwner)){
-                isOwner="0";//0包括 1排除
+            if (StringUtils.isBlank(isOwner) || !"1".equals(isOwner)) {
+                isOwner = "0";//0包括 1排除
             }
-            List<AccountInfo>list= accountInfoMapper.getParentOrChildList(id,deep,isOwner,type,accountState);
-            if(CollectionUtils.isNotEmpty(list)){
-                return ResultGenerator.genSuccessResult(list,"成功");
+            List<AccountInfo> list = accountInfoMapper.getParentOrChildList(id, deep, isOwner, type, accountState);
+            if (CollectionUtils.isNotEmpty(list)) {
+                return ResultGenerator.genSuccessResult(list, "成功");
             }
             return ResultGenerator.genFailResult("不存在，获取信息失败");
-        }else{
+        } else {
             return ResultGenerator.genFailResult("参数错误");
         }
     }
 
     @Override
     public Result getParentLevel(String createBy) {
-        if(StringUtils.isBlank(createBy)){
+        if (StringUtils.isBlank(createBy)) {
             return ResultGenerator.genFailResult("参数错误");
         }
-       SeveralAccount data= accountInfoMapper.getParentLevel(createBy);
-       if(null!=data){
-           return ResultGenerator.genSuccessResult(data,"成功");
-       }
+        SeveralAccount data = accountInfoMapper.getParentLevel(createBy);
+        if (null != data) {
+            return ResultGenerator.genSuccessResult(data, "成功");
+        }
         return ResultGenerator.genFailResult("获取失败");
     }
 
@@ -232,7 +233,7 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             accountInfoMapper.updateMoney(balanceTotal, commissionTotal, drawPercentageTotal, accountId);
             verificationService.save(verification);
             return ResultGenerator.genSuccessResult("修改成功");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultGenerator.genFailResult("修改异常");
         }
     }
@@ -245,24 +246,24 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             int code = -1;
             if (StringUtils.isNotBlank(accountId)) {//修改
                 msg = "修改";
-                code =0;
+                code = 0;
             } else {//添加
                 msg = "添加";
-                HashSet codeList=new HashSet<>();
-                int codes= UUIDS.getCode();
-                if (redisUtil.hasKey(CODE)){
-                    codeList= (HashSet) redisUtil.get(CODE);
-                }else{
-                    codeList=accountInfoMapper.getAllCode();
+                HashSet codeList = new HashSet<>();
+                int codes = UUIDS.getCode();
+                if (redisUtil.hasKey(CODE)) {
+                    codeList = (HashSet) redisUtil.get(CODE);
+                } else {
+                    codeList = accountInfoMapper.getAllCode();
                 }
-                boolean b=false;
-                do{
-                    codes=UUIDS.getCode();
-                    b=codeList.contains(codes);
-                }while (b);
+                boolean b = false;
+                do {
+                    codes = UUIDS.getCode();
+                    b = codeList.contains(codes);
+                } while (b);
                 codeList.add(codes);
-                redisUtil.set(CODE,codeList,720000);
-                accountInfo.setAssociationLevel(codes+"");
+                redisUtil.set(CODE, codeList, 720000);
+                accountInfo.setAssociationLevel(codes + "");
                 accountInfo.setInvitecode(codes);
                 accountInfo.setInviteCodeLevel(1);
                 code = 1;
@@ -307,15 +308,16 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             return ResultGenerator.genFailResult("参数异常");
         }
     }
+
     @Override
     public AccountInfo getWithdraw(String accountId) {
-      return   accountInfoMapper.getWithdraw(accountId);
+        return accountInfoMapper.getWithdraw(accountId);
     }
 
 
     @Override
     public int deleteUser(String[] accountId, int status) {
-        return accountInfoMapper.deleteUser(accountId,status);
+        return accountInfoMapper.deleteUser(accountId, status);
     }
 
     @Override
@@ -335,26 +337,27 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
             return new ArrayList<>();
         }
     }
+
     @Override
-    public List getUserListByAdmin(String userName,String mobile) {
-        return accountInfoMapper.getUserListByAdmin(userName,mobile);
+    public List getUserListByAdmin(String userName, String mobile) {
+        return accountInfoMapper.getUserListByAdmin(userName, mobile);
     }
 
     @Override
     public int updateAccount(AccountInfo accountInfo) {
-        if (StringUtils.isNotBlank(accountInfo.getLoginPwd())){
+        if (StringUtils.isNotBlank(accountInfo.getLoginPwd())) {
             accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
         }
         return accountInfoMapper.updateAccount(accountInfo);
     }
 
-    @RedisAnnotation(key = RedisConstant.USER_LOGIN_NAME_LIST,time = 3600)
+    @RedisAnnotation(key = RedisConstant.USER_LOGIN_NAME_LIST, time = 3600)
     @Override
     public HashSet checkUserLoginName() {
-        return  accountInfoMapper.getUserLoginName();
+        return accountInfoMapper.getUserLoginName();
     }
 
-    @RedisAnnotation(key = RedisConstant.USER_MOILE,time = 3600)
+    @RedisAnnotation(key = RedisConstant.USER_MOILE, time = 3600)
     @Override
     public HashSet checkUserMobile() {
         return accountInfoMapper.checkUserMobile();
@@ -374,49 +377,49 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return accountInfoMapper.getUserNameAndId();
     }
 
-    @RedisAnnotation(key = RedisConstant.HOME_MAP,time=3600)
+    @RedisAnnotation(key = RedisConstant.HOME_MAP, time = 3600)
     @Override
     public HashMap getHomeInfo() {
         HashMap map;
-        AccountInfo accountInfo=null;
-        int userCount=accountInfoMapper.selectCount(accountInfo);
-        OrderInfo orderInfo=null;
-        int orderCount=orderInfoMapper.selectCount(orderInfo);
-        QuoteInfo quoteInfo=null;
-        int quoteCount=quoteInfoMapper.selectCount(quoteInfo);
-        int todayCount=accountInfoMapper.getTodayLoginCount();
-        map=new HashMap();
-        map.put("userCount",userCount);
-        map.put("orderCount",orderCount);
-        map.put("quoteCount",quoteCount);
-        map.put("todayCount",todayCount);
+        AccountInfo accountInfo = null;
+        int userCount = accountInfoMapper.selectCount(accountInfo);
+        OrderInfo orderInfo = null;
+        int orderCount = orderInfoMapper.selectCount(orderInfo);
+        QuoteInfo quoteInfo = null;
+        int quoteCount = quoteInfoMapper.selectCount(quoteInfo);
+        int todayCount = accountInfoMapper.getTodayLoginCount();
+        map = new HashMap();
+        map.put("userCount", userCount);
+        map.put("orderCount", orderCount);
+        map.put("quoteCount", quoteCount);
+        map.put("todayCount", todayCount);
         return map;
     }
 
+    /**
+     * @param file
+     * @param type      0头像 1国徽
+     * @param accountId
+     * @return
+     */
     @Override
-    public Result accountVerified(MultipartFile front, MultipartFile back, String accountId) {
-
-
-     /*   String msg="";
-//        String path = "D:\\img\\";
-        String path = "www\\bts\\img";
-        File file = new File(path,accountId+"-"+type+".jpg");
-        // 得到MultipartFile文件
-        try {
-            f.transferTo(file);
-          String base64=Base64Util.ImageToBase64(file);
-            msg=JuHeHttpUtil.accountVerified(base64,type);
-            JSONObject jsonObject= JSON.parseObject(msg);
-            CardInfo cardInfo=JSONObject.toJavaObject(jsonObject,CardInfo.class);
-            if (cardInfo.getRealname()!=null || cardInfo.getBegin()!=null){
-                cardInfo.setAccountId(accountId);
-                cardInfoMapper.saveCardInfo(cardInfo);
-            }else{
-                return ResultGenerator.genFailResult("证据上传有误");
-            }/*
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        return ResultGenerator.genSuccessResult(null);
+    public Result accountVerified(MultipartFile file, int type, String accountId) {
+        String fileName = accountId + "-" + type;
+//        Random random = new Random();
+//        fileName=fileName+random.nextInt(10000);
+        String path = QiniuCloudUtil.put64image(file, fileName);
+        IdCardImg idCardImg = new IdCardImg();
+        if (type == 0) {
+            idCardImg.setFrontPath(path);
+        } else {
+            idCardImg.setBackPath(path);
+        }
+        idCardImg.setAccountId(accountId);
+        idCardImgService.saveIdCardImg(idCardImg);
+        AccountInfo accountInfo=new AccountInfo();
+        accountInfo.setAccountId(accountId);
+        accountInfo.setVerifiedStat(1);
+        accountInfoService.update(accountInfo);
+        return ResultGenerator.genSuccessResult();
     }
 }

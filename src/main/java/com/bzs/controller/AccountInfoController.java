@@ -334,11 +334,13 @@ public class AccountInfoController {
     }
     @ApiOperation("实名认证")
     @PostMapping("/accountVerified")
-    public Result accountVerified(@RequestParam(value = "file", required = false) MultipartFile front,
-                                  @RequestParam(value = "file", required = false) MultipartFile back,String accountId) throws Exception {
-
+    public Result accountVerified(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+                                    String accountId,
+                                    int type
+                                  ) throws Exception {
 //        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(front,back,accountId));
-        return ResultGenerator.genSuccessResult(QiniuCloudUtil.put64image("哈哈哈",front));
+        return accountInfoService.accountVerified(file,type,accountId);
     }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){

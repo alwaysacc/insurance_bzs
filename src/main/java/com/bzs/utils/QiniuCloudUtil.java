@@ -1,7 +1,10 @@
 package com.bzs.utils;
 
+import cn.hutool.core.util.StrUtil;
+import com.bzs.controller.JuntTest;
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
@@ -12,13 +15,14 @@ import com.qiniu.util.UrlSafeBase64;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Exrickx
@@ -40,7 +44,7 @@ public class QiniuCloudUtil {
     // 密钥
     private static final Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 
-    private static final String DOMAIN = "alwaysacc.club";
+    private static final String DOMAIN = "img.cdn.baozhishun.com";
 
     private static final String style = "自定义的图片样式";
 
@@ -48,17 +52,20 @@ public class QiniuCloudUtil {
         return auth.uploadToken(bucketname, null, 3600, new StringMap().put("insertOnly", 0));
     }
 
-    //base64方式上传
-    public static String put64image(String name, MultipartFile file) throws Exception {
+    public static String put64image(MultipartFile file, String name){
         Configuration cfg = new Configuration(Zone.zone0());
         UploadManager uploadManager = new UploadManager(cfg);
-//        Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
-        String upToken = auth.uploadToken(bucketname);
-//        String key = file.getOriginalFilename();
-        com.qiniu.http.Response response = uploadManager.put(file.getBytes(), name, upToken);
-        //解析上传成功的结果
-        DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-        System.out.println(putRet.toString());
-        return DOMAIN + "/" + name;
+        String upToken = auth.uploadToken(bucketname,name);
+        Response response = null;
+        DefaultPutRet putRet=null;
+        try {
+            response = uploadManager.put(file.getBytes(), name, upToken);
+//            putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+//        String fileName=file.getOriginalFilename();
+//        String fileTyle=fileName.substring(fileName.lastIndexOf("."),fileName.length());
+        return "http://"+DOMAIN+"/"+name;
     }
 }
