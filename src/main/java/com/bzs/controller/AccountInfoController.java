@@ -342,6 +342,11 @@ public class AccountInfoController {
 //        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(front,back,accountId));
         return accountInfoService.accountVerified(file,type,accountId);
     }
+    @ApiOperation("找回密码")
+    @PostMapping("/updatePassWord")
+    public Result updatePassWord(AccountInfo accountInfo){
+        return ResultGenerator.genSuccessResult(accountInfoService.updatePassWord(accountInfo));
+    }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){
         return ResultGenerator.genSuccessResult(accountInfoService.getUserNameAndId());

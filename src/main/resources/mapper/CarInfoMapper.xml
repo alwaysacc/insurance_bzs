@@ -177,69 +177,70 @@
     <!--一对一查询 结束-->
 
     <select id="getUserList" resultType="map">
-        SELECT distinct
-        car_info.car_info_id,
-        car_info.car_number,
-        car_info.engine_number,
-        car_info.frame_number,
-        car_info.register_date,
-        car_info.brand_model,
-        car_info.car_model,
-        car_info.purchase_price,
-        car_info.seat_number,
-        car_info.displacement,
-        car_info.isTransfer_car,
-        car_info.isLoan_car,
-        car_info.remarks_car,
-        car_info.follow_count,
-        car_info.follow_time,
-        car_info.follow_content,
-        car_info.plan_return_time,
-        car_info.customer_status,
-        car_info.customer_type,
-        car_info.salesman,
-        car_info.CREATED_TIME,
-        date_format(car_info.UPDATED_TIME,'%Y-%m-%d') as UPDATED_TIME,
-        car_info.CREATED_BY,
-        car_info.UPDATED_BY,
-        car_info.choice_last_year_insurance_name,
-        car_info.choice_last_year_source,
-        car_info.insured_area,
-        car_info.license_owner,
-        car_info.license_owner_id_card,
-        car_info.license_owner_id_card_type,
-        insured_info.busines_expire_date,
-        insured_info.force_expire_date,
-        insured_info.next_force_start_date,
-        insured_info.next_busines_start_date,
-        insured_info.last_year_insurance_company
+        SELECT DISTINCT
+        c.car_info_id,
+        c.car_number,
+        c.engine_number,
+        c.frame_number,
+        c.register_date,
+        c.brand_model,
+        c.car_model,
+        c.purchase_price,
+        c.seat_number,
+        c.displacement,
+        c.isTransfer_car,
+        c.isLoan_car,
+        c.remarks_car,
+        c.plan_return_time,
+        c.customer_status,
+        c.customer_type,
+        c.salesman,
+        c.CREATED_TIME,
+        date_format(c.UPDATED_TIME,'%Y-%m-%d') AS UPDATED_TIME,
+        c.CREATED_BY,
+        c.UPDATED_BY,
+        c.choice_last_year_insurance_name,
+        c.choice_last_year_source,
+        c.insured_area,
+        c.license_owner,
+        c.license_owner_id_card,
+        c.license_owner_id_card_type,
+        i.busines_expire_date,
+        i.force_expire_date,
+        i.next_force_start_date,
+        i.next_busines_start_date,
+        i.last_year_insurance_company,
+        f.create_time as follow_time,
+        f.follow_content,
+        f.follow_stat,
+        f.next_follow_date
         FROM
-        car_info
-        left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
+        car_info AS c
+        LEFT JOIN insured_info AS i ON (c.car_info_id = i.car_info_id)
+        LEFT JOIN follow_info AS f ON (c.car_info_id = f.car_info_id)
         <where>
-            car_info.status=0
+            c.status=0
             <if test="roleId==1">
             </if>
             <if test="roleId==2">
-                and car_info.car_info_id in (
+                and c.car_info_id in (
                 SELECT car_info_id FROM check_info WHERE create_by in
                 (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
-
             </if>
             <if test="roleId==3">
                 and
-                car_info.CREATED_BY = #{accountId}
+                c.CREATED_BY = #{accountId}
             </if>
             <if test="salesman!=null  and salesman!=''">
-                and car_info.salesman != #{salesman}
+                and c.salesman != #{salesman}
             </if>
             <if test="customerStatus!=null and customerStatus!=''">
-                and car_info.customer_status = #{customerStatus}
+                and c.customer_status = #{customerStatus}
             </if>
             <if test="plan!=null and plan!=''">
-                and car_info.plan_return_time !=null
+                and c.plan_return_time !=null
             </if>
-            ORDER BY car_info.CREATED_TIME DESC
+            ORDER BY c.CREATED_TIME DESC
         </where>
     </select>
 

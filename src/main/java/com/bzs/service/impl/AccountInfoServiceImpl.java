@@ -422,4 +422,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         accountInfoService.update(accountInfo);
         return ResultGenerator.genSuccessResult();
     }
+
+    @Override
+    public int updatePassWord(AccountInfo accountInfo) {
+        accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
+        return accountInfoMapper.updatePassWord(accountInfo);
+    }
 }

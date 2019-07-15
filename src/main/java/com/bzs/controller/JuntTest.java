@@ -123,6 +123,14 @@ public class JuntTest {
         System.out.println(response);
     }
     public static void main(String[] args) throws Exception {
-        new JuntTest().put64image();
+        Date date = DateUtil.date();
+//获得年的部分
+        DateUtil.year(date);
+//获得月份，从0开始计数
+        DateUtil.month(date);
+//获得月份枚举
+        DateUtil.monthEnum(date);
+        System.out.println(DateUtil.month(date));
+        System.out.println(DateUtil.dayOfMonth(date));
     }
 }

@@ -121,4 +121,5 @@ public interface AccountInfoService extends Service<AccountInfo> {
 
     Result accountVerified( MultipartFile file, int type, String accountId);
 
+    int updatePassWord(AccountInfo accountInfo);
     }

@@ -18,9 +18,11 @@ import static com.bzs.utils.ProjectConstant.*;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/insurance_bzs?serverTimezone=GMT%2B8";
+    private static final String JDBC_URL = "jdbc:mysql://192.168.0.100:3306/insurance_bzs?serverTimezone=GMT%2B8";
+//    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/insurance_bzs?serverTimezone=GMT%2B8";
     private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "root";
+//    private static final String JDBC_PASSWORD = "root";
+    private static final String JDBC_PASSWORD = "bzs820077";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
@@ -33,11 +35,11 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
-    private static final String AUTHOR = "dl";//@author
+    private static final String AUTHOR = "alwaysacc";//@author
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("id_card_img");
+        genCode("follow_info");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 

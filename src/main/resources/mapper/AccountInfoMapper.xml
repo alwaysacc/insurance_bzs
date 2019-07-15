@@ -393,4 +393,12 @@
     <select id="checkUserMobile" resultType="String">
         select mobile from account_info
     </select>
+    <!--找回密码，根据账号手机号修改密码-->
+    <update id="updatePassWord">
+        update account_info set login_pwd=#{loginPwd}
+        <where>
+            login_name=#{loginName}
+            and mobile=#{mobile}
+        </where>
+    </update>
 </mapper>

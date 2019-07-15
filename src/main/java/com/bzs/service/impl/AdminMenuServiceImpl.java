@@ -33,27 +33,28 @@ public class AdminMenuServiceImpl extends AbstractService<AdminMenu> implements 
     @Resource
     private RedisUtil redisUtil;
 
-    @RedisAnnotation(key=RedisConstant.MENU_LIST_NAME,time=3600)
+    @RedisAnnotation(key = RedisConstant.MENU_LIST_NAME, time = 3600)
     @Override
     public List<VueRouter<AdminMenu>> getMenuByAdminName(String adminName) {
         List<VueRouter<AdminMenu>> list;
-            List<VueRouter<AdminMenu>>  routes = new ArrayList<>();
-            List<AdminMenu> menus = adminMenuMapper.getMenuByAdminName(adminName);
-            menus.forEach(menu -> {
-                VueRouter<AdminMenu> route = new VueRouter<>();
-                route.setId(menu.getMenuId().toString());
-                route.setParentId(menu.getParentId().toString());
-                route.setIcon(menu.getIcon());
-                route.setPath(menu.getPath());
-                route.setComponent(menu.getComponent());
-                route.setName(menu.getMenuName());
-                route.setMeta(new RouterMeta(menu.getMenuName(), menu.getIcon()));
-                routes.add(route);
-            });
-            list=TreeUtil.buildVueRouter(routes);
+        List<VueRouter<AdminMenu>> routes = new ArrayList<>();
+        List<AdminMenu> menus = adminMenuMapper.getMenuByAdminName(adminName);
+        menus.forEach(menu -> {
+            VueRouter<AdminMenu> route = new VueRouter<>();
+            route.setId(menu.getMenuId().toString());
+            route.setParentId(menu.getParentId().toString());
+            route.setIcon(menu.getIcon());
+            route.setPath(menu.getPath());
+            route.setComponent(menu.getComponent());
+            route.setName(menu.getMenuName());
+            route.setMeta(new RouterMeta(menu.getMenuName(), menu.getIcon()));
+            routes.add(route);
+        });
+        list = TreeUtil.buildVueRouter(routes);
         return list;
     }
-    @RedisAnnotation(key = RedisConstant.MENT_LIST,time=3600)
+
+    @RedisAnnotation(key = RedisConstant.MENT_LIST, time = 3600)
     @Override
     public List<VueRouter<AdminMenu>> getMenu() {
         List<VueRouter<AdminMenu>> routes = new ArrayList<>();

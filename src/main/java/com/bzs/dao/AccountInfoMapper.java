@@ -94,4 +94,6 @@ public interface AccountInfoMapper extends Mapper<AccountInfo> {
     List getUserNameList();
     //判断手机号是否存在
     HashSet checkUserMobile();
+
+    int updatePassWord(AccountInfo accountInfo);
 }
