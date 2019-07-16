@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface CarInfoService extends Service<CarInfo> {
 
-    List getUserList( String accountId, String roleId, String salesman, String customerStatus,String plan);
+    List getUserList( String accountId, String roleId, String salesman, String customerStatus,String plan,int selectType,int orderByDate);
 
     List searchUserList(
             String accountId,String roleId,

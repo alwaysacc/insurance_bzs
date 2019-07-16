@@ -69,10 +69,11 @@ public class CarInfoController {
     @PostMapping("/getUserList")
     public Result getUserList(@RequestParam(defaultValue = "0")Integer page, @RequestParam(defaultValue = "0") Integer size,String accountId,
                               String roleId,String salesman,String customerStatus,
-                              String plan
+                              String plan,@RequestParam(defaultValue = "0")int selectType,
+                              @RequestParam(defaultValue = "0")int orderByDate
                               ) {
         PageHelper.startPage(page, size);
-        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus,plan);
+        List<CarInfo> list = carInfoService.getUserList(accountId,roleId,salesman,customerStatus,plan,selectType,orderByDate);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

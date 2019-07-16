@@ -1674,11 +1674,11 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                 }
                 //查询是否第一次续保
                 JSONObject jsonObject= JSON.parseObject(httpResult.getBody());
-                CarInfo c=carInfoService.findBy("carNumber", carInfo.getCarNumber());
-                if (c!=null){
-                    carInfo.setCarInfoId(c.getCarInfoId());
+                String c=carInfoMapper.getCarCountByAccountId(carInfo.getCarNumber(),createBy);
+                if (StringUtils.isNotBlank(c)){
+                    carInfo.setCarInfoId(c);
                     carInfoService.update(carInfo);
-                    jsonObject.put("carInfoId",c.getCarInfoId());
+                    jsonObject.put("carInfoId",c);
                 }else {
                     carInfoService.save(carInfo);
                     insuredInfoService.save(insuredInfo);

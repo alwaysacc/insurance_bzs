@@ -10,10 +10,12 @@ import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.bzs.utils.stringUtil.StringUtil;
 import com.qiniu.util.*;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -123,14 +125,10 @@ public class JuntTest {
         System.out.println(response);
     }
     public static void main(String[] args) throws Exception {
-        Date date = DateUtil.date();
-//获得年的部分
-        DateUtil.year(date);
-//获得月份，从0开始计数
-        DateUtil.month(date);
-//获得月份枚举
-        DateUtil.monthEnum(date);
-        System.out.println(DateUtil.month(date));
-        System.out.println(DateUtil.dayOfMonth(date));
+        String a="";
+        System.out.println(a!=null);
+        System.out.println(a!="");
+        System.out.println(!a.equals(""));
+        System.out.println(StringUtils.isNotBlank(a));
     }
 }

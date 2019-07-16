@@ -10,7 +10,8 @@ import java.util.List;
 public interface CarInfoMapper extends Mapper<CarInfo> {
     List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId,
                      @Param("salesman")String salesman,@Param("customerStatus")String customerStatus,
-                     @Param("plan")String plan);
+                     @Param("plan")String plan,@Param("begDate")String begDate,@Param("endDate")String endDate,
+                     @Param("orderByDate")int orderByDate);
 
 
     List searchUserList(
@@ -80,5 +81,7 @@ public interface CarInfoMapper extends Mapper<CarInfo> {
      */
     int updateBatchIsEnable (@Param("carInfoIds")List<String> carInfoIds,@Param("isEnable") String isEnable);
 
-
+    String getCarCountByAccountId(@Param("carNumber")String carNumber,
+                               @Param("accountId")String accountId
+                               );
 }

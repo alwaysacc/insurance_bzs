@@ -4,7 +4,10 @@ import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 
 /**
  * @program: insurance_bzs
@@ -37,7 +40,7 @@ public class Base64Util {
 
     public static String ImageToBase64(File file){
         //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
-        String imgFile = "E:\\photo\\timg.png";//待处理的图片
+//        String imgFile = "E:\\photo\\timg.png";//待处理的图片
         InputStream in = null;
         byte[] data = null;
         //读取图片字节数组
@@ -112,7 +115,22 @@ public class Base64Util {
             return false;
         }
     }
-
+    public static String encodeImgageToBase64(String remark) {
+        ByteArrayOutputStream outputStream = null;
+        try {
+            URL url = new URL(remark);
+            BufferedImage bufferedImage = ImageIO.read(url);
+            outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage,"jpg",outputStream);
+        } catch (IOException e) {
+            return remark;
+        }
+        BASE64Encoder encoder = new BASE64Encoder();
+        String s= encoder.encode(outputStream.toByteArray());
+//s = s.replaceAll("\\r\\n","");
+//return encoder.encode(outputStream.toByteArray());// 返回Base64编码过的字节数组字符串
+        return s;
+    }
     public static void main(String[] args) {
         System.out.println("base64打印"+imgToBase64("D:/softwarepage/vue/pingan1.jpg"));
     }

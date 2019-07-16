@@ -13,6 +13,7 @@ import com.bzs.service.IdCardImgService;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
 import com.bzs.utils.base64Util.Base64Util;
+import com.bzs.utils.jsontobean.TelCheckBean;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.bzs.utils.redisConstant.RedisConstant;
 import com.bzs.utils.stringUtil.StringUtil;
@@ -60,6 +61,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private QuoteInfoMapper quoteInfoMapper;
     @Resource
     private IdCardImgService idCardImgService;
+    @Resource
+    private CardInfoMapper cardInfoMapper;
+
+
     private static final String CODE = "CODE_LIST";
 
     @Override
@@ -427,5 +432,57 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     public int updatePassWord(AccountInfo accountInfo) {
         accountInfo.setLoginPwd(MD5Utils.encrypt(accountInfo.getLoginName().toLowerCase(), accountInfo.getLoginPwd()));
         return accountInfoMapper.updatePassWord(accountInfo);
+    }
+
+    @Override
+    public Result updateAccountVerifiedStat(String accountId, int verifiedStat, int id, String msg) {
+        AccountInfo accountInfo=new AccountInfo();
+        accountInfo.setAccountId(accountId);
+        accountInfo.setVerifiedStat(verifiedStat);
+        accountInfoService.update(accountInfo);
+        IdCardImg idCardImg=new IdCardImg();
+        idCardImg.setId(id);
+        idCardImg.setMsg(msg);
+        idCardImgService.update(idCardImg);
+        return ResultGenerator.genSuccessResult();
+    }
+    @Override
+    public Result updateAccountVerifiedStat(String accountId, int verifiedStat, int id, String msg,String idCard) {
+        AccountInfo accountInfo=new AccountInfo();
+        accountInfo.setAccountId(accountId);
+        accountInfo.setIdCard(idCard);
+        accountInfo.setVerifiedStat(verifiedStat);
+        accountInfoService.update(accountInfo);
+        IdCardImg idCardImg=new IdCardImg();
+        idCardImg.setId(id);
+        idCardImg.setMsg(msg);
+        idCardImgService.update(idCardImg);
+        return ResultGenerator.genSuccessResult();
+    }
+    @Override
+    public Result checkAccountVerified(IdCardImg idCardImg,String mobile) {
+        String img=Base64Util.encodeImgageToBase64(idCardImg.getFrontPath());
+        String msg=JuHeHttpUtil.accountVerified(img,"front");
+        JSONObject jsonObject= JSON.parseObject(msg);
+        CardInfo cardInfo=JSONObject.toJavaObject(jsonObject,CardInfo.class);
+        System.out.println(cardInfo.getRealname()!=null);
+        System.out.println(cardInfo.getRealname()!="");
+        System.out.println(cardInfo.getRealname().equals(""));
+        if (StringUtils.isNotBlank(cardInfo.getRealname())){
+            cardInfoMapper.saveCardInfo(cardInfo);
+            String m=JuHeHttpUtil.telecom(cardInfo.getRealname(),cardInfo.getIdcard(),mobile,1,1,1,"1");
+            JSONObject json= JSON.parseObject(m);
+            TelCheckBean t=JSONObject.toJavaObject(json,TelCheckBean.class);
+            if (t.getRes()==1){
+                this.updateAccountVerifiedStat(idCardImg.getAccountId(),3,idCardImg.getId(),t.getResmsg(),t.getIdcard());
+                return ResultGenerator.genSuccessResult("校验通过");
+            }else{
+                this.updateAccountVerifiedStat(idCardImg.getAccountId(),2,idCardImg.getId(),t.getResmsg());
+                return ResultGenerator.genSuccessResult(t.getResmsg()+",已驳回该请求");
+            }
+        }else{
+            this.updateAccountVerifiedStat(idCardImg.getAccountId(),2,idCardImg.getId(),"身份证照片无法识别，已驳回该请求");
+            return ResultGenerator.genFailResult("身份证照片无法识别，已驳回该请求");
+        }
     }
 }

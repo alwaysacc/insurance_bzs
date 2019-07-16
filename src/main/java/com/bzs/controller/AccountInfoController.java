@@ -4,13 +4,11 @@ import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
-import com.bzs.model.OrderInfo;
-import com.bzs.model.QuoteInfo;
-import com.bzs.model.Verification;
+import com.bzs.model.*;
 import com.bzs.redis.RedisUtil;
+import com.bzs.service.IdCardImgService;
 import com.bzs.shiro.FebsProperties;
 import com.bzs.utils.*;
-import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.base64Util.Base64Util;
 import com.bzs.utils.jsontobean.F;
@@ -67,6 +65,8 @@ public class AccountInfoController {
     private RedisUtil redisUtil;
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @Resource
+    private IdCardImgService idCardImgService;
 
     @PostMapping("/getHomeInfo")
     public Result getHomeInfo(){
@@ -339,7 +339,6 @@ public class AccountInfoController {
                                     String accountId,
                                     int type
                                   ) throws Exception {
-//        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(front,back,accountId));
         return accountInfoService.accountVerified(file,type,accountId);
     }
     @ApiOperation("找回密码")
@@ -356,4 +355,18 @@ public class AccountInfoController {
     public Result getUserNameList(){
         return ResultGenerator.genSuccessResult(accountInfoMapper.getUserNameList());
     }
+
+    @ApiOperation("驳回实名认证")
+    @PostMapping("/updateAccountVerifiedStat")
+    public Result updateAccountVerifiedStat(String accountId,int verifiedStat,
+                                            int id,String msg
+                                            ){
+        return accountInfoService.updateAccountVerifiedStat(accountId,verifiedStat,id,msg);
+    }
+    @ApiOperation("验证实名认证")
+    @PostMapping("/checkAccountVerified")
+    public Result checkAccountVerified(IdCardImg idCardImg,String mobile){
+        return accountInfoService.checkAccountVerified(idCardImg,mobile);
+    }
+
 }

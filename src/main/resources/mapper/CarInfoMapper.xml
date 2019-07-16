@@ -240,7 +240,18 @@
             <if test="plan!=null and plan!=''">
                 and c.plan_return_time !=null
             </if>
-            ORDER BY c.CREATED_TIME DESC
+            <if test="begDate!='' and endDate!=''">
+                and busines_expire_date between #{begDate} and #{endDate}
+                or  #{begDate} > busines_expire_date
+            </if>
+            <if test="orderByDate==1">
+                and i.busines_expire_date between #{begDate} and #{endDate}
+                or  #{begDate} > i.busines_expire_date
+                ORDER BY i.busines_expire_date DESC
+            </if>
+            <if test="orderByDate==0">
+                ORDER BY c.CREATED_TIME DESC
+            </if>
         </where>
     </select>
 
@@ -296,8 +307,8 @@
                 (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
             </if>
             <if test="roleId==3">
-                and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+                and
+                car_info.CREATED_BY = #{accountId}
             </if>
             <if test="carNumber!=null">
                 and car_info.car_number = #{carNumber}
@@ -525,4 +536,14 @@
         <include refid="updateOrAdd_update"/>
     </insert>
     <!-- 插入或更新 开始-->
+
+    <!--查询是否存在-->
+    <select id="getCarCountByAccountId" resultType="String">
+        select car_info_id from car_info
+        <where>
+            car_number=#{carNumber}
+            and
+            CREATED_BY=#{accountId}
+        </where>
+    </select>
 </mapper>
