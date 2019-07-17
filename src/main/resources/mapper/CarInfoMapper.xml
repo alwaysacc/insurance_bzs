@@ -166,6 +166,53 @@
             </if>
         </trim>
     </select>
+    <select id="getCarInfoAndQuoteList" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
+        select a.*,
+        b.insured_id as b_insured_id,
+        b.busines_expire_date as b_busines_expire_date,
+        b.force_expire_date as b_force_expire_date ,
+        b.next_busines_start_date as b_next_busines_start_date,
+        b.next_force_start_date as b_next_force_start_date,
+        b.last_year_insurance_company as b_last_year_insurance_company,
+        b.last_year_source as b_last_year_source,
+        c.insurance_name as c_insurance_name,
+        c.insurance_amount as c_insurance_amount,
+        c.insurance_premium as c_insurance_premium,
+        c.insurance_type_id as c_insurance_type_id,
+        c.excluding_deductible as c_excluding_deductible,
+        c.type_id as c_type_id,
+        c.info_type as c_info_type,
+        c.standard_premium as standard_premium,
+        q.quote_id as q_quote_id,
+        q.quote_status as q_quote_status,
+        q.submit_status as q_submit_status,
+        q.quote_source as q_quote_source,
+        q.quote_insurance_name as q_quote_insurance_name,
+        q.total as q_total,
+        q1.CREATED_TIME as createTime,
+        i.user_name as user_name
+        from car_info a
+        left join account_info i on a.CREATED_BY=i.account_id
+        left join insured_info b on a.car_info_id =b.car_info_id
+        left join insurance_type_info c on b.insured_id = c.type_id
+        left join quote_info q1 on q1.car_info_id=a.car_info_id
+        left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carInfoId!=null and carInfoId!=''">
+                a.car_info_id=#{carInfoId} and
+            </if>
+            <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">a.CREATED_BY =#{createdBy}
+                and</if>
+            <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
+            <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
+            <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
+            <if test="startTime!=null and endTime!=null">
+                q.CREATED_TIME  between #{startTime} and  #{endTime}
+            </if>
+        </trim>
+    </select>
+
     <!--查询车辆、续保、续保险种 结束-->
     <!--批量更新isEnable-->
     <update id="updateBatchIsEnable">

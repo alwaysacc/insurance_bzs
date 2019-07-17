@@ -99,7 +99,7 @@ public class QiniuCloudUtil {
         OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder().url(url).build();
         okhttp3.Response resp = null;
-        try {
+       /* try {
             String filePath = file.getCanonicalPath()+"/";
             resp = client.newCall(req).execute();
             System.out.println(resp.isSuccessful());
@@ -118,7 +118,7 @@ public class QiniuCloudUtil {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unexpected code " + resp);
-        }
+        }*/
     }
 
     /**

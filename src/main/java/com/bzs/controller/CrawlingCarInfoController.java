@@ -96,7 +96,7 @@ public class CrawlingCarInfoController {
 
     @ApiOperation("上传需要导入的数据")
     @PostMapping("/import")
-    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy, @RequestParam(defaultValue = "2") String type) {
+    public Result importExcel(@RequestParam(value = "file", required = false) MultipartFile file, String createBy, @RequestParam(defaultValue = "2") String type,String accountId) {
         String fileName = new File(file.getOriginalFilename()).getName();
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
         String seriesNo = UUIDS.getDateUUID();
@@ -107,7 +107,7 @@ public class CrawlingCarInfoController {
                 file.transferTo(f);
                 f.deleteOnExit();
                 String path = f.getAbsolutePath();
-                readExcel(suffix, path, fileName, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy, type);
+                readExcel(suffix, path, fileName, crawlingCarInfoService, crawlingExcelInfoService, seriesNo, createBy, type,accountId);
             } catch (Exception e) {
                 return ResultGenerator.genFailResult("上传异常");
             }
@@ -159,29 +159,6 @@ public class CrawlingCarInfoController {
         crawlingCarInfoService.exportCrawlingDataList(response, request, seriesNo);
     }
 
-    /* @ApiOperation("导入测试")
-    @PostMapping("/importTest")*/
-    public Result importTest() {
-        try {
-            String path = "B:\\testExcelData\\模板.xls";
-            File file = new File(path);
-            FileInputStream fileInputStream = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile(file.getName(), file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
-            System.out.println(multipartFile.getName()); // 输出copytest.txt
-            String fileName = new File(multipartFile.getOriginalFilename()).getName();
-            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-            File f = File.createTempFile(suffix, null);
-            multipartFile.transferTo(f);
-            f.deleteOnExit();
-            String paths = f.getAbsolutePath();
-            readExcel(suffix, paths, fileName, crawlingCarInfoService, crawlingExcelInfoService, UUIDS.getDateUUID(), "1", "2");
-            return ResultGenerator.genSuccessResult("上传成功");
-        } catch (Exception e) {
-            log.error("异常", e);
-            return ResultGenerator.genFailResult("上传失败");
-        }
-
-    }
 
     // @PostMapping("/batchInsertImportTest")
     public Result batchInsertImportTest() {

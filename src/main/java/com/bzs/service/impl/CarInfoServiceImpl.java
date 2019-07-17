@@ -217,6 +217,11 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
 
     @Override
     public List getCarInfoQuote(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess,String queryTime) {
+        return  carInfoMapper.getCarInfoAndQuoteList(carInfoId,carNo,createBy,vinNo,isEnable,isRenewSuccess,null,null);
+    }
+
+    @Override
+    public List getCarInfoAndQuoteList(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess, String queryTime) {
         String startTime=null;
         String endTime=null;
         if (queryTime!=null && queryTime!=""){
@@ -224,7 +229,6 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
             startTime=timeList.get(0);
             endTime=timeList.get(1);
         }
-
-        return  carInfoMapper.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess,startTime,endTime);
+        return  carInfoMapper.getCarInfoAndInsurance(carInfoId,carNo,createBy,vinNo,isEnable,isRenewSuccess,startTime,endTime);
     }
 }

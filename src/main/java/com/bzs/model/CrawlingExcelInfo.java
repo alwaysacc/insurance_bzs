@@ -1,8 +1,11 @@
 package com.bzs.model;
 
+import lombok.Data;
+
 import java.util.Date;
 import javax.persistence.*;
 
+@Data
 @Table(name = "crawling_excel_info")
 public class CrawlingExcelInfo {
     @Id
@@ -65,6 +68,8 @@ public class CrawlingExcelInfo {
      */
     @Column(name = "finish_total")
     private Integer finishTotal;
+    @Column(name = "account_id")
+    private String accountid;
 
     /**
      * @return id

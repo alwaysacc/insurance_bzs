@@ -128,5 +128,6 @@ public interface AccountInfoService extends Service<AccountInfo> {
                                      int id,String msg
     );
     Result updateAccountVerifiedStat(String accountId, int verifiedStat, int id, String msg,String idCard);
-    Result checkAccountVerified(IdCardImg idCardImg,String mobile);
+
+    Result checkAccountVerified(IdCardImg idCardImg,String mobile,String name,String idCard);
     }

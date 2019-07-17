@@ -365,8 +365,8 @@ public class AccountInfoController {
     }
     @ApiOperation("验证实名认证")
     @PostMapping("/checkAccountVerified")
-    public Result checkAccountVerified(IdCardImg idCardImg,String mobile){
-        return accountInfoService.checkAccountVerified(idCardImg,mobile);
+    public Result checkAccountVerified(IdCardImg idCardImg,String mobile,String name,String idCard){
+        return accountInfoService.checkAccountVerified(idCardImg,mobile,name,idCard);
     }
 
 }

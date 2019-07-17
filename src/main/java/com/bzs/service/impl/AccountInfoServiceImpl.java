@@ -460,29 +460,32 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         return ResultGenerator.genSuccessResult();
     }
     @Override
-    public Result checkAccountVerified(IdCardImg idCardImg,String mobile) {
-        String img=Base64Util.encodeImgageToBase64(idCardImg.getFrontPath());
+    public Result checkAccountVerified(IdCardImg idCardImg,String mobile,String name,String idCard) {
+/*        String img=Base64Util.encodeImgageToBase64(idCardImg.getFrontPath());
         String msg=JuHeHttpUtil.accountVerified(img,"front");
         JSONObject jsonObject= JSON.parseObject(msg);
         CardInfo cardInfo=JSONObject.toJavaObject(jsonObject,CardInfo.class);
         System.out.println(cardInfo.getRealname()!=null);
         System.out.println(cardInfo.getRealname()!="");
-        System.out.println(cardInfo.getRealname().equals(""));
-        if (StringUtils.isNotBlank(cardInfo.getRealname())){
-            cardInfoMapper.saveCardInfo(cardInfo);
-            String m=JuHeHttpUtil.telecom(cardInfo.getRealname(),cardInfo.getIdcard(),mobile,1,1,1,"1");
+        System.out.println(cardInfo.getRealname().equals(""));*/
+        if (StringUtils.isNotBlank(name)){
+            String m=JuHeHttpUtil.telecom(name,idCard,mobile,1,1,1,"1");
             JSONObject json= JSON.parseObject(m);
             TelCheckBean t=JSONObject.toJavaObject(json,TelCheckBean.class);
             if (t.getRes()==1){
                 this.updateAccountVerifiedStat(idCardImg.getAccountId(),3,idCardImg.getId(),t.getResmsg(),t.getIdcard());
+                CardInfo cardInfo=new CardInfo();
+                cardInfo.setAccountId(idCardImg.getAccountId());
+                cardInfo.setRealname(name);
+                cardInfo.setIdcard(idCard);
+                cardInfoMapper.saveCardInfo(cardInfo);
                 return ResultGenerator.genSuccessResult("校验通过");
             }else{
-                this.updateAccountVerifiedStat(idCardImg.getAccountId(),2,idCardImg.getId(),t.getResmsg());
+                this.updateAccountVerifiedStat(idCardImg.getAccountId(),2,idCardImg.getId(),"上传的身份证和注册手机号不匹配，请重新上传");
                 return ResultGenerator.genSuccessResult(t.getResmsg()+",已驳回该请求");
             }
         }else{
-            this.updateAccountVerifiedStat(idCardImg.getAccountId(),2,idCardImg.getId(),"身份证照片无法识别，已驳回该请求");
-            return ResultGenerator.genFailResult("身份证照片无法识别，已驳回该请求");
+            return  ResultGenerator.genFailResult("姓名不能为空");
         }
     }
 }

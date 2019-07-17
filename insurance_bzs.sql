@@ -3,14 +3,14 @@ Navicat MySQL Data Transfer
 
 Source Server         : bzs
 Source Server Version : 50725
-Source Host           : 192.168.1.100:3306
+Source Host           : 192.168.0.103:3306
 Source Database       : insurance_bzs
 
 Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-06-18 17:44:51
+Date: 2019-07-17 16:00:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -47,6 +47,7 @@ CREATE TABLE `account_info` (
   `invite_code_level` int(11) DEFAULT NULL COMMENT '关联等级，从1开始',
   `balance_total` decimal(10,2) DEFAULT '0.00' COMMENT '余额',
   `commission_total` decimal(10,2) DEFAULT '0.00' COMMENT '佣金累计总额',
+  `verified_stat` int(5) DEFAULT '0' COMMENT '0未认证 1 待审核 2 审核未通过 3 审核通过',
   `draw_percentage_total` decimal(10,2) DEFAULT '0.00' COMMENT '提成累计总额',
   PRIMARY KEY (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账号列表 ';
@@ -54,10 +55,8 @@ CREATE TABLE `account_info` (
 -- ----------------------------
 -- Records of account_info
 -- ----------------------------
-INSERT INTO `account_info` VALUES ('1', '1', '系统管理员', '', null, '0', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', 'admin', null, null, null, null, null, '0', null, null, '2019-06-17 14:17:02', '2019-04-15 10:56:15', '2019-06-17 14:14:54', '55412', null, null, '55412', '1', '22799.00', '3333.00', '5573.86');
-INSERT INTO `account_info` VALUES ('2', null, null, '20190617143519301790', null, '0', null, null, '13', null, null, null, null, null, '0', null, null, null, '2019-06-18 11:19:57', '2019-06-18 11:20:04', null, null, null, null, null, '0.00', '0.00', '0.00');
-INSERT INTO `account_info` VALUES ('20190617132506123299', '3', null, '1', null, '0', '15518727891', '91ae0331ca778e58a9d88312fc6aa996', 'asdasd', null, '15518727891', null, null, null, '0', null, null, null, '2019-06-17 13:25:12', '2019-06-17 14:28:48', '285149', null, null, null, null, '0.00', '0.00', '0.00');
-INSERT INTO `account_info` VALUES ('20190617143519301790', '3', null, '1', null, '0', '123123', 'cf49ee242288dcc02f888a3633c44a71', '123', null, '12312312312', null, null, null, '0', null, null, '2019-06-17 15:36:07', '2019-06-17 14:35:25', '2019-06-17 14:58:59', '611602', null, null, null, null, '0.00', '0.00', '0.00');
+INSERT INTO `account_info` VALUES ('1', '1', '系统管理员', '', null, '0', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', '保之顺', null, '18913320077', null, null, null, '0', null, null, '2019-07-15 10:17:08', '2019-04-15 10:56:15', '2019-07-17 15:37:48', '100001', null, null, '55412', '1', '0.00', '0.00', '0', '0.00');
+INSERT INTO `account_info` VALUES ('20190617132506123299', '3', '', '1', '', '0', '15518727891', '91ae0331ca778e58a9d88312fc6aa996', '孙鹏程', '22', '15518727891', '411425199509265771', '', '', '0', '', '', '2019-07-16 10:16:35', '2019-06-17 13:25:12', '2019-07-17 15:37:48', '285149', null, '', '', null, '0.00', '0.00', '0', '0.00');
 
 -- ----------------------------
 -- Table structure for account_role_info
@@ -137,12 +136,13 @@ CREATE TABLE `admin` (
   `status` char(1) DEFAULT '1' COMMENT '状态 0锁定 1有效',
   `role_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('1', '1', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', '', '0', 'admin', '2019-06-19 16:50:52', '2019-06-18 17:27:05', '2019-06-18 17:27:02', '0', '1');
+INSERT INTO `admin` VALUES ('9', '保之顺', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', '123', null, '', '2019-06-20 17:34:54', '2019-07-17 08:50:36', '2019-07-17 08:50:31', '0', '1');
+INSERT INTO `admin` VALUES ('11', '孙鹏程', '15518727891', '91ae0331ca778e58a9d88312fc6aa996', '15518727891', null, '', '2019-06-21 17:11:01', '2019-06-26 17:18:54', '2019-06-26 17:18:51', '0', '1');
 
 -- ----------------------------
 -- Table structure for admin_menu
@@ -150,80 +150,36 @@ INSERT INTO `admin` VALUES ('1', '1', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349
 DROP TABLE IF EXISTS `admin_menu`;
 CREATE TABLE `admin_menu` (
   `menu_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单/按钮ID',
-  `parent_id` bigint(20) NOT NULL COMMENT '上级菜单ID',
-  `menu_name` varchar(50) NOT NULL COMMENT '菜单/按钮名称',
+  `parent_id` bigint(20) DEFAULT NULL COMMENT '上级菜单ID',
+  `menu_name` varchar(50) DEFAULT NULL COMMENT '菜单/按钮名称',
   `path` varchar(255) DEFAULT NULL COMMENT '对应路由path',
   `component` varchar(255) DEFAULT NULL COMMENT '对应路由组件component',
   `perms` varchar(50) DEFAULT NULL COMMENT '权限标识',
   `icon` varchar(50) DEFAULT NULL COMMENT '图标',
-  `type` char(2) NOT NULL COMMENT '类型 0菜单 1按钮',
+  `type` char(2) DEFAULT NULL COMMENT '类型 0菜单 1按钮',
   `order_num` double(20,0) DEFAULT NULL COMMENT '排序',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of admin_menu
 -- ----------------------------
-INSERT INTO `admin_menu` VALUES ('1', '0', '系统管理', 'system', 'Layout', null, 'appstore-o', '0', '1', '2017-12-27 16:39:07', '2019-01-05 11:13:14');
-INSERT INTO `admin_menu` VALUES ('4', '1', '角色管理', 'role', 'system/role/index', 'role:view', '', '0', '2', '2017-12-27 16:48:09', '2018-04-25 09:01:12');
-INSERT INTO `admin_menu` VALUES ('5', '1', '菜单管理', '/system/menu', 'system/menu/Menu', 'menu:view', '', '0', '3', '2017-12-27 16:48:57', '2018-04-25 09:01:30');
-INSERT INTO `admin_menu` VALUES ('6', '1', '用户管理', 'user', 'system/user/index', null, 'peoples', '0', '2', '2017-12-27 16:45:51', '2019-01-23 06:27:12');
-INSERT INTO `admin_menu` VALUES ('8', '2', '在线用户', '/monitor/online', 'monitor/Online', 'user:online', '', '0', '1', '2017-12-27 16:59:33', '2018-04-25 09:02:04');
-INSERT INTO `admin_menu` VALUES ('10', '2', '系统日志', '/monitor/systemlog', 'monitor/SystemLog', 'log:view', '', '0', '2', '2017-12-27 17:00:50', '2018-04-25 09:02:18');
-INSERT INTO `admin_menu` VALUES ('11', '3', '新增用户', '', '', 'user:add', null, '1', null, '2017-12-27 17:02:58', null);
-INSERT INTO `admin_menu` VALUES ('12', '3', '修改用户', '', '', 'user:update', null, '1', null, '2017-12-27 17:04:07', null);
-INSERT INTO `admin_menu` VALUES ('13', '3', '删除用户', '', '', 'user:delete', null, '1', null, '2017-12-27 17:04:58', null);
-INSERT INTO `admin_menu` VALUES ('14', '4', '新增角色', '', '', 'role:add', null, '1', null, '2017-12-27 17:06:38', null);
-INSERT INTO `admin_menu` VALUES ('15', '4', '修改角色', '', '', 'role:update', null, '1', null, '2017-12-27 17:06:38', null);
-INSERT INTO `admin_menu` VALUES ('16', '4', '删除角色', '', '', 'role:delete', null, '1', null, '2017-12-27 17:06:38', null);
-INSERT INTO `admin_menu` VALUES ('17', '5', '新增菜单', '', '', 'menu:add', null, '1', null, '2017-12-27 17:08:02', null);
-INSERT INTO `admin_menu` VALUES ('18', '5', '修改菜单', '', '', 'menu:update', null, '1', null, '2017-12-27 17:08:02', null);
-INSERT INTO `admin_menu` VALUES ('19', '5', '删除菜单', '', '', 'menu:delete', null, '1', null, '2017-12-27 17:08:02', null);
-INSERT INTO `admin_menu` VALUES ('20', '6', '新增部门', '', '', 'dept:add', null, '1', null, '2017-12-27 17:09:24', null);
-INSERT INTO `admin_menu` VALUES ('21', '6', '修改部门', '', '', 'dept:update', null, '1', null, '2017-12-27 17:09:24', null);
-INSERT INTO `admin_menu` VALUES ('22', '6', '删除部门', '', '', 'dept:delete', null, '1', null, '2017-12-27 17:09:24', null);
-INSERT INTO `admin_menu` VALUES ('23', '8', '踢出用户', '', '', 'user:kickout', null, '1', null, '2017-12-27 17:11:13', null);
-INSERT INTO `admin_menu` VALUES ('24', '10', '删除日志', '', '', 'log:delete', null, '1', null, '2017-12-27 17:11:45', null);
-INSERT INTO `admin_menu` VALUES ('58', '0', '网络资源', '/web', 'PageView', null, 'compass', '0', '4', '2018-01-12 15:28:48', '2018-01-22 19:49:26');
-INSERT INTO `admin_menu` VALUES ('59', '58', '天气查询', '/web/weather', 'web/Weather', 'weather:view', '', '0', '1', '2018-01-12 15:40:02', '2019-01-22 05:43:19');
-INSERT INTO `admin_menu` VALUES ('61', '58', '每日一文', '/web/dailyArticle', 'web/DailyArticle', 'article:view', '', '0', '2', '2018-01-15 17:17:14', '2019-01-22 05:43:27');
-INSERT INTO `admin_menu` VALUES ('64', '1', '字典管理', '/system/dict', 'system/dict/Dict', 'dict:view', '', '0', '5', '2018-01-18 10:38:25', '2018-04-25 09:01:50');
-INSERT INTO `admin_menu` VALUES ('65', '64', '新增字典', '', '', 'dict:add', null, '1', null, '2018-01-18 19:10:08', null);
-INSERT INTO `admin_menu` VALUES ('66', '64', '修改字典', '', '', 'dict:update', null, '1', null, '2018-01-18 19:10:27', null);
-INSERT INTO `admin_menu` VALUES ('67', '64', '删除字典', '', '', 'dict:delete', null, '1', null, '2018-01-18 19:10:47', null);
-INSERT INTO `admin_menu` VALUES ('81', '58', '影视资讯', '/web/movie', 'EmptyPageView', null, null, '0', '3', '2018-01-22 14:12:59', '2019-01-22 05:43:35');
-INSERT INTO `admin_menu` VALUES ('82', '81', '正在热映', '/web/movie/hot', 'web/MovieHot', 'movie:hot', '', '0', '1', '2018-01-22 14:13:47', '2019-01-22 05:43:52');
-INSERT INTO `admin_menu` VALUES ('83', '81', '即将上映', '/web/movie/coming', 'web/MovieComing', 'movie:coming', '', '0', '2', '2018-01-22 14:14:36', '2019-01-22 05:43:58');
-INSERT INTO `admin_menu` VALUES ('101', '0', '任务调度', '/job', 'PageView', null, 'clock-circle-o', '0', '3', '2018-01-11 15:52:57', null);
-INSERT INTO `admin_menu` VALUES ('102', '101', '定时任务', '/job/job', 'quartz/job/Job', 'job:view', '', '0', '1', '2018-02-24 15:53:53', '2019-01-22 05:42:50');
-INSERT INTO `admin_menu` VALUES ('103', '102', '新增任务', '', '', 'job:add', null, '1', null, '2018-02-24 15:55:10', null);
-INSERT INTO `admin_menu` VALUES ('104', '102', '修改任务', '', '', 'job:update', null, '1', null, '2018-02-24 15:55:53', null);
-INSERT INTO `admin_menu` VALUES ('105', '102', '删除任务', '', '', 'job:delete', null, '1', null, '2018-02-24 15:56:18', null);
-INSERT INTO `admin_menu` VALUES ('106', '102', '暂停任务', '', '', 'job:pause', null, '1', null, '2018-02-24 15:57:08', null);
-INSERT INTO `admin_menu` VALUES ('107', '102', '恢复任务', '', '', 'job:resume', null, '1', null, '2018-02-24 15:58:21', null);
-INSERT INTO `admin_menu` VALUES ('108', '102', '立即执行任务', '', '', 'job:run', null, '1', null, '2018-02-24 15:59:45', null);
-INSERT INTO `admin_menu` VALUES ('109', '101', '调度日志', '/job/log', 'quartz/log/JobLog', 'jobLog:view', '', '0', '2', '2018-02-24 16:00:45', '2019-01-22 05:42:59');
-INSERT INTO `admin_menu` VALUES ('110', '109', '删除日志', '', '', 'jobLog:delete', null, '1', null, '2018-02-24 16:01:21', null);
-INSERT INTO `admin_menu` VALUES ('113', '2', 'Redis监控', '/monitor/redis/info', 'monitor/RedisInfo', 'redis:view', '', '0', '3', '2018-06-28 14:29:42', null);
-INSERT INTO `admin_menu` VALUES ('121', '2', '请求追踪', '/monitor/httptrace', 'monitor/Httptrace', null, null, '0', '4', '2019-01-18 02:30:29', null);
-INSERT INTO `admin_menu` VALUES ('122', '2', '系统信息', '/monitor/system', 'EmptyPageView', null, null, '0', '5', '2019-01-18 02:31:48', '2019-01-18 02:39:46');
-INSERT INTO `admin_menu` VALUES ('123', '122', 'Tomcat信息', '/monitor/system/tomcatinfo', 'monitor/TomcatInfo', null, null, '0', '2', '2019-01-18 02:32:53', '2019-01-18 02:46:57');
-INSERT INTO `admin_menu` VALUES ('124', '122', 'JVM信息', '/monitor/system/jvminfo', 'monitor/JvmInfo', null, null, '0', '1', '2019-01-18 02:33:30', '2019-01-18 02:46:51');
-INSERT INTO `admin_menu` VALUES ('127', '122', '服务器信息', '/monitor/system/info', 'monitor/SystemInfo', null, null, '0', '3', '2019-01-21 07:53:43', '2019-01-21 07:57:00');
-INSERT INTO `admin_menu` VALUES ('128', '0', '其他模块', '/others', 'PageView', null, 'coffee', '0', '5', '2019-01-22 06:49:59', '2019-01-22 06:50:13');
-INSERT INTO `admin_menu` VALUES ('129', '128', '导入导出', '/others/excel', 'others/Excel', null, null, '0', '1', '2019-01-22 06:51:36', '2019-01-22 07:06:45');
-INSERT INTO `admin_menu` VALUES ('130', '3', '导出Excel', null, null, 'user:export', null, '1', null, '2019-01-23 06:35:16', null);
-INSERT INTO `admin_menu` VALUES ('131', '4', '导出Excel', null, null, 'role:export', null, '1', null, '2019-01-23 06:35:36', null);
-INSERT INTO `admin_menu` VALUES ('132', '5', '导出Excel', null, null, 'menu:export', null, '1', null, '2019-01-23 06:36:05', null);
-INSERT INTO `admin_menu` VALUES ('133', '6', '导出Excel', null, null, 'dept:export', null, '1', null, '2019-01-23 06:36:25', null);
-INSERT INTO `admin_menu` VALUES ('134', '64', '导出Excel', null, null, 'dict:export', null, '1', null, '2019-01-23 06:36:43', null);
-INSERT INTO `admin_menu` VALUES ('135', '3', '密码重置', null, null, 'user:reset', null, '1', null, '2019-01-23 06:37:00', null);
-INSERT INTO `admin_menu` VALUES ('136', '10', '导出Excel', null, null, 'log:export', null, '1', null, '2019-01-23 06:37:27', null);
-INSERT INTO `admin_menu` VALUES ('137', '102', '导出Excel', null, null, 'job:export', null, '1', null, '2019-01-23 06:37:59', null);
-INSERT INTO `admin_menu` VALUES ('138', '109', '导出Excel', null, null, 'jobLog:export', null, '1', null, '2019-01-23 06:38:32', null);
-INSERT INTO `admin_menu` VALUES ('6111', '1', '部门管理', '/system/dept', 'system/dept/Dept', 'dept:view', '', '0', '4', '2017-12-27 16:57:33', '2018-04-25 09:01:40');
+INSERT INTO `admin_menu` VALUES ('1', '0', '系统管理', '/system', 'Layout', null, 'system', '0', '1', '2017-12-27 16:39:07', '2018-01-22 19:49:26');
+INSERT INTO `admin_menu` VALUES ('2', '1', '管理员列表', 'user', 'system/admin/adminList', 'role:view', 'peoples', '0', '2', '2017-12-27 16:48:09', '2018-01-22 19:49:26');
+INSERT INTO `admin_menu` VALUES ('3', '1', '角色管理', '/role', 'system/role/index', 'menu:view', 'role', '0', '3', '2017-12-27 16:48:57', '2018-01-22 19:49:26');
+INSERT INTO `admin_menu` VALUES ('40', '0', '小程序管理', '/app', 'Layout', 'movie:coming', 'monitor', '0', '2', '2018-01-22 14:14:36', '2018-01-22 19:49:26');
+INSERT INTO `admin_menu` VALUES ('41', '40', '出单列表', 'withdrawList', 'system/withdrawList/withdrawList', null, 'sys-tools', '0', '999', '2019-06-28 17:13:45', '2019-06-29 13:23:43');
+INSERT INTO `admin_menu` VALUES ('42', '40', '用户管理', 'user', 'system/user/user', null, 'user', '0', '1', '2018-01-11 15:52:57', '2019-07-14 12:40:59');
+INSERT INTO `admin_menu` VALUES ('44', '40', '报价记录', 'quote', 'system/quote/quote', 'job:view', 'swagger', '0', '999', '2018-02-24 15:53:53', '2019-06-20 17:49:52');
+INSERT INTO `admin_menu` VALUES ('45', '40', '订单列表', 'order', 'system/order/order', '213', 'log', '0', '999', '2019-06-26 08:47:20', '2019-06-20 17:49:46');
+INSERT INTO `admin_menu` VALUES ('46', '40', '提现列表', 'withdraw', 'system/withdraw/withdraw', null, 'codeConsole', '0', '999', '2019-06-19 10:12:17', '2019-06-20 17:50:15');
+INSERT INTO `admin_menu` VALUES ('47', '1', '佣金设置', 'commission', 'system/commission/commission', null, 'sys-tools', '0', '999', '2019-06-19 10:15:29', '2019-06-26 17:36:25');
+INSERT INTO `admin_menu` VALUES ('48', '0', '爬虫', '/craw', 'Layout', null, 'sys-tools', '0', '32', '2019-06-21 08:40:48', '2019-06-21 08:41:14');
+INSERT INTO `admin_menu` VALUES ('49', '48', '爬虫列表', 'crawling', 'crawling/index', null, 'monitor', '0', '33', '2019-06-21 08:41:05', '2019-06-21 08:42:02');
+INSERT INTO `admin_menu` VALUES ('50', '48', '第三方账号', 'account', 'account/index', null, 'monitor', '0', '34', '2019-06-21 08:42:34', '2019-06-21 08:48:41');
+INSERT INTO `admin_menu` VALUES ('51', '40', '实名审核', 'checkIdCard', 'system/checkIdCard/index', null, 'log', '0', '2', '2019-07-14 12:38:40', '2019-07-14 12:41:00');
 
 -- ----------------------------
 -- Table structure for admin_role
@@ -231,23 +187,23 @@ INSERT INTO `admin_menu` VALUES ('6111', '1', '部门管理', '/system/dept', 's
 DROP TABLE IF EXISTS `admin_role`;
 CREATE TABLE `admin_role` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `name` varchar(32) NOT NULL COMMENT '名称',
-  `code` varchar(32) NOT NULL COMMENT '角色编码',
+  `code` varchar(32) DEFAULT NULL COMMENT '角色编码',
   `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   `data_scope` varchar(255) DEFAULT NULL,
   `level` int(11) DEFAULT NULL,
   `is_enable_del` int(11) DEFAULT '0' COMMENT '是否可以删除，默认0可删除1不可删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of admin_role
 -- ----------------------------
 INSERT INTO `admin_role` VALUES ('1', '2019-06-16 11:15:19', '超级管理员', 'SADMIN', '系统所有权', '全部', '1', '0');
 INSERT INTO `admin_role` VALUES ('3', '2019-06-16 11:15:42', '代理用户', 'AGENT', '用于测试菜单与权限', '本级', '3', '0');
-INSERT INTO `admin_role` VALUES ('4', '2019-06-18 13:33:06', '爬取', 'CRAWLING', '爬取数据', null, '3', '0');
-INSERT INTO `admin_role` VALUES ('12', '2019-06-16 11:15:42', '普通管理员', 'CADMIN', '普通管理员级别为2，使用该角色新增用户时只能赋予比普通管理员级别低的角色', '全部', '2', '0');
+INSERT INTO `admin_role` VALUES ('29', '2019-06-24 15:05:24', '数据爬取用户', 'CRAWLING', '用于爬取数据', '本级', '3', '0');
+INSERT INTO `admin_role` VALUES ('30', '2019-06-24 15:49:13', '普通管理员', 'CADMIN', '普通管理员', '本级', '2', '0');
 
 -- ----------------------------
 -- Table structure for admin_role_menu
@@ -263,64 +219,13 @@ CREATE TABLE `admin_role_menu` (
 -- ----------------------------
 INSERT INTO `admin_role_menu` VALUES ('1', '1');
 INSERT INTO `admin_role_menu` VALUES ('3', '1');
-INSERT INTO `admin_role_menu` VALUES ('11', '1');
-INSERT INTO `admin_role_menu` VALUES ('12', '1');
-INSERT INTO `admin_role_menu` VALUES ('13', '1');
-INSERT INTO `admin_role_menu` VALUES ('4', '1');
-INSERT INTO `admin_role_menu` VALUES ('14', '1');
-INSERT INTO `admin_role_menu` VALUES ('15', '1');
-INSERT INTO `admin_role_menu` VALUES ('16', '1');
-INSERT INTO `admin_role_menu` VALUES ('5', '1');
-INSERT INTO `admin_role_menu` VALUES ('17', '1');
-INSERT INTO `admin_role_menu` VALUES ('18', '1');
-INSERT INTO `admin_role_menu` VALUES ('19', '1');
-INSERT INTO `admin_role_menu` VALUES ('6', '1');
-INSERT INTO `admin_role_menu` VALUES ('20', '1');
-INSERT INTO `admin_role_menu` VALUES ('21', '1');
-INSERT INTO `admin_role_menu` VALUES ('22', '1');
-INSERT INTO `admin_role_menu` VALUES ('64', '1');
-INSERT INTO `admin_role_menu` VALUES ('65', '1');
-INSERT INTO `admin_role_menu` VALUES ('66', '1');
-INSERT INTO `admin_role_menu` VALUES ('67', '1');
 INSERT INTO `admin_role_menu` VALUES ('2', '1');
-INSERT INTO `admin_role_menu` VALUES ('8', '1');
-INSERT INTO `admin_role_menu` VALUES ('23', '1');
-INSERT INTO `admin_role_menu` VALUES ('10', '1');
-INSERT INTO `admin_role_menu` VALUES ('24', '1');
-INSERT INTO `admin_role_menu` VALUES ('113', '1');
-INSERT INTO `admin_role_menu` VALUES ('121', '1');
-INSERT INTO `admin_role_menu` VALUES ('122', '1');
-INSERT INTO `admin_role_menu` VALUES ('124', '1');
-INSERT INTO `admin_role_menu` VALUES ('123', '1');
-INSERT INTO `admin_role_menu` VALUES ('125', '1');
-INSERT INTO `admin_role_menu` VALUES ('101', '1');
-INSERT INTO `admin_role_menu` VALUES ('102', '1');
-INSERT INTO `admin_role_menu` VALUES ('103', '1');
-INSERT INTO `admin_role_menu` VALUES ('104', '1');
-INSERT INTO `admin_role_menu` VALUES ('105', '1');
-INSERT INTO `admin_role_menu` VALUES ('106', '1');
-INSERT INTO `admin_role_menu` VALUES ('107', '1');
-INSERT INTO `admin_role_menu` VALUES ('108', '1');
-INSERT INTO `admin_role_menu` VALUES ('109', '1');
-INSERT INTO `admin_role_menu` VALUES ('110', '1');
-INSERT INTO `admin_role_menu` VALUES ('58', '1');
-INSERT INTO `admin_role_menu` VALUES ('59', '1');
-INSERT INTO `admin_role_menu` VALUES ('61', '1');
-INSERT INTO `admin_role_menu` VALUES ('81', '1');
-INSERT INTO `admin_role_menu` VALUES ('82', '1');
-INSERT INTO `admin_role_menu` VALUES ('83', '1');
-INSERT INTO `admin_role_menu` VALUES ('127', '1');
-INSERT INTO `admin_role_menu` VALUES ('128', '1');
-INSERT INTO `admin_role_menu` VALUES ('129', '1');
-INSERT INTO `admin_role_menu` VALUES ('130', '1');
-INSERT INTO `admin_role_menu` VALUES ('135', '1');
-INSERT INTO `admin_role_menu` VALUES ('131', '1');
-INSERT INTO `admin_role_menu` VALUES ('132', '1');
-INSERT INTO `admin_role_menu` VALUES ('133', '1');
-INSERT INTO `admin_role_menu` VALUES ('134', '1');
-INSERT INTO `admin_role_menu` VALUES ('136', '1');
-INSERT INTO `admin_role_menu` VALUES ('137', '1');
-INSERT INTO `admin_role_menu` VALUES ('138', '1');
+INSERT INTO `admin_role_menu` VALUES ('40', '1');
+INSERT INTO `admin_role_menu` VALUES ('42', '1');
+INSERT INTO `admin_role_menu` VALUES ('44', '1');
+INSERT INTO `admin_role_menu` VALUES ('45', '1');
+INSERT INTO `admin_role_menu` VALUES ('46', '1');
+INSERT INTO `admin_role_menu` VALUES ('47', '1');
 INSERT INTO `admin_role_menu` VALUES ('1', '72');
 INSERT INTO `admin_role_menu` VALUES ('3', '72');
 INSERT INTO `admin_role_menu` VALUES ('4', '72');
@@ -387,6 +292,48 @@ INSERT INTO `admin_role_menu` VALUES ('103', '2');
 INSERT INTO `admin_role_menu` VALUES ('137', '2');
 INSERT INTO `admin_role_menu` VALUES ('138', '2');
 INSERT INTO `admin_role_menu` VALUES ('131', '2');
+INSERT INTO `admin_role_menu` VALUES ('1', '3');
+INSERT INTO `admin_role_menu` VALUES ('2', '3');
+INSERT INTO `admin_role_menu` VALUES ('3', '3');
+INSERT INTO `admin_role_menu` VALUES ('47', '3');
+INSERT INTO `admin_role_menu` VALUES ('40', '3');
+INSERT INTO `admin_role_menu` VALUES ('42', '3');
+INSERT INTO `admin_role_menu` VALUES ('44', '3');
+INSERT INTO `admin_role_menu` VALUES ('45', '3');
+INSERT INTO `admin_role_menu` VALUES ('46', '3');
+INSERT INTO `admin_role_menu` VALUES ('48', '1');
+INSERT INTO `admin_role_menu` VALUES ('49', '1');
+INSERT INTO `admin_role_menu` VALUES ('50', '1');
+INSERT INTO `admin_role_menu` VALUES ('41', '1');
+INSERT INTO `admin_role_menu` VALUES ('51', '3');
+INSERT INTO `admin_role_menu` VALUES ('41', '3');
+INSERT INTO `admin_role_menu` VALUES ('51', '1');
+
+-- ----------------------------
+-- Table structure for card_info
+-- ----------------------------
+DROP TABLE IF EXISTS `card_info`;
+CREATE TABLE `card_info` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `realname` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '姓名',
+  `sex` varchar(2) CHARACTER SET utf8 DEFAULT NULL COMMENT '性别',
+  `nation` varchar(2) CHARACTER SET utf8 DEFAULT NULL COMMENT '民族',
+  `born` varchar(10) CHARACTER SET utf8 DEFAULT NULL COMMENT '出生日期',
+  `address` varchar(64) CHARACTER SET utf8 DEFAULT NULL COMMENT '地址',
+  `idcard` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '身份证号码',
+  `begin` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '签发日期',
+  `department` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '签发机关',
+  `end` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '失效日期',
+  `account_id` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account_id` (`account_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of card_info
+-- ----------------------------
+INSERT INTO `card_info` VALUES ('1', '孙鹏程', '男', '汉', '19950926', '河南省虞城县王集乡马庄村', '411425199509265771', null, null, null, null);
+INSERT INTO `card_info` VALUES ('2', '孙鹏程', null, null, null, null, '411425199509265771', null, null, null, '20190617132506123299');
 
 -- ----------------------------
 -- Table structure for car_info
@@ -436,11 +383,9 @@ CREATE TABLE `car_info` (
 -- ----------------------------
 -- Records of car_info
 -- ----------------------------
-INSERT INTO `car_info` VALUES ('20190616163023135881', '苏A0Q1Q4', '171240978', 'LSGBL5348HF087266', '2017-07-03', '雪佛兰SGM7156DAAA', null, '120900', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-06-16 16:30:51', null, '2019-06-16 16:42:07', null, null, null, '胡乐宏', '34262619841001509X', '1', null, '0', '', '0', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('c349ba55b5e642e9a6954836f74b02b8', '苏A77D6T', '0373964', 'LWVEA3M44JB126703', '2018-07-02', '吉普GFA7140ETCA', null, '195800', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-06-16 16:48:11', null, null, null, null, null, '狄平', '320106197401252816', '1', null, '0', '', '-1', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('c3dd2a7e46894ffab11c7dc0a9b67c95', '苏A23A9E', '11023428', 'LE40G4GB5JL235756', '2018-07-02', '梅赛德斯-奔驰BJ6466G4E多用途乘用车', null, '401000', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-06-16 16:50:28', null, null, null, null, null, '方方', '320102198307090418', '1', null, '0', '', '-1', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('cd9f8b306b31452ca8811c6fe6a08414', '苏A82FU5', '170715554', 'LSGXE83LXHD205774', '2017-07-10', '别克SGM6475DAX3多用途乘用车', null, '240900', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-06-16 16:53:13', null, null, null, null, null, '邬海涛', '320923198306302138', '1', null, '0', '', '-1', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('eb18b18b6c99484b8a4058b9cc35adf0', '苏A0M0C4', 'BT0609', 'LSVWY4183H2108608', '2017-07-03', '大众汽车SVW71617MM', null, '100900', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-06-16 16:45:57', null, null, null, null, null, '李奎', '420684198408265059', '1', null, '0', '', '-1', '0', '1', '0');
+INSERT INTO `car_info` VALUES ('3928164b301a430ea33c8ad593f3cbcb', '苏AB85Y7', '1806176', 'LHGCP167782004393', '2008-07-01', '雅阁HG7203A轿车', null, '190800', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '20190617132506123299', '2019-07-16 10:16:53', null, null, null, null, null, '戴乐', '320107198001303451', '1', null, '0', '', '-1', '0', '1', '0');
+INSERT INTO `car_info` VALUES ('dc83e1fbc3a642429978ac6484e63355', '苏A5L7W6', 'G8XS03494', 'LB37724Z6GX081074', '2016-08-29', '吉利JL7152C01轿车', null, '61900', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '20190617132506123299', '2019-07-16 10:29:26', null, null, null, null, null, '袁茂珍', '320123199105083021', '1', null, '0', '', '-1', '0', '1', '0');
+INSERT INTO `car_info` VALUES ('ffb013bf8d084512824503cfbfcb4ac7', '苏AB85Y7', '1806176', 'LHGCP167782004393', '2008-07-01', '雅阁HG7203A轿车', null, '190800', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-07-16 10:05:16', null, null, null, null, null, '戴乐', '320107198001303451', '1', null, '0', '', '-1', '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for car_out_danger_info
@@ -493,12 +438,73 @@ INSERT INTO `check_info` VALUES ('20190616163023125370', '1', '20190616163023125
 INSERT INTO `check_info` VALUES ('20190616163023135881', '1', '20190616163023135881', '2019-06-16 16:30:51', null, '0', '0', '2019-06-16 16:30:23', '苏A0Q1Q4', null, '1', '0');
 
 -- ----------------------------
+-- Table structure for commission_every_day
+-- ----------------------------
+DROP TABLE IF EXISTS `commission_every_day`;
+CREATE TABLE `commission_every_day` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `insurance_biz_percentage` varchar(10) DEFAULT NULL COMMENT '保司商业佣金',
+  `insurance_force_percentage` varchar(255) DEFAULT NULL COMMENT '保司交强佣金',
+  `biz_percentage` varchar(10) DEFAULT NULL COMMENT '商业险佣金百分点',
+  `subsidy` varchar(10) DEFAULT NULL COMMENT '商业险补贴',
+  `force_percentage` varchar(10) DEFAULT NULL COMMENT '交强险佣金百分点',
+  `level_one` varchar(10) DEFAULT NULL COMMENT '下一级提成百分点',
+  `level_two` varchar(10) DEFAULT NULL COMMENT '下二级提成百分点',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `source` varchar(12) DEFAULT NULL COMMENT '保司枚举值',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of commission_every_day
+-- ----------------------------
+INSERT INTO `commission_every_day` VALUES ('13', '20', '10', '15', '1', '11', '1', '1', '2019-07-03 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('14', '20', '10', '15', '3', '4', '1', '2', '2019-07-03 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('15', '20', '10', '15', '3', '4', '1', '2', '2019-07-03 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('16', '20', '10', '15', '1', '11', '1', '1', '2019-07-04 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('17', '20', '10', '15', '3', '4', '1', '2', '2019-07-04 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('18', '20', '10', '15', '3', '4', '1', '2', '2019-07-04 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('19', '20', '11', '15', '1', '11', '1', '1', '2019-07-05 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('20', '20', '10', '15', '3', '4', '1', '2', '2019-07-05 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('21', '20', '10', '15', '3', '4', '1', '2', '2019-07-05 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('22', '20', '11', '15', '1', '11', '1', '1', '2019-07-06 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('23', '20', '10', '15', '3', '4', '1', '2', '2019-07-06 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('24', '20', '10', '15', '3', '4', '1', '2', '2019-07-06 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('25', '20', '11', '15', '1', '11', '1', '1', '2019-07-07 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('26', '20', '10', '15', '3', '4', '1', '2', '2019-07-07 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('27', '20', '10', '15', '3', '4', '1', '2', '2019-07-07 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('28', '20', '4', '15', '1', '4', '1', '1', '2019-07-08 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('29', '20', '4', '15', '1', '4', '1', '2', '2019-07-08 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('30', '20', '4', '15', '1', '4', '1', '2', '2019-07-08 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('31', '20', '4', '15', '1', '4', '1', '1', '2019-07-09 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('32', '20', '4', '15', '1', '4', '1', '2', '2019-07-09 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('33', '20', '4', '15', '1', '4', '1', '2', '2019-07-09 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('34', '20', '4', '15', '1', '4', '1', '1', '2019-07-10 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('35', '20', '4', '15', '1', '4', '1', '2', '2019-07-10 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('36', '20', '4', '15', '1', '4', '1', '2', '2019-07-10 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('37', '20', '4', '15', '1', '4', '1', '1', '2019-07-11 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('38', '20', '4', '15', '1', '4', '1', '2', '2019-07-11 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('39', '20', '4', '15', '1', '4', '1', '2', '2019-07-11 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('40', '20', '4', '15', '1', '4', '1', '1', '2019-07-12 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('41', '20', '4', '15', '1', '4', '1', '2', '2019-07-12 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('42', '20', '4', '15', '1', '4', '1', '2', '2019-07-12 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('43', '20', '4', '15', '1', '4', '1', '1', '2019-07-13 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('44', '20', '4', '15', '1', '4', '1', '2', '2019-07-13 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('45', '20', '4', '15', '1', '4', '1', '2', '2019-07-13 23:59:59', '4');
+INSERT INTO `commission_every_day` VALUES ('46', '20', '4', '15', '1', '4', '1', '1', '2019-07-14 23:59:59', '1');
+INSERT INTO `commission_every_day` VALUES ('47', '20', '4', '15', '1', '4', '1', '2', '2019-07-14 23:59:59', '2');
+INSERT INTO `commission_every_day` VALUES ('48', '20', '4', '15', '1', '4', '1', '2', '2019-07-14 23:59:59', '4');
+
+-- ----------------------------
 -- Table structure for commission_percentage
 -- ----------------------------
 DROP TABLE IF EXISTS `commission_percentage`;
 CREATE TABLE `commission_percentage` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `insurance_biz_percentage` varchar(10) DEFAULT NULL COMMENT '保司商业佣金',
+  `insurance_force_percentage` varchar(255) DEFAULT NULL COMMENT '保司交强佣金',
   `biz_percentage` varchar(10) DEFAULT NULL COMMENT '商业险佣金百分点',
+  `subsidy` varchar(10) DEFAULT NULL COMMENT '商业险补贴',
   `force_percentage` varchar(10) DEFAULT NULL COMMENT '交强险佣金百分点',
   `level_one` varchar(10) DEFAULT NULL COMMENT '下一级提成百分点',
   `level_two` varchar(10) DEFAULT NULL COMMENT '下二级提成百分点',
@@ -509,30 +515,30 @@ CREATE TABLE `commission_percentage` (
   `source` varchar(12) DEFAULT NULL COMMENT '保司枚举值',
   `status` varchar(2) DEFAULT '1' COMMENT '状态默认1可用0废弃',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of commission_percentage
 -- ----------------------------
-INSERT INTO `commission_percentage` VALUES ('1', '15', '4', '2', '1', '2019-06-13 09:46:04', '2019-06-18 10:55:42', '1', '', '太平洋保险', '1');
-INSERT INTO `commission_percentage` VALUES ('2', '15', '4', '1', '2', '2019-06-13 11:12:05', '2019-06-18 09:52:23', '2', null, '2', '0');
-INSERT INTO `commission_percentage` VALUES ('3', '15', '4', '1', '2', '2019-06-13 11:23:49', '2019-06-18 09:22:25', '2', null, '4', '1');
+INSERT INTO `commission_percentage` VALUES ('1', '20', '4', '15', '1', '4', '1', '1', '2019-06-13 09:46:04', '2019-07-08 09:02:46', '1', '9', '1', '1');
+INSERT INTO `commission_percentage` VALUES ('2', '20', '4', '15', '1', '4', '1', '2', '2019-06-13 11:12:05', '2019-07-08 09:04:38', '2', '9', '2', '1');
+INSERT INTO `commission_percentage` VALUES ('3', '20', '4', '15', '1', '4', '1', '2', '2019-06-13 11:23:49', '2019-07-08 09:04:45', '2', '9', '4', '1');
 
 -- ----------------------------
 -- Table structure for crawling_car_info
 -- ----------------------------
 DROP TABLE IF EXISTS `crawling_car_info`;
 CREATE TABLE `crawling_car_info` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `car_no` varchar(32) DEFAULT NULL COMMENT '车牌',
   `new_car_no` varchar(32) DEFAULT NULL COMMENT '新车牌',
-  `is_new_car_no` varchar(64) DEFAULT NULL COMMENT '是否有新车牌0默认1有',
+  `is_new_car_no` varchar(64) DEFAULT '0' COMMENT '是否有新车牌0默认1有',
   `car_owner` varchar(64) DEFAULT NULL COMMENT '车主',
   `new_car_owner` varchar(64) DEFAULT NULL COMMENT '新车主',
-  `is_new_car_owner` varchar(64) DEFAULT NULL COMMENT '是否有新车主0默认1有',
+  `is_new_car_owner` varchar(64) DEFAULT '0' COMMENT '是否有新车主0默认1有',
   `vin_no` varchar(64) DEFAULT NULL COMMENT '车架号',
   `new_vin_no` varchar(64) DEFAULT NULL COMMENT '新车架号',
-  `is_new_vin_no` varchar(64) DEFAULT NULL COMMENT '是否有新车架0默认1有',
+  `is_new_vin_no` varchar(64) DEFAULT '0' COMMENT '是否有新车架0默认1有',
   `brand` varchar(64) DEFAULT NULL COMMENT '品牌',
   `model` varchar(64) DEFAULT NULL COMMENT '车辆型号',
   `engine_no` varchar(64) DEFAULT NULL COMMENT '发动机号',
@@ -551,6 +557,11 @@ CREATE TABLE `crawling_car_info` (
   `series_no` varchar(32) DEFAULT NULL COMMENT '批次号',
   `is_drawling` varchar(2) DEFAULT '0' COMMENT '是否已经爬取0未爬取1车牌爬取2车架爬取3车牌车架都爬取',
   `is_last_drawling` varchar(2) DEFAULT '0' COMMENT '是否上次暂停数据默认0不是1是',
+  `index_no` int(20) DEFAULT NULL COMMENT '本次上传的数据的序号',
+  `status` varchar(2) DEFAULT '0' COMMENT '默认0未爬取1成功2失败',
+  `result_message` varchar(255) DEFAULT NULL,
+  `force_start_date` varchar(32) DEFAULT NULL COMMENT '交强险起保时间',
+  `biz_start_date` varchar(32) DEFAULT NULL COMMENT '商业险起保时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -568,11 +579,15 @@ CREATE TABLE `crawling_excel_info` (
   `series_no` varchar(64) DEFAULT NULL COMMENT '批次号',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `create_by` varchar(32) DEFAULT NULL COMMENT '创建人',
-  `is_finish` varchar(2) DEFAULT '0' COMMENT '默认0未完成1完成',
   `finish_date` datetime DEFAULT NULL COMMENT '完成时间',
-  `type` varchar(2) DEFAULT '0' COMMENT '0车牌1车架',
+  `type` varchar(2) DEFAULT '2' COMMENT '规定爬取方式1车牌2车架',
+  `last_crawling` int(11) DEFAULT NULL COMMENT '最后一次爬取的id',
+  `status` varchar(2) DEFAULT '0' COMMENT '状态0未执行，1完成2暂停3执行中',
+  `total` int(11) DEFAULT NULL,
+  `finish_total` int(11) DEFAULT '0' COMMENT '完成数量',
+  `account_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of crawling_excel_info
@@ -604,11 +619,6 @@ CREATE TABLE `customer` (
 -- ----------------------------
 -- Records of customer
 -- ----------------------------
-INSERT INTO `customer` VALUES ('4d4b43f2f8e54268b3f4a010aeaa4a34', '22222', '123123123', '123123123', '0', null, null, '123123123123', null, null, null, '2019-05-10 14:49:36', null, null, null);
-INSERT INTO `customer` VALUES ('6283596187234f288c6b50c807a37ecf', '1111', '111', '111', '0', null, null, '1111', null, null, null, '2019-05-10 14:50:00', null, null, null);
-INSERT INTO `customer` VALUES ('7af4d06b433f4c0eb6a29f238d4ac381', '2213', '123', '123', '0', null, null, '123132', null, null, null, '2019-05-10 14:55:17', null, null, null);
-INSERT INTO `customer` VALUES ('ad228b58f4ae48598f4987d54d5cccfa', '213', '123', '123', '0', null, null, '123', null, null, null, '2019-05-10 14:53:57', null, null, null);
-INSERT INTO `customer` VALUES ('fd9688be884d4e6ea9bf34ffe338b5b2', '1321322222', '12312312', null, '', '', '11', '', '', null, '', '2019-05-17 16:38:33', '', '2019-05-17 16:39:03', null);
 
 -- ----------------------------
 -- Table structure for draw_cash
@@ -658,6 +668,52 @@ CREATE TABLE `enable_date_info` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for follow_info
+-- ----------------------------
+DROP TABLE IF EXISTS `follow_info`;
+CREATE TABLE `follow_info` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `follow_stat` varchar(255) DEFAULT NULL COMMENT '跟进状态',
+  `next_follow_date` datetime DEFAULT NULL COMMENT '下次跟进时间',
+  `follow_content` varchar(255) DEFAULT NULL COMMENT '跟进内容',
+  `car_info_id` varchar(50) DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of follow_info
+-- ----------------------------
+INSERT INTO `follow_info` VALUES ('4', '忙碌中待联系', '2019-07-15 16:21:53', '13213', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:22:03');
+INSERT INTO `follow_info` VALUES ('5', '成功出单', '2019-07-15 16:22:48', '123123', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:23:01');
+INSERT INTO `follow_info` VALUES ('6', '成功出单', '2019-07-15 16:23:17', '33333', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:23:27');
+INSERT INTO `follow_info` VALUES ('7', '其他', '2019-07-15 16:24:12', '22222', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:24:20');
+INSERT INTO `follow_info` VALUES ('8', '已报价考虑中(重点)', '2019-07-15 16:41:39', '13123', '13087baa5c8248c1b12e81ec0f347ded', '2019-07-15 16:41:48');
+
+-- ----------------------------
+-- Table structure for id_card_img
+-- ----------------------------
+DROP TABLE IF EXISTS `id_card_img`;
+CREATE TABLE `id_card_img` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `back_path` varchar(128) DEFAULT NULL,
+  `front_path` varchar(128) DEFAULT NULL,
+  `stat` int(5) DEFAULT NULL,
+  `msg` varchar(20) DEFAULT NULL,
+  `account_id` varchar(20) DEFAULT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `update_by` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `account_id` (`account_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of id_card_img
+-- ----------------------------
+INSERT INTO `id_card_img` VALUES ('1', 'http://img.cdn.baozhishun.com/1-1', 'http://img.cdn.baozhishun.com/1-0', null, '上传的不是身份证照片,请重新上传', '1', '2019-07-14 13:07:33', '2019-07-17 09:31:10', null);
+
+-- ----------------------------
 -- Table structure for insurance_follow_info
 -- ----------------------------
 DROP TABLE IF EXISTS `insurance_follow_info`;
@@ -700,73 +756,22 @@ CREATE TABLE `insurance_type_info` (
   `send_time` varchar(32) DEFAULT NULL COMMENT '请求发送日期',
   `standard_premium` varchar(32) DEFAULT NULL COMMENT '保费-标准保费',
   PRIMARY KEY (`insurance_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8 COMMENT='保险分类信息 ';
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COMMENT='保险分类信息 ';
 
 -- ----------------------------
 -- Records of insurance_type_info
 -- ----------------------------
-INSERT INTO `insurance_type_info` VALUES ('1', null, '1', null, null, null, '交强险', '1', null, '0', '8823941a8146421daa71a6a43773c6b0', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('2', null, '1', null, null, null, '机动车损失保险', '94241', null, '0', '8823941a8146421daa71a6a43773c6b0', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('3', null, '1', null, null, null, '机动车损失险_不计免', '1', null, '0', '8823941a8146421daa71a6a43773c6b0', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('4', null, '1', null, null, null, '商业第三者责任险', '1000000', null, '0', '8823941a8146421daa71a6a43773c6b0', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('5', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', '8823941a8146421daa71a6a43773c6b0', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('6', null, '1', null, null, null, '交强险', '1', null, '0', '8b8202e3606e4a24abc8611678c70eff', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('7', null, '1', null, null, null, '机动车损失保险', '168800', null, '0', '8b8202e3606e4a24abc8611678c70eff', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('8', null, '1', null, null, null, '机动车损失险_不计免', '1', null, '0', '8b8202e3606e4a24abc8611678c70eff', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('9', null, '1', null, null, null, '商业第三者责任险', '1000000', null, '0', '8b8202e3606e4a24abc8611678c70eff', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('10', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', '8b8202e3606e4a24abc8611678c70eff', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('11', null, '1', '2019-06-16 16:48:45', null, null, '交强险', '1', null, '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('12', null, '1', '2019-06-16 16:48:45', null, null, '机动车损失保险', '181702', '1736.06', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('13', null, '1', '2019-06-16 16:48:45', null, null, '机动车损失险_不计免', '1', '260.41', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('14', null, '1', '2019-06-16 16:48:45', null, null, '商业第三者责任险', '1000000', '1139.02', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('15', null, '1', '2019-06-16 16:48:45', null, null, '商业第三者责任险_不计免', '1', '170.85', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('16', null, '1', '2019-06-16 16:48:45', null, null, '全车盗抢险', '181702', '478.56', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('17', null, '1', '2019-06-16 16:48:45', null, null, '全车盗抢险_不计免', '1', '95.71', '1', '20190616164817198448', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('18', null, '1', null, null, null, '交强险', '1', null, '0', 'aaaec98a750e434e99aab0fe0841ffac', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('19', null, '1', null, null, null, '机动车损失保险', '399800', null, '0', 'aaaec98a750e434e99aab0fe0841ffac', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('20', null, '1', null, null, null, '机动车损失险_不计免', '1', null, '0', 'aaaec98a750e434e99aab0fe0841ffac', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('21', null, '1', null, null, null, '商业第三者责任险', '500000', null, '0', 'aaaec98a750e434e99aab0fe0841ffac', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('22', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'aaaec98a750e434e99aab0fe0841ffac', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('23', null, '1', '2019-06-16 16:50:45', null, null, '交强险', '1', null, '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('24', null, '1', '2019-06-16 16:50:45', null, null, '机动车损失保险', '374534', '3577.08', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('25', null, '1', '2019-06-16 16:50:45', null, null, '机动车损失险_不计免', '1', '536.56', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('26', null, '1', '2019-06-16 16:50:45', null, null, '商业第三者责任险', '1000000', '1139.07', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('27', null, '1', '2019-06-16 16:50:45', null, null, '商业第三者责任险_不计免', '1', '170.86', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('28', null, '1', '2019-06-16 16:50:45', null, null, '全车盗抢险', '374534', '917.46', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('29', null, '1', '2019-06-16 16:50:45', null, null, '全车盗抢险_不计免', '1', '183.49', '1', '20190616165032914150', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('30', null, '1', '2019-06-16 16:50:56', null, null, '交强险', '1', null, '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('31', null, '1', '2019-06-16 16:50:56', null, null, '机动车损失保险', '374534', '3576.91', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('32', null, '1', '2019-06-16 16:50:56', null, null, '机动车损失险_不计免', '1', '536.54', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('33', null, '1', '2019-06-16 16:50:56', null, null, '商业第三者责任险', '1000000', '1139.02', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('34', null, '1', '2019-06-16 16:50:56', null, null, '商业第三者责任险_不计免', '1', '170.85', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('35', null, '1', '2019-06-16 16:50:56', null, null, '全车盗抢险', '374534', '917.42', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('36', null, '1', '2019-06-16 16:50:56', null, null, '全车盗抢险_不计免', '1', '183.48', '1', '20190616165032885959', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('37', null, '1', null, null, null, '交强险', '1', null, '0', 'a45f7792ce854870b8cb5fc3c0f0abe5', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('38', null, '1', null, null, null, '机动车损失保险', '225001', null, '0', 'a45f7792ce854870b8cb5fc3c0f0abe5', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('39', null, '1', null, null, null, '机动车损失险_不计免', '1', null, '0', 'a45f7792ce854870b8cb5fc3c0f0abe5', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('40', null, '1', null, null, null, '商业第三者责任险', '2000000', null, '0', 'a45f7792ce854870b8cb5fc3c0f0abe5', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('41', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'a45f7792ce854870b8cb5fc3c0f0abe5', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('42', null, '1', '2019-06-16 16:53:40', null, null, '交强险', '1', null, '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('43', null, '1', '2019-06-16 16:53:40', null, null, '机动车损失保险', '207656', '1813.95', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('44', null, '1', '2019-06-16 16:53:40', null, null, '机动车损失险_不计免', '1', '272.09', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('45', null, '1', '2019-06-16 16:53:40', null, null, '商业第三者责任险', '1000000', '938.12', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('46', null, '1', '2019-06-16 16:53:40', null, null, '商业第三者责任险_不计免', '1', '140.72', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('47', null, '1', '2019-06-16 16:53:40', null, null, '全车盗抢险', '207656', '442.80', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('48', null, '1', '2019-06-16 16:53:40', null, null, '全车盗抢险_不计免', '1', '88.56', '1', '20190616165328865890', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('49', null, '1', '2019-06-16 16:53:42', null, null, '交强险', '1', null, '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('50', null, '1', '2019-06-16 16:53:42', null, null, '机动车损失保险', '207656', '1813.95', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('51', null, '1', '2019-06-16 16:53:42', null, null, '机动车损失险_不计免', '1', '272.09', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('52', null, '1', '2019-06-16 16:53:42', null, null, '商业第三者责任险', '1000000', '938.12', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('53', null, '1', '2019-06-16 16:53:42', null, null, '商业第三者责任险_不计免', '1', '140.72', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('54', null, '1', '2019-06-16 16:53:42', null, null, '全车盗抢险', '207656', '442.80', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('55', null, '1', '2019-06-16 16:53:42', null, null, '全车盗抢险_不计免', '1', '88.56', '1', '20190616165328839886', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('56', null, '1', '2019-06-16 16:53:52', null, null, '交强险', '1', null, '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('57', null, '1', '2019-06-16 16:53:52', null, null, '机动车损失保险', '207656', '1813.75', '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('58', null, '1', '2019-06-16 16:53:52', null, null, '机动车损失险_不计免', '1', '272.06', '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('59', null, '1', '2019-06-16 16:53:52', null, null, '商业第三者责任险', '1000000', '938.02', '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('60', null, '1', '2019-06-16 16:53:52', null, null, '商业第三者责任险_不计免', '1', '140.70', '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('61', null, '1', '2019-06-16 16:53:52', null, null, '全车盗抢险', '207656', '442.75', '1', '20190616165328841562', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('62', null, '1', '2019-06-16 16:53:52', null, null, '全车盗抢险_不计免', '1', '88.55', '1', '20190616165328841562', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('77', null, '1', null, null, null, '交强险', '1', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('78', null, '1', null, null, null, '商业第三者责任险', '500000', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('79', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('80', null, '20190617132506123299', null, null, null, '交强险', '1', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('81', null, '20190617132506123299', null, null, null, '商业第三者责任险', '500000', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('82', null, '20190617132506123299', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('83', null, '20190617132506123299', null, null, null, '交强险', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('84', null, '20190617132506123299', null, null, null, '机动车损失保险', '57815', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('85', null, '20190617132506123299', null, null, null, '机动车损失险_不计免', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('86', null, '20190617132506123299', null, null, null, '商业第三者责任险', '1000000', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
+INSERT INTO `insurance_type_info` VALUES ('87', null, '20190617132506123299', null, null, null, '商业第三者责任险_不计免', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
 
 -- ----------------------------
 -- Table structure for insured_info
@@ -812,10 +817,9 @@ CREATE TABLE `insured_info` (
 -- ----------------------------
 -- Records of insured_info
 -- ----------------------------
-INSERT INTO `insured_info` VALUES ('8823941a8146421daa71a6a43773c6b0', '1', '2019-06-16 16:45:57', null, null, null, null, null, '2019-06-30', '2019-06-30', '2019-07-01', '2019-06-30', null, null, '太平洋保险', '1', '李奎', '420684198408265059', '1', '李奎', '420684198408265059', '1', '李奎', '420684198408265059', '1', null, null, null, null, null, null, 'eb18b18b6c99484b8a4058b9cc35adf0', '0');
-INSERT INTO `insured_info` VALUES ('8b8202e3606e4a24abc8611678c70eff', '1', '2019-06-16 16:48:11', null, null, null, null, null, '2019-07-01', '2019-07-01', '2019-07-02', '2019-07-02', null, null, '太平洋保险', '1', '狄平', '320106197401252816', '1', '狄平', '320106197401252816', '1', '狄平', '320106197401252816', '1', null, null, null, null, null, null, 'c349ba55b5e642e9a6954836f74b02b8', '0');
-INSERT INTO `insured_info` VALUES ('a45f7792ce854870b8cb5fc3c0f0abe5', '1', '2019-06-16 16:53:13', null, null, null, null, null, '2019-07-04', '2019-07-05', '2019-07-05', '2019-07-06', null, null, '平安保险', '2', '邬海涛', '320923198306302138', '1', '邬海涛', '320923198306302138', '1', '邬海涛', '320923198306302138', '1', null, null, null, null, null, null, 'cd9f8b306b31452ca8811c6fe6a08414', '0');
-INSERT INTO `insured_info` VALUES ('aaaec98a750e434e99aab0fe0841ffac', '1', '2019-06-16 16:50:28', null, null, null, null, null, '2019-06-29', '2019-07-02', '2019-06-30', '2019-07-02', null, null, '人民保险', '4', '方方', '320102198307090418', '1', '方方', '320102198307090418', '1', '方方', '320102198307090418', '1', null, null, null, null, null, null, 'c3dd2a7e46894ffab11c7dc0a9b67c95', '0');
+INSERT INTO `insured_info` VALUES ('4a3ff3507aab41e8939a81a21d767ca9', '20190617132506123299', '2019-07-16 10:29:26', null, '2019-07-16 14:11:07', null, null, null, '2019-09-23', '2019-08-23', '2019-08-24', '2019-08-24', null, null, '人民保险', '4', '袁茂珍', '320123199105083021', '1', '袁茂珍', '320123199105083021', '1', '袁茂珍', '320123199105083021', '1', null, null, null, null, null, null, 'dc83e1fbc3a642429978ac6484e63355', '0');
+INSERT INTO `insured_info` VALUES ('a2339ac85d2d486490db9992a2fc039d', '1', '2019-07-16 10:05:16', null, '2019-07-16 14:11:03', null, null, null, '2019-08-21', '2019-08-21', '2019-08-22', '2019-08-21', null, null, '人民保险', '4', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', null, null, null, null, null, null, 'ffb013bf8d084512824503cfbfcb4ac7', '0');
+INSERT INTO `insured_info` VALUES ('dcaa4d63b8b045598a20f5d76450e135', '20190617132506123299', '2019-07-16 10:16:53', null, '2019-07-16 11:02:10', null, null, null, '2019-02-21', '2019-08-21', '2019-02-22', '2019-02-21', null, null, '人民保险', '4', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', null, null, null, null, null, null, '3928164b301a430ea33c8ad593f3cbcb', '0');
 
 -- ----------------------------
 -- Table structure for menu
@@ -899,7 +903,7 @@ CREATE TABLE `order_info` (
 -- ----------------------------
 -- Records of order_info
 -- ----------------------------
-INSERT INTO `order_info` VALUES ('20190616165802896991', '2019-06-16 16:58:04', null, '0', '2', '20190616165328865890', '3', '4816.2400', 'cd9f8b306b31452ca8811c6fe6a08414', null, null, null, null, '1', null, null, null, '0');
+INSERT INTO `order_info` VALUES ('20190714144626338975', '2019-07-14 14:46:26', null, '0', '2', '20190711134234285326', '3', '2390.3900', '13087baa5c8248c1b12e81ec0f347ded', null, null, null, null, '1', null, null, null, '0');
 
 -- ----------------------------
 -- Table structure for pay_account
@@ -907,18 +911,17 @@ INSERT INTO `order_info` VALUES ('20190616165802896991', '2019-06-16 16:58:04', 
 DROP TABLE IF EXISTS `pay_account`;
 CREATE TABLE `pay_account` (
   `id` int(20) NOT NULL AUTO_INCREMENT,
-  `account_id` varchar(20) DEFAULT NULL,
+  `account_id` varchar(50) DEFAULT NULL,
   `type` int(1) DEFAULT NULL COMMENT '0支付宝 1微信 2银行卡',
   `amount` varchar(50) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of pay_account
 -- ----------------------------
-INSERT INTO `pay_account` VALUES ('1', '1', '0', '123', '123', '2019-06-16 17:11:06');
 
 -- ----------------------------
 -- Table structure for policy_payment_info
@@ -1011,19 +1014,17 @@ CREATE TABLE `quote_info` (
 -- ----------------------------
 -- Records of quote_info
 -- ----------------------------
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:42:44', null, null, '20190616164244940274', '20190616163023135881', '0', '报价失败：交强险重复:交强险重复投保提示 :【发动机号】:171240978。 【号牌号码】:苏A0Q1Q4”的保单发生重复投保，与其重复投保的其它公司的保单信息如下：车架号 LSGBL5348HF087266 ', '1', '-1', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:42:44', null, null, '20190616164244966478', '20190616163023135881', '0', '报价失败：1.商业险重复投保！\r\n2.重复投保的保险公司：\r\n3.投保确认码：\r\n4.保单号：\r\n5.车牌号：\r\n6.号牌种类：\r\n7.车架号：LSGBL5348HF087266\r\n 8.发动机号：171240978\r\n 9.起保日期：\r\n10.终保日期：\r\n11.签单日期：\r\n12.已投保子险为：', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '太平洋保险', '1', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:42:44', null, null, '20190616164244978462', '20190616163023135881', '0', '报价失败：双险都重复投保:车牌号“苏A0Q1Q4”的保单发生重复投保，与其重复投保的其它公司的保单信息如下：车架号 LSGBL5348HF087266;发动机号 171240978。\r\n商业险重复投保！\r\n车辆识别代号: LSGBL5348HF087266\r\n发动机号:171240978\r\n投保险别信息:\r\n平台未返回', '3', '-1', '3', null, null, null, null, null, null, null, null, null, null, null, null, null, '人民保险', '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:46:34', null, null, '20190616164634724740', 'eb18b18b6c99484b8a4058b9cc35adf0', '0', '报价失败：交强险重复:交强险重复投保提示 :【发动机号】:BT0609。 【号牌号码】:苏A0M0C4”的保单发生重复投保，与其重复投保的其它公司的保单信息如下：车架号 LSVWY4183H2108608 ', '1', '-1', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:46:34', null, null, '20190616164634748801', 'eb18b18b6c99484b8a4058b9cc35adf0', '0', '报价失败：1.商业险重复投保！\r\n2.重复投保的保险公司：\r\n3.投保确认码：\r\n4.保单号：\r\n5.车牌号：\r\n6.号牌种类：\r\n7.车架号：LSVWY4183H2108608\r\n 8.发动机号：BT0609\r\n 9.起保日期：\r\n10.终保日期：\r\n11.签单日期：\r\n12.已投保子险为：\r\n机动车第三者责任保险\r\n不计免赔率险（机动车损失保险）\r\n不计免赔率险（机动车第三者责任保险）\r\n机动车损失保险', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '太平洋保险', '1', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:46:34', null, null, '20190616164634763548', 'eb18b18b6c99484b8a4058b9cc35adf0', '0', '报价失败：双险都重复投保:车牌号“苏A0M0C4”的保单发生重复投保，与其重复投保的其它公司的保单信息如下：车架号 LSVWY4183H2108608;发动机号 BT0609。\r\n商业险重复投保！\r\n车辆识别代号: LSVWY4183H2108608\r\n发动机号:BT0609\r\n投保险别信息:\r\n平台未返回', '3', '-1', '3', null, null, null, null, null, null, null, null, null, null, null, null, null, '人民保险', '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:48:17', null, '2019-06-16 16:48:52', '20190616164817198448', 'c349ba55b5e642e9a6954836f74b02b8', '1', '报价成功', '0', '0', '提交核保失败!交强险：[核保流程]交强险重复投保,已经被占单,交强险投保单号:ANAJA99CTP19A052900S 投保单状态:暂存 投保单系统来源代码:移动承保 经办人姓名:贾欢欢 经办人部门:江宁支公司 出单员姓名:贾欢欢 出单员部门:江宁支公司 保单起保日期：2019-07-02 00 保单终保日期：2020-07-02 00\r\n商业险：[核保流程]商业险重复投保,已经被占单,商业险投保单号:ANAJA99Y1419A040993S 投保单状态:暂存 投保单系统来源代码:移动承保 经办人姓名:贾欢欢 经办人部门:江宁支公司 出单员姓名:贾欢欢 出单员部门:江宁支公司 保单起保日期：2019-07-02 00 保单终保日期：2020-07-02 00', null, '0.85', '0.75', '0.85', '1.0', null, null, null, '吉普GFA7140ETCA轿车//1.368/5/0.00/195800.0/2018', '3880.61', '855.00', '300.00', '5035.61', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-07-02', '2019-07-02', null, null, null, '3880.61', null, null, null, null, null, null, null, null, '220577131', '529.97', '0.54187500', null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:50:32', null, '2019-06-16 16:52:27', '20190616165032885959', 'c3dd2a7e46894ffab11c7dc0a9b67c95', '1', '报价成功', '0', '0', '提交核保失败!交强险：[核保流程]交强险重复投保,已经被占单,交强险投保单号:ANAJ00LCTP19F061752F 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:耿雪琴 经办人部门:代理部 出单员姓名:南京新达新保险 出单员部门:代理部 保单起保日期：2019-07-02 11 保单终保日期：2020-07-02 11\r\n商业险：[核保流程]商业险重复投保,已经被占单,商业险投保单号:ANAJ00LY1419F067766Y 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:耿雪琴 经办人部门:代理部 出单员姓名:南京新达新保险 出单员部门:代理部 保单起保日期：2019-06-30 00 保单终保日期：2020-06-30 00', null, '0.85', '0.75', '0.85', '1.0', null, null, null, '梅赛德斯-奔驰BJ6466G4E多用途乘用车//1.991/5/0.00/401000.0/2018', '6524.22', '855.00', '360.00', '7739.22', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-07-02', '2019-06-30', null, null, null, '6524.22', null, null, null, null, null, null, null, null, '220577769', '893.87', '0.54187500', null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:50:32', null, '2019-06-16 16:52:39', '20190616165032914150', 'c3dd2a7e46894ffab11c7dc0a9b67c95', '1', '报价成功', '0', '3', '商业险：TDAA201932010001808807没有在人保系统中获取到核保意见或没有核保意见	交强险：TDZA201932010001848485没有在人保系统中获取到核保意见或没有核保意见	', null, '0.85', '0.7500346', '0.85', '1.0', null, null, null, '梅赛德斯-奔驰BJ6466G4E多用途乘用车/梅赛德斯-奔驰BJ6466G4E多用途乘用车/1.991/5/0.00/401000.0/', '6524.52', '855.00', '360.00', '7739.52', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-07-02', '2019-06-30', null, null, null, '6524.52', null, null, null, null, null, null, null, null, '220577769', '893.91', '0.54190000', null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:53:28', null, null, '20190616165328839886', 'cd9f8b306b31452ca8811c6fe6a08414', '1', '报价成功', '0', '-1', '0', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '别克SGM6475DAX3多用途乘用车/别克SGM6475DAX3多用途乘用车1.998手自一体 四驱领先型 国Ⅴ/1.998/5/0.00/240900.0/2016', '3696.24', '760.00', '360.00', '4816.24', '平安保险', '2', null, null, '0', null, null, null, null, null, '2019-07-06', '2019-07-05', null, null, null, '3696.24', null, null, null, null, null, null, null, null, '220578635', '504.37', '0.44625000', null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:53:28', null, null, '20190616165328841562', 'cd9f8b306b31452ca8811c6fe6a08414', '1', '报价成功', '0', '-1', '0', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '别克SGM6475DAX3多用途乘用车//1.998/5/0.00/240900.0/2017', '3695.83', '760.00', '360.00', '4815.83', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-07-06', '2019-07-05', null, null, null, '3695.83', null, null, null, null, null, null, null, null, '220578635', '504.31', '0.44625000', null, null);
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 16:53:28', null, '2019-06-16 16:58:04', '20190616165328865890', 'cd9f8b306b31452ca8811c6fe6a08414', '1', '报价成功', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201转入业务承保交强险的自动核保通过	', '0', '0.7', '0.75', '0.85', '1.0', null, null, null, '别克SGM6475DAX3多用途乘用车/别克SGM6475DAX3多用途乘用车/1.998/5/0.00/240900.0/', '3696.24', '760.00', '360.00', '4816.24', '人民保险', '4', 'TDAA201932010001808815', 'TDZA201932010001848493', '0', null, 'http://pay.epicc.com.cn/s3-modules-gateway/wx/getWechatAuthUrl.action?rdseq=JFCD-JS201906161658000361123&sign=08378eb36749c1ca649c9e65fac11d12', '2019-06-16 16:57:35', null, null, '2019-07-06', '2019-07-05', null, null, null, '3696.24', null, null, 'JFCD-JS201906161658000361123', null, 'JFCD-JS201906161658000361123', '3201190616901123', '2019-06-25 23:59:59', '获取成功！', '220578635', '504.37', '0.44620000', '0', '3251');
-INSERT INTO `quote_info` VALUES (null, '1', '2019-06-16 17:11:32', null, '2019-06-16 17:12:04', '20190616165328865891', 'cd9f8b306b31452ca8811c6fe6a08414', '1', null, null, '-1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-11 13:32:12', null, null, '20190711133212452214', '13087baa5c8248c1b12e81ec0f347ded', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：40, 微面旧车三者转保最高50万】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：40, 微面旧车三者转保最高50万】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-11 13:32:12', null, '2019-07-11 13:32:26', '20190711133212518214', '13087baa5c8248c1b12e81ec0f347ded', '1', '报价成功', '0', '0', '【核保占单】交强险：[核保流程]交强险重复投保,已经被占单,交强险投保单号:ANAJV23CTP19F028015N 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-11 00 保单终保日期：2020-08-11 00\r\n商业险：[核保流程]商业险重复投保,已经被占单,商业险投保单号:ANAJV23Y1419F028016V 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-11 00 保单终保日期：2020-08-11 00', null, '0.6', '0.75', '0.85', '0.9', null, null, null, '长安SC6449C客车//1.298/7/0.00/41900.0/', '1320.19', '770.00', '300.00', '2390.19', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-11', '2019-08-11', null, null, null, '1320.19', null, null, null, null, null, null, null, null, '236714255', '178.38', '0.34425000', null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-11 13:32:12', null, '2019-07-11 13:32:16', '20190711133212532173', '13087baa5c8248c1b12e81ec0f347ded', '1', '报价成功', '0', '2', '未到期未核保', null, '0.6', '0.75', '0.85', '0.9', null, null, null, '长安SC6449C客车/长安SC6449C客车/1.298/7/0.00/41900.0/', '1320.39', '770.00', '300.00', '2390.39', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-11', '2019-08-11', null, null, null, '1320.39', null, null, null, null, null, null, null, null, '236714255', '178.41', '0.34420000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-11 13:35:38', null, '2019-07-11 13:37:16', '20190711133538757582', '13087baa5c8248c1b12e81ec0f347ded', '1', '报价成功', '0', '0', '手续费拆分总和与实际发生的手续费不一致，请与管理员联系！', null, '0.6', '0.75', '0.85', '0.9', null, null, null, '长安SC6449C客车/长安SC6449C客车/1.298/7/0.00/41900.0/', '1320.39', '770.00', '300.00', '2390.39', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-11', '2019-08-11', null, null, null, '1320.39', null, null, null, null, null, null, null, null, '236714255', '178.41', '0.34420000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-11 13:42:28', null, null, '20190711134228306373', '13087baa5c8248c1b12e81ec0f347ded', '1', '报价成功', '0', '-1', '0', null, '0.6', '0.75', '0.85', '0.9', null, null, null, '长安SC6449C客车/长安SC6449C客车/1.2980/7/0.00/41900.0/', '1320.39', '770.00', '300.00', '2390.39', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-11', '2019-08-11', null, null, null, '1320.39', null, null, null, null, null, null, null, null, '236714255', '178.41', '0.34420000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-11 13:42:34', null, '2019-07-14 14:46:26', '20190711134234285326', '13087baa5c8248c1b12e81ec0f347ded', '1', '报价成功', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.6', '0.75', '0.85', '0.9', null, null, null, '长安SC6449C客车/长安SC6449C客车/1.2980/7/0.00/41900.0/', '1320.39', '770.00', '300.00', '2390.39', '人民保险', '4', 'TDAA201932010002099068', 'TDZA201932010002142569', '0', null, 'http://pay.epicc.com.cn/s3-modules-gateway/wx/getWechatAuthUrl.action?rdseq=JFCD-JS201907141446365210862&sign=726b7b87d832364bfb80216fca5c6afd', '2019-07-14 14:46:01', null, null, '2019-08-11', '2019-08-11', null, null, null, '1320.39', null, null, 'JFCD-JS201907141446365210862', null, 'JFCD-JS201907141446365210862', '3201190714900862', '2019-07-20 23:59:59', '获取成功！', '236714255', '178.41', '0.34420000', '0', '3251');
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-14 14:39:16', null, null, '20190714143916619166', '0e7813b547094174802f3b4cd8c9742d', '0', '报价失败：双险都重复投保:交强险重复投保 !车牌号“苏A5L7W6”的保单发生重复投保，与其重复投保的本公司的保单信息如下：投保确认码 02PICC320018001534124940946651;保单号 PDZA201832010000740724;起保日期 2018-08-24 00;终保日期 2019-08-24 00;车牌号 苏A5L7W6;号牌种类 02;车架号 LB37724Z6GX081074;发动机号 G8XS03494。\r\n商业险重复投保！\r\n重复投保保险公司:PICC\r\n重复投保保单号:PDAA201832010000675079\r\n起保日期: 2018-08-24\r\n终保日期: 2019-08-24\r\n签单日期:2018-08-09\r\n车辆识别代号: LB37724Z6GX081074\r\n发动机号:G8XS03494\r\n投保险别信息:\r\n(1) 机动车损失保险\r\n(2) 第三者责任保险\r\n(3) 不计免赔险（车损险）\r\n(4) 不计免赔险（三者险）', '3', '-1', '3', null, null, null, null, null, null, null, null, null, null, null, null, null, '人民保险', '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-14 14:43:31', null, '2019-07-14 14:43:35', '20190714144331554953', '0d7df65948a04146b3d25900663bfce2', '1', '报价成功', '0', '2', '未到期未核保', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.00/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44620000', null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, null, '20190715094510599955', '0d7df65948a04146b3d25900663bfce2', '0', '报价失败：客户端无法连接', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, '2019-07-15 09:46:03', '20190715094510621716', '0d7df65948a04146b3d25900663bfce2', '1', '系统自动调整成非过户车报价', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.00/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', 'TDAA201932010002123946', 'TDZA201932010002167433', '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44620000', '0', '3251');
+INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, '2019-07-15 09:45:28', '20190715094510626434', '0d7df65948a04146b3d25900663bfce2', '1', '报价成功', '0', '3', '【人工审核中】交强险：标准件,核保通过\r\n商业险：R2:RuleO1344:总费率折扣:家庭自用车,转保导致拒保不可申诉', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁2.0L EX/1.997/5/0.00/190800.0/2010', '2829.26', '760.00', '360.00', '3949.26', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.26', null, null, null, null, null, null, null, null, '238476827', '377.50', '0.44625000', null, null);
 
 -- ----------------------------
 -- Table structure for role
@@ -1039,7 +1040,7 @@ CREATE TABLE `role` (
   `level` int(11) DEFAULT NULL,
   `is_enable_del` int(11) DEFAULT '0' COMMENT '是否可以删除，默认0可删除1不可删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of role
@@ -1048,6 +1049,101 @@ INSERT INTO `role` VALUES ('1', '2019-06-16 11:15:19', '超级管理员', 'SADMI
 INSERT INTO `role` VALUES ('3', '2019-06-16 11:15:42', '代理用户', 'AGENT', '用于测试菜单与权限', '本级', '3', '0');
 INSERT INTO `role` VALUES ('4', '2019-06-18 13:33:06', '爬取', 'CRAWLING', '爬取数据', null, '3', '0');
 INSERT INTO `role` VALUES ('12', '2019-06-16 11:15:42', '普通管理员', 'CADMIN', '普通管理员级别为2，使用该角色新增用户时只能赋予比普通管理员级别低的角色', '全部', '2', '0');
+
+-- ----------------------------
+-- Table structure for roles_menus
+-- ----------------------------
+DROP TABLE IF EXISTS `roles_menus`;
+CREATE TABLE `roles_menus` (
+  `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
+  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE,
+  CONSTRAINT `FKcngg2qadojhi3a651a5adkvbq` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`),
+  CONSTRAINT `FKq1knxf8ykt26we8k331naabjx` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of roles_menus
+-- ----------------------------
+INSERT INTO `roles_menus` VALUES ('1', '1');
+INSERT INTO `roles_menus` VALUES ('2', '1');
+INSERT INTO `roles_menus` VALUES ('3', '1');
+INSERT INTO `roles_menus` VALUES ('4', '1');
+INSERT INTO `roles_menus` VALUES ('5', '1');
+INSERT INTO `roles_menus` VALUES ('6', '1');
+INSERT INTO `roles_menus` VALUES ('7', '1');
+INSERT INTO `roles_menus` VALUES ('8', '1');
+INSERT INTO `roles_menus` VALUES ('9', '1');
+INSERT INTO `roles_menus` VALUES ('10', '1');
+INSERT INTO `roles_menus` VALUES ('11', '1');
+INSERT INTO `roles_menus` VALUES ('12', '1');
+INSERT INTO `roles_menus` VALUES ('14', '1');
+INSERT INTO `roles_menus` VALUES ('15', '1');
+INSERT INTO `roles_menus` VALUES ('16', '1');
+INSERT INTO `roles_menus` VALUES ('18', '1');
+INSERT INTO `roles_menus` VALUES ('19', '1');
+INSERT INTO `roles_menus` VALUES ('28', '1');
+INSERT INTO `roles_menus` VALUES ('30', '1');
+INSERT INTO `roles_menus` VALUES ('32', '1');
+INSERT INTO `roles_menus` VALUES ('33', '1');
+INSERT INTO `roles_menus` VALUES ('34', '1');
+INSERT INTO `roles_menus` VALUES ('35', '1');
+INSERT INTO `roles_menus` VALUES ('36', '1');
+INSERT INTO `roles_menus` VALUES ('37', '1');
+INSERT INTO `roles_menus` VALUES ('38', '1');
+INSERT INTO `roles_menus` VALUES ('39', '1');
+INSERT INTO `roles_menus` VALUES ('44', '1');
+INSERT INTO `roles_menus` VALUES ('1', '2');
+INSERT INTO `roles_menus` VALUES ('2', '2');
+INSERT INTO `roles_menus` VALUES ('3', '2');
+INSERT INTO `roles_menus` VALUES ('4', '2');
+INSERT INTO `roles_menus` VALUES ('5', '2');
+INSERT INTO `roles_menus` VALUES ('6', '2');
+INSERT INTO `roles_menus` VALUES ('7', '2');
+INSERT INTO `roles_menus` VALUES ('8', '2');
+INSERT INTO `roles_menus` VALUES ('9', '2');
+INSERT INTO `roles_menus` VALUES ('10', '2');
+INSERT INTO `roles_menus` VALUES ('11', '2');
+INSERT INTO `roles_menus` VALUES ('12', '2');
+INSERT INTO `roles_menus` VALUES ('14', '2');
+INSERT INTO `roles_menus` VALUES ('15', '2');
+INSERT INTO `roles_menus` VALUES ('16', '2');
+INSERT INTO `roles_menus` VALUES ('18', '2');
+INSERT INTO `roles_menus` VALUES ('19', '2');
+INSERT INTO `roles_menus` VALUES ('24', '2');
+INSERT INTO `roles_menus` VALUES ('27', '2');
+INSERT INTO `roles_menus` VALUES ('28', '2');
+INSERT INTO `roles_menus` VALUES ('30', '2');
+INSERT INTO `roles_menus` VALUES ('32', '2');
+INSERT INTO `roles_menus` VALUES ('33', '2');
+INSERT INTO `roles_menus` VALUES ('34', '2');
+INSERT INTO `roles_menus` VALUES ('35', '2');
+INSERT INTO `roles_menus` VALUES ('36', '2');
+INSERT INTO `roles_menus` VALUES ('37', '2');
+INSERT INTO `roles_menus` VALUES ('38', '2');
+INSERT INTO `roles_menus` VALUES ('39', '2');
+INSERT INTO `roles_menus` VALUES ('1', '4');
+INSERT INTO `roles_menus` VALUES ('2', '4');
+
+-- ----------------------------
+-- Table structure for role_action_info
+-- ----------------------------
+DROP TABLE IF EXISTS `role_action_info`;
+CREATE TABLE `role_action_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action` varchar(32) DEFAULT NULL COMMENT '用于区分权限,如果使用id,id可能会改变,来自action_info ',
+  `account_id` varchar(64) DEFAULT NULL COMMENT '账号id',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `create_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+  `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of role_action_info
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for role_menu
@@ -1270,18 +1366,17 @@ CREATE TABLE `third_insurance_account_info` (
   `status` varchar(4) DEFAULT '1' COMMENT '状态,是否可用默认启用0废弃',
   `enable_start_date` varchar(20) DEFAULT NULL COMMENT '有效期起止日期',
   `enable_end_date` varchar(20) DEFAULT NULL COMMENT '有效期截止日期',
-  `level` varchar(2) DEFAULT '1' COMMENT '0总部账号1子账号',
+  `level` varchar(2) DEFAULT '0' COMMENT '0总部账号1子账号',
   PRIMARY KEY (`third_insurance_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='第三方保险公司账号,用于续保报价 ';
 
 -- ----------------------------
 -- Records of third_insurance_account_info
 -- ----------------------------
-INSERT INTO `third_insurance_account_info` VALUES ('1111', null, 'ssss', null, '2019-06-18 11:26:55', '2019-06-18 13:27:22', null, null, '0', '1', null, null, '1', null, null, '0');
-INSERT INTO `third_insurance_account_info` VALUES ('20190514151438427127', null, null, null, '2019-05-14 15:14:55', '2019-06-18 13:27:19', null, '1', '1', '1', 'http://47.103.61.241', '5000', '1', null, null, '0');
-INSERT INTO `third_insurance_account_info` VALUES ('20190514151622163223', null, null, null, '2019-05-14 15:16:38', '2019-06-18 13:27:18', null, '1', '1', '4', 'http://111.231.91.188', '4050', '1', null, null, '0');
-INSERT INTO `third_insurance_account_info` VALUES ('20190514151745194517', null, 'JSHSBXDL-00002', 'NJXXKJ147!', '2019-05-14 15:18:01', '2019-06-18 13:27:17', null, '1', '1', '2', 'http://47.103.61.241', '4000', '1', null, null, '0');
-INSERT INTO `third_insurance_account_info` VALUES ('20190618170822288535', null, null, null, '2019-06-18 17:09:38', null, null, null, '0', '0', null, 'sss', '1', null, null, '1');
+INSERT INTO `third_insurance_account_info` VALUES ('20190624153749136152', '9', 'HAICzl01', 'ZLzl123', '2019-06-24 15:38:45', '2019-06-25 15:23:04', '', '9', '0', '0', '', '', '1', '', '', '0');
+INSERT INTO `third_insurance_account_info` VALUES ('20190624153749136155', '9', 'HAICzl01', 'ZLzl123', '2019-06-24 15:38:45', '2019-06-25 15:23:04', '', '11', '0', '0', '', '', '1', '', '', '0');
+INSERT INTO `third_insurance_account_info` VALUES ('4ababbb69aa94d3286a76a4d6f63c1a3', '9', '12345622', '12345622', '2019-07-17 13:17:21', null, null, '9', '0', '0', null, null, 'NaN', null, null, '0');
+INSERT INTO `third_insurance_account_info` VALUES ('dedca9babecb4678b247c0531954054b', '9', '132123', '123123', '2019-07-17 13:24:01', null, null, '9', '0', '0', null, null, '1', null, null, '0');
 
 -- ----------------------------
 -- Table structure for t_menu
@@ -1388,29 +1483,46 @@ CREATE TABLE `upload_file_info` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for users_roles
+-- ----------------------------
+DROP TABLE IF EXISTS `users_roles`;
+CREATE TABLE `users_roles` (
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
+  KEY `FKq4eq273l04bpu4efj0jd0jb98` (`role_id`) USING BTREE,
+  CONSTRAINT `users_roles_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`),
+  CONSTRAINT `users_roles_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of users_roles
+-- ----------------------------
+INSERT INTO `users_roles` VALUES ('1', '1');
+INSERT INTO `users_roles` VALUES ('3', '2');
+INSERT INTO `users_roles` VALUES ('5', '4');
+
+-- ----------------------------
 -- Table structure for verification
 -- ----------------------------
 DROP TABLE IF EXISTS `verification`;
 CREATE TABLE `verification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `money` varchar(10) DEFAULT NULL COMMENT '金额',
-  `status` varchar(2) DEFAULT '0' COMMENT '审核状态0待审核1通过2驳回',
+  `status` varchar(2) DEFAULT '0' COMMENT '审核状态0待审核1通过2驳回3已打款',
   `pay_account_id` int(11) DEFAULT NULL COMMENT '收款账号',
   `description` varchar(255) DEFAULT NULL COMMENT '反馈信息',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `verification_time` timestamp NULL DEFAULT NULL COMMENT '审核日期',
   `create_by` varchar(64) DEFAULT NULL COMMENT '提交人',
   `verification_by` varchar(64) DEFAULT NULL COMMENT '审核人',
+  `is_pay` varchar(10) DEFAULT '0' COMMENT '是否打款1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of verification
 -- ----------------------------
-INSERT INTO `verification` VALUES ('1', '321', '1', '1', null, '2019-06-16 17:11:21', '2019-06-18 08:52:09', '1', '');
-INSERT INTO `verification` VALUES ('2', '2560', '1', '1', null, '2019-06-16 17:14:59', '2019-06-18 08:52:08', '1', '');
-INSERT INTO `verification` VALUES ('3', '123', '1', '1', null, '2019-06-16 17:15:06', '2019-06-18 08:52:05', '1', '');
-INSERT INTO `verification` VALUES ('4', '123', '1', '1', null, '2019-06-16 17:15:09', '2019-06-18 08:52:04', '1', '');
 
 -- ----------------------------
 -- Procedure structure for createChildListByPro
@@ -1541,48 +1653,5 @@ DECLARE results VARCHAR(32);
 SET results=DATE_ADD(DATE_ADD(DATE_ADD(NOW(),INTERVAL enableDays DAY) ,INTERVAL enableMonths MONTH),INTERVAL enableYears YEAR);
  return (results);
 END
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_account_role_info_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_account_role_info_trigger` BEFORE UPDATE ON `account_role_info` FOR EACH ROW SET NEW.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_action_column_info_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_action_column_info_trigger` BEFORE UPDATE ON `action_column_info` FOR EACH ROW SET NEW.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_action_info_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_action_info_trigger` BEFORE UPDATE ON `action_info` FOR EACH ROW SET NEW.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_commission_percentage_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_commission_percentage_trigger` BEFORE UPDATE ON `commission_percentage` FOR EACH ROW SET 
-
-NEW.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_draw_cash_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_draw_cash_trigger` BEFORE UPDATE ON `draw_cash` FOR EACH ROW SET NEW.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_insured_info_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `update_insured_info_trigger` BEFORE UPDATE ON `insured_info` FOR EACH ROW SET NEW.`update_time` = NOW()
-;
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `third_insurance_account_date_info_update_trigger`;
-DELIMITER ;;
-CREATE TRIGGER `third_insurance_account_date_info_update_trigger` BEFORE UPDATE ON `third_insurance_account_date_info` FOR EACH ROW SET new.update_time=NOW()
-;;
-DELIMITER ;
-DROP TRIGGER IF EXISTS `update_third_insurance_account_info`;
-DELIMITER ;;
-CREATE TRIGGER `update_third_insurance_account_info` BEFORE UPDATE ON `third_insurance_account_info` FOR EACH ROW SET NEW.`update_time` = NOW()
 ;;
 DELIMITER ;

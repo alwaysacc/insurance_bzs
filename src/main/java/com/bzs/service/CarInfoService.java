@@ -70,5 +70,7 @@ public interface CarInfoService extends Service<CarInfo> {
 
     List getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,
                          String isEnable,String  isRenewSuccess,String queryTime);
+    List getCarInfoAndQuoteList(String carInfoId,String createBy,String carNo,String vinNo,
+                         String isEnable,String  isRenewSuccess,String queryTime);
 
 }
