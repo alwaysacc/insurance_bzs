@@ -5,8 +5,10 @@ import com.bzs.controller.JuntTest;
 import com.bzs.utils.base64Util.Base64Util;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.google.gson.Gson;
+import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
+import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
@@ -46,7 +48,7 @@ public class QiniuCloudUtil {
     // 密钥
     private static final Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 
-    private static final String DOMAIN = "img.cdn.baozhishun.com";
+    private static final String DOMAIN = "http://img.cdn.baozhishun.com/";
 
     private static final String style = "自定义的图片样式";
 
@@ -68,7 +70,7 @@ public class QiniuCloudUtil {
         }
 //        String fileName=file.getOriginalFilename();
 //        String fileTyle=fileName.substring(fileName.lastIndexOf("."),fileName.length());
-        return "http://"+DOMAIN+"/"+name;
+        return DOMAIN+name;
     }
 
     public String getDownloadUrl(String targetUrl) {
@@ -140,7 +142,12 @@ public class QiniuCloudUtil {
         }
         return writer.toByteArray();
     }
-
+    //删除文件
+    public static void delete(String url) throws QiniuException {
+        Configuration cfg = new Configuration(Zone.zone0());//设置华南的服务器
+        BucketManager bucketManager = new BucketManager(auth, cfg);
+        bucketManager.delete(bucketname, url.replaceAll(DOMAIN,""));
+    }
 
     /**
      * 主函数：测试

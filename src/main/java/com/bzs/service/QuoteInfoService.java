@@ -148,7 +148,8 @@ public interface QuoteInfoService extends Service<QuoteInfo> {
      * @return
      */
     public Map<String, Object> getPayAddress(String carVin, String licenseNo,int payMent, Long source,String bizNo,
-                                             String forceNo, String buid,String channelId,String quoteId,String createBy,int isGetPayWay,String carInfoId);
+                                             String forceNo, String buid,String channelId,String quoteId,String createBy,int isGetPayWay,String carInfoId,
+                                             String deliveryAddress,String contactName,String contactTel);
 
     /**
      * 查看支付结果

@@ -125,10 +125,6 @@ public class JuntTest {
         System.out.println(response);
     }
     public static void main(String[] args) throws Exception {
-        String a="";
-        System.out.println(a!=null);
-        System.out.println(a!="");
-        System.out.println(!a.equals(""));
-        System.out.println(StringUtils.isNotBlank(a));
+        QiniuCloudUtil.delete("http://img.cdn.baozhishun.com/file");
     }
 }

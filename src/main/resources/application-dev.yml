@@ -9,7 +9,7 @@ spring:
 #    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
 #     填写你数据库的url、登录名、密码和数据库名
 #    url: jdbc:mysql://127.0.0.1:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT
-    url: jdbc:mysql://192.168.0.103:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT
+    url: jdbc:mysql://192.168.0.100:3306/insurance_bzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT
     username: root
 #    username: insurance_bzs
     password: bzs820077

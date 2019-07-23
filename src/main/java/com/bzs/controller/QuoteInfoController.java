@@ -339,14 +339,16 @@ public class QuoteInfoController {
 
     @ApiOperation("调用第三方壁虎-获取支付信息接口")
     @PostMapping("/WX_GetPayAddress")
-    Map getPayAddress(String carVin, String licenseNo, Integer payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, Integer isGetPayWay, String carInfoId) {
+    Map getPayAddress(String carVin, String licenseNo, Integer payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, Integer isGetPayWay, String carInfoId,
+                      String deliveryAddress,String contactName,String contactTel
+    ) {
         if(1!=payMent){
             payMent=1;
         }
         if(null==isGetPayWay){
             isGetPayWay=0;
         }
-        return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId);
+        return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId,deliveryAddress,contactName,contactTel);
     }
 
     @ApiOperation("调用第三方壁虎-获取支付结果接口")
