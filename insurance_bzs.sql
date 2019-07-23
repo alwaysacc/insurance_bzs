@@ -3,14 +3,14 @@ Navicat MySQL Data Transfer
 
 Source Server         : bzs
 Source Server Version : 50725
-Source Host           : 192.168.0.103:3306
+Source Host           : 192.168.0.100:3306
 Source Database       : insurance_bzs
 
 Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-07-17 16:00:56
+Date: 2019-07-23 14:57:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -141,7 +141,7 @@ CREATE TABLE `admin` (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('9', '保之顺', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', '123', null, '', '2019-06-20 17:34:54', '2019-07-17 08:50:36', '2019-07-17 08:50:31', '0', '1');
+INSERT INTO `admin` VALUES ('9', '保之顺', 'admin', 'b95dedfd5a3c2882e9c4d745a3a29349', '123', null, '', '2019-06-20 17:34:54', '2019-07-23 09:54:02', '2019-07-23 09:53:58', '0', '1');
 INSERT INTO `admin` VALUES ('11', '孙鹏程', '15518727891', '91ae0331ca778e58a9d88312fc6aa996', '15518727891', null, '', '2019-06-21 17:11:01', '2019-06-26 17:18:54', '2019-06-26 17:18:51', '0', '1');
 
 -- ----------------------------
@@ -161,7 +161,7 @@ CREATE TABLE `admin_menu` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of admin_menu
@@ -180,6 +180,7 @@ INSERT INTO `admin_menu` VALUES ('48', '0', '爬虫', '/craw', 'Layout', null, '
 INSERT INTO `admin_menu` VALUES ('49', '48', '爬虫列表', 'crawling', 'crawling/index', null, 'monitor', '0', '33', '2019-06-21 08:41:05', '2019-06-21 08:42:02');
 INSERT INTO `admin_menu` VALUES ('50', '48', '第三方账号', 'account', 'account/index', null, 'monitor', '0', '34', '2019-06-21 08:42:34', '2019-06-21 08:48:41');
 INSERT INTO `admin_menu` VALUES ('51', '40', '实名审核', 'checkIdCard', 'system/checkIdCard/index', null, 'log', '0', '2', '2019-07-14 12:38:40', '2019-07-14 12:41:00');
+INSERT INTO `admin_menu` VALUES ('52', '40', '轮播图设置', 'swiper', 'system/swiper/index', null, 'role', '0', '999', '2019-07-23 09:47:43', '2019-07-23 09:47:52');
 
 -- ----------------------------
 -- Table structure for admin_role
@@ -308,6 +309,7 @@ INSERT INTO `admin_role_menu` VALUES ('41', '1');
 INSERT INTO `admin_role_menu` VALUES ('51', '3');
 INSERT INTO `admin_role_menu` VALUES ('41', '3');
 INSERT INTO `admin_role_menu` VALUES ('51', '1');
+INSERT INTO `admin_role_menu` VALUES ('52', '1');
 
 -- ----------------------------
 -- Table structure for card_info
@@ -332,8 +334,6 @@ CREATE TABLE `card_info` (
 -- ----------------------------
 -- Records of card_info
 -- ----------------------------
-INSERT INTO `card_info` VALUES ('1', '孙鹏程', '男', '汉', '19950926', '河南省虞城县王集乡马庄村', '411425199509265771', null, null, null, null);
-INSERT INTO `card_info` VALUES ('2', '孙鹏程', null, null, null, null, '411425199509265771', null, null, null, '20190617132506123299');
 
 -- ----------------------------
 -- Table structure for car_info
@@ -383,9 +383,6 @@ CREATE TABLE `car_info` (
 -- ----------------------------
 -- Records of car_info
 -- ----------------------------
-INSERT INTO `car_info` VALUES ('3928164b301a430ea33c8ad593f3cbcb', '苏AB85Y7', '1806176', 'LHGCP167782004393', '2008-07-01', '雅阁HG7203A轿车', null, '190800', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '20190617132506123299', '2019-07-16 10:16:53', null, null, null, null, null, '戴乐', '320107198001303451', '1', null, '0', '', '-1', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('dc83e1fbc3a642429978ac6484e63355', '苏A5L7W6', 'G8XS03494', 'LB37724Z6GX081074', '2016-08-29', '吉利JL7152C01轿车', null, '61900', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '20190617132506123299', '2019-07-16 10:29:26', null, null, null, null, null, '袁茂珍', '320123199105083021', '1', null, '0', '', '-1', '0', '1', '0');
-INSERT INTO `car_info` VALUES ('ffb013bf8d084512824503cfbfcb4ac7', '苏AB85Y7', '1806176', 'LHGCP167782004393', '2008-07-01', '雅阁HG7203A轿车', null, '190800', '5', null, '0', '0', null, null, null, null, null, '0', null, null, '1', '2019-07-16 10:05:16', null, null, null, null, null, '戴乐', '320107198001303451', '1', null, '0', '', '-1', '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for car_out_danger_info
@@ -433,9 +430,6 @@ CREATE TABLE `check_info` (
 -- ----------------------------
 -- Records of check_info
 -- ----------------------------
-INSERT INTO `check_info` VALUES ('20190616163023116934', '1', '20190616163023116934', '2019-06-16 16:30:34', null, '0', '0', '2019-06-16 16:30:23', '苏A0Q1Q4', null, '0', '0');
-INSERT INTO `check_info` VALUES ('20190616163023125370', '1', '20190616163023125370', '2019-06-16 16:30:59', null, '0', '0', '2019-06-16 16:30:23', '苏A0Q1Q4', null, '0', '0');
-INSERT INTO `check_info` VALUES ('20190616163023135881', '1', '20190616163023135881', '2019-06-16 16:30:51', null, '0', '0', '2019-06-16 16:30:23', '苏A0Q1Q4', null, '1', '0');
 
 -- ----------------------------
 -- Table structure for commission_every_day
@@ -458,42 +452,6 @@ CREATE TABLE `commission_every_day` (
 -- ----------------------------
 -- Records of commission_every_day
 -- ----------------------------
-INSERT INTO `commission_every_day` VALUES ('13', '20', '10', '15', '1', '11', '1', '1', '2019-07-03 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('14', '20', '10', '15', '3', '4', '1', '2', '2019-07-03 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('15', '20', '10', '15', '3', '4', '1', '2', '2019-07-03 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('16', '20', '10', '15', '1', '11', '1', '1', '2019-07-04 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('17', '20', '10', '15', '3', '4', '1', '2', '2019-07-04 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('18', '20', '10', '15', '3', '4', '1', '2', '2019-07-04 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('19', '20', '11', '15', '1', '11', '1', '1', '2019-07-05 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('20', '20', '10', '15', '3', '4', '1', '2', '2019-07-05 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('21', '20', '10', '15', '3', '4', '1', '2', '2019-07-05 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('22', '20', '11', '15', '1', '11', '1', '1', '2019-07-06 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('23', '20', '10', '15', '3', '4', '1', '2', '2019-07-06 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('24', '20', '10', '15', '3', '4', '1', '2', '2019-07-06 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('25', '20', '11', '15', '1', '11', '1', '1', '2019-07-07 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('26', '20', '10', '15', '3', '4', '1', '2', '2019-07-07 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('27', '20', '10', '15', '3', '4', '1', '2', '2019-07-07 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('28', '20', '4', '15', '1', '4', '1', '1', '2019-07-08 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('29', '20', '4', '15', '1', '4', '1', '2', '2019-07-08 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('30', '20', '4', '15', '1', '4', '1', '2', '2019-07-08 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('31', '20', '4', '15', '1', '4', '1', '1', '2019-07-09 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('32', '20', '4', '15', '1', '4', '1', '2', '2019-07-09 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('33', '20', '4', '15', '1', '4', '1', '2', '2019-07-09 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('34', '20', '4', '15', '1', '4', '1', '1', '2019-07-10 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('35', '20', '4', '15', '1', '4', '1', '2', '2019-07-10 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('36', '20', '4', '15', '1', '4', '1', '2', '2019-07-10 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('37', '20', '4', '15', '1', '4', '1', '1', '2019-07-11 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('38', '20', '4', '15', '1', '4', '1', '2', '2019-07-11 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('39', '20', '4', '15', '1', '4', '1', '2', '2019-07-11 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('40', '20', '4', '15', '1', '4', '1', '1', '2019-07-12 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('41', '20', '4', '15', '1', '4', '1', '2', '2019-07-12 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('42', '20', '4', '15', '1', '4', '1', '2', '2019-07-12 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('43', '20', '4', '15', '1', '4', '1', '1', '2019-07-13 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('44', '20', '4', '15', '1', '4', '1', '2', '2019-07-13 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('45', '20', '4', '15', '1', '4', '1', '2', '2019-07-13 23:59:59', '4');
-INSERT INTO `commission_every_day` VALUES ('46', '20', '4', '15', '1', '4', '1', '1', '2019-07-14 23:59:59', '1');
-INSERT INTO `commission_every_day` VALUES ('47', '20', '4', '15', '1', '4', '1', '2', '2019-07-14 23:59:59', '2');
-INSERT INTO `commission_every_day` VALUES ('48', '20', '4', '15', '1', '4', '1', '2', '2019-07-14 23:59:59', '4');
 
 -- ----------------------------
 -- Table structure for commission_percentage
@@ -587,7 +545,7 @@ CREATE TABLE `crawling_excel_info` (
   `finish_total` int(11) DEFAULT '0' COMMENT '完成数量',
   `account_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of crawling_excel_info
@@ -684,11 +642,6 @@ CREATE TABLE `follow_info` (
 -- ----------------------------
 -- Records of follow_info
 -- ----------------------------
-INSERT INTO `follow_info` VALUES ('4', '忙碌中待联系', '2019-07-15 16:21:53', '13213', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:22:03');
-INSERT INTO `follow_info` VALUES ('5', '成功出单', '2019-07-15 16:22:48', '123123', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:23:01');
-INSERT INTO `follow_info` VALUES ('6', '成功出单', '2019-07-15 16:23:17', '33333', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:23:27');
-INSERT INTO `follow_info` VALUES ('7', '其他', '2019-07-15 16:24:12', '22222', '0d7df65948a04146b3d25900663bfce2', '2019-07-15 16:24:20');
-INSERT INTO `follow_info` VALUES ('8', '已报价考虑中(重点)', '2019-07-15 16:41:39', '13123', '13087baa5c8248c1b12e81ec0f347ded', '2019-07-15 16:41:48');
 
 -- ----------------------------
 -- Table structure for id_card_img
@@ -706,12 +659,11 @@ CREATE TABLE `id_card_img` (
   `update_by` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `account_id` (`account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of id_card_img
 -- ----------------------------
-INSERT INTO `id_card_img` VALUES ('1', 'http://img.cdn.baozhishun.com/1-1', 'http://img.cdn.baozhishun.com/1-0', null, '上传的不是身份证照片,请重新上传', '1', '2019-07-14 13:07:33', '2019-07-17 09:31:10', null);
 
 -- ----------------------------
 -- Table structure for insurance_follow_info
@@ -756,22 +708,11 @@ CREATE TABLE `insurance_type_info` (
   `send_time` varchar(32) DEFAULT NULL COMMENT '请求发送日期',
   `standard_premium` varchar(32) DEFAULT NULL COMMENT '保费-标准保费',
   PRIMARY KEY (`insurance_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COMMENT='保险分类信息 ';
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8 COMMENT='保险分类信息 ';
 
 -- ----------------------------
 -- Records of insurance_type_info
 -- ----------------------------
-INSERT INTO `insurance_type_info` VALUES ('77', null, '1', null, null, null, '交强险', '1', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('78', null, '1', null, null, null, '商业第三者责任险', '500000', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('79', null, '1', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'a2339ac85d2d486490db9992a2fc039d', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('80', null, '20190617132506123299', null, null, null, '交强险', '1', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('81', null, '20190617132506123299', null, null, null, '商业第三者责任险', '500000', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('82', null, '20190617132506123299', null, null, null, '商业第三者责任险_不计免', '1', null, '0', 'dcaa4d63b8b045598a20f5d76450e135', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('83', null, '20190617132506123299', null, null, null, '交强险', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('84', null, '20190617132506123299', null, null, null, '机动车损失保险', '57815', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('85', null, '20190617132506123299', null, null, null, '机动车损失险_不计免', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('86', null, '20190617132506123299', null, null, null, '商业第三者责任险', '1000000', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
-INSERT INTO `insurance_type_info` VALUES ('87', null, '20190617132506123299', null, null, null, '商业第三者责任险_不计免', '1', null, '0', '4a3ff3507aab41e8939a81a21d767ca9', null, null, null);
 
 -- ----------------------------
 -- Table structure for insured_info
@@ -817,9 +758,6 @@ CREATE TABLE `insured_info` (
 -- ----------------------------
 -- Records of insured_info
 -- ----------------------------
-INSERT INTO `insured_info` VALUES ('4a3ff3507aab41e8939a81a21d767ca9', '20190617132506123299', '2019-07-16 10:29:26', null, '2019-07-16 14:11:07', null, null, null, '2019-09-23', '2019-08-23', '2019-08-24', '2019-08-24', null, null, '人民保险', '4', '袁茂珍', '320123199105083021', '1', '袁茂珍', '320123199105083021', '1', '袁茂珍', '320123199105083021', '1', null, null, null, null, null, null, 'dc83e1fbc3a642429978ac6484e63355', '0');
-INSERT INTO `insured_info` VALUES ('a2339ac85d2d486490db9992a2fc039d', '1', '2019-07-16 10:05:16', null, '2019-07-16 14:11:03', null, null, null, '2019-08-21', '2019-08-21', '2019-08-22', '2019-08-21', null, null, '人民保险', '4', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', null, null, null, null, null, null, 'ffb013bf8d084512824503cfbfcb4ac7', '0');
-INSERT INTO `insured_info` VALUES ('dcaa4d63b8b045598a20f5d76450e135', '20190617132506123299', '2019-07-16 10:16:53', null, '2019-07-16 11:02:10', null, null, null, '2019-02-21', '2019-08-21', '2019-02-22', '2019-02-21', null, null, '人民保险', '4', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', '戴乐', '320107198001303451', '1', null, null, null, null, null, null, '3928164b301a430ea33c8ad593f3cbcb', '0');
 
 -- ----------------------------
 -- Table structure for menu
@@ -888,10 +826,10 @@ CREATE TABLE `order_info` (
   `payment` varchar(4) DEFAULT '1' COMMENT '支付方式1支付宝2微信3pos',
   `pay_money` decimal(10,4) DEFAULT NULL COMMENT '支付金额',
   `car_info_id` varchar(64) DEFAULT NULL COMMENT '车辆信息id',
-  `delivery_way` int(4) DEFAULT NULL,
-  `delivery_address` varchar(64) DEFAULT NULL,
+  `delivery_way` int(4) DEFAULT NULL COMMENT '配送方式',
+  `delivery_address` varchar(64) DEFAULT NULL COMMENT '地址',
   `contact_name` varchar(11) DEFAULT NULL COMMENT '联系人',
-  `contact_tel` int(11) DEFAULT NULL COMMENT '联系电话',
+  `contact_tel` varchar(11) DEFAULT NULL COMMENT '联系电话',
   `create_by` varchar(32) DEFAULT NULL COMMENT '创建人',
   `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `cancel_msg` varchar(255) DEFAULT NULL COMMENT '取消信息描述',
@@ -903,7 +841,6 @@ CREATE TABLE `order_info` (
 -- ----------------------------
 -- Records of order_info
 -- ----------------------------
-INSERT INTO `order_info` VALUES ('20190714144626338975', '2019-07-14 14:46:26', null, '0', '2', '20190711134234285326', '3', '2390.3900', '13087baa5c8248c1b12e81ec0f347ded', null, null, null, null, '1', null, null, null, '0');
 
 -- ----------------------------
 -- Table structure for pay_account
@@ -1025,6 +962,27 @@ INSERT INTO `quote_info` VALUES (null, '1', '2019-07-14 14:43:31', null, '2019-0
 INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, null, '20190715094510599955', '0d7df65948a04146b3d25900663bfce2', '0', '报价失败：客户端无法连接', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, '2019-07-15 09:46:03', '20190715094510621716', '0d7df65948a04146b3d25900663bfce2', '1', '系统自动调整成非过户车报价', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.00/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', 'TDAA201932010002123946', 'TDZA201932010002167433', '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44620000', '0', '3251');
 INSERT INTO `quote_info` VALUES (null, '1', '2019-07-15 09:45:10', null, '2019-07-15 09:45:28', '20190715094510626434', '0d7df65948a04146b3d25900663bfce2', '1', '报价成功', '0', '3', '【人工审核中】交强险：标准件,核保通过\r\n商业险：R2:RuleO1344:总费率折扣:家庭自用车,转保导致拒保不可申诉', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁2.0L EX/1.997/5/0.00/190800.0/2010', '2829.26', '760.00', '360.00', '3949.26', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.26', null, null, null, null, null, null, null, null, '238476827', '377.50', '0.44625000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 08:46:23', null, null, '20190722084623676577', 'ac2922ae564444d298aa3c06b08d6d6f', '0', '报价失败：Page页面元素获取超时', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '人民保险', '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 08:48:03', null, '2019-07-22 08:48:30', '20190722084803463887', 'ac2922ae564444d298aa3c06b08d6d6f', '1', '报价成功', '0', '1', '【交强】，审核状态，【通过】,意见，【自动核保】【商业】，审核状态，【通过】,意见，【自动核保】【交强】，审核状态，【退回修改】,意见，【误核】【商业】，审核状态，【退回修改】,意见，【误核】【交强】，审核状态，【通过】,意见，【自动核保】【商业】，审核状态，【通过】,意见，【自动核保】', '1', '0.6', '0.75', '0.85', '1.0', null, null, null, '思威DHW6451R1CSE多用途乘用车/思威CR-V 2.0L CVT两驱都市版/1.997/5/0.00/161800.0/2015', '2556.62', '665.00', '360.00', '3581.62', '太平洋保险', '1', 'ANAJV23Y1419F029002Z', 'ANAJV23CTP19F029002C', '0', null, null, null, null, null, '2019-08-17', '2019-08-17', null, null, null, '2556.62', null, null, null, null, null, null, null, null, '243122957', '346.51', '0.38250000', '1', '16719');
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 08:48:03', null, null, '20190722084803486186', 'ac2922ae564444d298aa3c06b08d6d6f', '0', '报价失败：Page页面元素获取超时', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '人民保险', '4', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:09:16', null, '2019-07-22 17:10:54', '20190722170916586502', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '0', '审核状态:通过,机动车交通事故责任强制保险审核意见:标准件,核保通过<br>,审核状态:核保拒绝 ,机动车交通事故责任强制保险审核意见:R2:FVCI4:总费率折扣:家庭自用车,转保导致拒保不可申诉<br>,', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁2.0L EX/1.997/5/0.00/190800.0/2010', '2829.26', '760.00', '360.00', '3949.26', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.26', null, null, null, null, null, null, null, null, '238476827', '377.50', '0.44625000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:16:53', null, null, '20190722171653287485', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:17:01', null, null, '20190722171701117650', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:17:02', null, null, '20190722171702109166', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:17:22', null, null, '20190722171722526603', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:19:16', null, null, '20190722171916783176', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：该单不建议承保，原因如下：决策树不报价原因[商业险]:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】【序号2,不报价原因\r】决策树修改建议:【序号1,流程号：50, 转保国产车车龄≥10年不承保盗抢】', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '平安保险', '2', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:21:56', null, '2019-07-23 13:42:39', '20190722172156469147', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '-10001', '核保失败:上次报价/核保值缓存到当天23:59分，请重新请求报价/核保再获取详情。', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁2.0L EX/1.997/5/0.00/190800.0/2010', '2829.26', '760.00', '360.00', '3949.26', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.26', null, null, null, null, null, null, null, null, '238476827', '377.50', '0.44625000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:22:24', null, null, '20190722172224329795', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '-1', '0', null, '0.7', '0.75008404', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.00/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44630000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-22 17:23:34', null, '2019-07-23 13:42:34', '20190722172334888455', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '-10001', '核保失败:上次报价/核保值缓存到当天23:59分，请重新请求报价/核保再获取详情。', null, '0.7', '0.75008404', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.00/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44630000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:40:13', null, '2019-07-23 13:40:31', '20190723134013166274', 'ac2922ae564444d298aa3c06b08d6d6f', '1', '报价成功', '0', '0', '【核保占单】交强险：[核保流程]交强险重复投保,已经被占单,交强险投保单号:ANAJV23CTP19F029002C 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-17 00 保单终保日期：2020-08-17 00\r\n商业险：[核保流程]商业险重复投保,已经被占单,商业险投保单号:ANAJV23Y1419F029002Z 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-17 00 保单终保日期：2020-08-17 00', null, '0.6', '0.75', '0.85', '1.0', null, null, null, '思威DHW6451R1CSE多用途乘用车/思威CR-V 2.0L CVT两驱都市版/1.997/5/0.0/161800.0/2015', '2556.62', '665.00', '360.00', '3581.62', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-17', '2019-08-17', null, null, null, '2556.62', null, null, null, null, null, null, null, null, '243122957', '346.51', '0.38250000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:40:13', null, null, '20190723134013178617', 'ac2922ae564444d298aa3c06b08d6d6f', '1', '报价成功', '0', '-1', '0', null, '0.6', '0.75', '0.85', '1.0', null, null, null, '思威DHW6451R1CSE多用途乘用车/思威DHW6451R1CSE多用途乘用车/1.997/5/0.0/161800.0/', '2556.62', '665.00', '360.00', '3581.62', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-17', '2019-08-17', null, null, null, '2556.62', null, null, null, null, null, null, null, null, '243122957', '346.51', '0.38250000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:42:07', null, '2019-07-23 13:42:24', '20190723134207438755', 'dc83e1fbc3a642429978ac6484e63355', '1', '报价成功', '0', '0', '【核保占单】交强险：[核保流程]交强险重复投保,已经被占单,交强险投保单号:ANAJV23CTP19F028041T 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-24 00 保单终保日期：2020-08-24 00\r\n商业险：[核保流程]商业险重复投保,已经被占单,商业险投保单号:ANAJV23Y1419F028044F 投保单状态:核保通过 投保单系统来源代码:统一接入平台 经办人姓名:左羽 经办人部门:六合支公司 出单员姓名:江苏徽商 出单员部门:六合支公司 保单起保日期：2019-08-24 00 保单终保日期：2020-08-24 00', null, '1.0', '0.75', '0.85', '1.0', null, null, null, '吉利JL7152C01轿车/吉利远景1.5L AT幸福版/1.498/5/0.0/61900.0/2016', '2717.20', '665.00', '300.00', '3682.20', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-24', '2019-08-24', null, null, null, '2717.20', null, null, null, null, null, null, null, null, '238475067', '366.44', '0.63750000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:42:07', null, null, '20190723134207451961', 'dc83e1fbc3a642429978ac6484e63355', '1', '报价成功', '0', '-1', '0', null, '1.0', '0.75', '0.85', '1.0', null, null, null, '吉利JL7152C01轿车/吉利JL7152C01轿车/1.498/5/0.0/61900.0/', '2717.20', '665.00', '300.00', '3682.20', '人民保险', '4', null, null, '0', null, null, null, null, null, '2019-08-24', '2019-08-24', null, null, null, '2717.20', null, null, null, null, null, null, null, null, '238475067', '366.44', '0.63750000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:42:42', null, '2019-07-23 13:43:02', '20190723134242534358', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '0', '审核状态:通过,机动车交通事故责任强制保险审核意见:标准件,核保通过<br>,审核状态:核保拒绝 ,机动车交通事故责任强制保险审核意见:R2:FVCI4:总费率折扣:家庭自用车,转保导致拒保不可申诉<br>,', null, '0.7', '0.75', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁2.0L EX/1.997/5/0.0/190800.0/2010', '2829.26', '760.00', '360.00', '3949.26', '太平洋保险', '1', null, null, '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.26', null, null, null, null, null, null, null, null, '238476827', '377.50', '0.44625000', null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 13:43:09', null, '2019-07-23 14:24:05', '20190723134309383929', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.7', '0.75008404', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.0/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', 'TDAA201932010002217501', 'TDZA201932010002261900', '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, 'JFCD-JS201907231423461543889', null, null, null, '238476827', '377.55', '0.44630000', '0', '3251');
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 14:24:37', null, null, '20190723142437921756', '3928164b301a430ea33c8ad593f3cbcb', '0', '报价失败：【加锁失败】 其他进程正在登陆,请一分钟后重试', '0', '-1', '0', null, null, null, null, null, null, null, null, null, null, null, null, null, '太平洋保险', '1', null, null, '0', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 14:25:36', null, '2019-07-23 14:33:23', '20190723142536380568', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.7', '0.75008404', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.0/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', 'TDAA201932010002218596', 'TDZA201932010002263009', '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, 'JFCD-JS201907231427479903931', null, null, null, '238476827', '377.55', '0.44630000', '0', '3251');
+INSERT INTO `quote_info` VALUES (null, '20190617132506123299', '2019-07-23 14:33:00', null, '2019-07-23 14:33:04', '20190723143300179108', '3928164b301a430ea33c8ad593f3cbcb', '1', '报价成功', '0', '1', '商业险：满足自动核保规则，自动核保通过，通过原因为： 20160412-3200-对于全业务分类视图已设定折扣的业务，且折扣大于等于全业务分类视图的设定值的商业险业务自动通过（NEW）	交强险：满足自动核保规则，自动核保通过，通过原因为： 20161212-3201续保交强险业务自动核保通过	', '0', '0.7', '0.75008404', '0.85', '1.0', null, null, null, '雅阁HG7203A轿车/雅阁HG7203A轿车/1.997/5/0.0/190800.0/', '2829.57', '760.00', '360.00', '3949.57', '人民保险', '4', 'TDAA201932010002218596', 'TDZA201932010002263009', '0', null, null, null, null, null, '2019-08-21', '2019-08-22', null, null, null, '2829.57', null, null, null, null, null, null, null, null, '238476827', '377.55', '0.44630000', '0', '3251');
 
 -- ----------------------------
 -- Table structure for role
@@ -1283,6 +1241,27 @@ INSERT INTO `role_menu` VALUES ('103', '2');
 INSERT INTO `role_menu` VALUES ('137', '2');
 INSERT INTO `role_menu` VALUES ('138', '2');
 INSERT INTO `role_menu` VALUES ('131', '2');
+
+-- ----------------------------
+-- Table structure for swiper
+-- ----------------------------
+DROP TABLE IF EXISTS `swiper`;
+CREATE TABLE `swiper` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `img_url` varchar(64) DEFAULT NULL,
+  `is_show` int(2) DEFAULT '0',
+  `order_num` int(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of swiper
+-- ----------------------------
+INSERT INTO `swiper` VALUES ('6', 'http://img.cdn.baozhishun.com/ef12622ce11f4791acf4299821c1fcd7', '0', '1');
+INSERT INTO `swiper` VALUES ('8', 'http://img.cdn.baozhishun.com/1668d577f9ad49949f4db431730ed0ec', '0', '2');
+INSERT INTO `swiper` VALUES ('9', 'http://img.cdn.baozhishun.com/95e87dc47b6245939e29dd8e58b62d30', '0', '2');
+INSERT INTO `swiper` VALUES ('10', 'http://img.cdn.baozhishun.com/ab0f9b78f2d0445297365741c10d9ef3', '0', '2');
+INSERT INTO `swiper` VALUES ('11', 'http://img.cdn.baozhishun.com/1c622e1b31584a90a918ba5d8a7f04cd', '0', '88');
 
 -- ----------------------------
 -- Table structure for temporary_relationship_info
