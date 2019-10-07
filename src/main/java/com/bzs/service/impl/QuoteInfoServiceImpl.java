@@ -1593,7 +1593,8 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
     }
 
     @Override
-    public Map<String, Object> getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId) {
+    public Map<String, Object> getPayAddress(String carVin, String licenseNo, int payMent, Long source, String bizNo, String forceNo, String buid, String channelId, String quoteId, String createBy, int isGetPayWay, String carInfoId,
+                                             String deliveryAddress,String contactName,String contactTel) {
         Map<String, Object> map = new HashMap<>();
         if (2 != payMent) {//
             payMent = 1;//1微信支付2pos
@@ -1713,6 +1714,9 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                         orderInfo.setPayment(payWay);
                         orderInfo.setCreateBy(createBy);
                         orderInfo.setPayMoney(new BigDecimal(money));
+                        orderInfo.setDeliveryAddress(deliveryAddress);
+                        orderInfo.setContactName(contactName);
+                        orderInfo.setContactTel(contactTel);
                         orderInfoService.save(orderInfo);
                         map.put("code", "200");
                         map.put("msg", "查询成功");

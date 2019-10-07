@@ -166,6 +166,53 @@
             </if>
         </trim>
     </select>
+    <select id="getCarInfoAndQuoteList" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
+        select a.*,
+        b.insured_id as b_insured_id,
+        b.busines_expire_date as b_busines_expire_date,
+        b.force_expire_date as b_force_expire_date ,
+        b.next_busines_start_date as b_next_busines_start_date,
+        b.next_force_start_date as b_next_force_start_date,
+        b.last_year_insurance_company as b_last_year_insurance_company,
+        b.last_year_source as b_last_year_source,
+        c.insurance_name as c_insurance_name,
+        c.insurance_amount as c_insurance_amount,
+        c.insurance_premium as c_insurance_premium,
+        c.insurance_type_id as c_insurance_type_id,
+        c.excluding_deductible as c_excluding_deductible,
+        c.type_id as c_type_id,
+        c.info_type as c_info_type,
+        c.standard_premium as standard_premium,
+        q.quote_id as q_quote_id,
+        q.quote_status as q_quote_status,
+        q.submit_status as q_submit_status,
+        q.quote_source as q_quote_source,
+        q.quote_insurance_name as q_quote_insurance_name,
+        q.total as q_total,
+        q1.CREATED_TIME as createTime,
+        i.user_name as user_name
+        from car_info a
+        left join account_info i on a.CREATED_BY=i.account_id
+        left join insured_info b on a.car_info_id =b.car_info_id
+        left join insurance_type_info c on b.insured_id = c.type_id
+        left join quote_info q1 on q1.car_info_id=a.car_info_id
+        left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
+        <trim prefix="where" suffixOverrides="and">
+            <if test="carInfoId!=null and carInfoId!=''">
+                a.car_info_id=#{carInfoId} and
+            </if>
+            <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
+            <if test="createdBy!=null and createdBy!=''">a.CREATED_BY =#{createdBy}
+                and</if>
+            <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
+            <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
+            <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
+            <if test="startTime!=null and endTime!=null">
+                q.CREATED_TIME  between #{startTime} and  #{endTime}
+            </if>
+        </trim>
+    </select>
+
     <!--查询车辆、续保、续保险种 结束-->
     <!--批量更新isEnable-->
     <update id="updateBatchIsEnable">
@@ -177,69 +224,81 @@
     <!--一对一查询 结束-->
 
     <select id="getUserList" resultType="map">
-        SELECT distinct
-        car_info.car_info_id,
-        car_info.car_number,
-        car_info.engine_number,
-        car_info.frame_number,
-        car_info.register_date,
-        car_info.brand_model,
-        car_info.car_model,
-        car_info.purchase_price,
-        car_info.seat_number,
-        car_info.displacement,
-        car_info.isTransfer_car,
-        car_info.isLoan_car,
-        car_info.remarks_car,
-        car_info.follow_count,
-        car_info.follow_time,
-        car_info.follow_content,
-        car_info.plan_return_time,
-        car_info.customer_status,
-        car_info.customer_type,
-        car_info.salesman,
-        car_info.CREATED_TIME,
-        date_format(car_info.UPDATED_TIME,'%Y-%m-%d') as UPDATED_TIME,
-        car_info.CREATED_BY,
-        car_info.UPDATED_BY,
-        car_info.choice_last_year_insurance_name,
-        car_info.choice_last_year_source,
-        car_info.insured_area,
-        car_info.license_owner,
-        car_info.license_owner_id_card,
-        car_info.license_owner_id_card_type,
-        insured_info.busines_expire_date,
-        insured_info.force_expire_date,
-        insured_info.next_force_start_date,
-        insured_info.next_busines_start_date,
-        insured_info.last_year_insurance_company
+        SELECT DISTINCT
+        c.car_info_id,
+        c.car_number,
+        c.engine_number,
+        c.frame_number,
+        c.register_date,
+        c.brand_model,
+        c.car_model,
+        c.purchase_price,
+        c.seat_number,
+        c.displacement,
+        c.isTransfer_car,
+        c.isLoan_car,
+        c.remarks_car,
+        c.plan_return_time,
+        c.customer_status,
+        c.customer_type,
+        c.salesman,
+        c.CREATED_TIME,
+        date_format(c.UPDATED_TIME,'%Y-%m-%d') AS UPDATED_TIME,
+        c.CREATED_BY,
+        c.UPDATED_BY,
+        c.choice_last_year_insurance_name,
+        c.choice_last_year_source,
+        c.insured_area,
+        c.license_owner,
+        c.license_owner_id_card,
+        c.license_owner_id_card_type,
+        i.busines_expire_date,
+        i.force_expire_date,
+        i.next_force_start_date,
+        i.next_busines_start_date,
+        i.last_year_insurance_company,
+        f.create_time as follow_time,
+        f.follow_content,
+        f.follow_stat,
+        f.next_follow_date
         FROM
-        car_info
-        left join insured_info on (car_info.car_info_id = insured_info.car_info_id)
+        car_info AS c
+        LEFT JOIN insured_info AS i ON (c.car_info_id = i.car_info_id)
+        LEFT JOIN follow_info AS f ON (c.car_info_id = f.car_info_id)
         <where>
-            car_info.status=0
+            c.status=0
             <if test="roleId==1">
             </if>
             <if test="roleId==2">
-                and car_info.car_info_id in (
+                and c.car_info_id in (
                 SELECT car_info_id FROM check_info WHERE create_by in
                 (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
-
             </if>
             <if test="roleId==3">
                 and
-                car_info.CREATED_BY = #{accountId}
+                c.CREATED_BY = #{accountId}
             </if>
             <if test="salesman!=null  and salesman!=''">
-                and car_info.salesman != #{salesman}
+                and c.salesman != #{salesman}
             </if>
             <if test="customerStatus!=null and customerStatus!=''">
-                and car_info.customer_status = #{customerStatus}
+                and c.customer_status = #{customerStatus}
             </if>
             <if test="plan!=null and plan!=''">
-                and car_info.plan_return_time !=null
+                and c.plan_return_time !=null
             </if>
-            ORDER BY car_info.CREATED_TIME DESC
+            <if test="begDate!='' and endDate!=''">
+                and busines_expire_date between #{begDate} and #{endDate}
+                or  #{begDate} > busines_expire_date
+            </if>
+            <if test="orderByDate==1">
+                and i.busines_expire_date between #{begDate} and #{endDate}
+                or  #{begDate} > i.busines_expire_date
+                ORDER BY i.busines_expire_date DESC
+            </if>
+            <if test="orderByDate==0">
+                ORDER BY c.CREATED_TIME DESC
+            </if>
         </where>
     </select>
 
@@ -295,8 +354,8 @@
                 (SELECT account_id FROM account_info where ancestor_id= #{accountId} or account_id = #{accountId} ))
             </if>
             <if test="roleId==3">
-                and car_info.car_info_id in (
-                SELECT car_info_id FROM check_info WHERE create_by = #{accountId}
+                and
+                car_info.CREATED_BY = #{accountId}
             </if>
             <if test="carNumber!=null">
                 and car_info.car_number = #{carNumber}
@@ -524,4 +583,14 @@
         <include refid="updateOrAdd_update"/>
     </insert>
     <!-- 插入或更新 开始-->
+
+    <!--查询是否存在-->
+    <select id="getCarCountByAccountId" resultType="String">
+        select car_info_id from car_info
+        <where>
+            car_number=#{carNumber}
+            and
+            CREATED_BY=#{accountId}
+        </where>
+    </select>
 </mapper>

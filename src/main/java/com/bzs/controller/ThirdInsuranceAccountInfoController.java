@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.dao.ThirdInsuranceAccountInfoMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.ThirdInsuranceAccountInfo;
@@ -26,6 +27,8 @@ import java.util.Map;
 public class ThirdInsuranceAccountInfoController {
     @Resource
     private ThirdInsuranceAccountInfoService thirdInsuranceAccountInfoService;
+    @Resource
+    private ThirdInsuranceAccountInfoMapper thirdInsuranceAccountInfoMapper;
 
     @PostMapping("/add")
     public Result add(ThirdInsuranceAccountInfo thirdInsuranceAccountInfo) {
@@ -143,11 +146,17 @@ public class ThirdInsuranceAccountInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-    @AspectInterface
     @ApiOperation("根据角色获取爬取账号信息")
     @PostMapping("/getCrawlingAndAccountList")
     public Result getCrawlingAndAccountList(@RequestParam String createBy){
         List list = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
         return ResultGenerator.genSuccessResult(list);
     }
+    @ApiOperation("根据角色获取爬取账号信息")
+    @PostMapping("/getAccountById")
+    public Result getAccountById(@RequestParam String id){
+        List list = thirdInsuranceAccountInfoMapper.getAccountById(id);
+        return ResultGenerator.genSuccessResult(list);
+    }
+
 }

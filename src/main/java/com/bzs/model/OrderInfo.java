@@ -74,7 +74,7 @@ public class OrderInfo {
     private String contactName;
 
     @Column(name = "contact_tel")
-    private Integer contactTel;
+    private String contactTel;
     @Column(name = "create_by")
     private String createBy;
     @Column(name = "cancel_msg")
@@ -318,16 +318,10 @@ public class OrderInfo {
     /**
      * @return contact_tel
      */
-    public Integer getContactTel() {
-        return contactTel;
-    }
-
     /**
-     * @param contactTel
+     * @param
      */
-    public void setContactTel(Integer contactTel) {
-        this.contactTel = contactTel;
-    }
+
 
     public String getPayTypeId() {
         return payTypeId;

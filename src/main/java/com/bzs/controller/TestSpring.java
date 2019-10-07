@@ -5,6 +5,7 @@ import com.bzs.dao.CardInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.model.CardInfo;
 import com.bzs.redis.RedisUtil;
+import com.bzs.service.FollowInfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,12 @@ public class TestSpring {
     @Autowired
     private CardInfoMapper cardInfoMapper;
     @Autowired
+    private FollowInfoService followInfoService;
+    @Autowired
     private RedisUtil redisUtil;
     @Test
     public void testSelect() {
-        CardInfo cardInfo=new CardInfo();
-        cardInfo.setAccountId("123");
-        cardInfo.setAddress("123");
-        cardInfo.setRealname("123");
-        System.out.println(cardInfoMapper.saveCardInfo(cardInfo));
+        followInfoService.getFollowInfoByCarInfoId("0d7df65948a04146b3d25900663bfce2");
     }
 
     public static void main(String[] args) {

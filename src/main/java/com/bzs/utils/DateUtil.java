@@ -35,4 +35,5 @@ public class DateUtil {
         Date d = sdf.parse(date);
         return DateUtil.getDateFormat(d, format);
     }
+
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface CarInfoService extends Service<CarInfo> {
 
-    List getUserList( String accountId, String roleId, String salesman, String customerStatus,String plan);
+    List getUserList( String accountId, String roleId, String salesman, String customerStatus,String plan,int selectType,int orderByDate);
 
     List searchUserList(
             String accountId,String roleId,
@@ -69,6 +69,8 @@ public interface CarInfoService extends Service<CarInfo> {
                                 String MoldName);
 
     List getCarInfoQuote(String carInfoId,String createBy,String carNo,String vinNo,
+                         String isEnable,String  isRenewSuccess,String queryTime);
+    List getCarInfoAndQuoteList(String carInfoId,String createBy,String carNo,String vinNo,
                          String isEnable,String  isRenewSuccess,String queryTime);
 
 }

@@ -173,6 +173,19 @@ public class AccountInfo implements Serializable {
      */
     @Column(name = "draw_percentage_total")
     private BigDecimal drawPercentageTotal;
+    @Column(name = "verified_stat")
+    private Integer verifiedStat;
+
+
+    public Integer getVerifiedStat() {
+        return verifiedStat;
+    }
+
+    public void setVerifiedStat(Integer verifiedStat) {
+        this.verifiedStat = verifiedStat;
+    }
+
+
     /**
      * 获取id
      *

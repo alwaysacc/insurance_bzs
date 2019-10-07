@@ -16,6 +16,7 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="total" jdbcType="INTEGER" property="total" />
     <result column="finish_total" jdbcType="INTEGER" property="finishTotal" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
   </resultMap>
   <insert id="add" parameterType="com.bzs.model.CrawlingExcelInfo">
     <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
@@ -27,8 +28,9 @@
       <if test="name!=null and ''!=name">name,</if>
       <if test="seriesNo!=null and ''!=seriesNo">series_no,</if>
       <if test="createBy!=null and ''!=createBy">create_by,</if>
-      <if test="type!=null and ''!=type">type,</if>
       <if test="total !=null and total>0 ">total,</if>
+      <if test="accountId!=null and ''!=accountId">account_id,</if>
+
     </trim>
     values
     <trim suffixOverrides="," prefix="(" suffix=")">
@@ -38,6 +40,7 @@
       <if test="createBy!=null and ''!=createBy">#{createBy},</if>
       <if test="type!=null and ''!=type">#{type},</if>
       <if test="total !=null and total>0 ">#{total},</if>
+      <if test="accountId!=null and ''!=accountId">#{accountId},</if>
     </trim>
   </insert>
   <update id="updateCrawlingFinish" parameterType="com.bzs.model.CrawlingExcelInfo">

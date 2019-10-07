@@ -50,4 +50,6 @@ public interface ThirdInsuranceAccountInfoMapper extends Mapper<ThirdInsuranceAc
     List getCrawlingAndAdminList();
 
     int deleteAccount(String accountId);
+
+    List getAccountById(String id);
 }

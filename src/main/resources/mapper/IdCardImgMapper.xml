@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.IdCardImgMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.IdCardImg">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="back_path" jdbcType="VARCHAR" property="backPath" />
+    <result column="front_path" jdbcType="VARCHAR" property="frontPath" />
+    <result column="stat" jdbcType="INTEGER" property="stat" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="insertItems">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="backPath!=null and ''!=backPath ">back_path,</if>
+      <if test="frontPath!=null and ''!=frontPath ">front_path,</if>
+      <if test="stat!=null and ''!=stat ">stat,</if>
+      <if test="msg!=null and ''!=msg ">msg,</if>
+      <if test="accountId!=null ">account_id,</if>
+    </trim>
+  </sql>
+  <sql id="insertValues">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="backPath!=null and ''!=backPath ">#{backPath},</if>
+      <if test="frontPath!=null and ''!=frontPath ">#{frontPath},</if>
+      <if test="stat!=null and ''!=stat ">#{stat},</if>
+      <if test="msg!=null and ''!=msg ">#{msg},</if>
+      <if test="accountId!=null ">#{accountId},</if>
+    </trim>
+  </sql>
+  <sql id="update">
+    <trim>
+      account_id = values (account_id)
+      <if test="backPath!=null and ''!=backPath ">,back_path=#{backPath}</if>
+      <if test="frontPath!=null and ''!=frontPath ">,front_path=#{frontPath}</if>
+      <if test="stat!=null and ''!=stat ">,stat=#{stat}</if>
+      <if test="msg!=null and ''!=msg ">,msg=#{msg}</if>
+    </trim>
+  </sql>
+  <insert id="saveIdCardImg" parameterType="com.bzs.model.IdCardImg">
+    INSERT INTO id_card_img
+    <include refid="insertItems" />
+    values
+    <include refid="insertValues" />
+    ON DUPLICATE KEY UPDATE
+    <include refid="update" />
+  </insert>
+  
+  <select id="getWaitCheckList" resultType="map">
+    SELECT
+	i.id,
+	i.back_path,
+	i.front_path,
+	i.stat,
+	i.msg,
+	i.account_id,
+	i.create_time,
+	i.update_time,
+	i.update_by,
+	a.user_name,
+	a.verified_stat,
+	a.mobile
+ FROM
+	id_card_img AS i
+ LEFT JOIN account_info AS a ON i.account_id = a.account_id
+  <where>
+      <if test="verifiedStat!=9">
+          a.verified_stat=#{verifiedStat}
+      </if>
+  </where>
+  </select>
+  <select id="getVerifiedStatById" resultType="map">
+       SELECT
+          i.id,
+  i.back_path,
+  i.front_path,
+  i.stat,
+  i.msg,
+  i.account_id,
+  i.create_time,
+  i.update_time,
+  i.update_by,
+  a.verified_stat,
+      a.user_name,
+      a.id_card
+  FROM
+  id_card_img AS i
+  LEFT JOIN account_info a ON a.account_id = i.account_id
+    <where>
+      <if test="accountId!=null">
+        i.account_id = #{accountId}
+      </if>
+  </where>
+
+  </select>
+</mapper>

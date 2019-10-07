@@ -26,6 +26,8 @@ import java.util.List;
 public class AdminRoleServiceImpl extends AbstractService<AdminRole> implements AdminRoleService {
     @Resource
     private AdminRoleMapper adminRoleMapper;
+    @Resource
+    private AdminRoleService adminRoleService;
 
     @Override
     public int addRoleAndMenu(AdminRole adminRole, String menuId) {
@@ -73,9 +75,7 @@ public class AdminRoleServiceImpl extends AbstractService<AdminRole> implements 
         if (array.length!=0){
             adminRoleMapper.deleteMenuByMenuId(roleId,array);
         }
-        System.out.println(saveList);
-        System.out.println(deleteList);
-        System.out.println(array);
+        adminRoleService.update(adminRole);
     }
 }
 

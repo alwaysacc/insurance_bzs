@@ -1,5 +1,6 @@
 package com.bzs.service;
 import com.bzs.model.AccountInfo;
+import com.bzs.model.IdCardImg;
 import com.bzs.model.Verification;
 import com.bzs.utils.Result;
 import com.bzs.utils.Service;
@@ -119,6 +120,14 @@ public interface AccountInfoService extends Service<AccountInfo> {
 
     HashMap getHomeInfo();
 
-    Result accountVerified( MultipartFile file, String type, String accountId);
+    Result accountVerified( MultipartFile file, int type, String accountId);
 
+    int updatePassWord(AccountInfo accountInfo);
+
+    Result updateAccountVerifiedStat(String accountId,int verifiedStat,
+                                     int id,String msg
+    );
+    Result updateAccountVerifiedStat(String accountId, int verifiedStat, int id, String msg,String idCard);
+
+    Result checkAccountVerified(IdCardImg idCardImg,String mobile,String name,String idCard);
     }

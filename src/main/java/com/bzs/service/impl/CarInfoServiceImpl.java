@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bzs.dao.AccountInfoMapper;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +42,9 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
     private AccountInfoMapper accountInfoMapper;
 
     @Override
-    public List getUserList(String accountId,String roleId,String salesman,String customerStatus,String plan) {
+    public List getUserList(String accountId,String roleId,String salesman,String customerStatus,String plan,int selectType,int orderByDate) {
         //roleId= accountInfoMapper.getRoleIdByAccountId(accountId);
-        if (roleId.equals("管理员")){
+     /*   if (roleId.equals("管理员")){
 
         }else if (roleId.equals("管理员分账户")){
 
@@ -50,12 +52,20 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
 
         }else{
 
+        }*/
+
+        String begDate="";
+        String endDate="";
+        if (selectType==1 || orderByDate==1){
+            begDate=cn.hutool.core.date.DateUtil.formatDate(new Date());
+            endDate=cn.hutool.core.date.DateUtil.formatDate(DateUtil.offsetDay(new Date(),40));
         }
-        return carInfoMapper.getUserList(accountId,roleId,salesman,customerStatus,plan);
+        return carInfoMapper.getUserList(accountId,roleId,salesman,customerStatus,plan,begDate,endDate,orderByDate);
     }
 
     @Override
-    public List searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName, String customerTel, String lincenseOwner) {
+    public List searchUserList(String accountId, String roleId, String carNumber, String frameNumber, String customerName,
+                               String customerTel, String lincenseOwner) {
         return carInfoMapper.searchUserList(accountId,roleId,carNumber,frameNumber,customerName,customerTel,lincenseOwner);
     }
 
@@ -207,6 +217,11 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
 
     @Override
     public List getCarInfoQuote(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess,String queryTime) {
+        return  carInfoMapper.getCarInfoAndQuoteList(carInfoId,carNo,createBy,vinNo,isEnable,isRenewSuccess,null,null);
+    }
+
+    @Override
+    public List getCarInfoAndQuoteList(String carInfoId, String createBy, String carNo, String vinNo, String isEnable, String isRenewSuccess, String queryTime) {
         String startTime=null;
         String endTime=null;
         if (queryTime!=null && queryTime!=""){
@@ -214,7 +229,6 @@ public class CarInfoServiceImpl extends AbstractService<CarInfo> implements CarI
             startTime=timeList.get(0);
             endTime=timeList.get(1);
         }
-
-        return  carInfoMapper.getCarInfoAndInsurance(carInfoId,createBy,carNo,vinNo,isEnable,isRenewSuccess,startTime,endTime);
+        return  carInfoMapper.getCarInfoAndInsurance(carInfoId,carNo,createBy,vinNo,isEnable,isRenewSuccess,startTime,endTime);
     }
 }

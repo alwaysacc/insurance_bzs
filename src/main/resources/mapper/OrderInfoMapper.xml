@@ -17,7 +17,7 @@
     <result column="delivery_way" jdbcType="INTEGER" property="deliveryWay" />
     <result column="delivery_address" jdbcType="VARCHAR" property="deliveryAddress" />
     <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
-    <result column="contact_tel" jdbcType="INTEGER" property="contactTel" />
+    <result column="contact_tel" jdbcType="VARCHAR" property="contactTel" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="cancel_msg" jdbcType="VARCHAR" property="cancelMsg" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />

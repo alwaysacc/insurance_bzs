@@ -177,9 +177,9 @@
     b.account_name as accountName,
     b.account_pwd as accountPwd,
     b.third_insurance_id as thirdInsuranceId,
-    a.user_name as userName
+    a.name as name
     from  third_insurance_account_info  b
-    left  join  account_info a on  a.account_id = b.account_id
+    left  join  admin a on  a.id = b.account_id
       <trim prefix="where" suffixOverrides="and">
         <if test="createBy!=null and createBy!=''">
           b.account_id =#{createBy} and
@@ -194,4 +194,9 @@
     third_insurance_id=#{accountId}
   </where>
   </delete>
+
+  <select id="getAccountById" resultMap="BaseResultMap">
+    SELECT * from third_insurance_account_info t where
+    t.account_id=#{id}
+  </select>
 </mapper>

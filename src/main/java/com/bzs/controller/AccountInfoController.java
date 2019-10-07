@@ -4,17 +4,12 @@ import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AccountInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
-import com.bzs.model.OrderInfo;
-import com.bzs.model.QuoteInfo;
-import com.bzs.model.Verification;
+import com.bzs.model.*;
 import com.bzs.redis.RedisUtil;
+import com.bzs.service.IdCardImgService;
 import com.bzs.shiro.FebsProperties;
-import com.bzs.utils.MD5Utils;
-import com.bzs.utils.Result;
-import com.bzs.utils.ResultGenerator;
-import com.bzs.model.AccountInfo;
+import com.bzs.utils.*;
 import com.bzs.service.AccountInfoService;
-import com.bzs.utils.UUIDS;
 import com.bzs.utils.base64Util.Base64Util;
 import com.bzs.utils.jsontobean.F;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
@@ -70,6 +65,8 @@ public class AccountInfoController {
     private RedisUtil redisUtil;
     @Resource
     private AccountInfoMapper accountInfoMapper;
+    @Resource
+    private IdCardImgService idCardImgService;
 
     @PostMapping("/getHomeInfo")
     public Result getHomeInfo(){
@@ -337,16 +334,17 @@ public class AccountInfoController {
     }
     @ApiOperation("实名认证")
     @PostMapping("/accountVerified")
-    public Result accountVerified(@RequestParam(value = "file", required = false) MultipartFile f,String type,String accountId){
-
-        // 操作完上的文件 需要删除在根目录下生成的文件
-      /*  if (file.delete()){
-            System.out.println("删除成功");
-        }else {
-            System.out.println("删除失败");
-
-        }*/
-        return ResultGenerator.genSuccessResult(accountInfoService.accountVerified(f,type,accountId));
+    public Result accountVerified(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+                                    String accountId,
+                                    int type
+                                  ) throws Exception {
+        return accountInfoService.accountVerified(file,type,accountId);
+    }
+    @ApiOperation("找回密码")
+    @PostMapping("/updatePassWord")
+    public Result updatePassWord(AccountInfo accountInfo){
+        return ResultGenerator.genSuccessResult(accountInfoService.updatePassWord(accountInfo));
     }
     @PostMapping("/getUserNameAndId")
     public Result getUserNameAndId(){
@@ -357,4 +355,18 @@ public class AccountInfoController {
     public Result getUserNameList(){
         return ResultGenerator.genSuccessResult(accountInfoMapper.getUserNameList());
     }
+
+    @ApiOperation("驳回实名认证")
+    @PostMapping("/updateAccountVerifiedStat")
+    public Result updateAccountVerifiedStat(String accountId,int verifiedStat,
+                                            int id,String msg
+                                            ){
+        return accountInfoService.updateAccountVerifiedStat(accountId,verifiedStat,id,msg);
+    }
+    @ApiOperation("验证实名认证")
+    @PostMapping("/checkAccountVerified")
+    public Result checkAccountVerified(IdCardImg idCardImg,String mobile,String name,String idCard){
+        return accountInfoService.checkAccountVerified(idCardImg,mobile,name,idCard);
+    }
+
 }

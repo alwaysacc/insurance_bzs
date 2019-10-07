@@ -7,6 +7,7 @@ import com.bzs.dao.CrawlingExcelInfoMapper;
 import com.bzs.model.CommissionPercentage;
 import com.bzs.model.CrawlingCarInfo;
 import com.bzs.model.CrawlingExcelInfo;
+import com.bzs.model.ThirdInsuranceAccountInfo;
 import com.bzs.model.query.CrawlingQuery;
 import com.bzs.model.query.ThridAccountAndAdminDomain;
 import com.bzs.redis.RedisUtil;
@@ -462,13 +463,14 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                         //获取爬取账号开始
                         String username = "";
                         String passWord = "";
-                        List<ThridAccountAndAdminDomain> lists = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
-                        if (CollectionUtils.isNotEmpty(lists)) {
-                            int size = lists.size();
+                        ThirdInsuranceAccountInfo t=thirdInsuranceAccountInfoService.findBy("thirdInsuranceId",excelInfo.getAccountid());
+//                        List<ThridAccountAndAdminDomain> lists = thirdInsuranceAccountInfoService.getCrawlingAndAdminList(createBy);
+                        if (StringUtils.isNotBlank(t.getAccountName())) {
+                            /*int size = lists.size();
                             int random = new Random().nextInt(size);//随机一个账号
-                            ThridAccountAndAdminDomain domain = lists.get(random);//获取随机账号信息
-                            username = domain.getAccountName();//账号
-                            passWord = domain.getAccountPwd();//密码
+                            ThridAccountAndAdminDomain domain = lists.get(random);//获取随机账号信息*/
+                            username = t.getAccountName();//账号
+                            passWord = t.getAccountPwd();//密码
                             //账号不能为空
                             if (StringUtils.isBlank(username) || StringUtils.isBlank(passWord)) {
                                 crawlingExcelInfoService.updateCrawlingFinish(seriesNo, null, status, null, null);
@@ -561,7 +563,7 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                     data.setEngineNo(resData.getFadongji_no());//发送机号
                                                     data.setIsDrawling(type);//2车架爬取1车牌爬取
                                                     data.setModel(resData.getCar_type());//车辆型号
-                                                    log.info("车辆和型号：" + resData.getCar_type() + ",品牌：" + resData.getCn_type());
+//                                                    log.info("车辆和型号：" + resData.getCar_type() + ",品牌：" + resData.getCn_type());
                                                     data.setRegisterDate(resData.getStart_time());//初登日期
                                                     String newCarNo = resData.getChepai_no();
                                                     data.setNewCarNo(newCarNo);//车牌
@@ -597,7 +599,6 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                                         }
                                                     }
                                                     data.setTransferDate(resData.getTrans_time());//转户日期
-                                                    log.info(String.valueOf(resltDataList.size()));
                                                 }
                                             }
                                         }else{
@@ -620,12 +621,11 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
                                     }
                                     //遍历爬取结果并修改
                                     if(CollectionUtils.isNotEmpty(resltDataList)){
-                                        System.out.println("执行修改");
+                                        log.info("执行修改");
                                         for (CrawlingCarInfo result:resltDataList){
                                             this.crawlingUpdate(result);//修改爬取的车辆信息
                                         }
                                     }
-
                                 } else {
                                     continue;
                                 }
