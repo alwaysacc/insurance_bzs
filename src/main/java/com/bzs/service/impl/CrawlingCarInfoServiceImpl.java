@@ -73,7 +73,8 @@ public class CrawlingCarInfoServiceImpl extends AbstractService<CrawlingCarInfo>
 
     @Override
     public String httpCrawling(String username, String password, String flag, String no) {
-        String url = "http://123.207.50.164:5000/query";
+//        String url = "http://123.207.50.164:5000/query";
+        String url=ThirdAPI.CRAWLINGURL;
         String params = "username=" + username + "&password=" + password +
                 "&flag=" + flag + "&no=" + no;
         String body = null;

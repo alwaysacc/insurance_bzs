@@ -72,7 +72,8 @@ public interface ThirdAPI {
     public static  final String GetCreditDetailInfo=BIHUURL+"/api/claim/GetCreditDetailInfo?";//获取车辆出险信息
     public static final String UploadMultipleImg=BIHUURL+"/api/UploadImg/UploadMultipleImg?";//核保上传图片
     //"http://123.207.50.164:5000/query"
-    public static final String CRAWLINGIP="http://123.207.50.164:5000";
+    //爬取数据
+    public static final String CRAWLINGIP="http://111.231.91.188:5000";
 
     public static final String CRAWLINGURL=CRAWLINGIP+"/query";//爬取的接口
 
