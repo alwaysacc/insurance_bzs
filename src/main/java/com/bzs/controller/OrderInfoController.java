@@ -52,6 +52,7 @@ public class OrderInfoController {
         PageHelper.startPage(page, size);
         List<OrderInfo> list=orderInfoService.getOrderList(accountId,payStatus);
         PageInfo pageInfo = new PageInfo(list);
+
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     /**
