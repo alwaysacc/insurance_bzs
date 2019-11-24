@@ -107,14 +107,13 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
         BigDecimal pw = new BigDecimal(0.5);
         BigDecimal rate = new BigDecimal(1.06);
         Long percentageId = null;
-        if (null == percentage) {
+        if (null != percentage) {
             bp = new BigDecimal(percentage.getBizPercentage());//商业险百分比
             bsp = new BigDecimal(percentage.getSubsidy());//商业险补贴百分比
             bp = bp.add(bsp);//商业险  佣金+补贴
             fp = new BigDecimal(percentage.getForcePercentage());//交强险百分比
             po = new BigDecimal(percentage.getLevelOne());//父一级提成
             pw = new BigDecimal(percentage.getLevelTwo());//父二级提成
-        } else {
             percentageId = percentage.getId();
         }
 
