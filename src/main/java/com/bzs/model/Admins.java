@@ -3,7 +3,7 @@ package com.bzs.model;
 import java.util.Date;
 import javax.persistence.*;
 
-public class Admin {
+public class Admins {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

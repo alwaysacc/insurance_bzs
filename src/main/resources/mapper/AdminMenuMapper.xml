@@ -22,7 +22,7 @@
     m.*
     FROM
     admin_menu m where  m.type &lt;&gt; 1 and m.menu_id in (
-    SELECT menu_id from admin_role_menu r where r.role_id=(SELECT a.role_id from admin a
+    SELECT menu_id from admin_role_menu r where r.role_id=(SELECT a.role_id from admins a
     where a.login_name=#{adminName})
     ) order by m.order_num
   </select>

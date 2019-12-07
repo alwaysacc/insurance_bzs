@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.SysParamMapper">
+  <resultMap id="BaseResultMap" type="com.bzs.model.SysParam">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="value" jdbcType="INTEGER" property="value" />
+  </resultMap>
+
+  <select id="getShowToday" resultType="int">
+    select value from sys_param where
+    id=1
+  </select>
+  <select id="getRole" resultType="string">
+    select value from sys_param where
+    id=2
+  </select>
+</mapper>

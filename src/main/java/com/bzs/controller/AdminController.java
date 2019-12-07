@@ -1,22 +1,17 @@
 package com.bzs.controller;
 import com.bzs.dao.AdminMapper;
-import com.bzs.model.AccountInfo;
 import com.bzs.redis.RedisUtil;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
-import com.bzs.model.Admin;
+import com.bzs.model.Admins;
 import com.bzs.service.AdminService;
 import com.bzs.utils.redisConstant.RedisConstant;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,7 +48,7 @@ public class AdminController {
 //        if (!code.equalsIgnoreCase(sessionCode)){
 //            return ResultGenerator.genFailResult("验证码错误");
 //        }
-        Admin admin=adminService.findBy("loginName",username);
+        Admins admin=adminService.findBy("loginName",username);
         password= MD5Utils.encrypt(username.toLowerCase(),password);
         log.info(password);
         UsernamePasswordToken token=new UsernamePasswordToken(username,password,rememberMe);
@@ -90,7 +85,7 @@ public class AdminController {
         }*/
     }
     @PostMapping("/updateAdmin")
-    public Result updateAdmin(Admin admin) {
+    public Result updateAdmin(Admins admin) {
         return ResultGenerator.genSuccessResult(adminService.updateAdmin(admin));
     }
     @PostMapping("/checkAdminLoginName")
@@ -98,7 +93,7 @@ public class AdminController {
         return  ResultGenerator.genSuccessResult(adminService.checkAdminLoginName().contains(loginName));
     }
     @PostMapping("/add")
-    public Result add(Admin admin) {
+    public Result add(Admins admin) {
         admin.setLoginPwd(MD5Utils.encrypt(admin.getLoginName().toLowerCase(),admin.getLoginPwd()));
         adminService.save(admin);
         HashSet set;
@@ -120,13 +115,13 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    public Result update(Admin admin) {
+    public Result update(Admins admin) {
         adminService.update(admin);
         return ResultGenerator.genSuccessResult();
     }
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
-        Admin admin = adminService.findById(id);
+        Admins admin = adminService.findById(id);
         return ResultGenerator.genSuccessResult(admin);
     }
     @PostMapping("/list")

@@ -1581,24 +1581,24 @@ public class InsuredInfoServiceImpl extends AbstractService<InsuredInfo> impleme
                     }
                     if (quote.getDouble("ChengKe") != 0) {
                         insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
-                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D3"));
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D4"));
                         insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("ChengKe")));
                         arrayList.add(insuranceTypeInfo);
                         if (Integer.valueOf(quote.getString("BuJiMianChengKe")) != 0){
                             insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
-                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD3"));
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD4"));
                             insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
                             arrayList.add(insuranceTypeInfo);
                         }
                     }
                     if (quote.getDouble("SiJi") != 0) {
                         insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
-                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D4"));
+                        insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("D3"));
                         insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(quote.getDouble("SiJi")));
                         arrayList.add(insuranceTypeInfo);
                         if (Integer.valueOf(quote.getString("BuJiMianSiJi")) != 0){
                             insuranceTypeInfo = new InsuranceTypeInfo(createBy,"0",insuredId);
-                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD4"));
+                            insuranceTypeInfo.setInsuranceName(InsuranceItems2.getName("MD3"));
                             insuranceTypeInfo.setInsuranceAmount(BigDecimal.valueOf(1));
                             arrayList.add(insuranceTypeInfo);
                         }

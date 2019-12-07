@@ -2,16 +2,14 @@ package com.bzs.service.impl;
 
 import com.bzs.cache.RedisAnnotation;
 import com.bzs.dao.AdminMapper;
-import com.bzs.model.Admin;
+import com.bzs.model.Admins;
 import com.bzs.redis.RedisUtil;
 import com.bzs.service.AdminService;
 import com.bzs.utils.AbstractService;
 import com.bzs.utils.MD5Utils;
 import com.bzs.utils.redisConstant.RedisConstant;
-import com.bzs.utils.stringUtil.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.solr.common.util.StrUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +25,7 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
-public class AdminServiceImpl extends AbstractService<Admin> implements AdminService {
+public class AdminServiceImpl extends AbstractService<Admins> implements AdminService {
     @Resource
     private AdminMapper adminMapper;
     @Resource
@@ -44,7 +42,7 @@ public class AdminServiceImpl extends AbstractService<Admin> implements AdminSer
     }
 
     @Override
-    public int updateAdmin(Admin admin) {
+    public int updateAdmin(Admins admin) {
         if (StringUtils.isNotBlank(admin.getLoginPwd())){
             admin.setLoginPwd(MD5Utils.encrypt(admin.getLoginName().toLowerCase(),admin.getLoginPwd()));
         }

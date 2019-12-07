@@ -92,6 +92,6 @@
         a.name
         FROM
         commission_percentage AS c
-        left join admin a on c.update_by=a.id
+        left join `admins` a on c.update_by=a.id
     </select>
 </mapper>
