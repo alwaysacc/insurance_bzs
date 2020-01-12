@@ -24,4 +24,6 @@ public interface DrawCashMapper extends Mapper<DrawCash> {
      * @return
      */
     int insertBatch2(List<DrawCash> list);
+
+    List getInsuranceList(@Param("typeId")String typeId);
 }

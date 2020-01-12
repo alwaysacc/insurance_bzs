@@ -11,4 +11,5 @@ public interface MessageMapper extends Mapper<Message> {
     List getList();
     List getListByUserId(@Param("userId")String userId, @Param("status")Integer status);
 
+    int delMessage(@Param("id")String id);
 }

@@ -351,6 +351,10 @@ public class QuoteInfoController {
         return quoteInfoService.getPayAddress(carVin, licenseNo, payMent, source, bizNo, forceNo, buid, channelId, quoteId, createBy, isGetPayWay, carInfoId,deliveryAddress,contactName,contactTel);
     }
 
+    public static void main(String[] args) {
+        Date nowDate=DateUtil.getDateToDate(new Date(),"yyyy-MM-dd HH:mm:ss");
+        System.out.println(nowDate);
+    }
     @ApiOperation("调用第三方壁虎-获取支付结果接口")
     @PostMapping("/WX_GetPayResult")
     public Map<String, Object> getPayResult(String carVin, String licenseNo, Long source, String buid, String bizNo, String forceNo, String channelId, String orderId,String createBy,String quoteId) {

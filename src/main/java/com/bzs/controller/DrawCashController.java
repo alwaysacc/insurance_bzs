@@ -1,4 +1,6 @@
 package com.bzs.controller;
+import com.bzs.dao.OrderInfoMapper;
+import com.bzs.dao.QuoteInfoMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.DrawCash;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,10 @@ import java.util.Map;
 public class DrawCashController {
     @Resource
     private DrawCashService drawCashService;
+    @Resource
+    private OrderInfoMapper orderInfoMapper;
+    @Resource
+    private QuoteInfoMapper quoteInfoMapper;
 
     @PostMapping("/add")
     public Result add(DrawCash drawCash) {
@@ -81,5 +88,14 @@ public class DrawCashController {
         List<DrawCash> list = drawCashService.getDrawCashList(incomePerson,type,createTime);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @PostMapping("/getInsuranceList")
+    public Result getInsuranceList(String orderId) {
+        Map map=new HashMap();
+        String id= orderInfoMapper.selectByPrimaryKey(orderId).getPayTypeId();
+        map.put("list",drawCashService.getInsuranceList(id));
+        map.put("bean",quoteInfoMapper.selectByPrimaryKey(id));
+        return ResultGenerator.genSuccessResult(map);
     }
 }

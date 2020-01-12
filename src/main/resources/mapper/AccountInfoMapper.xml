@@ -340,7 +340,8 @@
             a1.user_name AS user_name1,
             a2.user_name AS user_name2,
             a1.account_id AS account_id1,
-            a2.account_id AS account_id2
+            a2.account_id AS account_id2,
+            a.isFeedBack
         FROM
             account_info a
         LEFT JOIN account_info a1 ON a.parent_id = a1.account_id
@@ -363,6 +364,7 @@
             <if test="loginName!=null and loginName!=''">a.login_name=#{loginName}, </if>
             <if test="loginPwd!=null and loginPwd!=''">a.login_pwd=#{loginPwd}, </if>
             <if test="mobile!=null and mobile!=''">a.mobile=#{mobile}, </if>
+            <if test="isFeedBack!=null and isFeedBack!=''">a.isFeedBack=#{isFeedBack}, </if>
             a.account_state=#{accountState}
         </trim>
         <where>

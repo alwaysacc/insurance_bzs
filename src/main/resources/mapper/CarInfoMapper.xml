@@ -41,77 +41,77 @@
         <result column="is_renew_success" jdbcType="VARCHAR" property="isRenewSuccess"/>
         <result column="is_enable" jdbcType="VARCHAR" property="isEnable"/>
         <!--<collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
-<!--        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
+        <!--        <collection property="quote" ofType="com.bzs.model.QuoteInfo"></collection>-->
     </resultMap>
     <resultMap id="quote" type="com.bzs.model.QuoteInfo">
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="quote_id" jdbcType="VARCHAR" property="quoteId" />
-        <result column="REVISION" jdbcType="INTEGER" property="revision" />
-        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
-        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime" />
-        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
-        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime" />
-        <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId" />
-        <result column="quote_status" jdbcType="INTEGER" property="quoteStatus" />
-        <result column="repeat_submit_result" jdbcType="VARCHAR" property="repeatSubmitResult" />
-        <result column="submit_status" jdbcType="INTEGER" property="submitStatus" />
-        <result column="force_rate" jdbcType="VARCHAR" property="forceRate" />
-        <result column="biz_rate" jdbcType="VARCHAR" property="bizRate" />
-        <result column="no_reparation_sale_rate" jdbcType="VARCHAR" property="noReparationSaleRate" />
-        <result column="independent_channel_date" jdbcType="VARCHAR" property="independentChannelDate" />
-        <result column="independent_submit_rate" jdbcType="VARCHAR" property="independentSubmitRate" />
-        <result column="traffic_illegal_rate" jdbcType="VARCHAR" property="trafficIllegalRate" />
-        <result column="discount_rate" jdbcType="VARCHAR" property="discountRate" />
-        <result column="quote_channel" jdbcType="VARCHAR" property="quoteChannel" />
-        <result column="car_used_type" jdbcType="VARCHAR" property="carUsedType" />
-        <result column="car_model" jdbcType="VARCHAR" property="carModel" />
-        <result column="biz_total" jdbcType="DECIMAL" property="bizTotal" />
-        <result column="force_total" jdbcType="DECIMAL" property="forceTotal" />
-        <result column="tax_total" jdbcType="DECIMAL" property="taxTotal" />
-        <result column="total" jdbcType="DECIMAL" property="total" />
-        <result column="quote_insurance_name" jdbcType="VARCHAR" property="quoteInsuranceName" />
-        <result column="quote_source" jdbcType="VARCHAR" property="quoteSource" />
-        <result column="biz_no" jdbcType="VARCHAR" property="bizNo" />
-        <result column="force_no" jdbcType="VARCHAR" property="forceNo" />
-        <result column="quote_result" jdbcType="LONGVARCHAR" property="quoteResult" />
-        <result column="SubmitResult" jdbcType="LONGVARCHAR" property="submitresult" />
-        <result column="proposal_no" jdbcType="VARCHAR" property="proposalNo" />
-        <result column="pay_url" jdbcType="VARCHAR" property="payUrl" />
-        <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
-        <result column="ref_id" jdbcType="VARCHAR" property="refId" />
-        <result column="adv_discount_rate" jdbcType="VARCHAR" property="advDiscountRate" />
-        <result column="force_start_time" jdbcType="VARCHAR" property="forceStartTime" />
-        <result column="biz_start_time" jdbcType="VARCHAR" property="bizStartTime" />
-        <result column="force_ecompensation_rate" jdbcType="VARCHAR" property="forceEcompensationRate" />
-        <result column="biz_ecompensation_rate" jdbcType="VARCHAR" property="bizEcompensationRate" />
-        <result column="biz_premium" jdbcType="VARCHAR" property="bizPremium" />
-        <result column="biz_premiumBy_dis" jdbcType="VARCHAR" property="bizPremiumByDis" />
-        <result column="real_discount_rate" jdbcType="VARCHAR" property="realDiscountRate" />
-        <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate" />
-        <result column="check_no" jdbcType="VARCHAR" property="checkNo" />
-        <result column="pay_no" jdbcType="VARCHAR" property="payNo" />
-        <result column="payment_notice" jdbcType="VARCHAR" property="paymentNotice" />
-        <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
-        <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
-        <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate" />
-        <result column="buid" jdbcType="VARCHAR" property="buid" />
-        <result column="total_rate" jdbcType="VARCHAR" property="totalRate" />
-        <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
-        <result column="excluding_deductible_total" jdbcType="DECIMAL" property="excludingDeductibleTotal" />
+        <id column="quote_id" jdbcType="VARCHAR" property="quoteId"/>
+        <result column="REVISION" jdbcType="INTEGER" property="revision"/>
+        <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="CREATED_TIME" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="UPDATED_TIME" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="car_info_id" jdbcType="VARCHAR" property="carInfoId"/>
+        <result column="quote_status" jdbcType="INTEGER" property="quoteStatus"/>
+        <result column="repeat_submit_result" jdbcType="VARCHAR" property="repeatSubmitResult"/>
+        <result column="submit_status" jdbcType="INTEGER" property="submitStatus"/>
+        <result column="force_rate" jdbcType="VARCHAR" property="forceRate"/>
+        <result column="biz_rate" jdbcType="VARCHAR" property="bizRate"/>
+        <result column="no_reparation_sale_rate" jdbcType="VARCHAR" property="noReparationSaleRate"/>
+        <result column="independent_channel_date" jdbcType="VARCHAR" property="independentChannelDate"/>
+        <result column="independent_submit_rate" jdbcType="VARCHAR" property="independentSubmitRate"/>
+        <result column="traffic_illegal_rate" jdbcType="VARCHAR" property="trafficIllegalRate"/>
+        <result column="discount_rate" jdbcType="VARCHAR" property="discountRate"/>
+        <result column="quote_channel" jdbcType="VARCHAR" property="quoteChannel"/>
+        <result column="car_used_type" jdbcType="VARCHAR" property="carUsedType"/>
+        <result column="car_model" jdbcType="VARCHAR" property="carModel"/>
+        <result column="biz_total" jdbcType="DECIMAL" property="bizTotal"/>
+        <result column="force_total" jdbcType="DECIMAL" property="forceTotal"/>
+        <result column="tax_total" jdbcType="DECIMAL" property="taxTotal"/>
+        <result column="total" jdbcType="DECIMAL" property="total"/>
+        <result column="quote_insurance_name" jdbcType="VARCHAR" property="quoteInsuranceName"/>
+        <result column="quote_source" jdbcType="VARCHAR" property="quoteSource"/>
+        <result column="biz_no" jdbcType="VARCHAR" property="bizNo"/>
+        <result column="force_no" jdbcType="VARCHAR" property="forceNo"/>
+        <result column="quote_result" jdbcType="LONGVARCHAR" property="quoteResult"/>
+        <result column="SubmitResult" jdbcType="LONGVARCHAR" property="submitresult"/>
+        <result column="proposal_no" jdbcType="VARCHAR" property="proposalNo"/>
+        <result column="pay_url" jdbcType="VARCHAR" property="payUrl"/>
+        <result column="pay_time" jdbcType="VARCHAR" property="payTime"/>
+        <result column="ref_id" jdbcType="VARCHAR" property="refId"/>
+        <result column="adv_discount_rate" jdbcType="VARCHAR" property="advDiscountRate"/>
+        <result column="force_start_time" jdbcType="VARCHAR" property="forceStartTime"/>
+        <result column="biz_start_time" jdbcType="VARCHAR" property="bizStartTime"/>
+        <result column="force_ecompensation_rate" jdbcType="VARCHAR" property="forceEcompensationRate"/>
+        <result column="biz_ecompensation_rate" jdbcType="VARCHAR" property="bizEcompensationRate"/>
+        <result column="biz_premium" jdbcType="VARCHAR" property="bizPremium"/>
+        <result column="biz_premiumBy_dis" jdbcType="VARCHAR" property="bizPremiumByDis"/>
+        <result column="real_discount_rate" jdbcType="VARCHAR" property="realDiscountRate"/>
+        <result column="non_claim_discount_rate" jdbcType="VARCHAR" property="nonClaim_discountRate"/>
+        <result column="check_no" jdbcType="VARCHAR" property="checkNo"/>
+        <result column="pay_no" jdbcType="VARCHAR" property="payNo"/>
+        <result column="payment_notice" jdbcType="VARCHAR" property="paymentNotice"/>
+        <result column="serial_no" jdbcType="VARCHAR" property="serialNo"/>
+        <result column="pay_msg" jdbcType="VARCHAR" property="payMsg"/>
+        <result column="pay_end_date" jdbcType="VARCHAR" property="payEndDate"/>
+        <result column="buid" jdbcType="VARCHAR" property="buid"/>
+        <result column="total_rate" jdbcType="VARCHAR" property="totalRate"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
+        <result column="excluding_deductible_total" jdbcType="DECIMAL" property="excludingDeductibleTotal"/>
     </resultMap>
     <!--查询车辆、续保、续保险种 开始-->
     <resultMap id="carInfoAndInsuranceInfo" type="com.bzs.model.query.CarInfoAndInsuranceInfo" extends="BaseResultMap">
-        <result column="user_name" jdbcType="VARCHAR" property="userName" />
-        <association property="insuredInfo" javaType="com.bzs.model.query.InsuranceInfoAndType" >
-            <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId" />
-            <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate" />
-            <result column="b_force_expire_date" jdbcType="VARCHAR" property="forceExpireDate" />
-            <result column="b_next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate" />
-            <result column="b_next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate" />
-            <result column="b_last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany" />
-            <result column="b_last_year_source" jdbcType="VARCHAR" property="lastYearSource" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <association property="insuredInfo" javaType="com.bzs.model.query.InsuranceInfoAndType">
+            <id column="b_insured_id" jdbcType="VARCHAR" property="insuredId"/>
+            <result column="b_busines_expire_date" jdbcType="VARCHAR" property="businesExpireDate"/>
+            <result column="b_force_expire_date" jdbcType="VARCHAR" property="forceExpireDate"/>
+            <result column="b_next_busines_start_date" jdbcType="VARCHAR" property="nextBusinesStartDate"/>
+            <result column="b_next_force_start_date" jdbcType="VARCHAR" property="nextForceStartDate"/>
+            <result column="b_last_year_insurance_company" jdbcType="VARCHAR" property="lastYearInsuranceCompany"/>
+            <result column="b_last_year_source" jdbcType="VARCHAR" property="lastYearSource"/>
             <collection property="insuranceTypeInfos" resultMap="com.bzs.dao.InsuranceTypeInfoMapper.BaseResultMap"
                         ofType="com.bzs.model.InsuranceTypeInfo" columnPrefix="c_"/>
         </association>
@@ -149,7 +149,8 @@
         left join insured_info b on a.car_info_id =b.car_info_id
         left join insurance_type_info c on b.insured_id = c.type_id
         left join quote_info q1 on q1.car_info_id=a.car_info_id
-        left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
+        left join (select *from (select * FROM quote_info ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP BY
+        car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
         <trim prefix="where" suffixOverrides="and">
             <if test="carInfoId!=null and carInfoId!=''">
                 a.car_info_id=#{carInfoId} and
@@ -157,14 +158,16 @@
             <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
             <if test="createdBy!=null and createdBy!=''">a.CREATED_BY in
                 (select account_id from account_info where user_name=#{createdBy})
-             and</if>
+                and
+            </if>
             <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
             <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
             <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
             <if test="startTime!=null and endTime!=null">
-                q.CREATED_TIME  between #{startTime} and  #{endTime}
+                q.CREATED_TIME between #{startTime} and #{endTime}
             </if>
         </trim>
+        order by a.CREATED_TIME desc
     </select>
     <select id="getCarInfoAndQuoteList" parameterType="com.bzs.model.CarInfo" resultMap="carInfoAndInsuranceInfo">
         select a.*,
@@ -196,21 +199,24 @@
         left join insured_info b on a.car_info_id =b.car_info_id
         left join insurance_type_info c on b.insured_id = c.type_id
         left join quote_info q1 on q1.car_info_id=a.car_info_id
-        left join (select *from (select * FROM quote_info  ORDER BY CREATED_TIME desc LIMIT 99999999)p GROUP  BY car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
+        left join (select * from (select * FROM quote_info LIMIT 99999999)p GROUP BY
+        car_info_id,quote_source)q ON q.car_info_id =a.car_info_id
         <trim prefix="where" suffixOverrides="and">
             <if test="carInfoId!=null and carInfoId!=''">
                 a.car_info_id=#{carInfoId} and
             </if>
             <if test="carNumber!=null and carNumber!=''">a.car_number=#{carNumber} and</if>
             <if test="createdBy!=null and createdBy!=''">a.CREATED_BY =#{createdBy}
-                and</if>
+                and
+            </if>
             <if test="frameNumber!=null and frameNumber!=''">a.frame_number=#{frameNumber} and</if>
             <if test="isEnable!=null and isEnable!=''">a.is_enable=#{isEnable} and</if>
             <if test="isRenewSuccess!=null and isRenewSuccess!=''">a.is_renew_success=#{isRenewSuccess} and</if>
             <if test="startTime!=null and endTime!=null">
-                q.CREATED_TIME  between #{startTime} and  #{endTime}
+                q.CREATED_TIME between #{startTime} and #{endTime}
             </if>
         </trim>
+        ORDER BY a.CREATED_TIME desc
     </select>
 
     <!--查询车辆、续保、续保险种 结束-->
@@ -289,11 +295,11 @@
             </if>
             <if test="begDate!='' and endDate!=''">
                 and busines_expire_date between #{begDate} and #{endDate}
-                or  #{begDate} > busines_expire_date
+                or #{begDate} > busines_expire_date
             </if>
             <if test="orderByDate==1">
                 and i.busines_expire_date between #{begDate} and #{endDate}
-                or  #{begDate} > i.busines_expire_date
+                or #{begDate} > i.busines_expire_date
                 ORDER BY i.busines_expire_date DESC
             </if>
             <if test="orderByDate==0">
@@ -591,6 +597,57 @@
             car_number=#{carNumber}
             and
             CREATED_BY=#{accountId}
+        </where>
+    </select>
+    <!--获取车辆报价列表-->
+    <select id="getCarInfoListForQuote" resultType="com.bzs.utils.ResultMap">
+        SELECT
+        c.car_info_id,
+        c.car_number,
+        c.engine_number,
+        c.frame_number,
+        c.register_date,
+        c.brand_model,
+        c.car_model,
+        c.purchase_price,
+        c.seat_number,
+        c.displacement,
+        c.isTransfer_car,
+        c.isLoan_car,
+        c.remarks_car,
+        c.follow_count,
+        c.follow_time,
+        c.follow_content,
+        c.plan_return_time,
+        c.customer_status,
+        c.customer_type,
+        c.salesman,
+        c.CREATED_BY,
+        c.CREATED_TIME,
+        c.UPDATED_BY,
+        c.UPDATED_TIME,
+        c.choice_last_year_insurance_name,
+        c.choice_last_year_source,
+        c.insured_area,
+        c.license_owner,
+        c.license_owner_id_card,
+        c.license_owner_id_card_type,
+        c.customer_Id,
+        c.`status`,
+        c.mobile,
+        c.channel_type,
+        c.is_addtion,
+        c.is_renew_success,
+        c.is_enable,
+        a.user_name,
+        i.insured_id,
+        (SELECT * FROM insured_info where car_info_id=c.car_info_id) as insuredInfo
+        FROM
+        car_info AS c
+        LEFT JOIN account_info as a on(c.CREATED_BY=a.account_id)
+        left JOIN insured_info as i on(c.car_info_id=i.car_info_id)
+        <where>
+            c.CREATED_BY=#{userId}
         </where>
     </select>
 </mapper>

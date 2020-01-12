@@ -1,4 +1,6 @@
 package com.bzs.controller;
+import com.bzs.dao.SysParamMapper;
+import com.bzs.model.Address;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.SysParam;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,13 +25,14 @@ import java.util.List;
 public class SysParamController {
     @Resource
     private SysParamService sysParamService;
+    @Resource
+    private SysParamMapper sysParamMapper;
 
     @PostMapping("/add")
     public Result add(SysParam sysParam) {
         sysParamService.save(sysParam);
         return ResultGenerator.genSuccessResult();
     }
-
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         sysParamService.deleteById(id);
@@ -43,13 +48,16 @@ public class SysParamController {
     }
     @PostMapping("/update")
     public Result update(SysParam sysParam) {
-        sysParamService.update(sysParam);
+        Condition example=new Condition(SysParam.class);
+        Example.Criteria  criteria= example.createCriteria();
+        criteria.andCondition("param_key=", sysParam.getParamKey());
+        sysParamMapper.updateByCondition(sysParam,example);
         return ResultGenerator.genSuccessResult();
     }
 
     @PostMapping("/detail")
-    public Result detail(@RequestParam Integer id) {
-        return ResultGenerator.genSuccessResult(sysParamService.getRole());
+    public Result detail( String paramKey) {
+        return ResultGenerator.genSuccessResult(sysParamMapper.getParamValue(paramKey));
     }
 
     @PostMapping("/list")

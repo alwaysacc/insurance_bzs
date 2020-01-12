@@ -179,7 +179,7 @@
     b.third_insurance_id as thirdInsuranceId,
     a.name as name
     from  third_insurance_account_info  b
-    left  join  admin a on  a.id = b.account_id
+    left  join  admins a on  a.id = b.account_id
       <trim prefix="where" suffixOverrides="and">
         <if test="createBy!=null and createBy!=''">
           b.account_id =#{createBy} and

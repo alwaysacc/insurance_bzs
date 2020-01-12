@@ -172,4 +172,9 @@ public class DrawCashServiceImpl extends AbstractService<DrawCash> implements Dr
         }
         return ResultGenerator.genSuccessResult();
     }
+
+    @Override
+    public List getInsuranceList(String typeId) {
+        return drawCashMapper.getInsuranceList(typeId);
+    }
 }

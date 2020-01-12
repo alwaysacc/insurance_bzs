@@ -5,7 +5,7 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
@@ -15,42 +15,56 @@
         <result column="update_user" jdbcType="VARCHAR" property="updateUser"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_show" jdbcType="INTEGER" property="isShow"/>
+        <result column="m_id" jdbcType="VARCHAR" property="mId"/>
     </resultMap>
 
     <select id="getList" resultMap="BaseResultMap">
-    SELECT m.title,
- m.content,
-m.id,
-m.user_id,
-m.type,
-m.`status`,
-m.create_user,
-m.update_user,
-m.create_time,
-m.update_time
-FROM
-message AS m
-group by m.title,m.content
-  </select>
-
-    <select id="getListByUserId" resultMap="BaseResultMap">
-        SELECT m.title,
-        m.content,
+    SELECT
         m.id,
+        m.title,
+        m.content,
         m.user_id,
         m.type,
         m.`status`,
         m.create_user,
         m.update_user,
         m.create_time,
-        m.update_time
+        m.update_time,
+        m.is_show,
+        m.m_id
+        FROM
+        message AS m
+        where is_show=0
+group by  m.m_id
+order by  m.create_time desc
+  </select>
+
+    <select id="getListByUserId" resultMap="BaseResultMap">
+        SELECT
+        m.id,
+        m.title,
+        m.content,
+        m.user_id,
+        m.type,
+        m.`status`,
+        m.create_user,
+        m.update_user,
+        m.create_time,
+        m.update_time,
+        m.is_show,
+        m.m_id
         FROM
         message AS m
         <where>
             m.user_id=#{userId}
+            and m.is_show=0
             <if test="status!=null">
                 and m.status=#{status}
             </if>
         </where>
     </select>
+    <update id="delMessage">
+        update message set is_show=1 where m_id=#{id}
+    </update>
 </mapper>

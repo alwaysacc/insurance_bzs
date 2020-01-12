@@ -8,12 +8,14 @@ public class SysParam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String key;
+    @Column(name = "param_key")
+    private String paramKey;
 
     /**
      * 1 是 2否
      */
-    private String value;
+    @Column(name = "param_value")
+    private String paramValue;
 
     /**
      * @return id
@@ -30,34 +32,34 @@ public class SysParam {
     }
 
     /**
-     * @return key
+     * @return param_key
      */
-    public String getKey() {
-        return key;
+    public String getParamKey() {
+        return paramKey;
     }
 
     /**
-     * @param key
+     * @param paramKey
      */
-    public void setKey(String key) {
-        this.key = key;
+    public void setParamKey(String paramKey) {
+        this.paramKey = paramKey;
     }
 
     /**
      * 获取1 是 2否
      *
-     * @return value - 1 是 2否
+     * @return param_value - 1 是 2否
      */
-    public String getValue() {
-        return value;
+    public String getParamValue() {
+        return paramValue;
     }
 
     /**
      * 设置1 是 2否
      *
-     * @param value 1 是 2否
+     * @param paramValue 1 是 2否
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setParamValue(String paramValue) {
+        this.paramValue = paramValue;
     }
 }

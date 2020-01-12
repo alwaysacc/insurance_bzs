@@ -6,16 +6,19 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="key" jdbcType="VARCHAR" property="key" />
-    <result column="value" jdbcType="INTEGER" property="value" />
+    <result column="param_key" jdbcType="VARCHAR" property="paramKey" />
+    <result column="param_value" jdbcType="VARCHAR" property="paramValue" />
   </resultMap>
-
+  <select id="getParamValue" resultType="string">
+    select param_value from sys_param where
+   param_key=#{paramKey}
+  </select>
   <select id="getShowToday" resultType="int">
-    select value from sys_param where
+    select param_value from sys_param where
     id=1
   </select>
   <select id="getRole" resultType="string">
-    select value from sys_param where
+    select param_value from sys_param where
     id=2
   </select>
 </mapper>

@@ -1,9 +1,11 @@
 package com.bzs.controller;
 
+import com.bzs.dao.CarInfoMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.CarInfo;
 import com.bzs.service.CarInfoService;
+import com.bzs.utils.jsontobean.M;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +29,8 @@ import java.util.Map;
 public class CarInfoController {
     @Resource
     private CarInfoService carInfoService;
+   @Resource
+    private CarInfoMapper carInfoMapper;
 
     @PostMapping("/add")
     public Result add(CarInfo carInfo) {
@@ -179,6 +183,7 @@ public class CarInfoController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
     @PostMapping("/getCarInfoAndQuoteList")
     public Result getCarInfoAndQuoteList(String carInfoId, String createBy, String carNo, String vinNo, String isEnable,
                                          String isRenewSuccess, String queryTime,
@@ -190,4 +195,12 @@ public class CarInfoController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
+    @PostMapping("/getCarInfoQuoteList")
+    public Result getCarInfoQuoteList(String carInfoId, String createBy, String carNo, String vinNo, String isEnable,
+                                  String isRenewSuccess, String queryTime,
+                                  @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size
+    ) {
+        List list = carInfoService.getCarInfoQuote(carInfoId, createBy, carNo, vinNo, isEnable, isRenewSuccess, queryTime);
+        return ResultGenerator.genSuccessResult(list);
+    }
 }

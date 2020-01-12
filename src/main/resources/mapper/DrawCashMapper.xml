@@ -1,141 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bzs.dao.DrawCashMapper">
-  <resultMap id="BaseResultMap" type="com.bzs.model.DrawCash">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
-    <result column="commission_percentage_id" jdbcType="INTEGER" property="commissionPercentageId" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="serial_no" jdbcType="VARCHAR" property="serialNo" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="descriton" jdbcType="VARCHAR" property="descriton" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
-    <result column="biz_cash" jdbcType="VARCHAR" property="bizCash" />
-    <result column="income_person" jdbcType="VARCHAR" property="incomePerson" />
-    <result column="force_cash" jdbcType="VARCHAR" property="forceCash" />
-    <result column="cash" jdbcType="VARCHAR" property="cash" />
-    <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage" />
-    <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage" />
-    <result column="draw_percentage" jdbcType="VARCHAR" property="drawPercentage" />
-  </resultMap>
-  <sql id="insertBacthItems">
-    <trim prefix="(" suffixOverrides="," suffix=")">
-      order_id,
-      commission_percentage_id,
-      serial_no,
-      create_by
-    </trim>
-  </sql>
+    <resultMap id="BaseResultMap" type="com.bzs.model.DrawCash">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="commission_percentage_id" jdbcType="INTEGER" property="commissionPercentageId"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="serial_no" jdbcType="VARCHAR" property="serialNo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="descriton" jdbcType="VARCHAR" property="descriton"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="biz_cash" jdbcType="VARCHAR" property="bizCash"/>
+        <result column="income_person" jdbcType="VARCHAR" property="incomePerson"/>
+        <result column="force_cash" jdbcType="VARCHAR" property="forceCash"/>
+        <result column="cash" jdbcType="VARCHAR" property="cash"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="biz_percentage" jdbcType="VARCHAR" property="bizPercentage"/>
+        <result column="force_percentage" jdbcType="VARCHAR" property="forcePercentage"/>
+        <result column="draw_percentage" jdbcType="VARCHAR" property="drawPercentage"/>
+    </resultMap>
+    <sql id="insertBacthItems">
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            order_id,
+            commission_percentage_id,
+            serial_no,
+            create_by
+        </trim>
+    </sql>
 
-  <insert id="insertBatch" parameterType="java.util.List">
-    insert into draw_cash
-    <include refid="insertBacthItems"/>
-    values
-    <foreach collection="list" item="item" index="index" separator=",">
-      (
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into draw_cash
+        <include refid="insertBacthItems"/>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
             #{item.orderId},
             #{item.commissionPercentageId},
             #{item.serialNo},
             #{item.createBy}
-      )
-    </foreach>
-  </insert>
-  <sql id="insertBatch2Test">
-    <foreach collection="list" item="item" index="index">
-      <if test="index==0">
-        <trim suffixOverrides=",">
-          <if test="item.orderId!=null and item.orderId!=''">order_id,</if>
-          <if test="item.commissionPercentageId!=null">commission_percentage_id,</if>
-          <if test="item.serialNo!=null and item.serialNo!=''">serial_no,</if>
-          <if test="item.createBy!=null and item.createBy!=''">create_by,</if>
-          <if test="item.bizCash!=null and item.bizCash!=''">biz_cash,</if>
-          <if test="item.forceCash!=null and item.forceCash!=''">force_cash,</if>
-          <if test="item.cash!=null and item.cash!=''">cash,</if>
-          <if test="item.incomePerson!=null and item.incomePerson!=''">income_person,</if>
-          <if test="item.type!=null">type,</if>
-          <if test="item.bizPercentage!=null and item.bizPercentage!=''">biz_percentage,</if>
-          <if test="item.forcePercentage!=null and item.forcePercentage!=''">force_percentage,</if>
-          <if test="item.drawPercentage!=null and item.drawPercentage!=''">draw_percentage,</if>
-        </trim>
-      </if>
-    </foreach>
-  </sql>
+            )
+        </foreach>
+    </insert>
+    <sql id="insertBatch2Test">
+        <foreach collection="list" item="item" index="index">
+            <if test="index==0">
+                <trim suffixOverrides=",">
+                    <if test="item.orderId!=null and item.orderId!=''">order_id,</if>
+                    <if test="item.commissionPercentageId!=null">commission_percentage_id,</if>
+                    <if test="item.serialNo!=null and item.serialNo!=''">serial_no,</if>
+                    <if test="item.createBy!=null and item.createBy!=''">create_by,</if>
+                    <if test="item.bizCash!=null and item.bizCash!=''">biz_cash,</if>
+                    <if test="item.forceCash!=null and item.forceCash!=''">force_cash,</if>
+                    <if test="item.cash!=null and item.cash!=''">cash,</if>
+                    <if test="item.incomePerson!=null and item.incomePerson!=''">income_person,</if>
+                    <if test="item.type!=null">type,</if>
+                    <if test="item.bizPercentage!=null and item.bizPercentage!=''">biz_percentage,</if>
+                    <if test="item.forcePercentage!=null and item.forcePercentage!=''">force_percentage,</if>
+                    <if test="item.drawPercentage!=null and item.drawPercentage!=''">draw_percentage,</if>
+                </trim>
+            </if>
+        </foreach>
+    </sql>
 
-  <sql id="batchInsertItems2">
+    <sql id="batchInsertItems2">
 
-    <foreach collection="list" item="item" index="index" separator=",">
-      (
-      <trim suffixOverrides=",">
-        <if test="item.orderId!=null and item.orderId!=''">#{item.orderId},</if>
-        <if test="item.commissionPercentageId!=null">#{item.commissionPercentageId},</if>
-        <if test="item.serialNo!=null and item.serialNo!=''">#{item.serialNo},</if>
-        <if test="item.createBy!=null and item.createBy!=''">#{item.createBy},</if>
-        <if test="item.bizCash!=null and item.bizCash!=''">#{item.bizCash},</if>
-        <if test="item.forceCash!=null and item.forceCash!=''">#{item.forceCash},</if>
-        <if test="item.cash!=null and item.cash!=''">#{item.cach},</if>
-        <if test="item.incomePerson!=null and item.incomePerson!=''">#{item.incomePerson},</if>
-        <if test="item.type!=null">#{item.type}</if>
-        <if test="item.bizPercentage!=null and item.bizPercentage!=''">#{item.bizPercentage},</if>
-        <if test="item.forcePercentage!=null and item.forcePercentage!=''">#{item.forcePercentage},</if>
-        <if test="item.drawPercentage!=null and item.drawPercentage!=''">#{item.drawPercentage},</if>
-      </trim>
-      )
-    </foreach>
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim suffixOverrides=",">
+                <if test="item.orderId!=null and item.orderId!=''">#{item.orderId},</if>
+                <if test="item.commissionPercentageId!=null">#{item.commissionPercentageId},</if>
+                <if test="item.serialNo!=null and item.serialNo!=''">#{item.serialNo},</if>
+                <if test="item.createBy!=null and item.createBy!=''">#{item.createBy},</if>
+                <if test="item.bizCash!=null and item.bizCash!=''">#{item.bizCash},</if>
+                <if test="item.forceCash!=null and item.forceCash!=''">#{item.forceCash},</if>
+                <if test="item.cash!=null and item.cash!=''">#{item.cach},</if>
+                <if test="item.incomePerson!=null and item.incomePerson!=''">#{item.incomePerson},</if>
+                <if test="item.type!=null">#{item.type}</if>
+                <if test="item.bizPercentage!=null and item.bizPercentage!=''">#{item.bizPercentage},</if>
+                <if test="item.forcePercentage!=null and item.forcePercentage!=''">#{item.forcePercentage},</if>
+                <if test="item.drawPercentage!=null and item.drawPercentage!=''">#{item.drawPercentage},</if>
+            </trim>
+            )
+        </foreach>
 
-  </sql>
+    </sql>
 
-  <insert id="insertBatch2" parameterType="java.util.List">
-    insert into draw_cash( <include refid="insertBatch2Test"/> )
-    values <include refid="batchInsertItems2"/>
-  </insert>
+    <insert id="insertBatch2" parameterType="java.util.List">
+        insert into draw_cash(
+        <include refid="insertBatch2Test"/>
+        )
+        values
+        <include refid="batchInsertItems2"/>
+    </insert>
 
-  <select id="getDrawCashList" resultType="map">
-      SELECT
-      d.id,
-      d.order_id,
-      d.commission_percentage_id,
-      d.biz_cash,
-      d.force_cash,
-      d.cash,
-      d.`status`,
-      d.serial_no,
-      d.create_time,
-      d.descriton,
-      d.update_time,
-      d.create_by,
-      d.update_by,
-      d.income_person,
-      d.type,
-      d.biz_percentage,
-      d.force_percentage,
-      d.draw_percentage,
-      a.user_name,
-      q.quote_insurance_name,
-      q.biz_total,
-      q.force_total,
-      q.tax_total,
-      q.total,
-      c.car_number,
-      q.force_no,q.biz_no,c.license_owner
-      FROM
-      draw_cash AS d
-      LEFT JOIN account_info a ON d.income_person = a.account_id
-      LEFT JOIN order_info o ON d.order_id = o.order_id
-      LEFT JOIN quote_info q ON o.pay_type_id = q.quote_id
-      LEFT JOIN car_info c on q.car_info_id=c.car_info_id
-      <where>
-    <if test="incomePerson!=null and incomePerson!=''">and d.income_person=#{incomePerson} </if>
-          <if test="type!=null and type !=''">and type=#{type} </if>
-          <if test="startTime!=null and endTime!=null">
-              and  d.create_time  between #{startTime} and  #{endTime}
-          </if>
-</where>
-  </select>
-
+    <select id="getDrawCashList" resultType="map">
+        SELECT
+        d.id,
+        d.order_id,
+        d.commission_percentage_id,
+        d.biz_cash,
+        d.force_cash,
+        d.cash,
+        d.`status`,
+        d.serial_no,
+        d.create_time,
+        d.descriton,
+        d.update_time,
+        d.create_by,
+        d.update_by,
+        d.income_person,
+        d.type,
+        d.biz_percentage,
+        d.force_percentage,
+        d.draw_percentage,
+        a.user_name,
+        q.quote_insurance_name,
+        q.biz_total,
+        q.force_total,
+        q.tax_total,
+        q.total,
+        c.car_number,
+        q.force_no,q.biz_no,c.license_owner,
+        q.quote_source
+        FROM
+        draw_cash AS d
+        LEFT JOIN account_info a ON d.income_person = a.account_id
+        LEFT JOIN order_info o ON d.order_id = o.order_id
+        LEFT JOIN quote_info q ON o.pay_type_id = q.quote_id
+        LEFT JOIN car_info c on q.car_info_id=c.car_info_id
+        <where>
+            <if test="incomePerson!=null and incomePerson!=''">and d.income_person=#{incomePerson}</if>
+            <if test="type!=null and type !=''">and type=#{type}</if>
+            <if test="startTime!=null and endTime!=null">
+                and d.create_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+    </select>
+    <select id="getInsuranceList" resultType="map">
+       SELECT
+i.insurance_type_id,
+i.REVISION,
+i.CREATED_BY,
+i.CREATED_TIME,
+i.UPDATED_BY,
+i.UPDATED_TIME,
+i.insurance_name,
+i.insurance_amount,
+i.insurance_premium,
+i.info_type,
+i.type_id,
+i.excluding_deductible,
+i.send_time,
+i.standard_premium
+FROM
+insurance_type_info AS i
+where type_id =#{typeId}
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.bzs.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.bzs.dao.CarInfoMapper;
 import com.bzs.dao.OrderInfoMapper;
 import com.bzs.dao.QuoteInfoMapper;
@@ -44,8 +45,15 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
     private InsuredInfoService insuredInfoService;
 
     @Override
-    public List getOrderListByAdmin(int payStatus,String userName,String carNumber) {
-        return orderInfoMapper.getOrderListByAdmin(payStatus,userName,carNumber);
+    public List getOrderListByAdmin(int payStatus,String userName,String carNumber,String createTime) {
+        String startTime=null;
+        String endTime=null;
+        if (createTime!=null && createTime!=""){
+            List<String> timeList= JSONArray.parseArray(createTime).toJavaList(String.class);
+            startTime=timeList.get(0);
+            endTime=timeList.get(1);
+        }
+        return orderInfoMapper.getOrderListByAdmin(payStatus,userName,carNumber,startTime,endTime);
     }
 
     @Override

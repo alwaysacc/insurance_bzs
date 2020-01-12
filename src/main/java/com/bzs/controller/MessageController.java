@@ -33,14 +33,20 @@ public class MessageController {
     @PostMapping("/add")
     public Result add(Message message) {
         List<AccountInfo> list=accountInfoService.findAll();
+        String mId=IdUtil.fastSimpleUUID();
         for (AccountInfo a:list) {
-            message.setId(IdUtil.fastSimpleUUID());
+            message.setmId(mId);
             message.setUserId(a.getAccountId());
             messageMapper.insertSelective(message);
         }
         return ResultGenerator.genSuccessResult();
     }
 
+    @PostMapping("/del")
+    public Result del( String id) {
+        messageMapper.delMessage(id);
+        return ResultGenerator.genSuccessResult();
+    }
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         messageService.deleteById(id);
@@ -53,7 +59,7 @@ public class MessageController {
         return ResultGenerator.genSuccessResult();
     }
     @PostMapping("/updateStatus")
-    public Result updateStatus(String id) {
+    public Result updateStatus(int id) {
         Message message=new Message();
         message.setId(id);
         message.setStatus(1);

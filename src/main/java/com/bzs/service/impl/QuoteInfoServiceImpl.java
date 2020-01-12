@@ -1803,7 +1803,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     String forcepNo = jsonObject.getJSONObject("Data").getString("ForcepNo");
                     map.put("code", "200");
 
-                    Date nowDate=DateUtil.getDateToDate(new Date(),"yyyy-MM-dd");
+                    Date nowDate=DateUtil.getDateToDate(new Date(),"yyyy-MM-dd HH:mm:ss");
 
                     //支付状态0待支付,1完成2取消3过期4作废5已重新获取
                     Integer status = 0;

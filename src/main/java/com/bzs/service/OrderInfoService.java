@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by alwaysacc on 2019/04/12.
  */
 public interface OrderInfoService extends Service<OrderInfo> {
-    List getOrderListByAdmin(int payStatus,String userName,String carNumber);
+    List getOrderListByAdmin(int payStatus,String userName,String carNumber,String createTime);
 
     List getOrderList(String accountId, int payStatus);
 

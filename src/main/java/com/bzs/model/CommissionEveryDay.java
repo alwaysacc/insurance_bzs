@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class CommissionEveryDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * 保司商业佣金
@@ -64,14 +64,14 @@ public class CommissionEveryDay {
     /**
      * @return id
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     /**
      * @param id
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

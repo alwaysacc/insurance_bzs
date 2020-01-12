@@ -24,7 +24,8 @@ import java.util.Map;
 public class CommissionPercentageController {
     @Resource
     private CommissionPercentageService commissionPercentageService;
-
+    @Resource
+    private CommissionPercentageMapper commissionPercentageMapper;
 
     @PostMapping("/add")
     public Result add(CommissionPercentage commissionPercentage) {
@@ -47,6 +48,11 @@ public class CommissionPercentageController {
     @PostMapping("/detail")
     public Result detail(@RequestParam Integer id) {
         CommissionPercentage commissionPercentage = commissionPercentageService.findById(id);
+        return ResultGenerator.genSuccessResult(commissionPercentage);
+    }
+    @PostMapping("/getCommission")
+    public Result detail(CommissionPercentage c) {
+        CommissionPercentage commissionPercentage = commissionPercentageMapper.selectOne(c);
         return ResultGenerator.genSuccessResult(commissionPercentage);
     }
 

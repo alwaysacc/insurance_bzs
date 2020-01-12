@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.dao.CommissionEveryDayMapper;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
 import com.bzs.model.CommissionEveryDay;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.List;
 public class CommissionEveryDayController {
     @Resource
     private CommissionEveryDayService commissionEveryDayService;
+    @Resource
+    private CommissionEveryDayMapper commissionEveryDayMapper;
 
     @PostMapping("/add")
     public Result add(CommissionEveryDay commissionEveryDay) {
@@ -31,6 +35,11 @@ public class CommissionEveryDayController {
     @PostMapping("/delete")
     public Result delete(@RequestParam Integer id) {
         commissionEveryDayService.deleteById(id);
+        return ResultGenerator.genSuccessResult();
+    }
+    @PostMapping("/deleteSome")
+    public Result deletesSome(@RequestParam Integer[] id) {
+        commissionEveryDayMapper.deleteCommission(id);
         return ResultGenerator.genSuccessResult();
     }
 
@@ -49,7 +58,9 @@ public class CommissionEveryDayController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<CommissionEveryDay> list = commissionEveryDayService.findAll();
+        Condition condition=new Condition(CommissionEveryDay.class);
+        condition.orderBy("createTime").desc();
+        List<CommissionEveryDay> list = commissionEveryDayService.findByCondition(condition);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

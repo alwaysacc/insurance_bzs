@@ -8,36 +8,46 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface OrderInfoMapper extends Mapper<OrderInfo> {
-    List getOrderListByAdmin(@Param("payStatus")int payStatus,@Param("userName")String userName,@Param("carNumber")String carNumber);
+    List getOrderListByAdmin(@Param("payStatus") int payStatus, @Param("userName") String userName, @Param("carNumber") String carNumber,
+                             @Param("startTime") String startTime, @Param("endTime") String endTime);
 
-    List getOrderList(@Param("accountId")String accountId,@Param("payStatus")int payStatus);
+    List getOrderList(@Param("accountId") String accountId, @Param("payStatus") int payStatus);
 
-    List searchOrderList(@Param("accountId")String accountId,@Param("payStatus")int payStatus,
-                      @Param("carInfoId")String carInfoId, @Param("postedName")String postedName,
-                      @Param("deliveryWay") int deliveryWay,@Param("insuranceCompany") String insuranceCompany
-                      );
+    List searchOrderList(@Param("accountId") String accountId, @Param("payStatus") int payStatus,
+                         @Param("carInfoId") String carInfoId, @Param("postedName") String postedName,
+                         @Param("deliveryWay") int deliveryWay, @Param("insuranceCompany") String insuranceCompany
+    );
+
     /**
      * 根据订单id修改订单状态
+     *
      * @param orderInfo
      * @return
      */
-    int  updatePayStatus(OrderInfo orderInfo);
+    int updatePayStatus(OrderInfo orderInfo);
+
     /**
      * 根据订单id修改订单状态
+     *
      * @param orderId
      * @return
      */
-    int  updatePayStatusById(@Param("orderId") String  orderId);
+    int updatePayStatusById(@Param("orderId") String orderId);
 
     String getOrderIdByQuoteId(@Param("quoteId") String quoteId);
 
     /**
      * 获取下两级订单包括自己的一共三级
+     *
      * @param createBy
      * @param type
      * @param payStatus
      * @return
      */
 
-    List<OrderAndAccount> getNextLevelOrder(@Param("createBy")String createBy, @Param("type")String type, @Param("payStatus")String payStatus);
+    List<OrderAndAccount> getNextLevelOrder(@Param("createBy") String createBy, @Param("type") String type, @Param("payStatus") String payStatus);
+
+    List getListToQuartz();
+
+    int updatePayStatusByOderId(@Param("orderId") String orderId);
 }

@@ -3,37 +3,21 @@ package com.bzs.model;
 import java.util.Date;
 import javax.persistence.*;
 
-@Table(name = "message")
-public class Message {
+@Table(name = "partner_info")
+public class PartnerInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     /**
-     * 通知标题
+     * 名字
      */
-    private String title;
-
-    /**
-     * 通知内容
-     */
-    private String content;
-
-    /**
-     * 通知人id
-     */
-    @Column(name = "user_id")
-    private String userId;
+    private String name;
 
     /**
      * 通知类型
      */
     private Integer type;
-
-    /**
-     * 状态 0未读 1已读
-     */
-    private Integer status;
 
     /**
      * 创建人
@@ -52,76 +36,37 @@ public class Message {
 
     @Column(name = "update_time")
     private Date updateTime;
-    @Column(name = "is_show")
-    private int isShow;
-    @Column(name = "m_id")
-    private String mId;
+
     /**
      * @return id
      */
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
     /**
      * @param id
      */
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
     /**
-     * 获取通知标题
+     * 获取名字
      *
-     * @return title - 通知标题
+     * @return name - 名字
      */
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
     /**
-     * 设置通知标题
+     * 设置名字
      *
-     * @param title 通知标题
+     * @param name 名字
      */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * 获取通知内容
-     *
-     * @return content - 通知内容
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * 设置通知内容
-     *
-     * @param content 通知内容
-     */
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    /**
-     * 获取通知人id
-     *
-     * @return user_id - 通知人id
-     */
-    public String getUserId() {
-        return userId;
-    }
-
-    /**
-     * 设置通知人id
-     *
-     * @param userId 通知人id
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -140,24 +85,6 @@ public class Message {
      */
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    /**
-     * 获取状态 0未读 1已读
-     *
-     * @return status - 状态 0未读 1已读
-     */
-    public Integer getStatus() {
-        return status;
-    }
-
-    /**
-     * 设置状态 0未读 1已读
-     *
-     * @param status 状态 0未读 1已读
-     */
-    public void setStatus(Integer status) {
-        this.status = status;
     }
 
     /**
@@ -222,21 +149,5 @@ public class Message {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public int getIsShow() {
-        return isShow;
-    }
-
-    public void setIsShow(int isShow) {
-        this.isShow = isShow;
-    }
-
-    public String getmId() {
-        return mId;
-    }
-
-    public void setmId(String mId) {
-        this.mId = mId;
     }
 }

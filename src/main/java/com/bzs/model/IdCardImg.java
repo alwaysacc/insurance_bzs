@@ -28,6 +28,45 @@ public class IdCardImg {
     @Column(name = "update_time")
     private Date updateTime;
 
+    private String name;
+    private String bank;
+    @Column(name = "bankAddress")
+    private String bankAddress;
+    @Column(name = "bankNumber")
+    private Integer bankNumber;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
+    }
+
+    public String getBankAddress() {
+        return bankAddress;
+    }
+
+    public void setBankAddress(String bankAddress) {
+        this.bankAddress = bankAddress;
+    }
+
+    public Integer getBankNumber() {
+        return bankNumber;
+    }
+
+    public void setBankNumber(Integer bankNumber) {
+        this.bankNumber = bankNumber;
+    }
+
     /**
      * @return id
      */

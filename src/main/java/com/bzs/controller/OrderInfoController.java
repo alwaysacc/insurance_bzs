@@ -33,9 +33,10 @@ public class OrderInfoController {
 
 
     @PostMapping("/getOrderListByAdmin")
-    public Result getOrderListByAdmin(@RequestParam(defaultValue = "9")int payStatus,String userName,String carNumber,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public Result getOrderListByAdmin(@RequestParam(defaultValue = "9")int payStatus,String userName,String carNumber,String createTime,
+                                      @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<OrderInfo> list=orderInfoService.getOrderListByAdmin(payStatus,userName,carNumber);
+        List<OrderInfo> list=orderInfoService.getOrderListByAdmin(payStatus,userName,carNumber,createTime);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

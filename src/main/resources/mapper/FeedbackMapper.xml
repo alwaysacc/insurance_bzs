@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzs.dao.FeedbackMapper">
+    <resultMap id="BaseResultMap" type="com.bzs.model.Feedback">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="imageUrl" jdbcType="VARCHAR" property="imageUrl"/>
+        <result column="createUser" jdbcType="VARCHAR" property="createUser"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+    </resultMap>
+    <select id="getList" resultType="map">
+        SELECT
+        f.id,
+        f.`name`,
+        f.title,
+        f.content,
+        f.imageUrl,
+        f.createUser,
+        f.createTime,
+        f.tel,
+        f.`status`,
+        f.replyContent,
+        f.updateTime,
+        a.user_name
+        FROM
+        feedback AS f
+        LEFT JOIN account_info a on (f.createUser=a.account_id)
+        <where>
+            <if test="status!=null">
+                f.`status`=#{status}
+            </if>
+        </where>
+        ORDER BY createTime desc
+    </select>
+    <update id="updateImageUrl">
+    UPDATE feedback set imageUrl=concat(imageUrl,#{imageUrl}) where id=#{id}
+  </update>
+</mapper>

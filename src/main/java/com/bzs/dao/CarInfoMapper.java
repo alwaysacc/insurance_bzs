@@ -6,6 +6,7 @@ import com.bzs.utils.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CarInfoMapper extends Mapper<CarInfo> {
     List getUserList(@Param("accountId") String accountId, @Param("roleId") String roleId,
@@ -94,4 +95,6 @@ public interface CarInfoMapper extends Mapper<CarInfo> {
     String getCarCountByAccountId(@Param("carNumber") String carNumber,
                                   @Param("accountId") String accountId
     );
+
+    List<Map> getCarInfoListForQuote(@Param("userId")String userId);
 }

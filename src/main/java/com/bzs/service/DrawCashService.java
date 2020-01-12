@@ -29,4 +29,7 @@ public interface DrawCashService extends Service<DrawCash> {
      * @return
      */
     Result addDrawCash(String orderId, String quoteId, String createBy);
+
+
+    List getInsuranceList(String typeId);
 }

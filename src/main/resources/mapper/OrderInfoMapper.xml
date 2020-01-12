@@ -93,7 +93,11 @@
               <if test="carNumber!='' and carNumber!=null">
                 c.car_number=#{carNumber}
               </if>
+              <if test="startTime!=null and endTime!=null">
+                and o.create_time between #{startTime} and #{endTime}
+              </if>
             </where>
+            order by  o.create_time desc
   </select>
   <select id="getOrderList" resultType="map">
     SELECT
@@ -237,4 +241,16 @@ INNER JOIN car_info c on q.car_info_id= c.car_info_id
 LEFT JOIN draw_cash d ON d.order_id=o.order_id
 LEFT JOIN commission_percentage per ON per.id=d.commission_percentage_id*/-->
 
+  <select id="getListToQuartz" resultType="map">
+    SELECT
+q.pay_end_date,
+o.order_id
+FROM
+order_info AS o
+LEFT JOIN quote_info q on(o.pay_type_id=q.quote_id)
+WHERE o.pay_status=0
+  </select>
+  <update id="updatePayStatusByOderId">
+    update order_info set pay_status=3 where order_id=#{orderId}
+  </update>
 </mapper>

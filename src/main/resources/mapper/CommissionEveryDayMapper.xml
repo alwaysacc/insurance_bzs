@@ -16,4 +16,11 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="source" jdbcType="VARCHAR" property="source" />
   </resultMap>
+
+  <delete id="deleteCommission">
+    delete from commission_every_day where id in
+    <foreach item="item" collection="id" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </delete>
 </mapper>

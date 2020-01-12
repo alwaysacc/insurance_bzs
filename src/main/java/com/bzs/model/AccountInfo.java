@@ -175,7 +175,26 @@ public class AccountInfo implements Serializable {
     private BigDecimal drawPercentageTotal;
     @Column(name = "verified_stat")
     private Integer verifiedStat;
+    @Column(name = "openId")
+    private String openId;
+    @Column(name="isFeedBack")
+    private Integer isFeedBack;
 
+    public Integer getIsFeedBack() {
+        return isFeedBack;
+    }
+
+    public void setIsFeedBack(Integer isFeedBack) {
+        this.isFeedBack = isFeedBack;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
 
     public Integer getVerifiedStat() {
         return verifiedStat;

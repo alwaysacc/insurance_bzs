@@ -63,7 +63,10 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
     private IdCardImgService idCardImgService;
     @Resource
     private CardInfoMapper cardInfoMapper;
-
+    @Resource
+    private DrawCashMapper drawCashMapper;
+    @Resource
+    private MessageMapper messageMapper;
 
     private static final String CODE = "CODE_LIST";
 
@@ -393,11 +396,14 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         QuoteInfo quoteInfo = null;
         int quoteCount = quoteInfoMapper.selectCount(quoteInfo);
         int todayCount = accountInfoMapper.getTodayLoginCount();
+        DrawCash drawCash=null;
+        int drawCount = drawCashMapper.selectCount(null);
         map = new HashMap();
         map.put("userCount", userCount);
         map.put("orderCount", orderCount);
         map.put("quoteCount", quoteCount);
         map.put("todayCount", todayCount);
+        map.put("drawCount", drawCount);
         return map;
     }
 

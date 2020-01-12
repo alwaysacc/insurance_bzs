@@ -1,6 +1,8 @@
 package com.bzs.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.bzs.dao.AccountInfoMapper;
 import com.bzs.model.AccountInfo;
 import com.bzs.service.AccountInfoService;
 import com.bzs.utils.MD5Utils;
@@ -33,10 +35,12 @@ public class LoginController {
 
     @Resource
     private AccountInfoService accountInfoService;
-    
+    @Resource
+    private AccountInfoMapper accountInfoMapper;
+
     @PostMapping("/login")
     @ResponseBody
-    public Result login(String username,String password,String code,boolean rememberMe) {
+    public Result login(String username,String password,String code,boolean rememberMe,String openId) {
         System.out.println(username);
         System.out.println(password);
         if (StringUtils.isBlank(code)){
@@ -61,26 +65,12 @@ public class LoginController {
         else if (2==accountInfo.getAccountState())
             return ResultGenerator.genFailResult("账号待审核");
 
+        if (StrUtil.isNotBlank(openId)){
+            accountInfo.setOpenId(openId);
+            accountInfoMapper.updateByPrimaryKeySelective(accountInfo);
+        }
         accountInfoService.updateLoginTime(username);
-        //session.setAttribute("userName",username);
-        //session.setAttribute("accountInfo",accountInfo);
-        return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
-     /*   try {
-            Subject subject=SecurityUtils.getSubject();
-            if (subject!=null)
-                subject.logout();
-            System.out.println(subject.getPrincipals());
-            subject.login(token);
-            //修改登录时间
-            accountInfoService.updateLoginTime(username);
-            //session.setAttribute("userName",username);
-            //session.setAttribute("accountInfo",accountInfo);
-            return ResultGenerator.genSuccessResult(accountInfoService.getUserInfo(accountInfo));
-        }catch (UnknownAccountException | IncorrectCredentialsException | LockedAccountException e){
-            return ResultGenerator.genFailResult(e.getMessage());
-        }catch (AuthenticationException e){
-            return  ResultGenerator.genFailResult("认证失败"+e.getMessage());
-        }*/
+        return ResultGenerator.genSuccessResult(accountInfo);
     }
     private Map<String,Object> getUserInfo(String username){
         Map<String,Object> userInfo=null;
