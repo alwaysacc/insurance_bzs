@@ -193,8 +193,7 @@
   <select id="getOrderIdByQuoteId" resultType="String">
     select order_id from order_info
     <where>
-    <if test="quoteId!=null">pay_type_id=#{quoteId} and</if>
-          pay_status='0' or  pay_status='1'
+     <if test="quoteId!=null">pay_type_id=#{quoteId}</if>
     </where>
   </select>
   <select id="getNextLevelOrder" resultMap="orderAndAccountResultMap" >
@@ -251,6 +250,6 @@ LEFT JOIN quote_info q on(o.pay_type_id=q.quote_id)
 WHERE o.pay_status=0
   </select>
   <update id="updatePayStatusByOderId">
-    update order_info set pay_status=3 where order_id=#{orderId}
+    update order_info set pay_status=3,cancel_msg='已过期' where order_id=#{orderId}
   </update>
 </mapper>

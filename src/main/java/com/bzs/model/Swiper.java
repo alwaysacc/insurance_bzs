@@ -15,6 +15,7 @@ public class Swiper {
 
     @Column(name = "order_num")
     private Integer orderNum;
+    private Integer type;
 
     /**
      * @return id
@@ -70,5 +71,13 @@ public class Swiper {
      */
     public void setOrderNum(Integer orderNum) {
         this.orderNum = orderNum;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

@@ -1,4 +1,5 @@
 package com.bzs.controller;
+import com.bzs.dao.SwiperMapper;
 import com.bzs.utils.QiniuCloudUtil;
 import com.bzs.utils.Result;
 import com.bzs.utils.ResultGenerator;
@@ -24,6 +25,8 @@ import java.util.List;
 public class SwiperController {
     @Resource
     private SwiperService swiperService;
+    @Resource
+    private SwiperMapper swiperMapper;
 
     @PostMapping("/add")
     public Result add(Swiper swiper,@RequestParam(value = "file", required = false) MultipartFile file) {
@@ -56,13 +59,13 @@ public class SwiperController {
     @PostMapping("/list")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
-        List<Swiper> list = swiperService.findAll();
+        List<Swiper> list = swiperService.getListByOrderNum();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
     @PostMapping("/getListByOrderNum")
-    public Result getListByOrderNum() {
-        return ResultGenerator.genSuccessResult(swiperService.getListByOrderNum());
+    public Result getListByOrderNum(Integer type) {
+        return ResultGenerator.genSuccessResult(swiperMapper.getListByType(type));
     }
 
 }

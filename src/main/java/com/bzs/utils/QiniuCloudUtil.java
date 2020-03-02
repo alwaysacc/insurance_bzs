@@ -72,7 +72,22 @@ public class QiniuCloudUtil {
 //        String fileTyle=fileName.substring(fileName.lastIndexOf("."),fileName.length());
         return DOMAIN+name;
     }
-
+    public static String putFile(File file, String name){
+        Configuration cfg = new Configuration(Zone.zone0());
+        UploadManager uploadManager = new UploadManager(cfg);
+        String upToken = auth.uploadToken(bucketname,name);
+        Response response = null;
+        DefaultPutRet putRet=null;
+        try {
+            response = uploadManager.put(file, name, upToken);
+//            putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+//        String fileName=file.getOriginalFilename();
+//        String fileTyle=fileName.substring(fileName.lastIndexOf("."),fileName.length());
+        return DOMAIN+name;
+    }
     public String getDownloadUrl(String targetUrl) {
         String downloadUrl = auth.privateDownloadUrl(targetUrl);
         return downloadUrl;
@@ -153,15 +168,16 @@ public class QiniuCloudUtil {
      * 主函数：测试
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws QiniuException {
         //构造私有空间的需要生成的下载的链接；
-        //格式： http://私有空间绑定的域名/空间下的文件名
+      /*  //格式： http://私有空间绑定的域名/空间下的文件名
         String targetUrl = "http://img.cdn.baozhishun.com/cecb572a22c3eabca16839564e941cd.jpg";
         String img=Base64Util.encodeImgageToBase64(targetUrl);
         System.out.println(img);
         System.out.println(JuHeHttpUtil.accountVerified(img,"back"));
 
-        String filePath = "D://";//外链域名下的图片路径
+        String filePath = "D://";//外链域名下的图片路径*/
+      delete("http://img.cdn.baozhishun.com/20190617132506123299-invite.png");
 //        new QiniuCloudUtil().download(targetUrl,filePath);
     }
 }

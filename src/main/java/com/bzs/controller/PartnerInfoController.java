@@ -62,11 +62,11 @@ public class PartnerInfoController {
     @PostMapping("/getPartnerList")
     public Result getPartnerList() {
         Condition condition=new Condition(PartnerInfo.class);
-        condition.createCriteria().andCondition("type="+1);
+        condition.createCriteria().andEqualTo("type="+1);
         Map m=new HashMap<>();
         m.put("list1", partnerInfoService.findByCondition(condition));
         condition=new Condition(PartnerInfo.class);
-        condition.createCriteria().andCondition("type="+2);
+        condition.createCriteria().andEqualTo("type="+2);
         m.put("list2", partnerInfoService.findByCondition(condition));
         return ResultGenerator.genSuccessResult(m);
     }

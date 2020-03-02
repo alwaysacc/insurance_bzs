@@ -152,6 +152,12 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.59</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.0</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>
@@ -207,7 +213,7 @@
             <groupId>org.crazycake</groupId>
             <artifactId>shiro-redis</artifactId>
             <version>2.4.2.1-RELEASE</version>
-          <!--  <version>3.2.3</version>-->
+            <!--  <version>3.2.3</version>-->
 
         </dependency>
         <!-- java http请求-->
@@ -275,18 +281,20 @@
             <artifactId>hutool-all</artifactId>
             <version>4.5.16</version>
         </dependency>
+
+
         <!-- 热部署 -->
-     <!--   <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>springloaded</artifactId>
-            <version>1.2.8.RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
+        <!--   <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>springloaded</artifactId>
+               <version>1.2.8.RELEASE</version>
+               <scope>provided</scope>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-devtools</artifactId>
+               <scope>provided</scope>
+           </dependency>-->
     </dependencies>
     <build>
         <plugins>

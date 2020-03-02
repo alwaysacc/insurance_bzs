@@ -439,4 +439,24 @@ public class AccountInfoController {
         return accountInfoService.checkAccountVerified(idCardImg, mobile, name, idCard);
     }
 
+    @ApiOperation("生成邀请图片")
+    @PostMapping("/genInviteImage")
+    public Result genInviteImage(String url,String accountId) throws IOException {
+        String filePath=System.getProperty("user.dir") +"/myqrcode.png";
+        String newFilePath=System.getProperty("user.dir") +"/qwe.png";
+        System.out.println(System.getProperty("user.dir"));
+        File bgImgFile = new File(System.getProperty("user.dir") + "/bj.jpg");//背景图片
+        File logoFile = new File(System.getProperty("user.dir") + "/logo.png");//背景图片
+        File QrCodeFile = new File(filePath);//生成图片位置
+//        String url = "https://blog.csdn.net/weixin_38407595";//二维码链接
+        QRCodeMax.drawLogoQRCode(logoFile,QrCodeFile,url);
+        QRCodeMax.mergeImage(System.getProperty("user.dir") + "/bj.jpg",filePath,newFilePath,"160","450");
+        File f=new File(newFilePath);
+        String imgUrl=QiniuCloudUtil.putFile(f,accountId+"-invite.png");
+        return ResultGenerator.genSuccessResult(imgUrl);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(System.getProperty("user.dir"));
+    }
 }

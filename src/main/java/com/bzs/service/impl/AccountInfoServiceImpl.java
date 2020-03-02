@@ -13,6 +13,7 @@ import com.bzs.service.IdCardImgService;
 import com.bzs.service.VerificationService;
 import com.bzs.utils.*;
 import com.bzs.utils.base64Util.Base64Util;
+import com.bzs.utils.jsontobean.O;
 import com.bzs.utils.jsontobean.TelCheckBean;
 import com.bzs.utils.juheUtil.JuHeHttpUtil;
 import com.bzs.utils.redisConstant.RedisConstant;
@@ -391,19 +392,24 @@ public class AccountInfoServiceImpl extends AbstractService<AccountInfo> impleme
         HashMap map;
         AccountInfo accountInfo = null;
         int userCount = accountInfoMapper.selectCount(accountInfo);
-        OrderInfo orderInfo = null;
-        int orderCount = orderInfoMapper.selectCount(orderInfo);
+        int orderCount = orderInfoMapper.selectCount(null);
         QuoteInfo quoteInfo = null;
         int quoteCount = quoteInfoMapper.selectCount(quoteInfo);
         int todayCount = accountInfoMapper.getTodayLoginCount();
         DrawCash drawCash=null;
         int drawCount = drawCashMapper.selectCount(null);
+        int msgCount = messageMapper.selectCount(null);
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setPayStatus(1);
+        int okCount = orderInfoMapper.selectCount(orderInfo);
         map = new HashMap();
         map.put("userCount", userCount);
         map.put("orderCount", orderCount);
         map.put("quoteCount", quoteCount);
         map.put("todayCount", todayCount);
         map.put("drawCount", drawCount);
+        map.put("msgCount", msgCount);
+        map.put("okCount", okCount);
         return map;
     }
 

@@ -9,9 +9,13 @@
     <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
 
   <select id="getListByOrderNum" resultMap="BaseResultMap">
-    select * from  swiper order by order_num asc
+    select * from  swiper order by order_num,type asc
+  </select>
+  <select id="getListByType" resultMap="BaseResultMap">
+    select * from  swiper where type=#{type}  order by order_num asc
   </select>
 </mapper>

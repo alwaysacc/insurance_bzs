@@ -307,8 +307,16 @@ public class QuoteInfo {
      */
     @Column(name = "channel_id")
     private String channelId;
+    @Column(name = "forceTax")
+    private int forceTax;
 
+    public int getForceTax() {
+        return forceTax;
+    }
 
+    public void setForceTax(int forceTax) {
+        this.forceTax = forceTax;
+    }
 
     /**
      * 获取乐观锁

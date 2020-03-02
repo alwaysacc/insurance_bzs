@@ -1202,11 +1202,11 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setForceStartTime(forceStartDate);
                     int forceTax = 0;
                     /*if (bizTotal > 0 && forceTotal > 0) {//1：商业+交强车船
-                        forceTax = 1;
+                        forceTax = 2;
                     } else if (bizTotal > 0) {//0:单商业
                         forceTax = 0;
                     } else if (forceTotal > 0) {//2：单交强+车船
-                        forceTax = 2;
+                        forceTax = 1;
                     }*/
                     if (jiaoQiang > 0) {
                         forceTax = 1;
@@ -1433,6 +1433,7 @@ public class QuoteInfoServiceImpl extends AbstractService<QuoteInfo> implements 
                     qpc.setQuoteStatus(1);//报价状态
                     qpc.setQuoteResult(quoteResult);//报价信息
                     qpc.setSubmitStatus(-1);//报价状态
+                    qpc.setForceTax(jiaoQiang);
                     //qpc.setSubmitresult("未核保");//报价信息
                     quoteInfoMapper.insert(qpc);
                     return resultMap;

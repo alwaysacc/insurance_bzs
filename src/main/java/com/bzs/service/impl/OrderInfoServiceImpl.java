@@ -18,6 +18,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -80,7 +82,8 @@ public class OrderInfoServiceImpl extends AbstractService<OrderInfo> implements 
         OrderInfo orderInfo=orderInfoServices.findBy("orderId",orderId);
         //车辆信息
         CarInfo carInfo=carInfoService.findBy("carInfoId",orderInfo.getCarInfoId());
-        QuoteInfo quoteInfo=quoteInfoService.findBy("quoteId",orderInfo.getPayTypeId());
+//        QuoteInfo quoteInfo=quoteInfoService.findBy("quoteId",orderInfo.getPayTypeId());
+        QuoteInfo quoteInfo=quoteInfoMapper.selectByPrimaryKey(orderInfo.getPayTypeId());
         List insuredList=quoteInfoMapper.getInsurance(orderInfo.getPayTypeId(),1);
         InsuredInfo insuredInfo=insuredInfoService.findBy("carInfoId",orderInfo.getCarInfoId());
         map.put("orderInfo",orderInfo);
